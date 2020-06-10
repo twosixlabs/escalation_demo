@@ -1,0 +1,11 @@
+-r requirements.txt
+flask
+sqlalchemy
+flask_sqlalchemy
+Flask-APScheduler
+Flask-Migrate
+pymysql
+pytest
+black
+numpy
+plotly

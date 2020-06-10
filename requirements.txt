@@ -1,0 +1,4 @@
+GitPython
+pyyaml
+six
+requests
