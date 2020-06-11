@@ -1,11 +1,19 @@
-from flask import Flask
+from flask import Flask, render_template
+
+from controller import get_graphic
 
 app = Flask(__name__)
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def plot_test():
+    '''
+    to be deleted
+    proof of concept
+    :return:
+    '''
+    [filename, data] = get_graphic('bar plot', [], [], [])
+    return render_template(filename, plot=data)
 
 
 if __name__ == '__main__':
