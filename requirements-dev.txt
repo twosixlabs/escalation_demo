@@ -8,4 +8,3 @@ pymysql
 pytest
 black
 numpy
-plotly

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+     <div class="row">
+        <div class="col-10">
+            <div class="chart" id="firstgraph">
+                <script>
+                    var graphs = {{plot | safe}};
+                    Plotly.plot('firstgraph',graphs || {});
+                </script>
+            </div>
+         </div>
+        <div class="col-2">
+              <div class="form-group">
+                <label for="First Data option">X-axis</label>
+                <select class="form-control" id="exampleFormControlSelect1">
+                    {% for col in cols %}
+                        <option>{{ col }}</option>
+                    {% endfor %}
+                </select>
+              </div>
+            <div class="form-group">
+                    <label for="First Data option">Y-axis</label>
+                    <select class="form-control" id="exampleFormControlSelect1">
+                        {% for col in cols %}
+                            <option>{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                  </div>
+        </div>
+     </div>
+{% endblock %}

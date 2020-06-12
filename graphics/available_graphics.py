@@ -1,8 +1,17 @@
-from graphics.simple_plotly_plot import PlotlyPlot
+from graphics.plotly_plot import PlotlyPlot
 
-AVAILABLE_GRAPHICS = {'line plot': PlotlyPlot('line'),
-                      'bar plot': PlotlyPlot('bar'),
-                      'barh plot': PlotlyPlot('barh'),
-                      'box plot': PlotlyPlot('box'),
-                      'scatter plot': PlotlyPlot('scatter')
-                      }
+"""
+List of the available graphics
+"""
+AVAILABLE_GRAPHICS = {
+    "table": PlotlyPlot("table"),
+    "bar plot": PlotlyPlot("bar"),
+    "heatmap": PlotlyPlot("heatmap"),
+    "pie chart": PlotlyPlot("pie"),
+    "scatter plot": PlotlyPlot("scatter"),
+    "box plot": PlotlyPlot("box"),
+    "violin plot": PlotlyPlot("violin"),
+    "histogram": PlotlyPlot("histogram"),
+    "3D scatter plot": PlotlyPlot("scatter3d"),
+    "surface plot": PlotlyPlot("surface"),
+}

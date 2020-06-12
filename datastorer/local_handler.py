@@ -4,11 +4,17 @@ import pandas as pd
 
 class LocalHandler(DataHandler):
     def __init__(self, file_path=None):
-        super().__init__()
         self.file_path = file_path
 
-    def get_columns_names(self):
+    def get_column_names(self):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
     def get_column_data(self, cols: list) -> list:
-        return super().get_column_data(cols)
+        """
+
+        :param cols: list of str of the names of the columns of data you would like to plot
+        :return: list of lists of the data
+        """
+        return pd.read_csv(self.file_path)[
+            cols
+        ].values.T.tolist()  # pulls out each column as a different list
