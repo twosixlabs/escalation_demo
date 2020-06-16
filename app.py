@@ -5,16 +5,16 @@ from controller import get_graphic
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route("/")
 def plot_test():
-    '''
+    """
     to be deleted
     proof of concept
     :return:
-    '''
-    [filename, data] = get_graphic('bar plot', [], [], [])
-    return render_template(filename, plot=data)
+    """
+    [filename, htmldata] = get_graphic("scatter plot", [], [], [])
+    return render_template(filename, **htmldata)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()

@@ -1,13 +1,12 @@
-
 class DataHandler(object):
     def __init__(self):
-        pass
+        raise NotImplementedError
 
-    def get_columns_names(self):
+    def get_column_names(self):
         """
         What columns does the data have
         """
-        pass
+        raise NotImplementedError
 
     def get_column_data(self, cols: list) -> list:
         """
@@ -15,4 +14,4 @@ class DataHandler(object):
         :param cols: list of names
         :return:
         """
-        pass
+        raise NotImplementedError
