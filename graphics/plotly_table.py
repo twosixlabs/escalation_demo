@@ -5,15 +5,14 @@ from graphics.graphic_class import Graphic
 import plotly
 
 
-class PlotlyPlot(Graphic):
-    def __init__(self, type):
+class PlotlyTable(Graphic):
+    def __init__(self):
         """
 
         :param type: type of plotly graph - 'bar', 'scatter'
         :returns: filename and JSON file
         """
         super().__init__()
-        self.type = type
 
     def draw(self, data, axis_names):
         """

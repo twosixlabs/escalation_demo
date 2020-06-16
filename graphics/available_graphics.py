@@ -1,17 +1,36 @@
 from graphics.plotly_plot import PlotlyPlot
+from graphics.plotly_table import PlotlyTable
 
 """
 List of the available graphics
 """
 AVAILABLE_GRAPHICS = {
-    "table": PlotlyPlot("table"),
-    "bar plot": PlotlyPlot("bar"),
-    "heatmap": PlotlyPlot("heatmap"),
-    "pie chart": PlotlyPlot("pie"),
-    "scatter plot": PlotlyPlot("scatter"),
-    "box plot": PlotlyPlot("box"),
-    "violin plot": PlotlyPlot("violin"),
-    "histogram": PlotlyPlot("histogram"),
-    "3D scatter plot": PlotlyPlot("scatter3d"),
-    "surface plot": PlotlyPlot("surface"),
+    "table": {"object": PlotlyTable, "num_data": -1, "show_name": "Table"},
+    "bar": {"object": PlotlyPlot("bar"), "num_data": 2, "show_name": "bar plot"},
+    "heatmap": {
+        "object": PlotlyPlot("heatmap"),
+        "num_data": 3,
+        "show_name": "Heat map",
+    },
+    "scatter plot": {
+        "object": PlotlyPlot("scatter"),
+        "num_data": 2,
+        "show_name": "Scatter/Line Plot",
+    },
+    "box": {"object": PlotlyPlot("box"), "num_data": 2, "show_name": "Box"},
+    "histogram": {
+        "object": PlotlyPlot("histogram"),
+        "num_data": 1,
+        "show_name": "Histogram",
+    },
+    "scatter3d": {
+        "object": PlotlyPlot("scatter3d"),
+        "num_data": 3,
+        "show_name": "3D Scatter Plot",
+    },
+    "surface": {
+        "object": PlotlyPlot("surface"),
+        "num_data": 3,
+        "show_name": "Surface Plot",
+    },
 }
