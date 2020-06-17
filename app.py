@@ -1,22 +1,30 @@
-from flask import Flask, render_template
-import sys
-from controller import get_data_for_page
+import os
 
-DATALAYOUT = "datalayout.html"
-app = Flask(__name__)
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.engine.url import URL
 
-
-@app.route("/")
-def main_page():
-    html_data = get_data_for_page(app.config.get("path_to_json"), None)
-    return render_template(DATALAYOUT, **html_data)
+from app_settings import DATABASE_CONFIG
 
 
-@app.route("/<page_name>", methods=["GET"])
-def graphic_page(page_name):
-    html_data = get_data_for_page(app.config.get("path_to_json"), page_name)
-    return render_template(DATALAYOUT, **html_data)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_mapping(
+        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL') or URL(**DATABASE_CONFIG),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        VERSION="0.0.1")
 
+    db = SQLAlchemy()
+    db.init_app(app)
+
+    # register url bleuprints with the app object
+    from view import bp as sub_bp
+    app.register_blueprint(sub_bp)
+
+    return app
+
+
+app = create_app()
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:

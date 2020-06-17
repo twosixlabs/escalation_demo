@@ -10,15 +10,7 @@ from tableschema import Table
 from sqlalchemy.types import Integer, Text, Date, Float
 import warnings
 
-
-DATABASE_CONFIG = {
-    'drivername': 'mysql+pymysql',
-    'host': 'localhost',
-    'port': '3306',
-    'username': 'escalation_os_user',
-    'password': 'escalation_os_pwd',
-    'database': 'escalation_os'
-}
+from app_settings import DATABASE_CONFIG
 
 DATA_TYPE_MAP = {'integer': Integer, 'number': Float, 'string': Text, 'date': Date}
 
@@ -121,7 +113,8 @@ class CreateTablesFromCSVs:
                         schema=DATABASE_CONFIG['database'],
                         if_exists='replace',
                         chunksize=300,
-                        dtype=schema)
+                        dtype=schema,
+                        index=False)
 
 
 if __name__ == '__main__':
@@ -135,3 +128,8 @@ if __name__ == '__main__':
     # script method to create sqlalchemy models from database definition
     # note, this creates Tables instead of classes if no primary key is specified.  How can we generate pks and foreign_keys at data ingest time?
 #     sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile models.py
+
+
+    # workflow for onboarding:
+    # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
+    # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
