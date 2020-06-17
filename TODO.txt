@@ -1,8 +1,17 @@
-Implement Local_handler
-Fix tests
+Add title and brief description changable in the config file.
 
-Create Containers
-Add more then two data slots.
+Implement Administrator class
+ - walk through
+Implement database
 
+Buttons
+controller test
+make html general
+
+simple operations on the data.
+
+limitations/decisions:
 Cannot switch between x and y on the fly.
+Plots on the same page can use different tables
+
 

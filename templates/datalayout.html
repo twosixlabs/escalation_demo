@@ -3,16 +3,17 @@
 
 {% block body %}
 
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+    <div class="row">
+    <button type="button" class="btn btn-primary">To Do</button>
+    </div>
+    {% for plot in plots %}
      <div class="row">
         <div class="col-12">
-            <div class="chart" id="firstgraph">
-                <script>
-                    var graphs = {{plot | safe}};
-                    Plotly.plot('firstgraph',graphs || {});
-                </script>
-            </div>
+            <h1> {{ plot['title'] }}</h1>
+            {{ plot['brief_desc'] }}
+            {% set index = loop.index %}
+            {% include plot['html_file']%}
          </div>
      </div>
+    {% endfor %}
 {% endblock %}

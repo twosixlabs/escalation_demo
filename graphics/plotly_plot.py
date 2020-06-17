@@ -6,37 +6,20 @@ import plotly
 
 
 class PlotlyPlot(Graphic):
-    def __init__(self, type):
+    def __init__(self):
         """
-
         :param type: type of plotly graph - 'bar', 'scatter'
-        :returns: filename and JSON file
-        """
-        super().__init__()
-        self.type = type
-
-    def draw(self, data, axis_names):
         """
 
-        :param data: The data that wil be ploted list of lists
-        :param axis_names: names of the various axis
-        :return:
+    def draw(self, data, data_to_struct, plot_options):
         """
-        graphinfo = dict(
-            data=[dict(type=self.type, x=data[0], y=data[1], mode="markers"),],
-            layout=dict(
-                title="Penguin test data",  # will be changed
-                xaxis=dict(title=axis_names[0]),
-                yaxis=dict(title=axis_names[1]),
-            ),
-        )
+        :param plot_dict: The data that wil be ploted list of lists
+        :return: json
+        """
+        for key, path in data_to_struct.items():
+            plot_options[path[0]][path[1]][path[2]] = data[key]  # three things in path
+
         graphJSON = json.dumps(
-            graphinfo, cls=plotly.utils.PlotlyJSONEncoder
+            plot_options, cls=plotly.utils.PlotlyJSONEncoder
         )  # I decided that I want to keep the strings here
-        return "datalayout.html", graphJSON
-
-    def update_graphic(self, data):
-        super().update_graphic(data)
-
-    def get_options(self):
-        super().get_options()
+        return graphJSON

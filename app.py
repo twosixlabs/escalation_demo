@@ -2,6 +2,7 @@ from flask import Flask, render_template
 
 from controller import get_graphic
 
+DATALAYOUT = "datalayout.html"
 app = Flask(__name__)
 
 
@@ -12,8 +13,8 @@ def plot_test():
     proof of concept
     :return:
     """
-    [filename, htmldata] = get_graphic("scatter plot", [], [], [])
-    return render_template(filename, **htmldata)
+    htmldata = get_graphic("tests/test_data/test.json")
+    return render_template(DATALAYOUT, plots=htmldata)
 
 
 if __name__ == "__main__":

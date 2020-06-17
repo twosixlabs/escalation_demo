@@ -1,0 +1,6 @@
+<div class="chart" id="{{"firstgraph{}".format(index)}}">
+    <script>
+        var graphs = {{plot['plot_info'] | safe}};
+        Plotly.plot('{{"firstgraph{}".format(index)}}',graphs || {});
+    </script>
+</div>
