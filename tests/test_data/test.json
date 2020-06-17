@@ -1,0 +1,42 @@
+{
+   "graphics": [
+
+      {
+         "plot_name":"plotly",
+         "data_name": "TO DO",
+         "title":"Do massive penguins have long flippers?",
+        "brief_desc":"This plot looks at the relationsip between...",
+          "data": {
+              "x": "body_mass_g",
+              "y": "flipper_length_mm"
+            },
+        "data_to_struct": {"x": ["data",0,"x"],"y": ["data",0,"y"]},
+         "plot_options": {
+           "data": [{"type" : "scatter" ,"mode":"markers"}],
+                     "layout": {
+            "xaxis":{"title": "body mass"},
+            "yaxis":{"title": "flipper length"}
+          }
+         }
+
+      },
+     {
+         "plot_name":"plotly",
+         "data_name": "TO DO",
+       "title":"How big are penguins?",
+       "brief_desc":"",
+          "data": {
+              "x": "body_mass_g"
+            },
+        "data_to_struct": {"x": ["data",0,"x"]},
+         "plot_options": {
+           "data": [{"type" : "histogram" }],
+                     "layout": {
+            "xaxis":{"title": "body mass"},
+            "yaxis":{"title": "count"}
+          }
+         }
+
+      }
+   ]
+}

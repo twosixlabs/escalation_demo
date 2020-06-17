@@ -9,12 +9,13 @@ class LocalHandler(DataHandler):
     def get_column_names(self):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
-    def get_column_data(self, cols: list) -> list:
+    def get_column_data(self, data_dict: dict) -> dict:
         """
+        :param cols:
+        :return:
+        """
+        df = pd.read_csv(self.file_path)
+        for key, column in data_dict.items():
+            data_dict[key] = df[column].values
 
-        :param cols: list of str of the names of the columns of data you would like to plot
-        :return: list of lists of the data
-        """
-        return pd.read_csv(self.file_path)[
-            cols
-        ].values.T.tolist()  # pulls out each column as a different list
+        return data_dict
