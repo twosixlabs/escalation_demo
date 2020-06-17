@@ -1,4 +1,5 @@
 class DataHandler(object):
+    # todo: enforce that the function signatures on the children classes are the same as here, to make childern classes interchangeable
     def __init__(self):
         raise NotImplementedError
 

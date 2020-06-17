@@ -7,8 +7,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 import pandas as pd
 from tableschema import Table
-from sqlalchemy.types import Integer, Text, Date, Numeric
+from sqlalchemy.types import Integer, Text, Date, Float
 import warnings
+
 
 DATABASE_CONFIG = {
     'drivername': 'mysql+pymysql',
@@ -19,7 +20,22 @@ DATABASE_CONFIG = {
     'database': 'escalation_os'
 }
 
-DATA_TYPE_MAP = {'integer': Integer, 'number': Numeric, 'string': Text, 'date': Date}
+DATA_TYPE_MAP = {'integer': Integer, 'number': Float, 'string': Text, 'date': Date}
+
+
+# todo: bigger map:
+# int: sqlalchemy.sql.sqltypes.BigInteger,
+#  str: sqlalchemy.sql.sqltypes.Unicode,
+#  float: sqlalchemy.sql.sqltypes.Float,
+#  decimal.Decimal: sqlalchemy.sql.sqltypes.Numeric,
+#  datetime.datetime: sqlalchemy.sql.sqltypes.DateTime,
+#  bytes: sqlalchemy.sql.sqltypes.LargeBinary,
+#  bool: sqlalchemy.sql.sqltypes.Boolean,
+#  datetime.date: sqlalchemy.sql.sqltypes.Date,
+#  datetime.time: sqlalchemy.sql.sqltypes.Time,
+#  datetime.timedelta: sqlalchemy.sql.sqltypes.Interval,
+#  list: sqlalchemy.sql.sqltypes.ARRAY,
+#  dict: sqlalchemy.sql.sqltypes.JSON
 
 
 def extract_values(obj, key):
@@ -47,7 +63,9 @@ def extract_values(obj, key):
 
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
-    __engine = create_engine(URL(**DATABASE_CONFIG))
+    connection_url = URL(**DATABASE_CONFIG)
+    print(connection_url)
+    __engine = create_engine(connection_url)
 
     @staticmethod
     def get_data_from_csv(csv_data_file_path):
@@ -68,7 +86,7 @@ class CreateTablesFromCSVs:
         table = Table(csv_data_file_path)
         table.infer(limit=500, confidence=confidence)
         schema = table.schema.descriptor
-        # import ipdb; ipdb.set_trace()
+        # todo: we aren't evaluating the confidence failures here- what happens if we can't infer? UX step where the schema gets validated by a user?
         names = cls.get_column_names(schema, 'name')
         datatypes = cls.get_column_datatypes(schema, 'type')
         schema_dict = dict(zip(names, datatypes))
@@ -93,14 +111,14 @@ class CreateTablesFromCSVs:
         return sqlalchemy_data_types
 
     @classmethod
-    def create_new_table(cls, data, schema):
+    def create_new_table(cls, table_name, data, schema):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            data.to_sql('faketable',
+            data.to_sql(table_name,
                         con=cls.__engine,
-                        schema='escalation_os',
+                        schema=DATABASE_CONFIG['database'],
                         if_exists='replace',
                         chunksize=300,
                         dtype=schema)
@@ -111,4 +129,9 @@ if __name__ == '__main__':
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
     print(f"Schema \n{schema}")
-    CreateTablesFromCSVs.create_new_table(data, schema)
+    table_name = 'faketable'
+    CreateTablesFromCSVs.create_new_table(table_name, data, schema)
+
+    # script method to create sqlalchemy models from database definition
+    # note, this creates Tables instead of classes if no primary key is specified.  How can we generate pks and foreign_keys at data ingest time?
+#     sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile models.py
