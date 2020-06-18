@@ -9,10 +9,10 @@ MYSQL_DATABASE_CONFIG = {
 
 
 PSQL_DATABASE_CONFIG = {
-    "drivername": "psql",
+    "drivername": "postgresql+pg8000",
     "host": "localhost",
-    "port": "5432",
-    "username": "escalation_os_user",
+    "port": "54320",
+    "username": "escalation_os",
     "password": "escalation_os_pwd",
     "database": "escalation_os",
 }

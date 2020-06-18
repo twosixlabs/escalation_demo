@@ -10,7 +10,11 @@ from tableschema import Table
 from sqlalchemy.types import Integer, Text, Date, Float
 import warnings
 
-from app_settings import MYSQL_DATABASE_CONFIG as database_config
+DB_BACKEND = "psql"
+if DB_BACKEND == "psql":
+    from app_settings import PSQL_DATABASE_CONFIG as database_config
+elif DB_BACKEND == "mysql":
+    from app_settings import MYSQL_DATABASE_CONFIG as database_config
 
 DATA_TYPE_MAP = {"integer": Integer, "number": Float, "string": Text, "date": Date}
 
@@ -111,18 +115,31 @@ class CreateTablesFromCSVs:
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            data.to_sql(
-                table_name,
-                con=cls.__engine,
-                schema=database_config["database"],
-                if_exists="replace",
-                chunksize=300,
-                dtype=schema,
-                index=False,
-            )
-            cls.__engine.execute(
-                "ALTER TABLE faketable ADD UNIQUE({}({}));".format(*index_col)
-            )
+            if DB_BACKEND == "mysql":
+                data.to_sql(
+                    table_name,
+                    con=cls.__engine,
+                    schema=database_config["database"],
+                    if_exists="replace",
+                    chunksize=300,
+                    dtype=schema,
+                    index=False,
+                )
+                cls.__engine.execute(
+                    "ALTER TABLE {} ADD UNIQUE({}({}));".format(table_name, *index_col)
+                )
+            elif DB_BACKEND == "psql":
+                data.to_sql(
+                    table_name,
+                    con=cls.__engine,
+                    if_exists="replace",
+                    chunksize=300,
+                    dtype=schema,
+                    index=False,
+                )
+                cls.__engine.execute(
+                    f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                )
 
 
 if __name__ == "__main__":
@@ -138,7 +155,8 @@ if __name__ == "__main__":
     CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
 
     # script method to create sqlalchemy models from database definition
-    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile models.py
+    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
+    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
 
     # workflow for onboarding:
     # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
