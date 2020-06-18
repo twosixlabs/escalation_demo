@@ -2,10 +2,17 @@
 
 
 {% block body %}
-
-    <div class="row">
-    <button type="button" class="btn btn-primary">To Do</button>
-    </div>
+    <div class="jumbotron">
+  <h1 class="display-4">{{ title }}</h1>
+  <p class="lead">{{ brief_desc }}</p>
+  <hr class="my-4">
+  <p class="lead">
+    {% for button in buttons %}
+        <a class="btn btn-primary" href={{ button['link'] }} role="button">{{ button['name'] }}</a>
+    {% endfor %}
+  </p>
+</div>
+<div class="container">
     {% for plot in plots %}
      <div class="row">
         <div class="col-12">
@@ -16,4 +23,5 @@
          </div>
      </div>
     {% endfor %}
+</div>
 {% endblock %}

@@ -4,7 +4,9 @@ from graphics.plotly_plot import PlotlyPlot
 List of the available graphics
 """
 
-AVAILABLE_GRAPHICS = {"plotly": {"object": PlotlyPlot(), "html": "plotly.html"}}
+AVAILABLE_GRAPHICS = {
+    "plotly": {"object": PlotlyPlot(), "graph_html_template": "plotly.html"}
+}
 
 """
 I am going to repurpose this when I am making admin UI set up  

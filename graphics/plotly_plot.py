@@ -6,20 +6,20 @@ import plotly
 
 
 class PlotlyPlot(Graphic):
-    def __init__(self):
-        """
-        :param type: type of plotly graph - 'bar', 'scatter'
+    def draw(self, data, data_to_plot_path, plot_options):
         """
 
-    def draw(self, data, data_to_struct, plot_options):
+        :param data:
+        :param data_to_plot_path:
+        :param plot_options:
+        :return:
         """
-        :param plot_dict: The data that wil be ploted list of lists
-        :return: json
-        """
-        for key, path in data_to_struct.items():
-            plot_options[path[0]][path[1]][path[2]] = data[key]  # three things in path
+        for key, path in data_to_plot_path.items():
+            plot_options[path[0]][path[1]][path[2]] = data[
+                key
+            ]  # three things in path, data, which index and value (x,y)
 
-        graphJSON = json.dumps(
+        graph_json = json.dumps(
             plot_options, cls=plotly.utils.PlotlyJSONEncoder
         )  # I decided that I want to keep the strings here
-        return graphJSON
+        return graph_json

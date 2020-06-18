@@ -1,17 +1,24 @@
 Add title and brief description changable in the config file.
 
-Implement Administrator class
- - walk through
+
 Implement database
 
-Buttons
-controller test
-make html general
+data subselect - need to write javascript code.
+#data agg
 
-simple operations on the data.
+controller test
+
+Low:
+Simplify the config file
+Implement Administrator class
+ - walk through
 
 limitations/decisions:
 Cannot switch between x and y on the fly.
 Plots on the same page can use different tables
+Graph on use a single data set
+Need to be connected to the internet
+Assuming csv in local handler
+gets most recent data set
 
 
