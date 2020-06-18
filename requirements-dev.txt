@@ -8,3 +8,5 @@ pymysql
 pytest
 black
 numpy
+mysqlclient
+sqlacodegen

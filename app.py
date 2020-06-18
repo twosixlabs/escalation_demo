@@ -1,27 +1,36 @@
-from flask import Flask, render_template
+import os
 import sys
-from controller import get_data_for_page
 
-DATALAYOUT = "datalayout.html"
-app = Flask(__name__)
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.engine.url import URL
 
-
-@app.route("/")
-def main_page():
-    html_data = get_data_for_page(app.config.get("path_to_json"), None)
-    return render_template(DATALAYOUT, **html_data)
+from app_settings import DATABASE_CONFIG
 
 
-@app.route("/<page_name>", methods=["GET"])
-def graphic_page(page_name):
-    html_data = get_data_for_page(app.config.get("path_to_json"), page_name)
-    return render_template(DATALAYOUT, **html_data)
+def create_app(backend):
+    app = Flask(__name__)
+    # todo: option to build app without the sql connection if it's not needed. We'll build the config mapping based on info in the user-generated app config
+    app.config.from_mapping(
+        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL') or URL(**DATABASE_CONFIG),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        VERSION="0.0.1")
+    if backend == 'sql':
+        db = SQLAlchemy()
+        db.init_app(app)
+
+    # register url bleuprints with the app object
+    from view import bp as sub_bp
+    app.register_blueprint(sub_bp)
+
+    return app
 
 
 if __name__ == "__main__":
+    backend = 'filesystem'
     if len(sys.argv) > 1:
-        app.config["path_to_json"] = sys.argv[1]  # sanitize inputs
-    else:
-        app.config["path_to_json"] = "config_files/main.json"
+        backend = sys.argv[1]
 
+    app = create_app(backend)
+    app.config["path_to_json"] = "tests/test_data/test_app_config.json"
     app.run()
