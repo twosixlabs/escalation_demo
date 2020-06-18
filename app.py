@@ -1,4 +1,5 @@
 import os
+import sys
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -31,6 +32,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         app.config["path_to_json"] = sys.argv[1]  # sanitize inputs
     else:
-        app.config["path_to_json"] = "config_files/main.json"
+        app.config["path_to_json"] = "tests/test_data/test_app_config.json"
 
     app.run()
