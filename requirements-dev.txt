@@ -10,3 +10,4 @@ black
 numpy
 mysqlclient
 sqlacodegen
+pre-commit
