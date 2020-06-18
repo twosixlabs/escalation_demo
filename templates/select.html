@@ -1,5 +1,5 @@
 {% for key, cols in plot['select_info'].items() %}
-<select name={{ key }} id={{ key ~ index }}>
+<select class="custom-select custom-select-lg mb-3" name={{ key }} id={{ key ~ index }}>
     {% for col_name in cols %}
   <option value={{ col_name }}>{{ col_name }}</option>
     {% endfor %}
