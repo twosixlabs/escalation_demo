@@ -14,14 +14,22 @@
 </div>
 <div class="container">
     {% for plot in plots %}
+        {% set index = loop.index %}
      <div class="row">
-        <div class="col-12">
             <h1> {{ plot['title'] }}</h1>
-            {{ plot['brief_desc'] }}
-            {% set index = loop.index %}
-            {% include plot['html_file']%}
-         </div>
      </div>
+        <div class="row">
+        {{ plot['brief_desc'] }}
+        </div>
+        <div class="row">
+         <div class="col-10">
+            {% include plot['graph_html_file']%}
+         </div>
+     <div class="col-2">
+         {% include plot['select_html_file'] ignore missing %}
+     </div>
+     </div>
+
     {% endfor %}
 </div>
 {% endblock %}

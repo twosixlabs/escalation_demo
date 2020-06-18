@@ -20,5 +20,5 @@ Graph on use a single data set
 Need to be connected to the internet
 Assuming csv in local handler
 gets most recent data set
-
+Only one type of selector per section
 

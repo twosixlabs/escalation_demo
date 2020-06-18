@@ -15,12 +15,17 @@ class LocalCSVHandler(DataHandler):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
     def get_column_data(self, data_dict: dict) -> dict:
+        # error checking will be good
         """
         :param cols:
         :return:
         """
         df = pd.read_csv(self.file_path)
-        for key, column in data_dict.items():
-            data_dict[key] = df[column].values
+        return df.to_dict("list")
 
-        return data_dict
+    def get_column_unique_entries(self, cols: list) -> dict:
+        df = pd.read_csv(self.file_path)  # error checking will be good
+        unique_dict = {}
+        for col in cols:
+            unique_dict[col] = df[col].dropna().unique().tolist()
+        return unique_dict

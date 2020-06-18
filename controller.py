@@ -1,11 +1,14 @@
+from datastorer.data_handler import DataHandler
 from datastorer.local_handler import LocalCSVHandler
 from utility.available_graphics import AVAILABLE_GRAPHICS
+from utility.available_selectors import AVAILABLE_SELECTORS
 from utility.constants import *
 
 
 def get_data_for_page(config_dict: dict, display_pages) -> dict:
     """
-    :param config_file:
+    :param config_dict:
+    :param display_pages:
     :return:
     """
 
@@ -38,8 +41,19 @@ def organize_graphic(plot_list: list) -> list:
         jsonstr = new_graphic.draw(
             data_dict, plot_dict[DATA_TO_PLOT_PATH], plot_dict[PLOT_OPTIONS]
         )
+        if OPTION_BAR in plot_dict.keys():
+            select_dict = plot_dict[OPTION_BAR]
+            [select_html_file, select_info] = create_select_info(select_dict, new_data)
+
+        else:
+            select_html_file = ""
+            select_info = {}
         html_dict = {
-            "html_file": graphic_data[GRAPH_HTML_TEMPLATE],
+            "graph_html_file": graphic_data[
+                GRAPH_HTML_TEMPLATE
+            ],  # make these string constants
+            "select_html_file": select_html_file,
+            "select_info": select_info,
             "title": plot_dict[GRAPHIC_TITLE],
             "brief_desc": plot_dict[GRAPHIC_DESC],
             "plot_info": jsonstr,
@@ -53,3 +67,13 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
     for key in available_pages.keys():
         buttons.append({"name": available_pages[key][PAGE_NAME], "link": key})
     return buttons
+
+
+def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
+
+    selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
+    select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
+    columns = select_dict[OPTION_COLS]
+    select_info = new_data.get_column_unique_entries(columns)
+
+    return select_html_file, select_info
