@@ -32,7 +32,7 @@ def organize_graphic(plot_list: list) -> list:
     plot_specs = []
 
     for plot_dict in plot_list:
-        new_data = LocalHandler("tests/test_data/Penguins_size/penguins_size.csv")
+        new_data = LocalHandler(plot_dict["data_path"])
         data_dict = new_data.get_column_data(plot_dict["data"])
         graphic_data = AVAILABLE_GRAPHICS[plot_dict["plot_manager"]]
         new_graphic = graphic_data["object"]
