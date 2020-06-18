@@ -9,6 +9,7 @@ from app_settings import DATABASE_CONFIG
 
 def create_app():
     app = Flask(__name__)
+    # todo: option to build app without the sql connection if it's not needed. We'll build the config mapping based on info in the user-generated app config
     app.config.from_mapping(
         SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL') or URL(**DATABASE_CONFIG),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
