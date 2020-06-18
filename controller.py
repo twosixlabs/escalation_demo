@@ -1,29 +1,28 @@
-from datastorer.local_handler import LocalHandler
-from graphics.available_graphics import AVAILABLE_GRAPHICS
-import json
+from datastorer.local_handler import LocalCSVHandler
+from utility.available_graphics import AVAILABLE_GRAPHICS
+from utility.constants import *
 
 
-def get_data_for_page(config_file_path: str, disp_pg) -> dict:
+def get_data_for_page(config_dict: dict, display_pages) -> dict:
     """
     :param config_file:
     :return:
     """
-    with open(config_file_path, "r") as config_file:
-        config_dict = json.load(config_file)
-    aval_pg=config_dict["available_pages"]
-    if disp_pg is not None:
-        plot_list = aval_pg[disp_pg]["graphics"]
+
+    available_pages = config_dict[AVAILABLE_PAGES]
+    if display_pages is not None:
+        plot_list = available_pages[display_pages][GRAPHICS]
         plot_specs = organize_graphic(plot_list)
     else:
         plot_specs = []
 
-    buttons = extract_buttons(aval_pg)
+    buttons = create_link_buttons_for_available_pages(available_pages)
 
     page_info = {
         "plots": plot_specs,
-        "title": config_dict["title"],
-        "brief_desc": config_dict["brief_desc"],
-        "buttons":buttons
+        "title": config_dict[SITE_TITLE],
+        "brief_desc": config_dict[SITE_DESC],
+        "buttons": buttons,
     }
     return page_info
 
@@ -32,26 +31,25 @@ def organize_graphic(plot_list: list) -> list:
     plot_specs = []
 
     for plot_dict in plot_list:
-        new_data = LocalHandler(plot_dict["data_path"])
-        data_dict = new_data.get_column_data(plot_dict["data"])
-        graphic_data = AVAILABLE_GRAPHICS[plot_dict["plot_manager"]]
-        new_graphic = graphic_data["object"]
+        new_data = LocalCSVHandler(plot_dict[DATA_PATH])
+        data_dict = new_data.get_column_data(plot_dict[DATA])
+        graphic_data = AVAILABLE_GRAPHICS[plot_dict[PLOT_MANAGER]]
+        new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
-            data_dict, plot_dict["data_to_plot_path"], plot_dict["plot_options"]
+            data_dict, plot_dict[DATA_TO_PLOT_PATH], plot_dict[PLOT_OPTIONS]
         )
         html_dict = {
-            "html_file": graphic_data["graph_html_template"],
-            "title": plot_dict["title"],
-            "brief_desc": plot_dict["brief_desc"],
+            "html_file": graphic_data[GRAPH_HTML_TEMPLATE],
+            "title": plot_dict[GRAPHIC_TITLE],
+            "brief_desc": plot_dict[GRAPHIC_DESC],
             "plot_info": jsonstr,
         }
         plot_specs.append(html_dict)
     return plot_specs
 
 
-def extract_buttons(aval_pages: dict) -> list:
-    buttons=[]
-    for key in aval_pages.keys():
-        buttons.append({'name':aval_pages[key]['name'],
-                        'link':key})
+def create_link_buttons_for_available_pages(available_pages: dict) -> list:
+    buttons = []
+    for key in available_pages.keys():
+        buttons.append({"name": available_pages[key][PAGE_NAME], "link": key})
     return buttons

@@ -3,10 +3,11 @@ import pandas as pd
 import glob
 import os
 
-class LocalHandler(DataHandler):
+
+class LocalCSVHandler(DataHandler):
     def __init__(self, file_folder=None):
-        suffix='{}*.csv' if file_folder[-1]=='/' else '{}/*.csv'
-        list_of_files = glob.glob(suffix.format(file_folder))  # * means all if need specific format then *.csv
+        suffix = "{}*.csv" if file_folder[-1] == "/" else "{}/*.csv"
+        list_of_files = glob.glob(suffix.format(file_folder))
         latest_file = max(list_of_files, key=os.path.getctime)
         self.file_path = latest_file
 

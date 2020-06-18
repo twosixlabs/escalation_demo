@@ -12,7 +12,7 @@ import warnings
 
 from app_settings import DATABASE_CONFIG
 
-DATA_TYPE_MAP = {'integer': Integer, 'number': Float, 'string': Text, 'date': Date}
+DATA_TYPE_MAP = {"integer": Integer, "number": Float, "string": Text, "date": Date}
 
 
 # todo: bigger map:
@@ -55,6 +55,7 @@ def extract_values(obj, key):
 
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
+
     connection_url = URL(**DATABASE_CONFIG)
     print(connection_url)
     __engine = create_engine(connection_url)
@@ -65,7 +66,7 @@ class CreateTablesFromCSVs:
         :param csv_data_file_path:
         :return: pandas dataframe
         """
-        return pd.read_csv(csv_data_file_path, encoding='utf-8')
+        return pd.read_csv(csv_data_file_path, encoding="utf-8")
 
     @classmethod
     def get_schema_from_csv(cls, csv_data_file_path, confidence=0.05):
@@ -79,8 +80,8 @@ class CreateTablesFromCSVs:
         table.infer(limit=500, confidence=confidence)
         schema = table.schema.descriptor
         # todo: we aren't evaluating the confidence failures here- what happens if we can't infer? UX step where the schema gets validated by a user?
-        names = cls.get_column_names(schema, 'name')
-        datatypes = cls.get_column_datatypes(schema, 'type')
+        names = cls.get_column_names(schema, "name")
+        datatypes = cls.get_column_datatypes(schema, "type")
         schema_dict = dict(zip(names, datatypes))
         return schema_dict
 
@@ -99,7 +100,9 @@ class CreateTablesFromCSVs:
             try:
                 sqlalchemy_data_types.append(DATA_TYPE_MAP.get(tableschema_data_type))
             except KeyError:
-                raise KeyError(f"Mapping to sqlalchemy data type not found for {tableschema_data_type}")
+                raise KeyError(
+                    f"Mapping to sqlalchemy data type not found for {tableschema_data_type}"
+                )
         return sqlalchemy_data_types
 
     @classmethod
@@ -108,21 +111,23 @@ class CreateTablesFromCSVs:
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            data.to_sql(table_name,
-                        con=cls.__engine,
-                        schema=DATABASE_CONFIG['database'],
-                        if_exists='replace',
-                        chunksize=300,
-                        dtype=schema,
-                        index=False)
+            data.to_sql(
+                table_name,
+                con=cls.__engine,
+                schema=DATABASE_CONFIG["database"],
+                if_exists="replace",
+                chunksize=300,
+                dtype=schema,
+                index=False,
+            )
 
 
-if __name__ == '__main__':
-    filepath = os.path.join('scratch', 'YeastSTATES-1-0-Growth-Curves__platereader.csv')
+if __name__ == "__main__":
+    filepath = os.path.join("scratch", "YeastSTATES-1-0-Growth-Curves__platereader.csv")
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
     print(f"Schema \n{schema}")
-    table_name = 'faketable'
+    table_name = "faketable"
     CreateTablesFromCSVs.create_new_table(table_name, data, schema)
 
     # script method to create sqlalchemy models from database definition
@@ -130,6 +135,6 @@ if __name__ == '__main__':
 #     sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile models.py
 
 
-    # workflow for onboarding:
-    # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
-    # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
+# workflow for onboarding:
+# Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
+# store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
