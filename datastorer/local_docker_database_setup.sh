@@ -21,3 +21,21 @@ docker run \
 
 # to connect
 # mysql -h localhost -P 3306 --protocol=tcp -u escalation_os_user -pescalation_os_pwd -D escalation_os
+
+
+## PSQL setup
+
+#docker volume create psql_db_volume_escalate_os
+#
+#docker run -d \
+#    -e PSQL_ROOT_PASSWORD=test_pwd \
+#    -e PSQL_DATABASE=escalation_os \
+#    -e POSTGRES_USER=escalation_os_user \
+#    -e POSTGRES_PASSWORD=escalation_os_pwd \
+#    -v psql_db_volume_escalate_os:/var/lib/postgresql/data \
+#    -p 54320:5432 \
+#    --name escalation-os-psql \
+#    postgres:latest
+
+# to connect
+# psql -h localhost -P 3306 --protocol=tcp -u escalation_os_user -pescalation_os_pwd -D escalation_os
