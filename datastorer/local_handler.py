@@ -20,8 +20,8 @@ class LocalCSVHandler(DataHandler):
         :param cols:
         :return:
         """
-        all_cols = cols + list(filters)
-        df = pd.read_csv(self.file_path, usecols=all_cols)
+        all_to_include_cols = cols + list(filters)
+        df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
         for key, value in filters.items():
             df = df[df[key] == value]
         return df[cols].to_dict("list")

@@ -1,8 +1,10 @@
 {% for key, cols in plot['select_info'].items() %}
-<select class="custom-select custom-select-lg mb-3" name={{ index~ "_" ~ key }} id={{ key }} form="the_form" onchange="this.form.submit()">
-    <option value="ALL_134720"> {{'all of ' ~ key }}</option>
+    <h4>{{ key }}:</h4>
+    <select class="custom-select custom-select mb-3" name={{ index~ "_" ~ key }} id={{ key }} form="the_form" onchange="store_page_location_then_submit({{ index }})">
+    <option value="SHOW_ALL_ROW"> {{'All Rows'}}</option>
     {% for col_name in cols %}
-  <option value={{ col_name }}>{{ col_name }}</option>
+  <option value={{ col_name }}
+                  {% if key in plot['active_selector'] and plot['active_selector'][key]==col_name %}selected> {% else %}> {% endif %} {{ col_name }}</option>
     {% endfor %}
 </select>
 {% endfor %}

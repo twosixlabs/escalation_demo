@@ -16,12 +16,18 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <!-- Optional JavaScript -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script language="javascript">
 
-      <title>Escalation</title>
+function store_page_location_then_submit(plot_index) {
+    $('#the_form').attr('action','#plot'.concat(plot_index))
+  $('#the_form').submit();
+}
+</script>
+
+      <title>Escalation OS</title>
   </head>
   <body>
     {% block body %}{% endblock %}
-
 
 
   </body>

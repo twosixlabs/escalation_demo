@@ -11,7 +11,7 @@
           "title": "Do massive penguins have long flippers?",
           "brief_desc": "This plot looks at the relationship between...",
           "data": ["body_mass_g", "flipper_length_mm"],
-          "option_bar": {"type": "select","columns": ["sex","island"]},
+          "selectable_data_dict": {"type": "select","columns": ["sex","island"]},
           "data_to_plot_path": {
             "body_mass_g": [
               "data",

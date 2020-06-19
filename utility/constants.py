@@ -17,7 +17,7 @@ DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_OPTIONS = "plot_options"
 
 
-OPTION_BAR = "option_bar"
+SELECTABLE_DATA_DICT = "selectable_data_dict"
 OPTION_TYPE = "type"
 OPTION_COLS = "columns"
 
@@ -32,4 +32,16 @@ SELECT_HTML_TEMPLATE = "select_html_template"
 
 
 # ALL of row
-ALL_CONST = "ALL_134720"
+SHOW_ALL_ROW = "SHOW_ALL_ROW"
+
+#JINJA CONSTANTS
+JINJA_PLOT="plots"
+JINJA_BUTTONS="buttons"
+JINJA_GRAPH_HTML_FILE='graph_html_file'
+JINJA_SELECT_HTML_FILE="select_html_file"
+JINJA_SELECT_INFO="select_info"
+JINJA_PLOT_INFO="plot_info"
+ACTIVE_SELECTORS="active_selector"
+
+#                  {% if key in plot['active_selector'] %}selected> {% else %}> {% endif %}
+#and plot['active_selector'][key]==col_name

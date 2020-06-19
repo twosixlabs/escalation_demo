@@ -6,10 +6,9 @@ from werkzeug.datastructures import ImmutableMultiDict
 from controller import (
     create_link_buttons_for_available_pages,
     create_select_info,
-    turn_form_into_dict,
+    reformatting_the_form_dict,
 )
 from datastorer.local_handler import LocalCSVHandler
-from utility.constants import ALL_CONST
 
 
 @pytest.fixture()
@@ -42,7 +41,7 @@ def test_create_select_info(json_file):
     assert select_html_file == "select.html"
     assert "MALE" in select_info["sex"]
     assert "FEMALE" in select_info["sex"]
-    assert "." in select_info["sex"]
+    assert "." in select_info["sex"] #yes this is a unigue entry in the data set
     assert "Torgersen" in select_info["island"]
     assert "Biscoe" in select_info["island"]
     assert "Dream" in select_info["island"]
@@ -54,10 +53,10 @@ def test_turn_form_into_dict():
             ("0_sex", "FEMALE"),
             ("0_isl_and", "Torgersen"),
             ("1_sex", "MALE"),
-            ("1_island", 'ALL_134720'),
+            ("1_island", 'SHOW_ALL_ROW'),
         ]
     )
-    new_dict = turn_form_into_dict(test_dict)
+    new_dict = reformatting_the_form_dict(test_dict)
     print(new_dict)
     assert new_dict[0]["sex"] == test_dict["0_sex"]
     assert new_dict[0]["isl_and"] == test_dict["0_isl_and"]
