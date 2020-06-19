@@ -1,0 +1,19 @@
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine, MetaData
+from sqlalchemy.engine.url import URL
+from flask_sqlalchemy import SQLAlchemy
+
+from datastorer.models import *
+from datastorer.models import Base
+from app_settings import PSQL_DATABASE_CONFIG as database_config
+
+
+db = SQLAlchemy()
+engine = create_engine(URL(**database_config), convert_unicode=True)
+Base.metadata.create_all(bind=engine)
+db_session = scoped_session(
+    sessionmaker(autocommit=False, autoflush=False, bind=engine)
+)
+
+# allows us to use the table_class.query instead of db.session.query(table_class)
+Base.query = db_session.query_property()

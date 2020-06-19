@@ -161,3 +161,5 @@ if __name__ == "__main__":
     # workflow for onboarding:
     # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
     # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
+
+    # todo: add columns about upload time, upload id, to df and to sql. How are we choosing which data to show in our later queries?
