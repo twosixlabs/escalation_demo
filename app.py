@@ -7,7 +7,6 @@ from sqlalchemy.engine.url import URL
 
 from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL
 from app_settings import PSQL_DATABASE_CONFIG as database_config
-from datastorer.database import db, db_session
 
 
 def create_app():
@@ -42,6 +41,8 @@ if __name__ == "__main__":
 
     # setup steps unique to SQL-backended apps
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [MYSQL, POSTGRES]:
+        from datastorer.database import db, db_session
+
         db.init_app(app)
 
         @app.teardown_appcontext

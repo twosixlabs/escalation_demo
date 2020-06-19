@@ -1,11 +1,15 @@
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy import create_engine, MetaData
+from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from flask_sqlalchemy import SQLAlchemy
 
-from datastorer.models import *
-from datastorer.models import Base
 from app_settings import PSQL_DATABASE_CONFIG as database_config
+
+try:
+    from datastorer.models import *
+    from datastorer.models import Base
+except ModuleNotFoundError:
+    raise (ModuleNotFoundError, "models.py file not defined- run database setup")
 
 
 db = SQLAlchemy()
