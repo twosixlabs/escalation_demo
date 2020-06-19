@@ -1,4 +1,4 @@
-from flask import current_app, render_template, Blueprint
+from flask import current_app, render_template, Blueprint, request
 from utility.constants import APP_CONFIG_JSON
 from controller import get_data_for_page
 
@@ -17,4 +17,12 @@ def main_page():
 @bp.route("/<page_name>", methods=["GET"])
 def graphic_page(page_name):
     html_data = get_data_for_page(current_app.config.get(APP_CONFIG_JSON), page_name)
+    return render_template(DATALAYOUT, **html_data)
+
+
+@bp.route("/<page_name>", methods=["POST"])
+def new_graphic_page(page_name):
+    html_data = get_data_for_page(
+        current_app.config.get(APP_CONFIG_JSON), page_name, request.form
+    )
     return render_template(DATALAYOUT, **html_data)

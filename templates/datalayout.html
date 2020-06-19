@@ -12,9 +12,11 @@
     {% endfor %}
   </p>
 </div>
+    <form method="post" id="the_form">
+    </form>
 <div class="container">
     {% for plot in plots %}
-        {% set index = loop.index %}
+        {% set index = loop.index0 %}
      <div class="row">
             <h1> {{ plot['title'] }}</h1>
      </div>

@@ -29,3 +29,7 @@ OBJECT = "object"
 
 # Available selector keys
 SELECT_HTML_TEMPLATE = "select_html_template"
+
+
+# ALL of row
+ALL_CONST = "ALL_134720"
