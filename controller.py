@@ -2,7 +2,22 @@ from datastorer.data_handler import DataHandler
 from datastorer.local_handler import LocalCSVHandler
 from utility.available_graphics import AVAILABLE_GRAPHICS
 from utility.available_selectors import AVAILABLE_SELECTORS
-from utility.constants import *
+from utility.constants import (
+    AVAILABLE_PAGES,
+    GRAPHICS,
+    SITE_TITLE,
+    SITE_DESC,
+    DATA_PATH,
+    DATA,
+    PLOT_MANAGER,
+    OBJECT,
+    DATA_TO_PLOT_PATH,
+    PLOT_OPTIONS,
+    GRAPH_HTML_TEMPLATE,
+    GRAPHIC_TITLE,
+    GRAPHIC_DESC,
+    PAGE_NAME,
+)
 
 
 def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
@@ -17,8 +32,8 @@ def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
 
     available_pages = config_dict[AVAILABLE_PAGES]
     if display_pages is not None:
-        plot_list = available_pages[display_pages][GRAPHICS]
-        plot_specs = organize_graphic(plot_list, form_dict)
+        plot_list = available_pages.get(display_pages, {}).get(GRAPHICS, [])
+        plot_specs = organize_graphic(plot_list)
     else:
         plot_specs = []
 

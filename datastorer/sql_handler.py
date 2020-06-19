@@ -17,10 +17,11 @@ class SqlHandler(DataHandler):
     def get_column_names(self):
         return list(self.table.columns.keys())
 
-    def get_column_data(self, data_dict: dict) -> dict:
-        query = self.table_class.query
+    def get_column_data(self, columns: list, filters: dict = None) -> dict:
+        # query = self.table_class.query
+        query = db_session.query(*[getattr(self.table_class, col) for col in columns])
         # Build the list of filters to apply to the data
-        for filter_column, filter_value in data_dict.items():
+        for filter_column, filter_value in filters.items():
             # filter is a single item, evaluate with sql's equality statement
             if isinstance(filter_value, (int, float, str)):
                 query = query.filter(
@@ -37,3 +38,6 @@ class SqlHandler(DataHandler):
         # db_session.query(sql_handler.table_class.od).first()._asdict()
         # todo: response to dict
         return [self.object_as_dict(x) for x in response]
+
+    def get_column_unique_entries(self, cols: list) -> dict:
+        pass
