@@ -43,5 +43,7 @@ JINJA_SELECT_INFO="select_info"
 JINJA_PLOT_INFO="plot_info"
 ACTIVE_SELECTORS="active_selector"
 
-#                  {% if key in plot['active_selector'] %}selected> {% else %}> {% endif %}
-#and plot['active_selector'][key]==col_name
+DATA_BACKEND = "data_backend"
+POSTGRES = "psql"
+MYSQL = "mysql"
+LOCAL_CSV = "local_csv"
