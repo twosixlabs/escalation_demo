@@ -14,13 +14,21 @@ class LocalCSVHandler(DataHandler):
     def get_column_names(self):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
-    def get_column_data(self, data_dict: dict) -> dict:
+    def get_column_data(self, cols: list, filters: dict = {}) -> dict:
+        # error checking will be good
         """
         :param cols:
         :return:
         """
-        df = pd.read_csv(self.file_path)
-        for key, column in data_dict.items():
-            data_dict[key] = df[column].values
+        all_to_include_cols = cols + list(filters)
+        df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
+        for key, value in filters.items():
+            df = df[df[key] == value]
+        return df[cols].to_dict("list")
 
-        return data_dict
+    def get_column_unique_entries(self, cols: list) -> dict:
+        df = pd.read_csv(self.file_path)  # error checking will be good
+        unique_dict = {}
+        for col in cols:
+            unique_dict[col] = df[col].dropna().unique().tolist()
+        return unique_dict

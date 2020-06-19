@@ -16,3 +16,11 @@ class DataHandler(object):
         :return:
         """
         raise NotImplementedError
+
+    def get_column_unique_entries(self, cols: list) -> dict:
+        """
+
+        :param cols: list of names
+        :return:
+        """
+        raise NotImplementedError
