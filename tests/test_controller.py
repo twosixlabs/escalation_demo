@@ -41,7 +41,7 @@ def test_create_select_info(json_file):
     assert select_html_file == "select.html"
     assert "MALE" in select_info["sex"]
     assert "FEMALE" in select_info["sex"]
-    assert "." in select_info["sex"] #yes this is a unigue entry in the data set
+    assert "." in select_info["sex"]  # yes this is a unigue entry in the data set
     assert "Torgersen" in select_info["island"]
     assert "Biscoe" in select_info["island"]
     assert "Dream" in select_info["island"]
@@ -53,7 +53,7 @@ def test_turn_form_into_dict():
             ("0_sex", "FEMALE"),
             ("0_isl_and", "Torgersen"),
             ("1_sex", "MALE"),
-            ("1_island", 'SHOW_ALL_ROW'),
+            ("1_island", "SHOW_ALL_ROW"),
         ]
     )
     new_dict = reformatting_the_form_dict(test_dict)

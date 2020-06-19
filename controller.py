@@ -11,7 +11,7 @@ def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
     :param display_pages:
     :return:
     """
-    form_dict={}
+    form_dict = {}
     if form is not None:
         form_dict = reformatting_the_form_dict(form)
 
@@ -25,7 +25,7 @@ def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
     buttons = create_link_buttons_for_available_pages(available_pages)
 
     page_info = {
-        JINJA_PLOT: plot_specs,#jinja
+        JINJA_PLOT: plot_specs,  # jinja
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
         JINJA_BUTTONS: buttons,
@@ -38,10 +38,10 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
 
     for index, plot_dict in enumerate(plot_list):
         new_data = LocalCSVHandler(plot_dict[DATA_PATH])
-        filters={}
+        filters = {}
         if index in form_dict:
-            filters=form_dict[index]
-        data_dict = new_data.get_column_data(plot_dict[DATA],filters)
+            filters = form_dict[index]
+        data_dict = new_data.get_column_data(plot_dict[DATA], filters)
         graphic_data = AVAILABLE_GRAPHICS[plot_dict[PLOT_MANAGER]]
         new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
@@ -55,15 +55,13 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
             select_html_file = ""
             select_info = {}
         html_dict = {
-            JINJA_GRAPH_HTML_FILE: graphic_data[
-                GRAPH_HTML_TEMPLATE
-            ],
-            ACTIVE_SELECTORS : filters,
-            JINJA_SELECT_HTML_FILE : select_html_file,
+            JINJA_GRAPH_HTML_FILE: graphic_data[GRAPH_HTML_TEMPLATE],
+            ACTIVE_SELECTORS: filters,
+            JINJA_SELECT_HTML_FILE: select_html_file,
             JINJA_SELECT_INFO: select_info,
             GRAPHIC_TITLE: plot_dict[GRAPHIC_TITLE],
             GRAPHIC_DESC: plot_dict[GRAPHIC_DESC],
-            JINJA_PLOT_INFO: jsonstr
+            JINJA_PLOT_INFO: jsonstr,
         }
         plot_specs.append(html_dict)
     return plot_specs
