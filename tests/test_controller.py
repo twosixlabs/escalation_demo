@@ -5,9 +5,10 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from controller import (
     create_link_buttons_for_available_pages,
-    create_select_info,
-    reformatting_the_form_dict,
+    create_data_subselect_info,
+    reformat_filter_form_dict,
     get_unique_set_of_columns_needed,
+
 )
 from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
@@ -46,7 +47,7 @@ def test_create_select_info(json_file):
         {"type": "select", "columns": "sex", "options": {"multiple": False}},
         {"type": "select", "columns": "island", "options": {"multiple": True}},
     ]
-    select_info = create_select_info(select_dict, new_data)
+    select_info = create_data_subselect_info(select_dict, new_data)
     print(select_info)
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select.html"
     assert select_info[1][COLUMN_NAME] == "island"
@@ -72,7 +73,7 @@ def test_turn_form_into_dict():
             ("1_island", "SHOW_ALL_ROW"),
         ]
     )
-    new_dict = reformatting_the_form_dict(test_dict)
+    new_dict = reformat_filter_form_dict(test_dict)
     print(new_dict)
     assert "FEMALE" in new_dict[0]["sex"]
     assert "Torgersen" in new_dict[0]["isl_and"]
