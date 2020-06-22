@@ -19,7 +19,7 @@ def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
 
     available_pages = config_dict[AVAILABLE_PAGES]
     if display_page is not None:
-        plot_list = available_pages[display_page][GRAPHICS]
+        plot_list = available_pages.get(display_page, {}).get(GRAPHICS, [])
         plot_specs = organize_graphic(plot_list, form_dict)
     else:
         plot_specs = []

@@ -22,3 +22,9 @@ As of the current version:
 * Use a SQL database or local csv files
 
 ## How can I contribute?
+
+### Developing for Escalation
+
+- `pip install -r requirements-dev.txt`
+
+- `pre-commit install` sets up the pre-commit hooks to auto-format the code

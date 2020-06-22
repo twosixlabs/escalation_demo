@@ -10,7 +10,11 @@ from tableschema import Table
 from sqlalchemy.types import Integer, Text, Date, Float
 import warnings
 
-from app_settings import DATABASE_CONFIG
+DB_BACKEND = "psql"
+if DB_BACKEND == "psql":
+    from app_settings import PSQL_DATABASE_CONFIG as database_config
+elif DB_BACKEND == "mysql":
+    from app_settings import MYSQL_DATABASE_CONFIG as database_config
 
 DATA_TYPE_MAP = {"integer": Integer, "number": Float, "string": Text, "date": Date}
 
@@ -56,7 +60,7 @@ def extract_values(obj, key):
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
-    connection_url = URL(**DATABASE_CONFIG)
+    connection_url = URL(**database_config)
     print(connection_url)
     __engine = create_engine(connection_url)
 
@@ -106,35 +110,56 @@ class CreateTablesFromCSVs:
         return sqlalchemy_data_types
 
     @classmethod
-    def create_new_table(cls, table_name, data, schema):
+    def create_new_table(cls, table_name, data, schema, index_col):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            data.to_sql(
-                table_name,
-                con=cls.__engine,
-                schema=DATABASE_CONFIG["database"],
-                if_exists="replace",
-                chunksize=300,
-                dtype=schema,
-                index=False,
-            )
+            if DB_BACKEND == "mysql":
+                data.to_sql(
+                    table_name,
+                    con=cls.__engine,
+                    schema=database_config["database"],
+                    if_exists="replace",
+                    chunksize=300,
+                    dtype=schema,
+                    index=False,
+                )
+                cls.__engine.execute(
+                    "ALTER TABLE {} ADD UNIQUE({}({}));".format(table_name, *index_col)
+                )
+            elif DB_BACKEND == "psql":
+                data.to_sql(
+                    table_name,
+                    con=cls.__engine,
+                    if_exists="replace",
+                    chunksize=300,
+                    dtype=schema,
+                    index=False,
+                )
+                cls.__engine.execute(
+                    f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                )
 
 
 if __name__ == "__main__":
     filepath = os.path.join("scratch", "YeastSTATES-1-0-Growth-Curves__platereader.csv")
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
-    print(f"Schema \n{schema}")
-    table_name = "faketable"
-    CreateTablesFromCSVs.create_new_table(table_name, data, schema)
+    table_name = "platereader"
+    # index_cols = [col_name for col_name in schema if 'id' in col_name.lower()]
+    index_col = (
+        "_id",
+        24,
+    )  # we need a way of determining for text columns used as ids the max length
+    CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
 
     # script method to create sqlalchemy models from database definition
-    # note, this creates Tables instead of classes if no primary key is specified.  How can we generate pks and foreign_keys at data ingest time?
-#     sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile models.py
+    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
+    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
 
+    # workflow for onboarding:
+    # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
+    # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
 
-# workflow for onboarding:
-# Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
-# store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
+    # todo: add columns about upload time, upload id, to df and to sql. How are we choosing which data to show in our later queries?

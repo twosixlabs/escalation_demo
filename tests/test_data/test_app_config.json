@@ -1,6 +1,7 @@
 {
   "title": "Escalation Demo",
   "brief_desc": "This is a test/demo for the Escalation os",
+  "data_backend": "psql",
   "available_pages": { "penguins":
     {
       "name": "Penguins",

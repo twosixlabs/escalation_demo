@@ -5,3 +5,5 @@ requests
 pandas
 plotly
 flask
+pymysql
+# pg8000 #postgres backend only

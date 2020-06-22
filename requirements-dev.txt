@@ -4,9 +4,9 @@ sqlalchemy
 flask_sqlalchemy
 Flask-APScheduler
 Flask-Migrate
-pymysql
 pytest
 black
 numpy
-mysqlclient
+# mysqlclient # todo- rebuild and make sure this is unnecessary
 sqlacodegen
+pre-commit

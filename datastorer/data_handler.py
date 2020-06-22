@@ -1,22 +1,28 @@
-class DataHandler(object):
-    # todo: enforce that the function signatures on the children classes are the same as here, to make childern classes interchangeable
-    def __init__(self):
-        raise NotImplementedError
+from abc import ABC, abstractmethod
 
+
+class DataHandler(ABC):
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
     def get_column_names(self):
         """
         What columns does the data have
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_column_data(self, cols: list) -> list:
         """
 
         :param cols: list of names
         :return:
         """
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def get_column_unique_entries(self, cols: list) -> dict:
         """
 
