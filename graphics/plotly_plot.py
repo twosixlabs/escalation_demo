@@ -4,20 +4,32 @@ from graphics.graphic_class import Graphic
 
 import plotly
 
+DATA = "data"
+LAYOUT = "layout"
+AXIS = "{}axis"
+TITLE = "title"
+
 
 class PlotlyPlot(Graphic):
-    def draw(self, data, data_to_plot_path, plot_options):
+    def draw(self, data, axis_to_data_columns, plot_options):
         """
 
         :param data:
-        :param data_to_plot_path:
+        :param axis_to_data_columns:
         :param plot_options:
         :return:
         """
-        for key, path in data_to_plot_path.items():
-            plot_options[path[0]][path[1]][path[2]] = data[
-                key
-            ]  # three things in path, data, which index and value (x,y)
+
+        for index, axis_to_data_dict in enumerate(axis_to_data_columns):
+            for key, value in axis_to_data_dict.items():
+                plot_options[DATA][index][key] = data[
+                    value
+                ]  # three things in path, data, which index and value (x,y)
+                if index == 0:
+                    if LAYOUT in plot_options:
+                        plot_options[LAYOUT][AXIS.format(key)] = {TITLE: value}
+                    else:
+                        plot_options[LAYOUT] = {AXIS.format(key): {TITLE: value}}
 
         graph_json = json.dumps(
             plot_options, cls=plotly.utils.PlotlyJSONEncoder

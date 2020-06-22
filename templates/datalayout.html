@@ -8,7 +8,7 @@
   <hr class="my-4">
   <p class="lead">
     {% for button in buttons %}
-        <a class="btn btn-primary" href={{ button['link'] }} role="button">{{ button['name'] }}</a>
+        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{ button['name'] }}</a>
     {% endfor %}
   </p>
 </div>
@@ -17,7 +17,7 @@
 <div class="container">
     {% for plot in plots %}
         {% set index = loop.index0 %}
-     <div class="row">
+     <div class="row" id={{ "graphic" ~ index }}>
             <h1> {{ plot['title'] }}</h1>
      </div>
         <div class="row">
@@ -28,7 +28,10 @@
             {% include plot['graph_html_file']%}
          </div>
      <div class="col-2">
-         {% include plot['select_html_file'] ignore missing %}
+         {% for selector in plot['select_info'] %}
+            {% include selector['select_html_file'] ignore missing %}
+         {% endfor %}
+         <button type="button" class="btn btn-primary btn-lg" onclick="store_page_location_then_submit({{ index }})">Update</button>
      </div>
      </div>
 

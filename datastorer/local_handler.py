@@ -23,7 +23,7 @@ class LocalCSVHandler(DataHandler):
         all_to_include_cols = cols + list(filters)
         df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
         for key, value in filters.items():
-            df = df[df[key] == value]
+            df = df[df[key].isin(value)]
         return df[cols].to_dict("list")
 
     def get_column_unique_entries(self, cols: list) -> dict:

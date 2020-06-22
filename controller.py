@@ -43,23 +43,24 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
         filters = {}
         if index in form_dict:
             filters = form_dict[index]
-        data_dict = new_data.get_column_data(plot_dict[DATA], filters)
+        axis_to_data_columns = plot_dict[DATA]
+        data_dict = new_data.get_column_data(
+            extract_data_needed(axis_to_data_columns), filters
+        )
         graphic_data = AVAILABLE_GRAPHICS[plot_dict[PLOT_MANAGER]]
         new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
-            data_dict, plot_dict[DATA_TO_PLOT_PATH], plot_dict[PLOT_OPTIONS]
+            data_dict, axis_to_data_columns, plot_dict[PLOT_OPTIONS]
         )
-        if SELECTABLE_DATA_DICT in plot_dict.keys():
-            select_dict = plot_dict[SELECTABLE_DATA_DICT]
-            [select_html_file, select_info] = create_select_info(select_dict, new_data)
+        if SELECTABLE_DATA_LIST in plot_dict.keys():
+            select_dict = plot_dict[SELECTABLE_DATA_LIST]
+            select_info = create_select_info(select_dict, new_data)
 
         else:
-            select_html_file = ""
-            select_info = {}
+            select_info = []
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graphic_data[GRAPH_HTML_TEMPLATE],
             ACTIVE_SELECTORS: filters,
-            JINJA_SELECT_HTML_FILE: select_html_file,
             JINJA_SELECT_INFO: select_info,
             GRAPHIC_TITLE: plot_dict[GRAPHIC_TITLE],
             GRAPHIC_DESC: plot_dict[GRAPHIC_DESC],
@@ -67,6 +68,19 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
         }
         plot_specs.append(html_dict)
     return plot_specs
+
+
+def extract_data_needed(data_list: list) -> list:
+    """
+    Returns the unique columns of the data we need to get
+    TO DO throw an error if contains column names not in data
+    :param data_list:
+    :return:
+    """
+    data_set = set()
+    for data_dict in data_list:
+        data_set.update(data_dict.values())
+    return list(data_set)
 
 
 def create_link_buttons_for_available_pages(available_pages: dict) -> list:
@@ -81,19 +95,29 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
     return buttons
 
 
-def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
+def create_select_info(select_list: list, new_data: DataHandler) -> list:
     """
-
-    :param select_dict:
+    puts selctor data in form to be read by html file
+    :param select_list:
     :param new_data:
     :return:
     """
-    selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
-    select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-    columns = select_dict[OPTION_COLS]
-    select_info = new_data.get_column_unique_entries(columns)
+    select_info = []
+    for select_dict in select_list:
+        selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
+        select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
+        column = select_dict[OPTION_COLS]
+        columns_names = new_data.get_column_unique_entries([column])
+        select_info.append(
+            {
+                JINJA_SELECT_HTML_FILE: select_html_file,
+                COLUMN_NAME: column,
+                UNIQUE_ENTRIES: columns_names[column],
+                SELECT_OPTION: select_dict[SELECT_OPTION],
+            }
+        )
 
-    return select_html_file, select_info
+    return select_info
 
 
 def reformatting_the_form_dict(form_dict: dict) -> dict:
@@ -104,13 +128,13 @@ def reformatting_the_form_dict(form_dict: dict) -> dict:
     :return:
     """
     new_form_dict = {}
-    for key, value in form_dict.items():
-        if value != SHOW_ALL_ROW:
+    for key, values in form_dict.lists():
+        if SHOW_ALL_ROW not in values:  # need to decide behavior
             [plot_index, column_name] = key.split("_", 1)
             plot_index = int(plot_index)
             if plot_index in new_form_dict:
-                new_form_dict[plot_index][column_name] = value
+                new_form_dict[plot_index][column_name] = values
             else:
-                new_form_dict[plot_index] = {column_name: value}
+                new_form_dict[plot_index] = {column_name: values}
 
     return new_form_dict
