@@ -54,7 +54,7 @@ def test_create_select_info(json_file):
     assert "FEMALE" in select_info[0][UNIQUE_ENTRIES]
     assert (
         "." in select_info[0][UNIQUE_ENTRIES]
-    )  # yes this is a unigue entry in the data set
+    )  # yes this is a unique entry in the data set
     assert "Torgersen" in select_info[1][UNIQUE_ENTRIES]
     assert "Biscoe" in select_info[1][UNIQUE_ENTRIES]
     assert "Dream" in select_info[1][UNIQUE_ENTRIES]
