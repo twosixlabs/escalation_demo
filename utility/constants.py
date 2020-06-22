@@ -13,6 +13,7 @@ DATA_PATH = "data_path"
 DATA = "data"
 PLOT_MANAGER = "plot_manager"
 
+HOVER_DATA = "hover_data"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_OPTIONS = "plot_options"
 

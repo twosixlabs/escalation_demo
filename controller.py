@@ -52,8 +52,11 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
         if index in form_dict:
             filters = form_dict[index]  # finds filters for the data
         axis_to_data_columns = plot_dict[DATA]
+        hover_data = []
+        if HOVER_DATA in plot_dict:
+            hover_data = plot_dict[HOVER_DATA]
         data_dict = new_data.get_column_data(
-            extract_data_needed(axis_to_data_columns),
+            extract_data_needed(axis_to_data_columns, hover_data),
             filters,  # retrieves all needed columns
         )
         graphic_data = AVAILABLE_GRAPHICS[
@@ -64,11 +67,12 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
         jsonstr = new_graphic.draw(
             data_dict,
             axis_to_data_columns,
-            plot_dict[
-                PLOT_OPTIONS
-            ],  # makes a json file as required by js plotting documentation
+            plot_dict[PLOT_OPTIONS],
+            hover_data,  # makes a json file as required by js plotting documentation
         )
-        if SELECTABLE_DATA_LIST in plot_dict.keys():  # checks to see if this plot has selectors
+        if (
+            SELECTABLE_DATA_LIST in plot_dict.keys()
+        ):  # checks to see if this plot has selectors
             select_dict = plot_dict[SELECTABLE_DATA_LIST]
             select_info = create_select_info(select_dict, new_data)
 
@@ -86,16 +90,19 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
     return plot_specs
 
 
-def extract_data_needed(data_list: list) -> list:
+def extract_data_needed(data_list: list, hover_data: list = []) -> list:
     """
     Returns the unique columns of the data we need to get
     TO DO throw an error if contains column names not in data
+
     :param data_list:
+    :param hover_data:
     :return:
     """
     data_set = set()
     for data_dict in data_list:
         data_set.update(data_dict.values())
+    data_set.update(hover_data)
     return list(data_set)
 
 
