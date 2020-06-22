@@ -27,7 +27,7 @@ def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
     buttons = create_link_buttons_for_available_pages(available_pages)
 
     page_info = {
-        JINJA_PLOT: plot_specs,  # jinja
+        JINJA_PLOT: plot_specs,
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
         JINJA_BUTTONS: buttons,
@@ -36,23 +36,39 @@ def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
 
 
 def organize_graphic(plot_list: list, form_dict={}) -> list:
+    """
+    creates dictionary to be read in by the html file to plot the graphics and selectors
+    :param plot_list:
+    :param form_dict:
+    :return:
+    """
     plot_specs = []
 
     for index, plot_dict in enumerate(plot_list):
-        new_data = LocalCSVHandler(plot_dict[DATA_PATH])
+        new_data = LocalCSVHandler(
+            plot_dict[DATA_PATH]
+        )  # TO DO Need to allow for database
         filters = {}
         if index in form_dict:
-            filters = form_dict[index]
+            filters = form_dict[index]  # finds filters for the data
         axis_to_data_columns = plot_dict[DATA]
         data_dict = new_data.get_column_data(
-            extract_data_needed(axis_to_data_columns), filters
+            extract_data_needed(axis_to_data_columns),
+            filters,  # retrieves all needed columns
         )
-        graphic_data = AVAILABLE_GRAPHICS[plot_dict[PLOT_MANAGER]]
+        graphic_data = AVAILABLE_GRAPHICS[
+            plot_dict[PLOT_MANAGER]
+        ]  # Checks to see if it is a valid graphic
+        # TO DO what if it is not
         new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
-            data_dict, axis_to_data_columns, plot_dict[PLOT_OPTIONS]
+            data_dict,
+            axis_to_data_columns,
+            plot_dict[
+                PLOT_OPTIONS
+            ],  # makes a json file as required by js plotting documentation
         )
-        if SELECTABLE_DATA_LIST in plot_dict.keys():
+        if SELECTABLE_DATA_LIST in plot_dict.keys():  # checks to see if this plot has selectors
             select_dict = plot_dict[SELECTABLE_DATA_LIST]
             select_info = create_select_info(select_dict, new_data)
 
@@ -129,7 +145,7 @@ def reformatting_the_form_dict(form_dict: dict) -> dict:
     """
     new_form_dict = {}
     for key, values in form_dict.lists():
-        if SHOW_ALL_ROW not in values:  # need to decide behavior
+        if SHOW_ALL_ROW not in values:  # Made a choice about behavior
             [plot_index, column_name] = key.split("_", 1)
             plot_index = int(plot_index)
             if plot_index in new_form_dict:
