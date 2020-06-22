@@ -5,19 +5,21 @@ from utility.available_selectors import AVAILABLE_SELECTORS
 from utility.constants import *
 
 
-def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
+def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
     """
-    :param config_dict:
-    :param display_pages:
-    :return:
+
+    :param config_dict: A dictionary containing all the information from the config json file
+    :param display_page: Which page is the viewer requesting
+    :param form: form request received from push request.
+    :return: dictionary to be read by jinja to build the page
     """
-    form_dict={}
+    form_dict = {}
     if form is not None:
         form_dict = reformatting_the_form_dict(form)
 
     available_pages = config_dict[AVAILABLE_PAGES]
-    if display_pages is not None:
-        plot_list = available_pages[display_pages][GRAPHICS]
+    if display_page is not None:
+        plot_list = available_pages[display_page][GRAPHICS]
         plot_specs = organize_graphic(plot_list, form_dict)
     else:
         plot_specs = []
@@ -25,7 +27,7 @@ def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
     buttons = create_link_buttons_for_available_pages(available_pages)
 
     page_info = {
-        JINJA_PLOT: plot_specs,#jinja
+        JINJA_PLOT: plot_specs,  # jinja
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
         JINJA_BUTTONS: buttons,
@@ -38,10 +40,10 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
 
     for index, plot_dict in enumerate(plot_list):
         new_data = LocalCSVHandler(plot_dict[DATA_PATH])
-        filters={}
+        filters = {}
         if index in form_dict:
-            filters=form_dict[index]
-        data_dict = new_data.get_column_data(plot_dict[DATA],filters)
+            filters = form_dict[index]
+        data_dict = new_data.get_column_data(plot_dict[DATA], filters)
         graphic_data = AVAILABLE_GRAPHICS[plot_dict[PLOT_MANAGER]]
         new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
@@ -55,21 +57,24 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
             select_html_file = ""
             select_info = {}
         html_dict = {
-            JINJA_GRAPH_HTML_FILE: graphic_data[
-                GRAPH_HTML_TEMPLATE
-            ],
-            ACTIVE_SELECTORS : filters,
-            JINJA_SELECT_HTML_FILE : select_html_file,
+            JINJA_GRAPH_HTML_FILE: graphic_data[GRAPH_HTML_TEMPLATE],
+            ACTIVE_SELECTORS: filters,
+            JINJA_SELECT_HTML_FILE: select_html_file,
             JINJA_SELECT_INFO: select_info,
             GRAPHIC_TITLE: plot_dict[GRAPHIC_TITLE],
             GRAPHIC_DESC: plot_dict[GRAPHIC_DESC],
-            JINJA_PLOT_INFO: jsonstr
+            JINJA_PLOT_INFO: jsonstr,
         }
         plot_specs.append(html_dict)
     return plot_specs
 
 
 def create_link_buttons_for_available_pages(available_pages: dict) -> list:
+    """
+
+    :param available_pages:
+    :return:
+    """
     buttons = []
     for key in available_pages.keys():
         buttons.append({"name": available_pages[key][PAGE_NAME], "link": key})
@@ -77,7 +82,12 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
 
 
 def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
+    """
 
+    :param select_dict:
+    :param new_data:
+    :return:
+    """
     selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
     select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
     columns = select_dict[OPTION_COLS]
@@ -88,8 +98,8 @@ def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
 
 def reformatting_the_form_dict(form_dict: dict) -> dict:
     """
-    Because it is easier to use in order
-    reformting only contains values that will be changed.
+    Because it is easier to use a nested dictionary in organize_graphic for getting the data
+    then the default form request from flask
     :param form_dict:
     :return:
     """
