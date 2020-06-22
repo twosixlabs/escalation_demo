@@ -28,3 +28,8 @@ As of the current version:
 - `pip install -r requirements-dev.txt`
 
 - `pre-commit install` sets up the pre-commit hooks to auto-format the code
+
+###How to add a new plot
+* Needs to inherit from grahpic_class.py
+* Add to available_graphics.py
+* Add a html file with javascript code required to plot 
