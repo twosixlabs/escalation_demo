@@ -5,19 +5,21 @@ from utility.available_selectors import AVAILABLE_SELECTORS
 from utility.constants import *
 
 
-def get_data_for_page(config_dict: dict, display_pages, form=None) -> dict:
+def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
     """
-    :param config_dict:
-    :param display_pages:
-    :return:
+
+    :param config_dict: A dictionary containing all the information from the config json file
+    :param display_page: Which page is the viewer requesting
+    :param form: form request received from push request.
+    :return: dictionary to be read by jinja to build the page
     """
     form_dict = {}
     if form is not None:
         form_dict = reformatting_the_form_dict(form)
 
     available_pages = config_dict[AVAILABLE_PAGES]
-    if display_pages is not None:
-        plot_list = available_pages.get(display_pages, {}).get(GRAPHICS, [])
+    if display_page is not None:
+        plot_list = available_pages.get(display_page, {}).get(GRAPHICS, [])
         plot_specs = organize_graphic(plot_list, form_dict)
     else:
         plot_specs = []
@@ -68,6 +70,11 @@ def organize_graphic(plot_list: list, form_dict={}) -> list:
 
 
 def create_link_buttons_for_available_pages(available_pages: dict) -> list:
+    """
+
+    :param available_pages:
+    :return:
+    """
     buttons = []
     for key in available_pages.keys():
         buttons.append({"name": available_pages[key][PAGE_NAME], "link": key})
@@ -75,7 +82,12 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
 
 
 def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
+    """
 
+    :param select_dict:
+    :param new_data:
+    :return:
+    """
     selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
     select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
     columns = select_dict[OPTION_COLS]
@@ -86,8 +98,8 @@ def create_select_info(select_dict: dict, new_data: DataHandler) -> [str, dict]:
 
 def reformatting_the_form_dict(form_dict: dict) -> dict:
     """
-    Because it is easier to use in order
-    reformting only contains values that will be changed.
+    Because it is easier to use a nested dictionary in organize_graphic for getting the data
+    then the default form request from flask
     :param form_dict:
     :return:
     """
