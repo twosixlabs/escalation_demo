@@ -3,7 +3,6 @@ Add title and brief description changable in the config file.
 
 Implement database
 # save state of the website.
-touch tick
 #data agg
 plot multiple scatters etc different colors using filter
 
