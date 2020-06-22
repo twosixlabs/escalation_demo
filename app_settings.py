@@ -7,7 +7,6 @@ MYSQL_DATABASE_CONFIG = {
     "database": "escalation_os",
 }
 
-
 PSQL_DATABASE_CONFIG = {
     "drivername": "postgresql+pg8000",
     "host": "localhost",
