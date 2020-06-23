@@ -13,11 +13,12 @@ DATA_PATH = "data_path"
 DATA = "data"
 PLOT_MANAGER = "plot_manager"
 
+HOVER_DATA = "hover_data"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_OPTIONS = "plot_options"
 
 
-SELECTABLE_DATA_DICT = "selectable_data_dict"
+SELECTABLE_DATA_LIST = "selectable_data_list"
 OPTION_TYPE = "type"
 OPTION_COLS = "columns"
 
@@ -29,8 +30,9 @@ OBJECT = "object"
 
 # Available selector keys
 SELECT_HTML_TEMPLATE = "select_html_template"
-
-
+COLUMN_NAME = "column_name"
+UNIQUE_ENTRIES = "unique_entries"
+SELECT_OPTION = "options"
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROW"
 

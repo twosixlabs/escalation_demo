@@ -2,11 +2,9 @@ Add title and brief description changable in the config file.
 
 
 Implement database
-
-data subselect - need to write javascript code.
+# save state of the website.
 #data agg
-
-controller test
+plot multiple scatters etc different colors using filter
 
 Low:
 Simplify the config file
