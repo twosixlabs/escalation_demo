@@ -7,7 +7,7 @@ from controller import (
     create_link_buttons_for_available_pages,
     create_select_info,
     reformatting_the_form_dict,
-    extract_data_needed,
+    get_unique_set_of_columns_needed,
 )
 from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
@@ -87,7 +87,7 @@ def test_extract_data_needed():
     culmen = "culmen_length_mm"
     flipper = "flipper_length_mm"
     flipper2 = "flipper_length_mm2"
-    test_cols_list = extract_data_needed(
+    test_cols_list = get_unique_set_of_columns_needed(
         [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}]
     )
     assert culmen in test_cols_list
