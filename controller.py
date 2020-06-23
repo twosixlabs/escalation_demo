@@ -40,40 +40,39 @@ def get_data_for_page(config_dict: dict, display_page, filter_form=None) -> dict
 
 
 def organize_graphic(
-    plot_list: list, filter_dict: dict = None, axis_dict: dict = None
+    plot_list: list, filter_dict: dict = None, axes_to_show_per_plot: dict = None
 ) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
     :param filter_dict:
-    :param axis_dict:
+    :param axes_to_show_per_plot: keyed by html_id of plot, value is dict with some of xyz keys and valued by column name
     :return:
     """
     plot_specs = []
     if filter_dict is None:
         filter_dict = {}
-    if axis_dict is None:
-        axis_dict = {}
+    if axes_to_show_per_plot is None:
+        axes_to_show_per_plot = {}
     for index, plot_specification in enumerate(plot_list):
         plot_data_handler = current_app.config.data_handler(
             plot_specification[DATA_SOURCE]
-        )  # TO DO Need to allow for database
-        filters = {}
-        axis_change = {}
-        if index in filter_dict:
-            filters = filter_dict[index]  # finds filters for the data
-
-        if index in axis_dict:
-            axis_change = axis_dict[index]  # finds filters for the data
+        )
+        filters = filter_dict.get(index, {})  # finds filters for the data
+        axis_change = axes_to_show_per_plot.get(
+            index, {}
+        )  # finds user-selected axes to display
 
         axis_to_data_columns_list = plot_specification[DATA]
-        num_of_graphs_on_plots = len(axis_to_data_columns_list)
-        for index_of_data_on_plot in range(num_of_graphs_on_plots):
+        # each of these is a separate grouping of data that is renderable on our plot
+        num_xy_pairs_of_data_to_plot = len(axis_to_data_columns_list)
+        # for each axis comparison set for which we want to change an axis view, change the axis displayed
+        for index_of_data_on_plot in range(num_xy_pairs_of_data_to_plot):
             axis_to_data_columns_list[index_of_data_on_plot].update(axis_change)
+        # tells dropdown menu which axis is selected to be shown. 0th index because all identical functionality
         selector_settings_for_axis = axis_to_data_columns_list[0]
-        hover_data = []
-        if HOVER_DATA in plot_specification:
-            hover_data = plot_specification[HOVER_DATA]
+
+        hover_data = plot_specification.get(HOVER_DATA, [])
         plot_data = plot_data_handler.get_column_data(
             get_unique_set_of_columns_needed(axis_to_data_columns_list, hover_data),
             filters,  # retrieves all needed columns
