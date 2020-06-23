@@ -7,18 +7,19 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
-    def get_column_names(self):
+    def get_column_names(self) -> list:
         """
-        What columns does the data have
+        :return: a list of the column names in the data source referenced by the handler
         """
         pass
 
     @abstractmethod
-    def get_column_data(self, cols: list) -> list:
+    def get_column_data(self, cols: list, filters: dict) -> list:
         """
-
-        :param cols: list of names
-        :return:
+        :param cols: list of column names, including all columns for which data should be returned
+        :param filters: a dict keyed by column name and valued with the filters to be applied
+        # todo: document the filtering allowed: equality, presence in list, inequality?
+        :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
         pass
 
@@ -26,7 +27,7 @@ class DataHandler(ABC):
     def get_column_unique_entries(self, cols: list) -> dict:
         """
 
-        :param cols: list of names
-        :return:
+        :param cols: list of column names
+        :return: A dict keyed by column names and valued with the unique values in that column
         """
-        raise NotImplementedError
+        pass

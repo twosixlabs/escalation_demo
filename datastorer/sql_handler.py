@@ -1,3 +1,4 @@
+import pandas as pd
 from sqlalchemy import inspect
 
 from datastorer.data_handler import DataHandler
@@ -15,9 +16,17 @@ class SqlHandler(DataHandler):
         return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
     def get_column_names(self):
+        """
+        :return: a list of the column names in the table referenced by the handler
+        """
         return list(self.table.columns.keys())
 
     def get_column_data(self, columns: list, filters: dict = None) -> dict:
+        """
+        :param columns: A complete list of the columns to be returned
+        :param filters: Optional dict specifying how to filter the requested columns based on the row values
+        :return: a dict keyed by column name and valued with lists of row datapoints for the column
+        """
         # query = self.table_class.query
         query = db_session.query(*[getattr(self.table_class, col) for col in columns])
         # Build the list of filters to apply to the data
@@ -32,12 +41,21 @@ class SqlHandler(DataHandler):
                 query = query.filter(
                     getattr(self.table_class, filter_column).in_(filter_value)
                 )
-        response = query.all()
-        # todo: we're not filtering the columns queried here, and I'm overloading the data_dict input. We need additional filtering logic here as a filter arg, I think
-        # the orm query from above doesn't allow easy parsing.
-        # db_session.query(sql_handler.table_class.od).first()._asdict()
-        # todo: response to dict
-        return [self.object_as_dict(x) for x in response]
+        # response_rows is a list of tuples
+        response_rows = query.all()
+        # use pandas to read the sql response and convert to a dict of lists keyed by column names
+        response_dict_of_lists = pd.DataFrame(response_rows).to_dict(orient="list")
+        return response_dict_of_lists
 
     def get_column_unique_entries(self, cols: list) -> dict:
-        pass
+        """
+        :param cols: a list of column names
+        :return: A dict keyed by column names and valued with the unique values in that column
+        """
+        unique_dict = {}
+        for col in cols:
+            query = db_session.query(getattr(self.table_class, col)).distinct()
+            response = query.all()
+            # todo: note we're dropping none/missing values from the response. Do we want to be able to include them?
+            unique_dict[col] = [r[0] for r in response if r[0] is not None]
+        return unique_dict

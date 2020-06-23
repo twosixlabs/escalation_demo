@@ -16,21 +16,11 @@ def main_page():
 
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET"])
 def graphic_page(page_name):
-    if page_name == "test":
-        from datastorer.sql_handler import SqlHandler
 
-        sql_handler = SqlHandler("Platereader")
-        print(sql_handler.get_column_names())
-        response = sql_handler.get_column_data(
-            columns=["od"], filters={"od": 0.034652792466308736}
-        )
-        print(f"sql response: {response}")
-        return render_template(DATALAYOUT)
-    else:
-        html_data = get_data_for_page(
-            current_app.config.get(APP_CONFIG_JSON), page_name
-        )
-        return render_template(DATALAYOUT, **html_data)
+    html_data = get_data_for_page(
+        current_app.config.get(APP_CONFIG_JSON), page_name
+    )
+    return render_template(DATALAYOUT, **html_data)
 
 
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["POST"])
