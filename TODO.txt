@@ -1,8 +1,10 @@
 Add title and brief description changable in the config file.
 
 
+Check of plotly python fig.
 Implement database
 # save state of the website.
+
 #data agg
 plot multiple scatters etc different colors using filter
 
@@ -18,8 +20,7 @@ Graph on use a single data set
 Need to be connected to the internet
 Assuming csv in local handler
 gets most recent data set
-Only one type of selector per section
-hopefully
+Cannot select along nan
 
 
 Replicating Existing Escalation Functionality:
