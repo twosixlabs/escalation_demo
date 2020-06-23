@@ -90,7 +90,7 @@ def test_reformat_filter_form_dict():
             ("1_filter_sex", "FEMALE"),
             ("1_filter_sex", "MALE"),
             ("1_filter_island", "SHOW_ALL_ROW"),
-            ('1_axis_x', 'flipper_length_mm')
+            ("1_axis_x", "flipper_length_mm"),
         ]
     )
     [filter_dict, axis_dict] = reformat_filter_form_dict(test_dict)
@@ -102,6 +102,7 @@ def test_reformat_filter_form_dict():
     with pytest.raises(KeyError):
         filter_dict[1]["island"]
     assert "flipper_length_mm" == axis_dict[1]["x"]
+
 
 def test_get_unique_set_of_columns_needed():
     culmen = "culmen_length_mm"
