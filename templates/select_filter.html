@@ -1,0 +1,11 @@
+{% set col=selector['column_name'] %}
+
+<h4>{{ col }}</h4>
+    <select class="custom-select custom-select mb-3" name={{ index~ "_" ~ selector["type"] ~ "_" ~ col }} id={{ col }} form="the_form"
+            {% if selector['options']['multiple'] %} multiple> {% else %}> {% endif %}
+    <option value="SHOW_ALL_ROW"> {{'All Rows'}}</option>
+    {% for col_name in selector['entries'] %}
+  <option value={{ col_name }}
+                  {% if col_name in selector['active_selector'] %}selected> {% else %}> {% endif %} {{ col_name }}</option>
+    {% endfor %}
+</select>

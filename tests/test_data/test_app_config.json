@@ -1,6 +1,6 @@
 {
-  "title": "Escalation Demo",
-  "brief_desc": "This is a test/demo for the Escalation os",
+  "title": "Escalation Test",
+  "brief_desc": "This is a test/demo for the Escalation OS",
   "data_backend": "local_csv",
   "available_pages": { "penguins":
     {
@@ -30,6 +30,8 @@
           "title": "How big are penguins?",
           "brief_desc": "",
           "data": [{"x":"body_mass_g"}],
+          "selectable_data_list": [{"type": "axis","columns": "x","options":{"entries":
+          ["culmen_length_mm","flipper_length_mm","body_mass_g","culmen_depth_mm"]}}],
           "plot_options": {
             "data": [
               {

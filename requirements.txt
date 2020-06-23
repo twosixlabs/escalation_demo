@@ -6,4 +6,14 @@ pandas
 plotly
 flask
 pymysql
-# pg8000 #postgres backend only
+pg8000 #postgres backend only
+wheel
+colorama
+jinja2
+werkzeug
+click
+markupsafe
+setuptools
+cython
+pytest
+sqlalchemy

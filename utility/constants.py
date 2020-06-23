@@ -33,8 +33,13 @@ OBJECT = "object"
 # Available selector keys
 SELECT_HTML_TEMPLATE = "select_html_template"
 COLUMN_NAME = "column_name"
-UNIQUE_ENTRIES = "unique_entries"
+ENTRIES = "entries"
 SELECT_OPTION = "options"
+AXIS = "axis"
+SELECTOR = "select"
+SELECTOR_TYPE = "type"
+FILTER = "filter"
+
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROW"
 

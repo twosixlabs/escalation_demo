@@ -8,14 +8,14 @@ from controller import (
     create_data_subselect_info,
     reformat_filter_form_dict,
     get_unique_set_of_columns_needed,
-
 )
 from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
     COLUMN_NAME,
     JINJA_SELECT_HTML_FILE,
-    UNIQUE_ENTRIES,
+    ENTRIES,
     SELECT_OPTION,
+    ACTIVE_SELECTORS,
 )
 
 
@@ -41,50 +41,70 @@ def test_extract_buttons(json_file):
     assert button2 in buttons
 
 
-def test_create_select_info(json_file):
+def test_create_data_subselect_info(json_file):
     new_data = LocalCSVHandler("tests/test_data/penguins_size/")
     select_dict = [
         {"type": "select", "columns": "sex", "options": {"multiple": False}},
         {"type": "select", "columns": "island", "options": {"multiple": True}},
+        {
+            "type": "axis",
+            "columns": "x",
+            "options": {
+                "entries": ["culmen_length_mm", "flipper_length_mm", "body_mass_g"]
+            },
+        },
     ]
-    select_info = create_data_subselect_info(select_dict, new_data)
-    print(select_info)
-    assert select_info[0][JINJA_SELECT_HTML_FILE] == "select.html"
+    current_axis = {"x": "body_mass_g", "y": "flipper_length_mm"}
+    select_info = create_data_subselect_info(
+        select_dict,
+        new_data,
+        {"sex": ["MALE"]},
+        {"x": "body_mass_g", "y": "flipper_length_mm"},
+    )
+    assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
     assert select_info[1][COLUMN_NAME] == "island"
-    assert "MALE" in select_info[0][UNIQUE_ENTRIES]
-    assert "FEMALE" in select_info[0][UNIQUE_ENTRIES]
-    assert (
-        "." in select_info[0][UNIQUE_ENTRIES]
-    )  # yes this is a unique entry in the data set
-    assert "Torgersen" in select_info[1][UNIQUE_ENTRIES]
-    assert "Biscoe" in select_info[1][UNIQUE_ENTRIES]
-    assert "Dream" in select_info[1][UNIQUE_ENTRIES]
+    assert select_info[2][JINJA_SELECT_HTML_FILE] == "select_axis.html"
+
+    assert "MALE" in select_info[0][ACTIVE_SELECTORS]
+    assert "MALE" in select_info[0][ENTRIES]
+    assert "FEMALE" in select_info[0][ENTRIES]
+    assert "." in select_info[0][ENTRIES]  # yes this is a unique entry in the data set
+    assert "Torgersen" in select_info[1][ENTRIES]
+    assert len(select_info[1][ACTIVE_SELECTORS]) == 0
+    assert "Biscoe" in select_info[1][ENTRIES]
+    assert "Dream" in select_info[1][ENTRIES]
     assert select_info[1][SELECT_OPTION]["multiple"]
     assert not select_info[0][SELECT_OPTION]["multiple"]
+    assert "culmen_length_mm" in select_info[2][ENTRIES]
+    assert "flipper_length_mm" in select_info[2][ENTRIES]
+    assert "body_mass_g" in select_info[2][ENTRIES]
+    assert "body_mass_g" in select_info[2][ACTIVE_SELECTORS]
+    assert len(select_info[2][ACTIVE_SELECTORS]) == 1
 
 
-def test_turn_form_into_dict():
+def test_reformat_filter_form_dict():
     test_dict = ImmutableMultiDict(
         [
-            ("0_sex", "FEMALE"),
-            ("0_isl_and", "Torgersen"),
-            ("1_sex", "FEMALE"),
-            ("1_sex", "MALE"),
-            ("1_island", "SHOW_ALL_ROW"),
+            ("0_filter_sex", "FEMALE"),
+            ("0_filter_isl_and", "Torgersen"),
+            ("1_filter_sex", "FEMALE"),
+            ("1_filter_sex", "MALE"),
+            ("1_filter_island", "SHOW_ALL_ROW"),
+            ("1_axis_x", "flipper_length_mm"),
         ]
     )
-    new_dict = reformat_filter_form_dict(test_dict)
-    print(new_dict)
-    assert "FEMALE" in new_dict[0]["sex"]
-    assert "Torgersen" in new_dict[0]["isl_and"]
-    assert "FEMALE" in new_dict[1]["sex"]
-    assert "MALE" in new_dict[1]["sex"]
+    [filter_dict, axis_dict] = reformat_filter_form_dict(test_dict)
+    assert "FEMALE" in filter_dict[0]["sex"]
+    assert "Torgersen" in filter_dict[0]["isl_and"]
+    assert "FEMALE" in filter_dict[1]["sex"]
+    assert "MALE" in filter_dict[1]["sex"]
 
     with pytest.raises(KeyError):
-        new_dict[1]["island"]
+        filter_dict[1]["island"]
+    assert "flipper_length_mm" == axis_dict[1]["x"]
 
 
-def test_extract_data_needed():
+def test_get_unique_set_of_columns_needed():
     culmen = "culmen_length_mm"
     flipper = "flipper_length_mm"
     flipper2 = "flipper_length_mm2"
