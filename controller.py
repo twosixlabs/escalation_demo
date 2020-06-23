@@ -63,11 +63,12 @@ def organize_graphic(
         plot_data_handler = current_app.config.data_handler(
             plot_specification[DATA_SOURCE]
         )
-        [
+
+        (
             jsonstr,
             graph_html_template,
             selector_settings_for_axis,
-        ] = assemble_info_for_plot(
+        ) = assemble_info_for_plot(
             plot_specification, plot_data_handler, filters, axis_change
         )
 
@@ -92,39 +93,61 @@ def organize_graphic(
 
 
 def assemble_info_for_plot(plot_specification, plot_data_handler, filters, axis_change):
+    """
+    assembles
+    the dictionary needed to render the graphic
+    a string with the html file that use the aforementioned dictionary
+    The dashboard options
+    :param plot_specification:
+    :param plot_data_handler:
+    :param filters:
+    :param axis_change:
+    :return:
+    """
 
     (
         axis_to_data_columns_list,
         selector_settings_for_axis,
-    ) = finds_xy_data_columns_based_on_user_selection(plot_specification, axis_change)
+    ) = finds_xy_data_columns_based_on_dashboard_form_options(
+        plot_specification, axis_change
+    )
 
     hover_data = plot_specification.get(HOVER_DATA, [])
-    plot_data = plot_data_handler.get_column_data(  # retrieves all needed columns
+    plot_data = plot_data_handler.get_column_data(
         get_unique_set_of_columns_needed(axis_to_data_columns_list, hover_data), filters
     )
 
-    graphic_data = AVAILABLE_GRAPHICS[
-        plot_specification[PLOT_MANAGER]
-    ]  # Checks to see if it is a valid graphic
+    # Checks to see if it is a valid graphic
+    graphic_data = AVAILABLE_GRAPHICS[plot_specification[PLOT_MANAGER]]
     # TO DO what if it is not
     graphic_to_plot = graphic_data[OBJECT]
+
+    # makes a json file as required by js plotting documentation
     jsonstr = graphic_to_plot.make_dict_for_html_plot(
         plot_data,
         axis_to_data_columns_list,
         plot_specification[PLOT_OPTIONS],
-        hover_data,  # makes a json file as required by js plotting documentation
+        hover_data,
     )
 
     return jsonstr, graphic_data[GRAPH_HTML_TEMPLATE], selector_settings_for_axis
 
 
-def finds_xy_data_columns_based_on_user_selection(plot_specification, axis_change):
+def finds_xy_data_columns_based_on_dashboard_form_options(
+    plot_specification, axis_change
+):
+    """
+    Looks at the dashboard options and changes the default plots to match the choices on the dashboard
+    :param plot_specification:
+    :param axis_change:
+    :return:
+    """
     axis_to_data_columns_list = plot_specification[DATA]
     # each of these is a separate grouping of data that is renderable on our plot
-    num_xy_pairs_of_data_to_plot = len(axis_to_data_columns_list)
+
     # for each axis comparison set for which we want to change an axis view, change the axis displayed
-    for index_of_data_on_plot in range(num_xy_pairs_of_data_to_plot):
-        axis_to_data_columns_list[index_of_data_on_plot].update(axis_change)
+    for data_to_column_mapping in axis_to_data_columns_list:
+        data_to_column_mapping.update(axis_change)
     # tells dropdown menu which axis is selected to be shown. 0th index because all identical functionality
     selector_settings_for_axis = axis_to_data_columns_list[0]
     return axis_to_data_columns_list, selector_settings_for_axis
