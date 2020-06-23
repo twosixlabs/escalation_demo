@@ -3,12 +3,14 @@ Inspired by https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
 """
 
 import os
+import sys
+import warnings
+
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
-import pandas as pd
-from tableschema import Table
 from sqlalchemy.types import Integer, Text, Date, Float
-import warnings
+from tableschema import Table
 
 DB_BACKEND = "psql"
 if DB_BACKEND == "psql":
@@ -110,11 +112,13 @@ class CreateTablesFromCSVs:
         return sqlalchemy_data_types
 
     @classmethod
-    def create_new_table(cls, table_name, data, schema, index_col):
+    def create_new_table(cls, table_name, data, schema, key_columns=None):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
+            # if there is no key specified, include the index
+            index = key_columns is None
             if DB_BACKEND == "mysql":
                 data.to_sql(
                     table_name,
@@ -123,11 +127,19 @@ class CreateTablesFromCSVs:
                     if_exists="replace",
                     chunksize=300,
                     dtype=schema,
-                    index=False,
+                    index=index,
                 )
-                cls.__engine.execute(
-                    "ALTER TABLE {} ADD UNIQUE({}({}));".format(table_name, *index_col)
-                )
+                if key_columns:
+                    cls.__engine.execute(
+                        "ALTER TABLE {} ADD UNIQUE({}({}));".format(
+                            table_name, *key_columns
+                        )
+                    )
+                else:
+                    # use the numerical index from pandas as a pk
+                    cls.__engine.execute(
+                        "ALTER TABLE {} ADD UNIQUE({});".format(table_name, "index")
+                    )
             elif DB_BACKEND == "psql":
                 data.to_sql(
                     table_name,
@@ -135,31 +147,45 @@ class CreateTablesFromCSVs:
                     if_exists="replace",
                     chunksize=300,
                     dtype=schema,
-                    index=False,
+                    index=index,
                 )
-                cls.__engine.execute(
-                    f"ALTER TABLE {table_name} add primary key (index_col[0]);"
-                )
+                if key_columns:
+                    cls.__engine.execute(
+                        f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                    )
+                else:
+                    # use the numerical index from pandas as a pk
+                    cls.__engine.execute(
+                        f"ALTER TABLE {table_name} add primary key (index);"
+                    )
 
 
 if __name__ == "__main__":
-    filepath = os.path.join("scratch", "YeastSTATES-1-0-Growth-Curves__platereader.csv")
+    # filepath = os.path.join("scratch", "YeastSTATES-1-0-Growth-Curves__platereader.csv")
+    # data = CreateTablesFromCSVs.get_data_from_csv(filepath)
+    # schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
+    # table_name = "platereader"
+    # # index_cols = [col_name for col_name in schema if 'id' in col_name.lower()]
+    # index_col = (
+    #     "_id",
+    #     24,
+    # )  # we need a way of determining for text columns used as ids the max length
+    # CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
+    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
+
+    table_name = sys.argv[1]
+    filepath = sys.argv[2]
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
-    table_name = "platereader"
-    # index_cols = [col_name for col_name in schema if 'id' in col_name.lower()]
-    index_col = (
-        "_id",
-        24,
-    )  # we need a way of determining for text columns used as ids the max length
-    CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
+    key_column = None
+    CreateTablesFromCSVs.create_new_table(
+        table_name, data, schema, key_columns=key_column
+    )
 
-    # script method to create sqlalchemy models from database definition
-    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
+    # example usage:
+    # create a table in your db defined by a csv file
+    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguins_size/penguins_size.csv
+    # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
 
-    # workflow for onboarding:
-    # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
-    # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Just drop columns that aren't in the schema?
-
-    # todo: add columns about upload time, upload id, to df and to sql. How are we choosing which data to show in our later queries?
+# todo: add columns about upload time, upload id, to df and to sql. How are we choosing which data to show in our later queries?

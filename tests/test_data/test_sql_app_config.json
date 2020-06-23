@@ -1,14 +1,14 @@
 {
   "title": "Escalation Demo",
   "brief_desc": "This is a test/demo for the Escalation os",
-  "data_backend": "local_csv",
+  "data_backend": "psql",
   "available_pages": { "penguins":
     {
       "name": "Penguins",
       "graphics": [
         {
           "plot_manager": "plotly",
-          "data_path": "tests/test_data/penguins_size/",
+          "data_path": "PenguinSize",
           "title": "Do massive penguins have long flippers?",
           "brief_desc": "This plot looks at the relationship between...",
           "data": [{"x":"body_mass_g", "y":"flipper_length_mm"}],
@@ -26,12 +26,10 @@
           },
         {
           "plot_manager": "plotly",
-          "data_path": "tests/test_data/penguins_size/",
+          "data_path": "PenguinSize",
           "title": "How big are penguins?",
           "brief_desc": "",
           "data": [{"x":"body_mass_g"}],
-          "selectable_data_list": [{"type": "axis","columns": "x","options":{"entries":
-          ["culmen_length_mm","flipper_length_mm","body_mass_g","culmen_depth_mm"]}}],
           "plot_options": {
             "data": [
               {
@@ -55,7 +53,7 @@
       "graphics": [
         {
           "plot_manager": "plotly",
-          "data_path": "tests/test_data/penguins_size/",
+          "data_path": "PenguinSize",
           "title": "Do long nosed penguins have long flippers?",
           "brief_desc": "A plot",
           "data": [{"x":"culmen_length_mm","y":"flipper_length_mm"}],

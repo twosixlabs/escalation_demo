@@ -9,7 +9,9 @@ SITE_DESC = "brief_desc"
 
 GRAPHIC_TITLE = "title"
 GRAPHIC_DESC = "brief_desc"
-DATA_PATH = "data_path"
+DATA_SOURCE = (
+    "data_path"  # path to the file for LocalHandler or table name for SqlHandler
+)
 DATA = "data"
 PLOT_MANAGER = "plot_manager"
 

@@ -5,23 +5,23 @@ from utility.available_selectors import AVAILABLE_SELECTORS
 from utility.constants import *
 
 
-def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
+def get_data_for_page(config_dict: dict, display_page, filter_form=None) -> dict:
     """
 
     :param config_dict: A dictionary containing all the information from the config json file
     :param display_page: Which page is the viewer requesting
-    :param form: form request received from push request.
+    :param filter_form: form request received from push request. # todo: describe how this form is structured, and how we restructure it in reformat_html_form_dict
     :return: dictionary to be read by jinja to build the page
     """
-    filter_dict = {}
+    filter_form_dict = None
     axis_dict = {}
-    if form is not None:
-        [filter_dict, axis_dict] = reformatting_the_form_dict(form)
+    if filter_form is not None:
+        filter_form_dict = reformat_filter_form_dict(filter_form)
 
     available_pages = config_dict[AVAILABLE_PAGES]
     if display_page is not None:
         plot_list = available_pages.get(display_page, {}).get(GRAPHICS, [])
-        plot_specs = organize_graphic(plot_list, filter_dict, axis_dict)
+        plot_specs = organize_graphic(plot_list, filter_form_dict, axis_dict)
     else:
         plot_specs = []
 
@@ -36,7 +36,7 @@ def get_data_for_page(config_dict: dict, display_page, form=None) -> dict:
     return page_info
 
 
-def organize_graphic(plot_list: list, filter_dict={}, axis_dict={}) -> list:
+def organize_graphic(plot_list: list, filter_dict: dict = None, axis_dict: dict = None) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
@@ -45,10 +45,11 @@ def organize_graphic(plot_list: list, filter_dict={}, axis_dict={}) -> list:
     :return:
     """
     plot_specs = []
-
-    for index, plot_dict in enumerate(plot_list):
-        new_data = LocalCSVHandler(
-            plot_dict[DATA_PATH]
+    if filter_dict is None:
+        form_dict = {}
+    for index, plot_specification in enumerate(plot_list):
+        plot_data_handler = current_app.config.data_handler(
+            plot_specification[DATA_SOURCE]
         )  # TO DO Need to allow for database
         filters = {}
         axis_change = {}
@@ -58,61 +59,64 @@ def organize_graphic(plot_list: list, filter_dict={}, axis_dict={}) -> list:
         if index in axis_dict:
             axis_change = axis_dict[index]  # finds filters for the data
 
-        axis_to_data_columns = plot_dict[DATA]
+        axis_to_data_columns = plot_specification[DATA]
         axis_to_data_columns.update(axis_change)
         hover_data = []
-        if HOVER_DATA in plot_dict:
-            hover_data = plot_dict[HOVER_DATA]
-        data_dict = new_data.get_column_data(
-            extract_data_needed(axis_to_data_columns, hover_data),
+        if HOVER_DATA in plot_specification:
+            hover_data = plot_specification[HOVER_DATA]
+        data_dict = plot_data_handler.get_column_data(
+            get_unique_set_of_columns_needed(axis_to_data_columns, hover_data),
             filters,  # retrieves all needed columns
         )
         graphic_data = AVAILABLE_GRAPHICS[
-            plot_dict[PLOT_MANAGER]
+            plot_specification[PLOT_MANAGER]
         ]  # Checks to see if it is a valid graphic
         # TO DO what if it is not
         new_graphic = graphic_data[OBJECT]
         jsonstr = new_graphic.draw(
-            data_dict,
+            plot_data,
             axis_to_data_columns,
-            plot_dict[PLOT_OPTIONS],
+            plot_specification[PLOT_OPTIONS],
             hover_data,  # makes a json file as required by js plotting documentation
         )
         if (
-            SELECTABLE_DATA_LIST in plot_dict.keys()
+            SELECTABLE_DATA_LIST in plot_specification.keys()
         ):  # checks to see if this plot has selectors
-            select_dict = plot_dict[SELECTABLE_DATA_LIST]
-            select_info = create_select_info(
-                select_dict, new_data, filters, axis_to_data_columns
-            )
+            select_dict = plot_specification[SELECTABLE_DATA_LIST]
+            select_info = create_data_subselect_info(select_dict, new_data, filters, axis_to_data_columns)
 
         else:
             select_info = []
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graphic_data[GRAPH_HTML_TEMPLATE],
+            ACTIVE_SELECTORS: filters,
             JINJA_SELECT_INFO: select_info,
-            GRAPHIC_TITLE: plot_dict[GRAPHIC_TITLE],
-            GRAPHIC_DESC: plot_dict[GRAPHIC_DESC],
+            GRAPHIC_TITLE: plot_specification[GRAPHIC_TITLE],
+            GRAPHIC_DESC: plot_specification[GRAPHIC_DESC],
             JINJA_PLOT_INFO: jsonstr,
         }
         plot_specs.append(html_dict)
     return plot_specs
 
 
-def extract_data_needed(data_list: list, hover_data: list = []) -> list:
+def get_unique_set_of_columns_needed(
+    list_data_dict_to_be_plotted: list, list_of_data_in_hover_text: list = None
+) -> list:
     """
     Returns the unique columns of the data we need to get
     TO DO throw an error if contains column names not in data
 
-    :param data_list:
-    :param hover_data:
+    :param list_data_dict_to_be_plotted:
+    :param list_of_data_in_hover_text:
     :return:
     """
-    data_set = set()
-    for data_dict in data_list:
-        data_set.update(data_dict.values())
-    data_set.update(hover_data)
-    return list(data_set)
+    if list_of_data_in_hover_text is None:
+        list_of_data_in_hover_text = []
+    set_of_column_names = set()
+    for dict_of_data_on_each_axis in list_data_dict_to_be_plotted:
+        set_of_column_names.update(dict_of_data_on_each_axis.values())
+    set_of_column_names.update(list_of_data_in_hover_text)
+    return list(set_of_column_names)
 
 
 def create_link_buttons_for_available_pages(available_pages: dict) -> list:
@@ -127,34 +131,34 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
     return buttons
 
 
-def create_select_info(
-    select_list: list, new_data: DataHandler, filters: dict, axis_to_data_columns: dict
+def create_data_subselect_info(
+    list_of_selection_options_by_plot: list, new_data: DataHandler
+, filters: dict, axis_to_data_columns: dict
 ) -> list:
     """
     puts selctor data in form to be read by html file
-    :param select_list:
+    :param list_of_selection_options_by_plot:
     :param new_data:
-    :param filters:
-    :param axis_to_data_columns:
     :return:
     """
     select_info = []
-    for select_dict in select_list:
+    for selection_option_dict_for_plot in list_of_selection_options_by_plot:
         active = []
-        selector_attributes = AVAILABLE_SELECTORS[select_dict[OPTION_TYPE]]
+        selector_attributes = AVAILABLE_SELECTORS[
+            selection_option_dict_for_plot[OPTION_TYPE]
+        ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        column = select_dict[OPTION_COLS]
+        column = selection_option_dict_for_plot[OPTION_COLS]
         columns_names = []
-        if select_dict[SELECTOR_TYPE] == SELECTOR:
+        if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
             columns_names = new_data.get_column_unique_entries([column])
             columns_names = columns_names[column]
             if column in filters:
                 active = filters[column]
-        elif select_dict[SELECTOR_TYPE] == AXIS:
-            columns_names = select_dict[SELECT_OPTION][ENTRIES]
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
+            columns_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
             if column in axis_to_data_columns:
                 active = [axis_to_data_columns[column]]
-
         select_info.append(
             {
                 JINJA_SELECT_HTML_FILE: select_html_file,
@@ -162,36 +166,38 @@ def create_select_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active,
                 ENTRIES: columns_names,
-                SELECT_OPTION: select_dict[SELECT_OPTION],
+                SELECT_OPTION: selection_option_dict_for_plot[SELECT_OPTION],
             }
         )
 
     return select_info
 
 
-def reformatting_the_form_dict(form_dict: dict) -> [dict, dict]:
+def reformat_filter_form_dict(form_dict: dict) -> [dict, dict]:
     """
     Because it is easier to use a nested dictionary in organize_graphic for getting the data
     then the default form request from flask
     :param form_dict:
     :return:
     """
-    filter_dict = {}
-    axis_dict = {}
-    for key, values in form_dict.lists():
-        [plot_index, selector_type, column_name] = key.split("_", 2)
+    filter_dict = defaultdict(dict)
+    axis_dict = defaultdict(dict)
+    for selector_html_id, value_chosen_in_selector in form_dict.lists():
+        [plot_index, selector_type, column_name] = selector_html_id.split("_", 2)
         if selector_type == SELECTOR:
-            if SHOW_ALL_ROW not in values:  # Made a choice about behavior
+            if SHOW_ALL_ROW not in value_chosen_in_selector:  # Made a choice about behavior
                 plot_index = int(plot_index)
                 if plot_index in filter_dict:
-                    filter_dict[plot_index][column_name] = values
+                    filter_dict[plot_index][column_name] = value_chosen_in_selector
                 else:
-                    filter_dict[plot_index] = {column_name: values}
+                    filter_dict[plot_index] = {column_name: value_chosen_in_selector}
+
         elif selector_type == AXIS:
             plot_index = int(plot_index)
             if plot_index in filter_dict:
-                filter_dict[plot_index][column_name] = values
+                filter_dict[plot_index][column_name] = value_chosen_in_selector
             else:
-                filter_dict[plot_index] = {column_name: values}
+                filter_dict[plot_index] = {column_name: value_chosen_in_selector}
+
 
     return filter_dict, axis_dict

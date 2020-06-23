@@ -14,21 +14,25 @@ class LocalCSVHandler(DataHandler):
     def get_column_names(self):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
-    def get_column_data(self, cols: list, filters: dict = {}) -> dict:
+    def get_column_data(self, cols: list, filters: dict = None) -> dict:
         # error checking will be good
         """
         :param cols:
+        :param filters:
         :return:
         """
+        if filters is None:
+            filters = {}
         all_to_include_cols = cols + list(filters)
         df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
-        for key, value in filters.items():
-            df = df[df[key].isin(value)]
+        for column_name, entry_values_to_be_shown_in_plot in filters.items():
+            df = df[df[column_name].isin(entry_values_to_be_shown_in_plot)]
         return df[cols].to_dict("list")
 
     def get_column_unique_entries(self, cols: list) -> dict:
         df = pd.read_csv(self.file_path)  # error checking will be good
         unique_dict = {}
         for col in cols:
+            # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
             unique_dict[col] = df[col].dropna().unique().tolist()
         return unique_dict
