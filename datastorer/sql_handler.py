@@ -16,6 +16,9 @@ class SqlHandler(DataHandler):
         return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
     def get_column_names(self):
+        """
+        :return: a list of the column names in the table referenced by the handler
+        """
         return list(self.table.columns.keys())
 
     def get_column_data(self, columns: list, filters: dict = None) -> dict:
@@ -45,6 +48,10 @@ class SqlHandler(DataHandler):
         return response_dict_of_lists
 
     def get_column_unique_entries(self, cols: list) -> dict:
+        """
+        :param cols: a list of column names
+        :return: A dict keyed by column names and valued with the unique values in that column
+        """
         unique_dict = {}
         for col in cols:
             query = db_session.query(getattr(self.table_class, col)).distinct()

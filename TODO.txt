@@ -33,11 +33,14 @@ Data upload options: 1) direct upload via a web interface 2) API upload which wi
 
 Add another db table with a relationship to an existing db table, and build a graph that pulls from 2 tables?
 
-Build graph in config using sql backend
-
 
 
 # Document workflow for onboarding:
 # Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
 # store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Does the app just ignore columns that aren't in the schema?
 
+
+
+USER STORIES
+
+Real time data from fermenter (temp, pH) with updates on dashboard, including
