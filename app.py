@@ -6,16 +6,8 @@ from flask import Flask
 from sqlalchemy.engine.url import URL
 
 from datastorer.local_handler import LocalCSVHandler
-from datastorer.sql_handler import SqlHandler
-from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL, LOCAL_CSV
+from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL
 from app_settings import PSQL_DATABASE_CONFIG as database_config
-
-
-DATA_BACKEND_CLASS_LOOKUP = {
-    POSTGRES: SqlHandler,
-    MYSQL: SqlHandler,
-    LOCAL_CSV: LocalCSVHandler,
-}
 
 
 def create_app():
@@ -43,16 +35,23 @@ if __name__ == "__main__":
 
     app = create_app()
     app.config[APP_CONFIG_JSON] = config_dict
-    app.config.data_handler = DATA_BACKEND_CLASS_LOOKUP[config_dict[DATA_BACKEND]]
 
     # setup steps unique to SQL-backended apps
+    # todo: make sure we don't need postgres install reqs if running mysql
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [MYSQL, POSTGRES]:
+        from datastorer.sql_handler import SqlHandler
         from datastorer.database import db, db_session
 
         db.init_app(app)
+        data_backend_class = SqlHandler
 
         @app.teardown_appcontext
         def shutdown_session(exception=None):
             db_session.remove()
+
+    else:
+        data_backend_class = LocalCSVHandler
+
+    app.config.data_handler = data_backend_class
 
     app.run()
