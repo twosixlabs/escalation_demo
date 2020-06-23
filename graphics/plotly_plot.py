@@ -11,19 +11,22 @@ TITLE = "title"
 
 
 class PlotlyPlot(Graphic):
-    def draw(self, data, axis_to_data_columns, plot_options, hover_data=[]):
+    def make_dict_for_html_plot(
+        self, data, axis_to_data_columns, plot_options, hover_data=None
+    ):
 
         for index, axis_to_data_dict in enumerate(axis_to_data_columns):
-            for key, value in axis_to_data_dict.items():
-                plot_options[DATA][index][key] = data[
-                    value
+            for axis, column_name in axis_to_data_dict.items():
+                plot_options[DATA][index][axis] = data[
+                    column_name
                 ]  # three things in path, data, which index and value (x,y)
                 if index == 0:
                     if LAYOUT in plot_options:
-                        plot_options[LAYOUT][AXIS.format(key)] = {TITLE: value}
+                        plot_options[LAYOUT][AXIS.format(axis)] = {TITLE: column_name}
                     else:
-                        plot_options[LAYOUT] = {AXIS.format(key): {TITLE: value}}
-            if len(hover_data) > 0:
+                        plot_options[LAYOUT] = {AXIS.format(axis): {TITLE: column_name}}
+
+            if hover_data is not None:
                 hover_data_list = []
                 hover_template_list = []
                 for hover_index, hover_col in enumerate(hover_data):

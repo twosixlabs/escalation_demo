@@ -6,7 +6,7 @@ class Graphic(ABC):
         pass
 
     @abstractmethod
-    def draw(self, data, data_to_struct, plot_options, hover_data):
+    def make_dict_for_html_plot(self, data, data_to_struct, plot_options, hover_data):
         """
 
 

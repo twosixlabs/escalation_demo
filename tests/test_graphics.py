@@ -18,7 +18,7 @@ def test_plotly_draw_scatter(make_data):
     options = {"data": [{"type": "scatter", "mode": "markers"}]}
     test = PlotlyPlot()
     data_to_struct = [{"x": TITLE2, "y": TITLE1}]
-    json_output = test.draw(make_data, data_to_struct, options)
+    json_output = test.make_dict_for_html_plot(make_data, data_to_struct, options)
     options_dict = json.loads(json_output)
     assert options_dict["data"][0]["type"] == "scatter"
     assert options_dict["data"][0]["x"] == make_data[TITLE2]
