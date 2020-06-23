@@ -38,14 +38,13 @@ def get_data_for_page(config_dict: dict, display_page, filter_form=None) -> dict
     return page_info
 
 
-def organize_graphic(plot_list: list, form_dict={}) -> list:
-    """
-    creates dictionary to be read in by the html file to plot the graphics and selectors
-    :param plot_list:
-    :param form_dict:
-    :return:
-    """
 def organize_graphic(plot_list: list, form_dict: dict = None) -> list:
+    """
+      creates dictionary to be read in by the html file to plot the graphics and selectors
+      :param plot_list:
+      :param form_dict:
+      :return:
+      """
     plot_specs = []
     if form_dict is None:
         form_dict = {}
@@ -61,8 +60,7 @@ def organize_graphic(plot_list: list, form_dict: dict = None) -> list:
         if HOVER_DATA in plot_specification:
             hover_data = plot_specification[HOVER_DATA]
         plot_data = plot_data_handler.get_column_data(
-            get_unique_set_of_columns_needed(axis_to_data_columns, hover_data),
-            filters,
+            get_unique_set_of_columns_needed(axis_to_data_columns, hover_data), filters,
         )
         graphic_data = AVAILABLE_GRAPHICS[
             plot_specification[PLOT_MANAGER]
@@ -95,7 +93,9 @@ def organize_graphic(plot_list: list, form_dict: dict = None) -> list:
     return plot_specs
 
 
-def get_unique_set_of_columns_needed(list_data_dict_to_be_plotted: list, list_of_data_in_hover_text: list = []) -> list:
+def get_unique_set_of_columns_needed(
+    list_data_dict_to_be_plotted: list, list_of_data_in_hover_text: list = None
+) -> list:
     """
     Returns the unique columns of the data we need to get
     TO DO throw an error if contains column names not in data
@@ -104,6 +104,8 @@ def get_unique_set_of_columns_needed(list_data_dict_to_be_plotted: list, list_of
     :param list_of_data_in_hover_text:
     :return:
     """
+    if list_of_data_in_hover_text is None:
+        list_of_data_in_hover_text = []
     set_of_column_names = set()
     for dict_of_data_on_each_axis in list_data_dict_to_be_plotted:
         set_of_column_names.update(dict_of_data_on_each_axis.values())
@@ -123,7 +125,9 @@ def create_link_buttons_for_available_pages(available_pages: dict) -> list:
     return buttons
 
 
-def create_data_subselect_info(list_of_selection_options_by_plot: list, new_data: DataHandler) -> list:
+def create_data_subselect_info(
+    list_of_selection_options_by_plot: list, new_data: DataHandler
+) -> list:
     """
     puts selctor data in form to be read by html file
     :param list_of_selection_options_by_plot:
@@ -132,7 +136,9 @@ def create_data_subselect_info(list_of_selection_options_by_plot: list, new_data
     """
     select_info = []
     for selection_option_dict_for_plot in list_of_selection_options_by_plot:
-        selector_attributes = AVAILABLE_SELECTORS[selection_option_dict_for_plot[OPTION_TYPE]]
+        selector_attributes = AVAILABLE_SELECTORS[
+            selection_option_dict_for_plot[OPTION_TYPE]
+        ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
         column = selection_option_dict_for_plot[OPTION_COLS]
         columns_names = new_data.get_column_unique_entries([column])
