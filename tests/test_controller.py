@@ -5,9 +5,9 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from controller import (
     create_link_buttons_for_available_pages,
-    create_select_info,
-    reformatting_the_form_dict,
-    extract_data_needed,
+    create_data_subselect_info,
+    reformat_filter_form_dict,
+    get_unique_set_of_columns_needed,
 )
 from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
@@ -41,7 +41,7 @@ def test_extract_buttons(json_file):
     assert button2 in buttons
 
 
-def test_create_select_info(json_file):
+def test_create_data_subselect_info(json_file):
     new_data = LocalCSVHandler("tests/test_data/penguins_size/")
     select_dict = [
         {"type": "select", "columns": "sex", "options": {"multiple": False}},
@@ -55,7 +55,7 @@ def test_create_select_info(json_file):
         },
     ]
     current_axis = {"x": "body_mass_g", "y": "flipper_length_mm"}
-    select_info = create_select_info(
+    select_info = create_data_subselect_info(
         select_dict,
         new_data,
         {"sex": ["MALE"]},
@@ -82,32 +82,32 @@ def test_create_select_info(json_file):
     assert len(select_info[2][ACTIVE_SELECTORS]) == 1
 
 
-def test_turn_form_into_dict():
+def test_reformat_filter_form_dict():
     test_dict = ImmutableMultiDict(
         [
-            ("0_select_sex", "FEMALE"),
-            ("0_select_isl_and", "Torgersen"),
-            ("1_select_sex", "FEMALE"),
-            ("1_select_sex", "MALE"),
-            ("1_select_island", "SHOW_ALL_ROW"),
+            ("0_filter_sex", "FEMALE"),
+            ("0_filter_isl_and", "Torgersen"),
+            ("1_filter_sex", "FEMALE"),
+            ("1_filter_sex", "MALE"),
+            ("1_filter_island", "SHOW_ALL_ROW"),
+            ('1_axis_x', 'flipper_length_mm')
         ]
     )
-    [filter_dict,axis_dict] = reformatting_the_form_dict(test_dict)
+    [filter_dict, axis_dict] = reformat_filter_form_dict(test_dict)
     assert "FEMALE" in filter_dict[0]["sex"]
     assert "Torgersen" in filter_dict[0]["isl_and"]
     assert "FEMALE" in filter_dict[1]["sex"]
     assert "MALE" in filter_dict[1]["sex"]
 
-
     with pytest.raises(KeyError):
         filter_dict[1]["island"]
+    assert "flipper_length_mm" == axis_dict[1]["x"]
 
-
-def test_extract_data_needed():
+def test_get_unique_set_of_columns_needed():
     culmen = "culmen_length_mm"
     flipper = "flipper_length_mm"
     flipper2 = "flipper_length_mm2"
-    test_cols_list = extract_data_needed(
+    test_cols_list = get_unique_set_of_columns_needed(
         [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}]
     )
     assert culmen in test_cols_list

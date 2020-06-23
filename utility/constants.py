@@ -38,6 +38,7 @@ SELECT_OPTION = "options"
 AXIS = "axis"
 SELECTOR = "select"
 SELECTOR_TYPE = "type"
+FILTER = "filter"
 
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROW"

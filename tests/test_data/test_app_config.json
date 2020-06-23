@@ -1,6 +1,6 @@
 {
-  "title": "Escalation Demo",
-  "brief_desc": "This is a test/demo for the Escalation os",
+  "title": "Escalation Test",
+  "brief_desc": "This is a test/demo for the Escalation OS",
   "data_backend": "local_csv",
   "available_pages": { "penguins":
     {

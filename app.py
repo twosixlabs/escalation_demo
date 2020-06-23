@@ -27,8 +27,8 @@ def create_app():
 
 
 if __name__ == "__main__":
-    config_file_path = "tests/test_data/test_sql_app_config.json"
-    # config_file_path = "tests/test_data/test_app_config.json"
+    # config_file_path = "tests/test_data/test_sql_app_config.json"
+    config_file_path = "tests/test_data/test_app_config.json"
 
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)
