@@ -1,0 +1,4 @@
+{% for hover_col in hover_column_names -%}
+    {{ hover_col ~ ": %{customdata[" ~ loop.index0 ~ "]}" }}{% if not loop.last %} <br> {% endif %}
+{%- endfor %}
+<extra></extra>
