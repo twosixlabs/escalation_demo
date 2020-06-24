@@ -161,25 +161,25 @@ def finds_xy_data_columns_based_on_dashboard_form_options(
 
 
 def get_unique_set_of_columns_needed(
-    list_data_dict_to_be_plotted: list, list_of_extra_visualizations: list = None
+    list_data_dict_to_be_plotted: list, list_of_plot_metadata: list = None
 ) -> list:
     """
     Returns the unique columns of the data we need to get
     TO DO throw an error if contains column names not in data
 
     :param list_data_dict_to_be_plotted:
-    :param list_of_extra_visualizations:
+    :param list_of_plot_metadata:
     :return:
     """
     set_of_column_names = set()
     for dict_of_data_on_each_axis in list_data_dict_to_be_plotted:
         set_of_column_names.update(dict_of_data_on_each_axis.values())
-        if list_of_extra_visualizations is not None:
+        if list_of_plot_metadata is not None:
             set_of_column_names.update(
                 {
                     col_name
-                    for visualization in list_of_extra_visualizations
-                    for col_name in visualization[DATA]
+                    for visualization in list_of_plot_metadata
+                    for col_name in visualization[OPTION_COLS]
                 }
             )
     return list(set_of_column_names)

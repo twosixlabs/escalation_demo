@@ -1,42 +1,26 @@
-Add title and brief description changable in the config file.
-
+# graphics functionality
 Allow user to add their own hand-coded Plotly plots- where do they do the config, how is it included in the HTML?
-
-Save a user's preferences for graph configuration. Store the last form as a cookie and use it as the default? Store the form on the server side with a user-provided name and allow a user to select the form they want from a dropdown? This would work also as a way of sharing a graph config.
-
+ Save state of the website / user's preferences for graph configuration. Store the last form as a cookie and use it as the default? Store the form on the server side with a user-provided name and allow a user to select the form they want from a dropdown? This would work also as a way of sharing a graph config.
 Shareable graph configs- either a URL-encoded version for a GET that could be shared, or store a config server side that can be selected (as described above)
-
-# save state of the website.
-
+plot multiple scatters etc different colors using filter
+# App configuration
+Document workflow for onboarding:
+Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
+store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Does the app just ignore columns that aren't in the schema?
+# Data management
+Which version of the data do we display? Management page to select "Active data files" or "active sql row keys" which get loaded. May combine multiple files/keys into single graph
+Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
+Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
+Add another db table with a relationship to an existing db table, and build a graph that pulls from 2 tables?
+USER STORIES
+Real time data from fermenter (temp, pH) with updates on dashboard, including
 Low:
 Simplify the config file
 Implement Administrator class
  - walk through
-
 limitations/decisions:
-Cannot switch between x and y on the fly.
-Plots on the same page can use different tables
-Graph on use a single data set
-Need to be connected to the internet
+Graph can only use a single data set, defined by the handler
 Assuming csv in local handler
-gets most recent data set
-Cannot select along nan
+Local handler currently gets most recent data set
+Cannot select along nan values in the db or file
 
-
-Replicating Existing Escalation Functionality:
-Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
-Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
-
-Add another db table with a relationship to an existing db table, and build a graph that pulls from 2 tables?
-
-
-
-# Document workflow for onboarding:
-# Run csv to schema on file, build the sqlalchemy schema from the db write (after manual validation), Repeat for more files, specify which graphs are built from which files
-# store schema from this stage to use to validate future data uploads, or use the model definition? Question to address: How hard should it be to upload a new file format? Does the app just ignore columns that aren't in the schema?
-
-
-
-USER STORIES
-
-Real time data from fermenter (temp, pH) with updates on dashboard, including

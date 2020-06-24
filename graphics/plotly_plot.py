@@ -2,6 +2,7 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
+from utility.constants import OPTION_COLS
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -33,8 +34,9 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     """
     # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
     # is equalavent to the two lines function
-    hover_column_names = hover_options[DATA]
+    hover_column_names = hover_options[OPTION_COLS]
     hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
+    # transposes a list of lists of column data to a list of lists of row data
     plot_options_data_dict[CUSTOM_DATA] = list(map(list, zip(*hover_data_list)))
 
     plot_options_data_dict[HOVER_TEMPLATE] = render_template(
@@ -43,56 +45,51 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     return plot_options_data_dict
 
 
-def get_groupby_in_plotly_form(data, group_by, plot_options_data_dict):
+def get_groupby_or_aggregate_in_plotly_form(
+    data, visualization_property, plot_options_data_dict
+):
     """
-    if group_by has options
-     We only allow the key styles
+    aggregate allows you to do a function on an aggregation of the data
+    group_by allows you to change the color based on one of the columns
+    if group_by has options we only allow the key styles
      we expect a dictionary of styles g.e. col_name: {marker: {color: blue}}
     :param data:
-    :param group_by:
+    :param visualization_property: a dictionary that includes the type (groupby or aggregate), column name (stored in a list of length one)
+    and options such as color for groupby and function for aggregate
     :param plot_options_data_dict:
     :return:
     """
-    group_by_dict = {VISUALIZATION_TYPE: GROUPBY, GROUPS: data[group_by[DATA][0]]}
-    if OPTIONS in group_by:
-        style_dict = group_by[OPTIONS][STYLES]
+    visualization_type = visualization_property[VISUALIZATION_TYPE]
+    property_dict = {
+        VISUALIZATION_TYPE: visualization_type,
+        GROUPS: data[visualization_property[OPTION_COLS][0]],
+    }
+
+    if visualization_type == GROUPBY and OPTIONS in visualization_property:
+        style_dict = visualization_property[OPTIONS][STYLES]
         plotly_style_list = [
             {"target": col_name, "value": style}
             for col_name, style in style_dict.items()
         ]
-        group_by_dict[STYLES] = plotly_style_list
+        property_dict[STYLES] = plotly_style_list
+    elif visualization_type == AGGREGATE:
+        # attribute_name can be x, y or something like marker.size
+        # func can be avg, min, sum, count, stddev etc.
+        attribute_dict = visualization_property[OPTIONS][AGGREGATIONS]
+        plotly_aggregations_list = [
+            {"target": attribute_name, "func": func}
+            for attribute_name, func in attribute_dict.items()
+        ]
+        property_dict[AGGREGATIONS] = plotly_aggregations_list
 
-    plot_options_data_dict[TRANSFORMS].append(group_by_dict)
-    return plot_options_data_dict
-
-
-def get_aggregate_in_plotly_form(data, aggregate, plot_options_data_dict):
-    """
-    You have to have aggregations in your options column
-    :param data:
-    :param aggregate:
-    :param plot_options_data_dict:
-    :return:
-    """
-    aggregate_dict = {VISUALIZATION_TYPE: AGGREGATE, GROUPS: data[aggregate[DATA][0]]}
-
-    # attribute_name can be x, y or something like marker.size
-    # func can be avg, min, sum, count, stddev etc.
-    attribute_dict = aggregate[OPTIONS][AGGREGATIONS]
-    plotly_aggregations_list = [
-        {"target": attribute_name, "func": func}
-        for attribute_name, func in attribute_dict.items()
-    ]
-    aggregate_dict[AGGREGATIONS] = plotly_aggregations_list
-
-    plot_options_data_dict[TRANSFORMS].append(aggregate_dict)
+    plot_options_data_dict[TRANSFORMS].append(property_dict)
     return plot_options_data_dict
 
 
 VISUALIZATION_OPTIONS = {
     HOVER_DATA: get_hover_data_in_plotly_form,
-    GROUPBY: get_groupby_in_plotly_form,
-    AGGREGATE: get_aggregate_in_plotly_form,
+    GROUPBY: get_groupby_or_aggregate_in_plotly_form,
+    AGGREGATE: get_groupby_or_aggregate_in_plotly_form,
 }
 
 

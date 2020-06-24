@@ -13,8 +13,8 @@
           "brief_desc": "This plot looks at the relationship between...",
           "data": [{"x":"body_mass_g", "y":"flipper_length_mm"}],
 
-          "visualization_options": [{"type":  "hover_data", "data": ["sex", "culmen_length_mm"]},
-            {"type":  "groupby", "data": ["island"],
+          "visualization_options": [{"type":  "hover_data", "columns": ["sex", "culmen_length_mm"]},
+            {"type":  "groupby", "columns": ["island"],
               "options":{"styles": {"Torgersen": {"marker":{"color": "green"}},
                 "Biscoe": {"marker":{"color": "blue"}},"Dream": {"marker":{"color": "red"}}}
           }}],
@@ -67,10 +67,10 @@
           "selectable_data_list": [
             {"type": "select","columns": "island","options":{"multiple": true}}],
           "visualization_options": [
-            {"type":  "aggregate", "data": ["sex"],
+            {"type":  "aggregate", "columns": ["sex"],
               "options":{"aggregations": {"x": "avg", "y": "avg"}
           }},
-          {"type":  "groupby", "data": ["sex"]
+          {"type":  "groupby", "columns": ["sex"]
           }
           ],
           "plot_options": {

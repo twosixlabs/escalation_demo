@@ -113,8 +113,8 @@ def test_get_unique_set_of_columns_needed():
     test_cols_list = get_unique_set_of_columns_needed(
         [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}],
         [
-            {"type": "hover_data", "data": [sex, culmen]},
-            {"type": "groupby", "data": [island]},
+            {"type": "hover_data", "columns": [sex, culmen]},
+            {"type": "groupby", "columns": [island]},
         ],
     )
     assert culmen in test_cols_list
