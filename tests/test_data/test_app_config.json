@@ -13,6 +13,7 @@
           "brief_desc": "This plot looks at the relationship between...",
           "data": [{"x":"body_mass_g", "y":"flipper_length_mm"}],
           "hover_data" : ["sex", "culmen_length_mm"],
+          "group_by" : {"column": "sex"},
           "selectable_data_list": [{"type": "select","columns": "sex","options":{"multiple": false}},
             {"type": "select","columns": "island","options":{"multiple": true}}],
           "plot_options": {

@@ -30,10 +30,39 @@ def get_hover_data_in_plotly_form(data, hover_column_names):
 
     return list(map(list, zip(*hover_data_list)))  # transpose list of lists
 
+def get_groupby_in_plotly_form(data, group_by):
+    """
+
+    :param data:
+    :param group_by:
+    :return:
+    """
+
+    pass
+
+    return
+
+def get_aggregate_in_plotly_form(data, a):
+    """
+
+    :param data:
+    :param group_by:
+    :return:
+    """
+
+    pass
+
+    return
 
 class PlotlyPlot(Graphic):
     def make_dict_for_html_plot(
-        self, data, axis_to_data_columns, plot_options, hover_column_names=None
+        self,
+        data,
+        axis_to_data_columns,
+        plot_options,
+        hover_column_names=None,
+        group_by=None,
+        aggregate=None,
     ):
 
         for index, axis_to_data_dict in enumerate(axis_to_data_columns):
@@ -46,15 +75,20 @@ class PlotlyPlot(Graphic):
                         plot_options[LAYOUT][AXIS.format(axis)] = {TITLE: column_name}
                     else:
                         plot_options[LAYOUT] = {AXIS.format(axis): {TITLE: column_name}}
+                plot_options[DATA][index]["transforms"] = []
+            if hover_column_names is not None:
+                plot_options[DATA][index][CUSTOM_DATA] = get_hover_data_in_plotly_form(
+                    data, hover_column_names
+                )
+                plot_options[DATA][index][HOVER_TEMPLATE] = render_template(
+                    HOVER_TEMPLATE_HTML, hover_column_names=hover_column_names
+                )
 
-            if hover_column_names is None:
-                continue
-            plot_options[DATA][index][CUSTOM_DATA] = get_hover_data_in_plotly_form(
-                data, hover_column_names
-            )
-            plot_options[DATA][index][HOVER_TEMPLATE] = render_template(
-                HOVER_TEMPLATE_HTML, hover_column_names=hover_column_names
-            )
+            if group_by is not None:
+                pass
+
+            if aggregate is not None:
+                pass
 
         graph_json = json.dumps(plot_options, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
