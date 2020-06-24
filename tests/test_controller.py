@@ -108,10 +108,18 @@ def test_get_unique_set_of_columns_needed():
     culmen = "culmen_length_mm"
     flipper = "flipper_length_mm"
     flipper2 = "flipper_length_mm2"
+    island = "island"
+    sex = "sex"
     test_cols_list = get_unique_set_of_columns_needed(
-        [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}]
+        [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}],
+        [
+            {"type": "hover_data", "data": [sex, culmen]},
+            {"type": "groupby", "data": [island]},
+        ],
     )
     assert culmen in test_cols_list
     assert flipper in test_cols_list
     assert flipper2 in test_cols_list
-    assert len(test_cols_list) == 3
+    assert island in test_cols_list
+    assert sex in test_cols_list
+    assert len(test_cols_list) == 5

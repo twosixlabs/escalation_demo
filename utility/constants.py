@@ -15,7 +15,7 @@ DATA_SOURCE = (
 DATA = "data"
 PLOT_MANAGER = "plot_manager"
 
-HOVER_DATA = "hover_data"
+VISUALIZATION_OPTIONS = "visualization_options"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_OPTIONS = "plot_options"
 
