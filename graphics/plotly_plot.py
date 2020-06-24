@@ -23,12 +23,9 @@ def get_hover_data_in_plotly_form(data, hover_column_names):
     :param hover_column_names:
     :return:
     """
-
-    hover_data_list = []
-    for hover_col_name in hover_column_names:
-        hover_data_list.append(data[hover_col_name])
-
-    return list(map(list, zip(*hover_data_list)))  # transpose list of lists
+    hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
+    # transposes a list of lists of column data to a list of lists of row data
+    return list(map(list, zip(*hover_data_list)))
 
 def get_groupby_in_plotly_form(data, group_by):
     """
