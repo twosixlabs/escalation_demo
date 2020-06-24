@@ -65,7 +65,7 @@ def organize_graphic(
         )
 
         (
-            jsonstr,
+            plot_directions_dict,
             graph_html_template,
             selector_settings_for_axis,
         ) = assemble_info_for_plot(
@@ -86,7 +86,7 @@ def organize_graphic(
             JINJA_SELECT_INFO: select_info,
             GRAPHIC_TITLE: plot_specification[GRAPHIC_TITLE],
             GRAPHIC_DESC: plot_specification[GRAPHIC_DESC],
-            JINJA_PLOT_INFO: jsonstr,
+            JINJA_PLOT_INFO: plot_directions_dict,
         }
         plot_specs.append(html_dict)
     return plot_specs
@@ -112,9 +112,12 @@ def assemble_info_for_plot(plot_specification, plot_data_handler, filters, axis_
         plot_specification, axis_change
     )
 
-    hover_data = plot_specification.get(HOVER_DATA, [])
+    visualization_options = plot_specification.get(VISUALIZATION_OPTIONS, [])
     plot_data = plot_data_handler.get_column_data(
-        get_unique_set_of_columns_needed(axis_to_data_columns_list, hover_data), filters
+        get_unique_set_of_columns_needed(
+            axis_to_data_columns_list, visualization_options
+        ),
+        filters,
     )
 
     # Checks to see if it is a valid graphic
@@ -123,14 +126,18 @@ def assemble_info_for_plot(plot_specification, plot_data_handler, filters, axis_
     graphic_to_plot = graphic_data[OBJECT]
 
     # makes a json file as required by js plotting documentation
-    jsonstr = graphic_to_plot.make_dict_for_html_plot(
+    plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
         plot_data,
         axis_to_data_columns_list,
         plot_specification[PLOT_OPTIONS],
-        hover_data,
+        visualization_options,
     )
 
-    return jsonstr, graphic_data[GRAPH_HTML_TEMPLATE], selector_settings_for_axis
+    return (
+        plot_directions_dict,
+        graphic_data[GRAPH_HTML_TEMPLATE],
+        selector_settings_for_axis,
+    )
 
 
 def finds_xy_data_columns_based_on_dashboard_form_options(
@@ -154,22 +161,27 @@ def finds_xy_data_columns_based_on_dashboard_form_options(
 
 
 def get_unique_set_of_columns_needed(
-    list_data_dict_to_be_plotted: list, list_of_data_in_hover_text: list = None
+    list_data_dict_to_be_plotted: list, list_of_plot_metadata: list = None
 ) -> list:
     """
     Returns the unique columns of the data we need to get
     TO DO throw an error if contains column names not in data
 
     :param list_data_dict_to_be_plotted:
-    :param list_of_data_in_hover_text:
+    :param list_of_plot_metadata:
     :return:
     """
-    if list_of_data_in_hover_text is None:
-        list_of_data_in_hover_text = []
     set_of_column_names = set()
     for dict_of_data_on_each_axis in list_data_dict_to_be_plotted:
         set_of_column_names.update(dict_of_data_on_each_axis.values())
-    set_of_column_names.update(list_of_data_in_hover_text)
+        if list_of_plot_metadata is not None:
+            set_of_column_names.update(
+                {
+                    col_name
+                    for visualization in list_of_plot_metadata
+                    for col_name in visualization[OPTION_COLS]
+                }
+            )
     return list(set_of_column_names)
 
 

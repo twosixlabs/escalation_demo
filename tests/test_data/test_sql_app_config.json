@@ -1,6 +1,6 @@
 {
-  "title": "Escalation Demo",
-  "brief_desc": "This is a test/demo for the Escalation os",
+  "title": "Escalation Test",
+  "brief_desc": "This is a test/demo for the Escalation OS",
   "data_backend": "psql",
   "available_pages": { "penguins":
     {
@@ -8,11 +8,16 @@
       "graphics": [
         {
           "plot_manager": "plotly",
-          "data_path": "PenguinSize",
+          "data_path": "tests/test_data/penguins_size/",
           "title": "Do massive penguins have long flippers?",
           "brief_desc": "This plot looks at the relationship between...",
           "data": [{"x":"body_mass_g", "y":"flipper_length_mm"}],
-          "hover_data" : ["sex", "culmen_length_mm"],
+
+          "visualization_options": [{"type":  "hover_data", "columns": ["sex", "culmen_length_mm"]},
+            {"type":  "groupby", "columns": ["island"],
+              "options":{"styles": {"Torgersen": {"marker":{"color": "green"}},
+                "Biscoe": {"marker":{"color": "blue"}},"Dream": {"marker":{"color": "red"}}}
+          }}],
           "selectable_data_list": [{"type": "select","columns": "sex","options":{"multiple": false}},
             {"type": "select","columns": "island","options":{"multiple": true}}],
           "plot_options": {
@@ -26,7 +31,7 @@
           },
         {
           "plot_manager": "plotly",
-          "data_path": "PenguinSize",
+          "data_path": "tests/test_data/penguins_size/",
           "title": "How big are penguins?",
           "brief_desc": "",
           "data": [{"x":"body_mass_g"}],
@@ -55,10 +60,19 @@
       "graphics": [
         {
           "plot_manager": "plotly",
-          "data_path": "PenguinSize",
-          "title": "Do long nosed penguins have long flippers?",
+          "data_path": "tests/test_data/penguins_size/",
+          "title": "Do long nosed penguins have long flippers by sex (avg)?",
           "brief_desc": "A plot",
           "data": [{"x":"culmen_length_mm","y":"flipper_length_mm"}],
+          "selectable_data_list": [
+            {"type": "select","columns": "island","options":{"multiple": true}}],
+          "visualization_options": [
+            {"type":  "aggregate", "columns": ["sex"],
+              "options":{"aggregations": {"x": "avg", "y": "avg"}
+          }},
+          {"type":  "groupby", "columns": ["sex"]
+          }
+          ],
           "plot_options": {
             "data": [
               {

@@ -2,6 +2,7 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
+from utility.constants import OPTION_COLS
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -11,26 +12,90 @@ AXIS = "{}axis"
 TITLE = "title"
 CUSTOM_DATA = "customdata"
 HOVER_TEMPLATE = "hovertemplate"
+VISUALIZATION_TYPE = "type"
+TRANSFORMS = "transforms"
+GROUPBY = "groupby"
+AGGREGATE = "aggregate"
+HOVER_DATA = "hover_data"
+GROUPS = "groups"
+OPTIONS = "options"
+STYLES = "styles"
+AGGREGATIONS = "aggregations"
 
 
-def get_hover_data_in_plotly_form(data, hover_column_names):
+def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     """
-    if data is a dataframe:
-    plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
-    is equalavent to this function
 
     :param data:
     :param hover_column_names:
+    :param plot_options_data_dict:
+    :param index:
     :return:
     """
+    # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
+    # is equalavent to the two lines function
+    hover_column_names = hover_options[OPTION_COLS]
     hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
     # transposes a list of lists of column data to a list of lists of row data
-    return list(map(list, zip(*hover_data_list)))
+    plot_options_data_dict[CUSTOM_DATA] = list(map(list, zip(*hover_data_list)))
+
+    plot_options_data_dict[HOVER_TEMPLATE] = render_template(
+        HOVER_TEMPLATE_HTML, hover_column_names=hover_column_names
+    )
+    return plot_options_data_dict
+
+
+def get_groupby_or_aggregate_in_plotly_form(
+    data, visualization_property, plot_options_data_dict
+):
+    """
+    aggregate allows you to do a function on an aggregation of the data
+    group_by allows you to change the color based on one of the columns
+    if group_by has options we only allow the key styles
+     we expect a dictionary of styles g.e. col_name: {marker: {color: blue}}
+    :param data:
+    :param visualization_property: a dictionary that includes the type (groupby or aggregate), column name (stored in a list of length one)
+    and options such as color for groupby and function for aggregate
+    :param plot_options_data_dict:
+    :return:
+    """
+    visualization_type = visualization_property[VISUALIZATION_TYPE]
+    property_dict = {
+        VISUALIZATION_TYPE: visualization_type,
+        GROUPS: data[visualization_property[OPTION_COLS][0]],
+    }
+
+    if visualization_type == GROUPBY and OPTIONS in visualization_property:
+        style_dict = visualization_property[OPTIONS][STYLES]
+        plotly_style_list = [
+            {"target": col_name, "value": style}
+            for col_name, style in style_dict.items()
+        ]
+        property_dict[STYLES] = plotly_style_list
+    elif visualization_type == AGGREGATE:
+        # attribute_name can be x, y or something like marker.size
+        # func can be avg, min, sum, count, stddev etc.
+        attribute_dict = visualization_property[OPTIONS][AGGREGATIONS]
+        plotly_aggregations_list = [
+            {"target": attribute_name, "func": func}
+            for attribute_name, func in attribute_dict.items()
+        ]
+        property_dict[AGGREGATIONS] = plotly_aggregations_list
+
+    plot_options_data_dict[TRANSFORMS].append(property_dict)
+    return plot_options_data_dict
+
+
+VISUALIZATION_OPTIONS = {
+    HOVER_DATA: get_hover_data_in_plotly_form,
+    GROUPBY: get_groupby_or_aggregate_in_plotly_form,
+    AGGREGATE: get_groupby_or_aggregate_in_plotly_form,
+}
 
 
 class PlotlyPlot(Graphic):
     def make_dict_for_html_plot(
-        self, data, axis_to_data_columns, plot_options, hover_column_names=None
+        self, data, axis_to_data_columns, plot_options, visualization_options=None
     ):
 
         for index, axis_to_data_dict in enumerate(axis_to_data_columns):
@@ -43,15 +108,13 @@ class PlotlyPlot(Graphic):
                         plot_options[LAYOUT][AXIS.format(axis)] = {TITLE: column_name}
                     else:
                         plot_options[LAYOUT] = {AXIS.format(axis): {TITLE: column_name}}
+            plot_options[DATA][index][TRANSFORMS] = []
 
-            if hover_column_names is None:
-                continue
-            plot_options[DATA][index][CUSTOM_DATA] = get_hover_data_in_plotly_form(
-                data, hover_column_names
-            )
-            plot_options[DATA][index][HOVER_TEMPLATE] = render_template(
-                HOVER_TEMPLATE_HTML, hover_column_names=hover_column_names
-            )
+            if visualization_options is not None:
+                for extra_visualization_feature in visualization_options:
+                    plot_options[DATA][index] = VISUALIZATION_OPTIONS[
+                        extra_visualization_feature[VISUALIZATION_TYPE]
+                    ](data, extra_visualization_feature, plot_options[DATA][index])
 
         graph_json = json.dumps(plot_options, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json

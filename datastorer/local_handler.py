@@ -27,9 +27,7 @@ class LocalCSVHandler(DataHandler):
         df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
         for column_name, entry_values_to_be_shown_in_plot in filters.items():
             df = df[df[column_name].isin(entry_values_to_be_shown_in_plot)]
-        # return df[cols].to_dict("list")
-
-        return df[cols]
+        return df[cols].to_dict("list")
 
     def get_column_unique_entries(self, cols: list) -> dict:
         df = pd.read_csv(self.file_path)  # error checking will be good
