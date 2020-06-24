@@ -6,12 +6,7 @@ Save a user's preferences for graph configuration. Store the last form as a cook
 
 Shareable graph configs- either a URL-encoded version for a GET that could be shared, or store a config server side that can be selected (as described above)
 
-Check of plotly python fig.
-Implement database
 # save state of the website.
-
-#data agg
-plot multiple scatters etc different colors using filter
 
 Low:
 Simplify the config file
