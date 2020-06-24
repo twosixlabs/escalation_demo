@@ -133,7 +133,11 @@ def assemble_info_for_plot(plot_specification, plot_data_handler, filters, axis_
         visualization_options,
     )
 
-    return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE], selector_settings_for_axis
+    return (
+        plot_directions_dict,
+        graphic_data[GRAPH_HTML_TEMPLATE],
+        selector_settings_for_axis,
+    )
 
 
 def finds_xy_data_columns_based_on_dashboard_form_options(

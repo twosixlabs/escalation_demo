@@ -21,6 +21,7 @@ OPTIONS = "options"
 STYLES = "styles"
 AGGREGATIONS = "aggregations"
 
+
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     """
 
@@ -52,13 +53,13 @@ def get_groupby_in_plotly_form(data, group_by, plot_options_data_dict):
     :param plot_options_data_dict:
     :return:
     """
-    group_by_dict = {
-        VISUALIZATION_TYPE: GROUPBY,
-        GROUPS: data[group_by[DATA][0]]
-    }
+    group_by_dict = {VISUALIZATION_TYPE: GROUPBY, GROUPS: data[group_by[DATA][0]]}
     if OPTIONS in group_by:
         style_dict = group_by[OPTIONS][STYLES]
-        plotly_style_list=[{'target': col_name, 'value': style} for col_name, style in style_dict.items()]
+        plotly_style_list = [
+            {"target": col_name, "value": style}
+            for col_name, style in style_dict.items()
+        ]
         group_by_dict[STYLES] = plotly_style_list
 
     plot_options_data_dict[TRANSFORMS].append(group_by_dict)
@@ -73,15 +74,15 @@ def get_aggregate_in_plotly_form(data, aggregate, plot_options_data_dict):
     :param plot_options_data_dict:
     :return:
     """
-    aggregate_dict = {
-        VISUALIZATION_TYPE: AGGREGATE,
-        GROUPS: data[aggregate[DATA][0]]
-    }
+    aggregate_dict = {VISUALIZATION_TYPE: AGGREGATE, GROUPS: data[aggregate[DATA][0]]}
 
     # attribute_name can be x, y or something like marker.size
     # func can be avg, min, sum, count, stddev etc.
     attribute_dict = aggregate[OPTIONS][AGGREGATIONS]
-    plotly_aggregations_list = [{'target': attribute_name, 'func': func} for attribute_name, func in attribute_dict.items()]
+    plotly_aggregations_list = [
+        {"target": attribute_name, "func": func}
+        for attribute_name, func in attribute_dict.items()
+    ]
     aggregate_dict[AGGREGATIONS] = plotly_aggregations_list
 
     plot_options_data_dict[TRANSFORMS].append(aggregate_dict)
