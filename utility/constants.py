@@ -13,9 +13,15 @@ BUTTON_LABEL = "button_label"
 LINK = "link"
 GRAPHIC_TITLE = "title"
 GRAPHIC_DESC = "brief_desc"
-DATA_SOURCE = (
-    "data_path"  # path to the file for LocalHandler or table name for SqlHandler
-)
+
+# path to the file folder for LocalHandler or table name for SqlHandler
+DATA_SOURCES = "data_sources"
+DATA_SOURCE_TYPE = "data_source_type"
+LEFT_KEY = "left_key"
+RIGHT_KEY = "right_key"
+DATA_FILE_PATH = "filepath"
+
+
 DATA = "data"
 DATA_FILTERS = "data_filters"
 PLOT_MANAGER = "plot_manager"

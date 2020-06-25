@@ -7,6 +7,10 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
+    def build_combined_data_table(self):
+        pass
+
+    @abstractmethod
     def get_column_names(self) -> list:
         """
         :return: a list of the column names in the data source referenced by the handler

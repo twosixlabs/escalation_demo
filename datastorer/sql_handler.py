@@ -11,6 +11,10 @@ class SqlHandler(DataHandler):
         self.table_class = getattr(module, table_name)
         self.table = self.table_class.__table__
 
+    # todo
+    def build_combined_data_table(self):
+        pass
+
     @staticmethod
     def object_as_dict(obj):
         return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
@@ -29,6 +33,8 @@ class SqlHandler(DataHandler):
         """
         # query = self.table_class.query
         query = db_session.query(*[getattr(self.table_class, col) for col in columns])
+        raise NotImplementedError
+        # todo: filter by inequality
         # Build the list of filters to apply to the data
         for filter_column, filter_value in filters.items():
             # filter is a single item, evaluate with sql's equality statement

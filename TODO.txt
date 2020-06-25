@@ -24,3 +24,4 @@ Assuming csv in local handler
 Local handler currently gets most recent data set
 Cannot select along nan values in the db or file
 
+Enforce no spaces or weird characters in column names

@@ -62,7 +62,7 @@ def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list
 
     for plot_index, plot_specification in single_page_config_dict.items():
         plot_data_handler = current_app.config.data_handler(
-            plot_specification[DATA_SOURCE]
+            plot_specification[DATA_SOURCES]
         )
 
         (plot_directions_dict, graph_html_template) = assemble_info_for_plot(
