@@ -208,8 +208,8 @@ def create_data_subselect_info(
 ) -> list:
     """
     puts selctor data in form to be read by html file
-    :param filters:
-    :param axis_to_data_columns:
+    :param filters: Contains information on which selection on the webpage have
+    :param axis_to_data_columns: Contains infomation which axis are currently showing up on the plot {'x':'bon'}
     :param list_of_selection_options_by_plot:
     :param new_data:
     :return:
@@ -238,7 +238,8 @@ def create_data_subselect_info(
             if column in filters:
                 active_selection_options = filters[column][INEQUALITIES]
             else:
-                # reasonable_default
+                # reasonable active selections in the numerical filters when you load up the page.
+                # The 0 and 1 are HTML dropdown ids. Corresponds to range(2) in numerical_filters.html
                 active_selection_options = {
                     "0": {OPERATION: "<=", VALUE: None},
                     "1": {OPERATION: ">=", VALUE: None},
