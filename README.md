@@ -29,7 +29,14 @@ As of the current version:
 
 - `pre-commit install` sets up the pre-commit hooks to auto-format the code
 
-###How to add a new plot
-* Needs to inherit from grahpic_class.py
+### How to add a new plot
+* Needs to inherit from graphic_class.py
 * Add to available_graphics.py
-* Add a html file with javascript code required to plot 
+* Add a html file with javascript code required to plot
+
+### How to add a new option feature
+* add it to available_selectors.py
+* create a html document input elements need name "\<id>|\<type>|<column_name>"
+* add to create_data_subselect_info and reformat_filter_form_dict in controller.py
+* build in functionality graphics_class or data_storer class
+ 

@@ -39,6 +39,10 @@ AXIS = "axis"
 SELECTOR = "select"
 SELECTOR_TYPE = "type"
 FILTER = "filter"
+NUMERICAL_FILTER = "numerical_filter"
+INEQUALITIES = "inequalities"
+OPERATION = "operation"
+VALUE = "value"
 
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROW"

@@ -1,0 +1,17 @@
+{% set col=selector['column_name'] %}
+
+<h4>{{ col }}</h4>
+    {% for n in range(2) %}
+        <div class="input-group">
+        <div class="input-group-prepend">
+    <select class="custom-select custom-select-sm" name={{ index~ "|" ~ selector["type"] ~ "|" ~ n ~ "|operation|"  ~ col }} form="the_form">
+      {% for col_name in selector['entries'] %}
+        <option value={{ col_name }}
+                  {% if col_name == selector['active_selector'][n|string]['operation'] %}selected> {% else %}> {% endif %} {{ col_name }}</option>
+      {% endfor %}
+    </select>
+   </div>
+    <input class="form-control form-control-sm" name={{ index~ "|" ~ selector["type"] ~ "|" ~ n ~ "|value|"  ~ col }}  type="number" value={{ selector['active_selector'][n|string]['value'] }} placeholder="number" form="the_form">
+        </div>
+        <!--{% if not loop.last %}<div class="row"><div class="col"><p class="text-center">and </p></div></div>{% endif %}-->
+{% endfor %}

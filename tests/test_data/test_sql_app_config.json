@@ -19,7 +19,8 @@
                 "Biscoe": {"marker":{"color": "blue"}},"Dream": {"marker":{"color": "red"}}}
           }}],
           "selectable_data_list": [{"type": "select","columns": "sex","options":{"multiple": false}},
-            {"type": "select","columns": "island","options":{"multiple": true}}],
+            {"type": "select","columns": "island","options":{"multiple": true}},
+            {"type": "numerical_filter","columns": "culmen_length_mm"}],
           "plot_options": {
             "data": [
               {
