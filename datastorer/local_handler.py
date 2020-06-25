@@ -3,6 +3,16 @@ import pandas as pd
 import glob
 import os
 
+from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
+from utility.constants import (
+    FILTER,
+    VALUE,
+    NUMERICAL_FILTER,
+    SELECTOR_TYPE,
+    INEQUALITIES,
+    OPERATION,
+)
+
 
 class LocalCSVHandler(DataHandler):
     def __init__(self, file_folder=None):
@@ -25,8 +35,21 @@ class LocalCSVHandler(DataHandler):
             filters = {}
         all_to_include_cols = cols + list(filters)
         df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
-        for column_name, entry_values_to_be_shown_in_plot in filters.items():
-            df = df[df[column_name].isin(entry_values_to_be_shown_in_plot)]
+        for column_name, filter_dict in filters.items():
+            if filter_dict[SELECTOR_TYPE] == FILTER:
+                entry_values_to_be_shown_in_plot = filter_dict[VALUE]
+                df = df[df[column_name].isin(entry_values_to_be_shown_in_plot)]
+            elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
+                for inequality_dict in filter_dict[INEQUALITIES].values():
+                    comparision_value = inequality_dict[VALUE]
+                    if comparision_value is None:
+                        continue
+                    df = df[
+                        OPERATIONS_FOR_NUMERICAL_FILTERS[inequality_dict[OPERATION]](
+                            df[column_name], comparision_value
+                        )
+                    ]
+
         return df[cols].to_dict("list")
 
     def get_column_unique_entries(self, cols: list) -> dict:

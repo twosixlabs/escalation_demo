@@ -5,7 +5,10 @@ from werkzeug.datastructures import ImmutableMultiDict
 
 from datastorer.data_handler import DataHandler
 from utility.available_graphics import AVAILABLE_GRAPHICS
-from utility.available_selectors import AVAILABLE_SELECTORS
+from utility.available_selectors import (
+    AVAILABLE_SELECTORS,
+    OPERATIONS_FOR_NUMERICAL_FILTERS,
+)
 from utility.constants import *
 
 
@@ -229,6 +232,18 @@ def create_data_subselect_info(
             columns_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
             if column in axis_to_data_columns:
                 active_selection_options = [axis_to_data_columns[column]]
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
+            selection_option_dict_for_plot[SELECT_OPTION] = {}
+            columns_names = list(OPERATIONS_FOR_NUMERICAL_FILTERS.keys())
+            if column in filters:
+                active_selection_options = filters[column][INEQUALITIES]
+            else:
+                # reasonable_default
+                active_selection_options = {
+                    "0": {OPERATION: "<=", VALUE: None},
+                    "1": {OPERATION: ">=", VALUE: None},
+                }
+
         select_info.append(
             {
                 JINJA_SELECT_HTML_FILE: select_html_file,
@@ -254,17 +269,38 @@ def reformat_filter_form_dict(form_dict: ImmutableMultiDict) -> [dict, dict]:
     axis_dict = defaultdict(dict)
     # lists() is similar to items() for a dict. It allows value_chosen_in_selector to be a list
     for selector_html_id, value_chosen_in_selector in form_dict.lists():
-        # expect id_type_columnname
-        [plot_index, selector_type, column_name] = selector_html_id.split("_", 2)
+        # expect id|type|column_name
+        [plot_index, selector_type, column_name] = selector_html_id.split("|", 2)
         plot_index = int(plot_index)
         if selector_type == FILTER:
             if SHOW_ALL_ROW in value_chosen_in_selector:
                 continue
 
-            filter_dict[plot_index][column_name] = value_chosen_in_selector
+            filter_dict[plot_index][column_name] = {
+                SELECTOR_TYPE: FILTER,
+                VALUE: value_chosen_in_selector,
+            }
         elif selector_type == AXIS:
             # Not allowing selector for axis be multiple
             # So value_chosen_in_selector are lists of length one
             axis_dict[plot_index][column_name] = value_chosen_in_selector[0]
+        elif selector_type == NUMERICAL_FILTER:
+            # expect these to be in format: index_of_input|type|column_name
+            # where index_of_input is 0 or 1 and type is operation (e.g. ">") or value ("5")
+            [index_of_input, type, column_name] = column_name.split("|", 2)
+            numerical_filter_dict = filter_dict[plot_index].get(
+                column_name,
+                {SELECTOR_TYPE: NUMERICAL_FILTER, INEQUALITIES: defaultdict(dict)},
+            )
+            # Not allowing selector for axis be multiple
+            # So value_chosen_in_selector are lists of length one
+            selector_value = value_chosen_in_selector[0]
+            if type == VALUE:
+                if selector_value == "":
+                    selector_value = None
+                else:
+                    selector_value = float(selector_value)
+            numerical_filter_dict[INEQUALITIES][index_of_input][type] = selector_value
+            filter_dict[plot_index][column_name] = numerical_filter_dict
 
     return filter_dict, axis_dict
