@@ -16,6 +16,11 @@ from utility.constants import (
     ENTRIES,
     SELECT_OPTION,
     ACTIVE_SELECTORS,
+    INEQUALITIES,
+    SELECTOR_TYPE,
+    OPERATION,
+    VALUE,
+    NUMERICAL_FILTER,
 )
 
 
@@ -85,23 +90,34 @@ def test_create_data_subselect_info(json_file):
 def test_reformat_filter_form_dict():
     test_dict = ImmutableMultiDict(
         [
-            ("0_filter_sex", "FEMALE"),
-            ("0_filter_isl_and", "Torgersen"),
-            ("1_filter_sex", "FEMALE"),
-            ("1_filter_sex", "MALE"),
-            ("1_filter_island", "SHOW_ALL_ROW"),
-            ("1_axis_x", "flipper_length_mm"),
+            ("0|filter|sex", "FEMALE"),
+            ("0|filter|isl|and", "Torgersen"),
+            ("1|filter|sex", "FEMALE"),
+            ("1|filter|sex", "MALE"),
+            ("1|filter|island", "SHOW_ALL_ROW"),
+            ("1|axis|x", "flipper_length_mm"),
+            ("0|numerical_filter|0|operation|culmen_length_mm", ">="),
+            ("0|numerical_filter|0|value|culmen_length_mm", "5"),
+            ("0|numerical_filter|1|operation|culmen_length_mm", "<"),
+            ("0|numerical_filter|1|value|culmen_length_mm", ""),
         ]
     )
     [filter_dict, axis_dict] = reformat_filter_form_dict(test_dict)
-    assert "FEMALE" in filter_dict[0]["sex"]
-    assert "Torgersen" in filter_dict[0]["isl_and"]
-    assert "FEMALE" in filter_dict[1]["sex"]
-    assert "MALE" in filter_dict[1]["sex"]
+
+    assert "FEMALE" in filter_dict[0]["sex"]["value"]
+    assert "Torgersen" in filter_dict[0]["isl|and"]["value"]
+    assert "FEMALE" in filter_dict[1]["sex"]["value"]
+    assert "MALE" in filter_dict[1]["sex"]["value"]
 
     with pytest.raises(KeyError):
         filter_dict[1]["island"]
     assert "flipper_length_mm" == axis_dict[1]["x"]
+    assert NUMERICAL_FILTER == filter_dict[0]["culmen_length_mm"][SELECTOR_TYPE]
+    dict_output = filter_dict[0]["culmen_length_mm"][INEQUALITIES]
+    assert dict_output["0"][OPERATION] == ">="
+    assert dict_output["0"][VALUE] == 5
+    assert dict_output["1"][OPERATION] == "<"
+    assert dict_output["1"][VALUE] is None
 
 
 def test_get_unique_set_of_columns_needed():

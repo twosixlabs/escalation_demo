@@ -1,6 +1,14 @@
 import pytest
 
 from datastorer.local_handler import LocalCSVHandler
+from utility.constants import (
+    SELECTOR_TYPE,
+    FILTER,
+    NUMERICAL_FILTER,
+    OPERATION,
+    VALUE,
+    INEQUALITIES,
+)
 
 
 @pytest.fixture()
@@ -35,9 +43,23 @@ def test_get_column_data(make_local_handler):
     assert test_dict["body_mass_g"] == [3750, 3800, 3250]
     assert test_dict["flipper_length_mm"] == [181, 186, 195]
 
-    test_dict = make_local_handler.get_column_data(data_dict, {"sex": ["MALE"]})
+    test_dict = make_local_handler.get_column_data(
+        data_dict, {"sex": {SELECTOR_TYPE: FILTER, "value": ["MALE"]}}
+    )
     assert test_dict["body_mass_g"] == [3750]
     assert test_dict["flipper_length_mm"] == [181]
+
+    test_dict = make_local_handler.get_column_data(
+        data_dict,
+        {
+            "body_mass_g": {
+                SELECTOR_TYPE: NUMERICAL_FILTER,
+                INEQUALITIES: {"0": {OPERATION: ">", VALUE: 3250}},
+            }
+        },
+    )
+    assert test_dict["body_mass_g"] == [3750, 3800]
+    assert test_dict["flipper_length_mm"] == [181, 186]
 
 
 def test_get_column_unique_entries(make_local_handler):
