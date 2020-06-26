@@ -101,7 +101,7 @@ class PlotlyPlot(Graphic):
 
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
-            index = int("".join(filter(str.isdigit, point_index)))
+            index = int(point_index.split("_")[-1])
             for axis, column_name in axis_to_data_dict.items():
                 plot_options[DATA][index][axis] = data[
                     column_name
