@@ -1,5 +1,3 @@
-import json
-
 import pytest
 from werkzeug.datastructures import ImmutableMultiDict
 
@@ -8,7 +6,6 @@ from controller import (
     create_data_subselect_info,
     get_unique_set_of_columns_needed,
 )
-from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
     COLUMN_NAME,
     JINJA_SELECT_HTML_FILE,
@@ -24,14 +21,6 @@ from utility.constants import (
 )
 
 
-@pytest.fixture()
-def json_file():
-    with open("tests/test_data/test_app_config.json", "r") as config_file:
-        config_dict = json.load(config_file)
-
-    return config_dict
-
-
 def test_get_graphic():
     assert False
 
@@ -44,8 +33,8 @@ def test_extract_buttons(json_file):
     assert button1 in buttons
 
 
-def test_create_data_subselect_info(json_file):
-    new_data = LocalCSVHandler("tests/test_data/penguins_size/")
+def test_create_data_subselect_info(make_local_handler, json_file):
+    new_data = make_local_handler
     select_dict = [
         {"type": "select", "column": "sex", "options": {"multiple": False}},
         {"type": "select", "column": "island", "options": {"multiple": True}},

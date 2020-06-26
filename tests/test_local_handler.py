@@ -8,20 +8,25 @@ from utility.constants import (
     OPERATION,
     VALUE,
     INEQUALITIES,
+    DATA_SOURCE_TYPE,
+    DATA_FILE_PATH,
 )
 
 
-@pytest.fixture()
-def make_local_handler():
-    got_data = LocalCSVHandler("tests/test_data/penguins_size_small")
-    return got_data
-
-
 def test_local_handler_init(make_local_handler):
+
+    data_sources = make_local_handler.data_sources
+    assert len(data_sources) == 1
+    first_data_source = data_sources[0]
     assert (
-        make_local_handler.file_path
+        first_data_source[DATA_FILE_PATH]
         == "tests/test_data/penguins_size_small/penguins_size_small.csv"
     )
+    # todo: more complicated init with key joining
+
+
+def test_build_combined_data_table(make_local_handler):
+    assert False
 
 
 def test_get_column_names(make_local_handler):
@@ -36,7 +41,6 @@ def test_get_column_names(make_local_handler):
     assert "penguins_size" not in cols_names
 
 
-# def test_get_column_data(make_local_handler):
 def test_get_column_data(make_local_handler):
     data_dict = ["body_mass_g", "flipper_length_mm"]
     test_dict = make_local_handler.get_column_data(data_dict)
