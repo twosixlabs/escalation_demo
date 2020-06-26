@@ -101,12 +101,12 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
     visualization_options = plot_specification.get(VISUALIZATION_OPTIONS, [])
     data_filters = []
     if DATA_FILTERS in plot_specification:
-        data_filters=plot_specification[DATA_FILTERS]
+        data_filters = plot_specification[DATA_FILTERS]
     plot_data = plot_data_handler.get_column_data(
         get_unique_set_of_columns_needed(
             plot_specification[DATA], visualization_options
         ),
-        data_filters
+        data_filters,
     )
 
     # Checks to see if it is a valid graphic
@@ -211,9 +211,9 @@ def create_data_subselect_info(
             selection_option_dict_for_plot[SELECT_OPTION] = {}
             column_names = list(OPERATIONS_FOR_NUMERICAL_FILTERS.keys())
             for loc in [UPPER, LOWER]:
-                active_selection_options[loc] = single_graphic_addendum_dict[selection_index_str][
-                    INEQUALTIY_LOC.format(loc)
-                ]
+                active_selection_options[loc] = single_graphic_addendum_dict[
+                    selection_index_str
+                ][INEQUALTIY_LOC.format(loc)]
 
         select_info.append(
             {

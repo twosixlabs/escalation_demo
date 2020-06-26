@@ -101,7 +101,7 @@ class PlotlyPlot(Graphic):
 
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
-            index = int(''.join(filter(str.isdigit, point_index)))
+            index = int("".join(filter(str.isdigit, point_index)))
             for axis, column_name in axis_to_data_dict.items():
                 plot_options[DATA][index][axis] = data[
                     column_name
@@ -110,9 +110,7 @@ class PlotlyPlot(Graphic):
                 if index == 0:
                     layout_dict = plot_options.get(LAYOUT, {})
                     if PLOT_AXIS.format(axis) not in layout_dict:
-                        layout_dict[PLOT_AXIS.format(axis)] = {
-                            TITLE: column_name
-                        }
+                        layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
                     plot_options[LAYOUT] = layout_dict
 
             plot_options[DATA][index][TRANSFORMS] = []
