@@ -19,7 +19,7 @@ def test_local_handler_init(local_handler_fixture_small):
     first_data_source = data_sources[0]
     assert (
         first_data_source[DATA_LOCATION]
-        == "tests/test_data/penguins_size_small/penguins_size_small.csv"
+        == "tests/test_data/penguin_size_small/penguin_size_small.csv"
     )
     # todo: more complicated init with key joining
 
@@ -33,7 +33,7 @@ def test_get_column_names(local_handler_fixture_small):
     assert "culmen_length_mm" in cols_names
     assert "culmen_depth_mm" in cols_names
     assert "body_mass_g" in cols_names
-    assert "penguins_size" not in cols_names
+    assert "penguin_size" not in cols_names
 
 
 def test_get_column_data(local_handler_fixture_small):
@@ -83,11 +83,11 @@ def test_get_column_unique_entries(local_handler_fixture_small):
 
 # define 2 joined data tables as the data_source
 TWO_DATA_SOURCES_CONFIG = [
-    {"data_source_type": "tests/test_data/penguins_size/"},
+    {"data_source_type": "tests/test_data/penguin_size/"},
     {
-        "data_source_type": "tests/test_data/mean_penguin_stats/",
-        "left_key": ["study_name", "sex", "species"],
-        "right_key": ["study_name", "sex", "species"],
+        "data_source_type": "tests/test_data/mean_penguin_stat/",
+        "left_keys": ["study_name", "sex", "species"],
+        "right_keys": ["study_name", "sex", "species"],
     },
 ]
 
@@ -97,11 +97,11 @@ def test_init():
     # test that init gets the correct file for each data source folder
     assert (
         handler.data_sources[0][DATA_LOCATION]
-        == "tests/test_data/penguins_size/penguins_size.csv"
+        == "tests/test_data/penguin_size/penguin_size.csv"
     )
     assert (
         handler.data_sources[1][DATA_LOCATION]
-        == "tests/test_data/mean_penguin_stats/mean_penguin_stats.csv"
+        == "tests/test_data/mean_penguin_stat/mean_penguin_stat.csv"
     )
 
 

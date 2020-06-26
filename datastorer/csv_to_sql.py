@@ -189,8 +189,8 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguins_size/penguins_size.csv
-    # python datastorer/csv_to_sql.py mean_penguin_stats /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stats/mean_penguin_stats.csv
+    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
+    # python datastorer/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
     # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
 

@@ -198,7 +198,7 @@
               "data_source_type": "penguin_size"
             },
             {
-              "data_source_type": "mean_penguin_stats",
+              "data_source_type": "mean_penguin_stat",
               "left_keys": [
                 "study_name",
                 "sex",
@@ -215,23 +215,23 @@
           "brief_desc": "Filter individual penguin size plot based on isotope statistics for groups",
           "data": [
             {
-              "x": "body_mass_g",
-              "y": "flipper_length_mm"
+              "x": "penguin_size_body_mass_g",
+              "y": "penguin_size_flipper_length_mm"
             }
           ],
           "visualization_options": [
             {
               "type": "hover_data",
               "columns": [
-                "sex",
-                "delta_13_c"
+                "penguin_size_sex",
+                "mean_penguin_stat_delta_13_c"
               ]
             }
           ],
           "selectable_data_list": [
             {
               "type": "numerical_filter",
-              "columns": "delta_13_c"
+              "columns": "mean_penguin_stat_delta_13_c"
             }
           ],
           "plot_options": {

@@ -13,14 +13,14 @@ from utility.constants import DATA_SOURCE_TYPE
 @pytest.fixture()
 def local_handler_fixture_small():
     got_data = LocalCSVHandler(
-        [{DATA_SOURCE_TYPE: "tests/test_data/penguins_size_small"}]
+        [{DATA_SOURCE_TYPE: "tests/test_data/penguin_size_small"}]
     )
     return got_data
 
 
 @pytest.fixture()
 def local_handler_fixture():
-    got_data = LocalCSVHandler([{DATA_SOURCE_TYPE: "tests/test_data/penguins_size"}])
+    got_data = LocalCSVHandler([{DATA_SOURCE_TYPE: "tests/test_data/penguin_size"}])
     return got_data
 
 

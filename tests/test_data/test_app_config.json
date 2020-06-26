@@ -10,7 +10,7 @@
           "plot_manager": "plotly",
           "data_sources": [
             {
-              "data_source_type": "tests/test_data/penguins_size/"
+              "data_source_type": "tests/test_data/penguin_size/"
             }
           ],
           "title": "Do massive penguins have long flippers?",
@@ -90,7 +90,7 @@
           "plot_manager": "plotly",
           "data_sources": [
             {
-              "data_source_type": "tests/test_data/penguins_size/"
+              "data_source_type": "tests/test_data/penguin_size/"
             }
           ],
           "title": "How big are penguins?",
@@ -123,7 +123,7 @@
           "plot_manager": "plotly",
           "data_sources": [
             {
-              "data_source_type": "tests/test_data/penguins_size/"
+              "data_source_type": "tests/test_data/penguin_size/"
             }
           ],
           "title": "Do long nosed penguins have long flippers by sex (avg)?",
@@ -187,7 +187,7 @@
           "plot_manager": "plotly",
           "data_sources": [
             {
-              "data_source_type": "tests/test_data/penguins_size/"
+              "data_source_type": "tests/test_data/penguin_size/"
             },
             {
               "data_source_type": "tests/test_data/mean_penguin_stats/",
