@@ -187,12 +187,20 @@
           "plot_manager": "plotly",
           "data_sources": [
             {
-              "data_source_type": "tests/test_data/mean_penguin_stats/"
+              "data_source_type": "tests/test_data/penguins_size/"
             },
             {
-              "data_source_type": "tests/test_data/penguins_size/",
-              "left_key": ["study_name", "sex", "species"],
-              "right_key": ["study_name", "sex", "species"]
+              "data_source_type": "tests/test_data/mean_penguin_stats/",
+              "left_keys": [
+                "study_name",
+                "sex",
+                "species"
+              ],
+              "right_keys": [
+                "study_name",
+                "sex",
+                "species"
+              ]
             }
           ],
           "title": "Does penguin size have anything to do with isotopes",

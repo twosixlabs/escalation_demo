@@ -1,4 +1,4 @@
-import pytest
+import pandas as pd
 
 from datastorer.local_handler import LocalCSVHandler
 from utility.constants import (
@@ -9,24 +9,19 @@ from utility.constants import (
     VALUE,
     INEQUALITIES,
     DATA_SOURCE_TYPE,
-    DATA_FILE_PATH,
+    DATA_LOCATION,
 )
 
 
 def test_local_handler_init(local_handler_fixture_small):
-
     data_sources = local_handler_fixture_small.data_sources
     assert len(data_sources) == 1
     first_data_source = data_sources[0]
     assert (
-        first_data_source[DATA_FILE_PATH]
+        first_data_source[DATA_LOCATION]
         == "tests/test_data/penguins_size_small/penguins_size_small.csv"
     )
     # todo: more complicated init with key joining
-
-
-def test_build_combined_data_table(local_handler_fixture_small):
-    assert False
 
 
 def test_get_column_names(local_handler_fixture_small):
@@ -84,3 +79,38 @@ def test_get_column_unique_entries(local_handler_fixture_small):
     assert "MALE" in unique_dict["sex"]
     assert "FEMALE" in unique_dict["sex"]
     assert "Torgersen" in unique_dict["island"]
+
+
+# define 2 joined data tables as the data_source
+TWO_DATA_SOURCES_CONFIG = [
+    {"data_source_type": "tests/test_data/penguins_size/"},
+    {
+        "data_source_type": "tests/test_data/mean_penguin_stats/",
+        "left_key": ["study_name", "sex", "species"],
+        "right_key": ["study_name", "sex", "species"],
+    },
+]
+
+
+def test_init():
+    handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
+    # test that init gets the correct file for each data source folder
+    assert (
+        handler.data_sources[0][DATA_LOCATION]
+        == "tests/test_data/penguins_size/penguins_size.csv"
+    )
+    assert (
+        handler.data_sources[1][DATA_LOCATION]
+        == "tests/test_data/mean_penguin_stats/mean_penguin_stats.csv"
+    )
+
+
+def test_build_combined_data_table():
+    handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
+    mean_penguin_stats = pd.read_csv(handler.data_sources[0][DATA_LOCATION])
+    num_rows_in_leftmost_table = mean_penguin_stats.shape[0]
+    num_rows_in_combined_table = handler.combined_data_table.shape[0]
+    # this is a left join, so assuming only one matching key in right table per key in left,
+    # the number of rows of final table should equal the left/first table
+    assert num_rows_in_leftmost_table == num_rows_in_combined_table
+    # todo: one to many join, where we expect the number of rows to change
