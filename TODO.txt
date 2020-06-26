@@ -25,3 +25,4 @@ Local handler currently gets most recent data set
 Cannot select along nan values in the db or file
 
 Enforce no spaces or weird characters in column names
+Validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?

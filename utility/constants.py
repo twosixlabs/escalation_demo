@@ -17,9 +17,9 @@ GRAPHIC_DESC = "brief_desc"
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_SOURCES = "data_sources"
 DATA_SOURCE_TYPE = "data_source_type"
-LEFT_KEY = "left_key"
-RIGHT_KEY = "right_key"
-DATA_FILE_PATH = "filepath"
+LEFT_KEYS = "left_keys"
+RIGHT_KEYS = "right_keys"
+DATA_LOCATION = "filepath"
 
 
 DATA = "data"

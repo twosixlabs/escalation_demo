@@ -14,9 +14,9 @@ from utility.constants import (
     SELECTED,
     LIST_OF_VALUES,
     DATA_SOURCE_TYPE,
-    DATA_FILE_PATH,
-    LEFT_KEY,
-    RIGHT_KEY,
+    DATA_LOCATION,
+    LEFT_KEYS,
+    RIGHT_KEYS,
 )
 
 
@@ -49,7 +49,7 @@ class LocalCSVHandler(DataHandler):
             suffix = "{}*.csv" if data_source_name[-1] == "/" else "{}/*.csv"
             list_of_files = glob.glob(suffix.format(data_source_name))
             latest_filepath = max(list_of_files, key=os.path.getctime)
-            data_source.update({DATA_FILE_PATH: latest_filepath})
+            data_source.update({DATA_LOCATION: latest_filepath})
         self.combined_data_table = self.build_combined_data_table()
 
     def build_combined_data_table(self):
@@ -62,7 +62,7 @@ class LocalCSVHandler(DataHandler):
         combined_data_table = None
         # todo: join on multiple keys
         for data_source in self.data_sources:
-            data_source_df = pd.read_csv(data_source[DATA_FILE_PATH])
+            data_source_df = pd.read_csv(data_source[DATA_LOCATION])
             # the first data source defines the left most of any joins
             if combined_data_table is None:
                 combined_data_table = data_source_df
@@ -71,8 +71,8 @@ class LocalCSVHandler(DataHandler):
                 combined_data_table = combined_data_table.merge(
                     data_source_df,
                     how="left",
-                    left_on=data_source[LEFT_KEY],
-                    right_on=data_source[RIGHT_KEY],
+                    left_on=data_source[LEFT_KEYS],
+                    right_on=data_source[RIGHT_KEYS],
                     # add the data_source/table name as a suffix to new matching columns
                     suffixes=("", f"_{data_source[DATA_SOURCE_TYPE]}"),
                 )
