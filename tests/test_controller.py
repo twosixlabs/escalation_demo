@@ -25,16 +25,15 @@ def test_get_graphic():
     assert False
 
 
-def test_extract_buttons(json_file):
-    aval_pg = json_file["available_pages"]
+def test_extract_buttons(json_config_fixture):
+    aval_pg = json_config_fixture["available_pages"]
     buttons = create_link_buttons_for_available_pages(aval_pg)
 
     button1 = {"button_label": "Penguins", "link": "penguins"}
     assert button1 in buttons
 
 
-def test_create_data_subselect_info(make_local_handler, json_file):
-    new_data = make_local_handler
+def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     select_dict = [
         {"type": "select", "column": "sex", "options": {"multiple": False}},
         {"type": "select", "column": "island", "options": {"multiple": True}},
@@ -53,7 +52,7 @@ def test_create_data_subselect_info(make_local_handler, json_file):
         "selection_2": {"type": "axis", "column": "x", "selected": "body_mass_g"},
     }
     select_info = create_data_subselect_info(
-        select_dict, new_data, single_addendum_dict
+        select_dict, local_handler_fixture, single_addendum_dict
     )
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
     assert select_info[1][COLUMN_NAME] == "island"
