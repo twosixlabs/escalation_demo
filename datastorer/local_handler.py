@@ -9,9 +9,24 @@ from utility.constants import (
     VALUE,
     NUMERICAL_FILTER,
     SELECTOR_TYPE,
-    INEQUALITIES,
     OPERATION,
+    OPTION_COL,
+    SELECTED,
+    LIST_OF_VALUES,
 )
+
+
+def filter_operation(data_column, filter_dict):
+    if filter_dict[SELECTOR_TYPE] == FILTER:
+        entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
+        if filter_dict[LIST_OF_VALUES]:
+            return data_column.isin(entry_values_to_be_shown_in_plot)
+        else:
+            return data_column == entry_values_to_be_shown_in_plot
+    elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
+        return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
+            data_column, filter_dict[VALUE]
+        )
 
 
 class LocalCSVHandler(DataHandler):
@@ -24,31 +39,20 @@ class LocalCSVHandler(DataHandler):
     def get_column_names(self):
         return pd.read_csv(self.file_path, nrows=1).columns.tolist()
 
-    def get_column_data(self, cols: list, filters: dict = None) -> dict:
-        # error checking will be good
+    def get_column_data(self, cols: list, filters: list = None) -> dict:
+        # error checking would be good
         """
         :param cols:
         :param filters:
         :return:
         """
         if filters is None:
-            filters = {}
-        all_to_include_cols = cols + list(filters)
+            filters = []
+        cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
+        all_to_include_cols = cols + list(cols_for_filters)
         df = pd.read_csv(self.file_path, usecols=all_to_include_cols)
-        for column_name, filter_dict in filters.items():
-            if filter_dict[SELECTOR_TYPE] == FILTER:
-                entry_values_to_be_shown_in_plot = filter_dict[VALUE]
-                df = df[df[column_name].isin(entry_values_to_be_shown_in_plot)]
-            elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
-                for inequality_dict in filter_dict[INEQUALITIES].values():
-                    comparision_value = inequality_dict[VALUE]
-                    if comparision_value is None:
-                        continue
-                    df = df[
-                        OPERATIONS_FOR_NUMERICAL_FILTERS[inequality_dict[OPERATION]](
-                            df[column_name], comparision_value
-                        )
-                    ]
+        for filter_dict in filters:
+            df = df[filter_operation(df[filter_dict[OPTION_COL]], filter_dict)]
 
         return df[cols].to_dict("list")
 

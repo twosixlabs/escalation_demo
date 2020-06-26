@@ -4,25 +4,30 @@ APP_CONFIG_JSON = "app_config_json"
 # app config keys
 AVAILABLE_PAGES = "available_pages"
 GRAPHICS = "graphics"
+GRAPHIC_NUM = "graphic_{:d}"
+POINTS_NUM = "points_{:d}"
+SELECTION_NUM = "selection_{:d}"
 SITE_TITLE = "title"
 SITE_DESC = "brief_desc"
-
+BUTTON_LABEL = "button_label"
+LINK = "link"
 GRAPHIC_TITLE = "title"
 GRAPHIC_DESC = "brief_desc"
 DATA_SOURCE = (
     "data_path"  # path to the file for LocalHandler or table name for SqlHandler
 )
 DATA = "data"
+DATA_FILTERS = "data_filters"
 PLOT_MANAGER = "plot_manager"
 
 VISUALIZATION_OPTIONS = "visualization_options"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
-PLOT_OPTIONS = "plot_options"
-
+PLOT_SPECIFIC_INFO = "plot_specific_info"
+FILTERS = "filters"
 
 SELECTABLE_DATA_LIST = "selectable_data_list"
 OPTION_TYPE = "type"
-OPTION_COLS = "columns"
+OPTION_COL = "column"
 
 PAGE_NAME = "name"
 
@@ -32,7 +37,7 @@ OBJECT = "object"
 
 # Available selector keys
 SELECT_HTML_TEMPLATE = "select_html_template"
-COLUMN_NAME = "column_name"
+COLUMN_NAME = "column"
 ENTRIES = "entries"
 SELECT_OPTION = "options"
 AXIS = "axis"
@@ -43,7 +48,11 @@ NUMERICAL_FILTER = "numerical_filter"
 INEQUALITIES = "inequalities"
 OPERATION = "operation"
 VALUE = "value"
-
+SELECTED = "selected"
+INEQUALTIY_LOC = "inequality_{}"
+UPPER = "upper"
+LOWER = "lower"
+LIST_OF_VALUES = "list_of_values"
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROW"
 
