@@ -71,15 +71,15 @@ class LocalCSVHandler(DataHandler):
                 combined_data_table = combined_data_table.merge(
                     data_source_df,
                     how="left",
-                    left_on=LEFT_KEY,
-                    right_on=RIGHT_KEY,
+                    left_on=data_source[LEFT_KEY],
+                    right_on=data_source[RIGHT_KEY],
                     # add the data_source/table name as a suffix to new matching columns
                     suffixes=("", f"_{data_source[DATA_SOURCE_TYPE]}"),
                 )
         return combined_data_table
 
     def get_column_names(self):
-        return self.combined_data_table.tolist()
+        return self.combined_data_table.columns.tolist()
 
     def get_column_data(self, cols: list, filters: list = None) -> dict:
         # error checking would be good
@@ -91,7 +91,7 @@ class LocalCSVHandler(DataHandler):
         if filters is None:
             filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
-        all_to_include_cols = cols + list(cols_for_filters)
+        all_to_include_cols = set(cols + list(filters))
         df = self.combined_data_table[all_to_include_cols]
         for filter_dict in filters:
             df = df[filter_operation(df[filter_dict[OPTION_COL]], filter_dict)]
