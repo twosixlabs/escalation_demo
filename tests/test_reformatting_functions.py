@@ -50,7 +50,7 @@ def test_add_info_from_addendum_to_config_dict(single_page_config_dict):
     }
     assert single_page_config_dict[GRAPHIC_NUM.format(0)][DATA_FILTERS][2] == {
         "type": "numerical_filter",
-        "column": "island",
+        "column": "culmen_length_mm",
         "operation": "<=",
         "value": 4,
     }

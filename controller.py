@@ -39,6 +39,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
             single_page_config_dict = add_info_from_addendum_to_config_dict(
                 single_page_config_dict, addendum_dict
             )
+            print(single_page_config_dict)
         plot_specs = organize_graphic(single_page_config_dict, addendum_dict)
 
     page_info = {

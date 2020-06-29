@@ -59,9 +59,9 @@ def test_create_data_subselect_info(json_file):
     ]
 
     single_addendum_dict = {
-        "selection_0": {"type": "filter", "column": "sex", "selected": "MALE"},
-        "selection_1": {"type": "filter", "column": "island", "selected": SHOW_ALL_ROW},
-        "selection_2": {"type": "axis", "column": "x", "selected": "body_mass_g"},
+        "selection_0": {"selected": "MALE"},
+        "selection_1": {"selected": SHOW_ALL_ROW},
+        "selection_2": {"selected": "body_mass_g"},
     }
     select_info = create_data_subselect_info(
         select_dict, new_data, single_addendum_dict
