@@ -15,6 +15,7 @@ GRAPHIC_TITLE = "title"
 GRAPHIC_DESC = "brief_desc"
 
 # path to the file folder for LocalHandler or table name for SqlHandler
+DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"
 DATA_SOURCE_TYPE = "data_source_type"
 LEFT_KEYS = "left_keys"
