@@ -123,7 +123,7 @@ def build_config_json(data_backend, data_file_directory):
                                 },
                             }
                         ],
-                        "visualization_options": [
+                        VISUALIZATION_OPTIONS: [
                             {
                                 "type": "aggregate",
                                 "column": ["penguin_size.sex"],
@@ -145,7 +145,7 @@ def build_config_json(data_backend, data_file_directory):
 # todo: don't assume we're running the script from escos root directory?
 if __name__ == "__main__":
     config_file_definitions = {
-        "test_app_config.json": {
+        "test_app_local_handler_config.json": {
             DATA_BACKEND: LOCAL_CSV,
             DATA_FILE_DIRECTORY: "tests/test_data/",
         },

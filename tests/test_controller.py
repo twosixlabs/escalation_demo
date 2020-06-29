@@ -35,27 +35,51 @@ def test_extract_buttons(json_config_fixture):
 
 def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     select_dict = [
-        {"type": "select", "column": "sex", "options": {"multiple": False}},
-        {"type": "select", "column": "island", "options": {"multiple": True}},
+        {
+            "type": "select",
+            "column": "penguin_size.sex",
+            "options": {"multiple": False},
+        },
+        {
+            "type": "select",
+            "column": "penguin_size.island",
+            "options": {"multiple": True},
+        },
         {
             "type": "axis",
             "column": "x",
             "options": {
-                "entries": ["culmen_length_mm", "flipper_length_mm", "body_mass_g"]
+                "entries": [
+                    "penguin_size.culmen_length_mm",
+                    "penguin_size.flipper_length_mm",
+                    "penguin_size.body_mass_g",
+                ]
             },
         },
     ]
 
     single_addendum_dict = {
-        "selection_0": {"type": "filter", "column": "sex", "selected": "MALE"},
-        "selection_1": {"type": "filter", "column": "island", "selected": SHOW_ALL_ROW},
-        "selection_2": {"type": "axis", "column": "x", "selected": "body_mass_g"},
+        "selection_0": {
+            "type": "filter",
+            "column": "penguin_size.sex",
+            "selected": "MALE",
+        },
+        "selection_1": {
+            "type": "filter",
+            "column": "penguin_size.island",
+            "selected": SHOW_ALL_ROW,
+        },
+        "selection_2": {
+            "type": "axis",
+            "column": "x",
+            "selected": "penguin_size.body_mass_g",
+        },
     }
     select_info = create_data_subselect_info(
         select_dict, local_handler_fixture, single_addendum_dict
     )
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
-    assert select_info[1][COLUMN_NAME] == "island"
+    assert select_info[1][COLUMN_NAME] == "penguin_size.island"
     assert select_info[2][JINJA_SELECT_HTML_FILE] == "select_axis.html"
 
     assert "MALE" in select_info[0][ACTIVE_SELECTORS]
@@ -68,18 +92,18 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     assert "Dream" in select_info[1][ENTRIES]
     assert select_info[1][SELECT_OPTION]["multiple"]
     assert not select_info[0][SELECT_OPTION]["multiple"]
-    assert "culmen_length_mm" in select_info[2][ENTRIES]
-    assert "flipper_length_mm" in select_info[2][ENTRIES]
-    assert "body_mass_g" in select_info[2][ENTRIES]
-    assert "body_mass_g" == select_info[2][ACTIVE_SELECTORS]
+    assert "penguin_size.culmen_length_mm" in select_info[2][ENTRIES]
+    assert "penguin_size.flipper_length_mm" in select_info[2][ENTRIES]
+    assert "penguin_size.body_mass_g" in select_info[2][ENTRIES]
+    assert "penguin_size.body_mass_g" == select_info[2][ACTIVE_SELECTORS]
 
 
 def test_get_unique_set_of_columns_needed():
-    culmen = "culmen_length_mm"
-    flipper = "flipper_length_mm"
-    flipper2 = "flipper_length_mm2"
-    island = "island"
-    sex = "sex"
+    culmen = "penguin_size.culmen_length_mm"
+    flipper = "penguin_size.flipper_length_mm"
+    flipper2 = "penguin_size.flipper_length_mm2"
+    island = "penguin_size.island"
+    sex = "penguin_size.sex"
     test_cols_list = get_unique_set_of_columns_needed(
         {
             "points_0": {"x": culmen, "y": flipper},
