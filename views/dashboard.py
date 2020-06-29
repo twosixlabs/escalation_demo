@@ -5,7 +5,7 @@ from controller import get_data_for_page
 
 DATALAYOUT = "datalayout.html"
 
-dashboard_blueprint = Blueprint("", __name__)
+dashboard_blueprint = Blueprint("dashboard", __name__)
 
 
 @dashboard_blueprint.route("/")
@@ -14,13 +14,13 @@ def main_page():
     return render_template(DATALAYOUT, **html_data)
 
 
-@dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET"])
+@dashboard_blueprint.route("/<page_name>", methods=["GET"])
 def graphic_page(page_name):
     html_data = get_data_for_page(current_app.config.get(APP_CONFIG_JSON), page_name)
     return render_template(DATALAYOUT, **html_data)
 
 
-@dashboard_blueprint.route("/dashboard/<page_name>", methods=["POST"])
+@dashboard_blueprint.route("/<page_name>", methods=["POST"])
 def new_graphic_page(page_name):
     html_data = get_data_for_page(
         current_app.config.get(APP_CONFIG_JSON), page_name, request.form

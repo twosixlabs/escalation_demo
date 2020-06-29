@@ -1,5 +1,6 @@
 import json
 import os
+from types import MappingProxyType
 
 from flask import Flask
 from sqlalchemy.engine.url import URL
@@ -19,9 +20,13 @@ def create_app():
     )
 
     # register url bleuprints with the app object
-    from views.view import dashboard_blueprint
+    from views.dashboard import dashboard_blueprint
 
     app.register_blueprint(dashboard_blueprint)
+    from views.file_upload import upload_blueprint
+
+    app.register_blueprint(upload_blueprint)
+
     return app
 
 
@@ -33,7 +38,8 @@ if __name__ == "__main__":
         config_dict = json.load(config_file)
 
     app = create_app()
-    app.config[APP_CONFIG_JSON] = config_dict
+    # write the config dict to app config as a read-only proxy of a mutable dict
+    app.config[APP_CONFIG_JSON] = MappingProxyType(config_dict)
 
     # setup steps unique to SQL-backended apps
     # todo: make sure we don't need postgres install reqs if running mysql
