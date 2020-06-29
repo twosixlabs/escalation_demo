@@ -1,4 +1,4 @@
-{% set col=selector['column_name'] %}
+{% set col=selector['column'] %}
 
 <h4>{{ col }}</h4>
     <select class="custom-select" name={{ index~ "|" ~ selector["type"] ~ "|" ~ col }} id={{ col }} form="the_form"

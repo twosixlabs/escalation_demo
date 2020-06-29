@@ -1,4 +1,4 @@
-{% set col=selector['column_name'] %}
+{% set col=selector['column'] %}
 
 <h4>{{ col }}</h4>
     {% for position in ['upper', 'lower'] %}
@@ -11,7 +11,7 @@
       {% endfor %}
     </select>
    </div>
-    <input class="form-control form-control-sm" name={{ index~ "|" ~ selector["type"] ~ "|" ~ position ~ "|value|"  ~ col }}  type="number" value={{ selector['active_selector'][position]['value'] }} placeholder="number" form="the_form">
+    <input class="form-control form-control-sm" name={{ index~ "|" ~ selector["type"] ~ "|" ~ position ~ "|value|"  ~ col }}  type="number" value={{ selector['active_selector'][position]['value'] }} form="the_form">
         </div>
         <!--{% if not loop.last %}<div class="row"><div class="col"><p class="text-center">and </p></div></div>{% endif %}-->
 {% endfor %}

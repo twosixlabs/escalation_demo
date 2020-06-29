@@ -50,7 +50,7 @@ def add_info_from_addendum_to_config_dict(
                     if numerical_filter_info[VALUE] is None:
                         continue
                     operation_list.append(
-                        {**base_info_dict_for_selector, **numerical_filter_info,}
+                        {**base_info_dict_for_selector, **numerical_filter_info}
                     )
         if operation_list:
             single_page_config_dict[graphic_index][DATA_FILTERS] = operation_list
@@ -71,8 +71,8 @@ FILTER_SELECTION_DEFAULTS = {
     "numerical_filter": lambda selection_option, data_info: {
         OPTION_TYPE: NUMERICAL_FILTER,
         OPTION_COL: selection_option[OPTION_COL],
-        INEQUALTIY_LOC.format(UPPER): {OPERATION: "<=", VALUE: None},
-        INEQUALTIY_LOC.format(LOWER): {OPERATION: ">=", VALUE: None},
+        INEQUALTIY_LOC.format(UPPER): {OPERATION: "<=", VALUE: ""},
+        INEQUALTIY_LOC.format(LOWER): {OPERATION: ">=", VALUE: ""},
     },
 }
 
