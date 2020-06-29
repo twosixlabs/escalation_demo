@@ -19,10 +19,11 @@ from utility.constants import (
 def filter_operation(data_column, filter_dict):
     if filter_dict[SELECTOR_TYPE] == FILTER:
         entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
-        if filter_dict[LIST_OF_VALUES]:
+        # data storers handle a single value different from multiple values
+        if len(entry_values_to_be_shown_in_plot) > 1:
             return data_column.isin(entry_values_to_be_shown_in_plot)
         else:
-            return data_column == entry_values_to_be_shown_in_plot
+            return data_column == entry_values_to_be_shown_in_plot[0]
     elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
         return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
             data_column, filter_dict[VALUE]

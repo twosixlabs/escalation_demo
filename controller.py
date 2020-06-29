@@ -21,7 +21,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 
     :param config_dict: A dictionary containing all the information from the config json file
     :param display_page: Which page is the viewer requesting
-    :param filter_form: form request received from push request. # todo: describe how this form is structured, and how we restructure it in reformat_html_form_dict
+    :param addendum_dict: json received from post. # todo: describe how this form is structured, and how we restructure it in reformat_html_form_dict
     :return: dictionary to be read by jinja to build the page
     """
 
@@ -210,10 +210,10 @@ def create_data_subselect_info(
             active_selection_options = {}
             selection_option_dict_for_plot[SELECT_OPTION] = {}
             column_names = list(OPERATIONS_FOR_NUMERICAL_FILTERS.keys())
-            for loc in [UPPER, LOWER]:
+            for loc in [UPPER_INEQUALITY, LOWER_INEQUALITY]:
                 active_selection_options[loc] = single_graphic_addendum_dict[
                     selection_index_str
-                ][INEQUALTIY_LOC.format(loc)]
+                ][INEQUALITY_LOC.format(loc)]
 
         select_info.append(
             {

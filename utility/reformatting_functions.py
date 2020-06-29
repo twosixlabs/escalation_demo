@@ -8,8 +8,7 @@ def add_info_from_addendum_to_config_dict(
     single_page_config_dict: dict, addendum_dict: dict
 ) -> dict:
     """
-    add operations to the data dictionary
-    assuming operations happen to all scatters/lines on a plot
+    We build a page based on 2 dictonaries, what is in the config and what is submitted in the HTML form.
     :param single_page_config_dict:
     :param addendum_dict: see test_app_config_addendum.json for an example of one of these
     :return:
@@ -18,18 +17,10 @@ def add_info_from_addendum_to_config_dict(
     for graphic_index, selection_index_dict in addendum_dict.items():
         operation_list = []
         for selection_dict in selection_index_dict.values():
+            # creates an operations where only the values selected along a column will be shown in the plot
             if selection_dict[OPTION_TYPE] == FILTER:
-                selected_values = selection_dict[SELECTED]
-                # data storers handle a single value different from multiple values
-                if isinstance(selected_values, list):
-                    if len(selected_values) > 1:
-                        selection_dict[LIST_OF_VALUES] = True
-                    else:
-                        selection_dict[LIST_OF_VALUES] = False
-                        selection_dict[SELECTED] = selected_values[0]
-                else:
-                    selection_dict[LIST_OF_VALUES] = False
                 operation_list.append(selection_dict)
+            # modifies the aixs shown in the config
             elif selection_dict[OPTION_TYPE] == AXIS:
                 for point_index, data_dict in single_page_config_dict[graphic_index][
                     DATA
@@ -39,14 +30,16 @@ def add_info_from_addendum_to_config_dict(
                     single_page_config_dict[graphic_index][DATA][
                         point_index
                     ] = data_dict
+            # creates an operations where only the values following an (in)equality
+            # along a column will be shown in the plot
             elif selection_dict[OPTION_TYPE] == NUMERICAL_FILTER:
                 # the numerical filter contains two filters so add them separately
                 base_info_dict_for_selector = {
                     OPTION_TYPE: NUMERICAL_FILTER,
                     COLUMN_NAME: selection_dict[COLUMN_NAME],
                 }
-                for loc in [UPPER, LOWER]:
-                    numerical_filter_info = selection_dict[INEQUALTIY_LOC.format(loc)]
+                for loc in [UPPER_INEQUALITY, LOWER_INEQUALITY]:
+                    numerical_filter_info = selection_dict[INEQUALITY_LOC.format(loc)]
                     if numerical_filter_info[VALUE] is None:
                         continue
                     operation_list.append(
@@ -71,15 +64,17 @@ FILTER_SELECTION_DEFAULTS = {
     "numerical_filter": lambda selection_option, data_info: {
         OPTION_TYPE: NUMERICAL_FILTER,
         OPTION_COL: selection_option[OPTION_COL],
-        INEQUALTIY_LOC.format(UPPER): {OPERATION: "<=", VALUE: ""},
-        INEQUALTIY_LOC.format(LOWER): {OPERATION: ">=", VALUE: ""},
+        INEQUALITY_LOC.format(UPPER_INEQUALITY): {OPERATION: "<=", VALUE: ""},
+        INEQUALITY_LOC.format(LOWER_INEQUALITY): {OPERATION: ">=", VALUE: ""},
     },
 }
 
 
 def make_default_addendum(single_page_config_dict: dict) -> dict:
     """
-    This addendum sets the defaults for the selectors
+    This addendum sets the defaults for the selectors in the case that there
+     is no user input submitted in the HTML form
+    such as when first opening the page
     :param single_page_config_dict:
     :return:
     """
