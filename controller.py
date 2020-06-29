@@ -4,7 +4,7 @@ import copy
 from flask import current_app
 from werkzeug.datastructures import ImmutableMultiDict
 
-from datastorer.data_handler import DataHandler
+from database.data_handler import DataHandler
 from utility.available_graphics import AVAILABLE_GRAPHICS
 from utility.available_selectors import (
     AVAILABLE_SELECTORS,

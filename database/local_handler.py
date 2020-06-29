@@ -3,7 +3,7 @@ import glob
 import os
 
 from flask import current_app
-from datastorer.data_handler import DataHandler
+from database.data_handler import DataHandler
 from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
     FILTER,

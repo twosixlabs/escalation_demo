@@ -8,7 +8,7 @@ from app import create_app
 
 import pytest
 
-from datastorer.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler
 from utility.constants import DATA_SOURCE_TYPE, APP_CONFIG_JSON
 
 

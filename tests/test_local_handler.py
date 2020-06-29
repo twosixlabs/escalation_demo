@@ -1,6 +1,6 @@
 import pandas as pd
 
-from datastorer.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler
 from utility.constants import (
     SELECTOR_TYPE,
     FILTER,

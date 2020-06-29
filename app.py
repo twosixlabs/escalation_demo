@@ -1,11 +1,10 @@
 import json
 import os
-import sys
 
 from flask import Flask
 from sqlalchemy.engine.url import URL
 
-from datastorer.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler
 from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL
 from app_settings import PSQL_DATABASE_CONFIG as database_config
 
@@ -20,15 +19,15 @@ def create_app():
     )
 
     # register url bleuprints with the app object
-    from view import dashboard_blueprint
+    from views.view import dashboard_blueprint
 
     app.register_blueprint(dashboard_blueprint)
     return app
 
 
 if __name__ == "__main__":
-    # config_file_path = "tests/test_data/test_sql_app_config.json"
-    config_file_path = "tests/test_data/test_app_local_handler_config.json"
+    config_file_path = "tests/test_data/test_sql_app_config.json"
+    # config_file_path = "tests/test_data/test_app_local_handler_config.json"
 
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)
@@ -39,8 +38,8 @@ if __name__ == "__main__":
     # setup steps unique to SQL-backended apps
     # todo: make sure we don't need postgres install reqs if running mysql
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [MYSQL, POSTGRES]:
-        from datastorer.sql_handler import SqlHandler
-        from datastorer.database import db, db_session
+        from database.sql_handler import SqlHandler
+        from database.database import db, db_session
 
         db.init_app(app)
         data_backend_class = SqlHandler

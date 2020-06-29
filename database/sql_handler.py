@@ -2,8 +2,8 @@ import pandas as pd
 from sqlalchemy import and_
 from sqlalchemy.orm.query import Query
 
-from datastorer.data_handler import DataHandler
-from datastorer.database import db_session, Base
+from database.data_handler import DataHandler
+from database.database import db_session, Base
 from utility.constants import DATA_SOURCE_TYPE, DATA_LOCATION, LEFT_KEYS, RIGHT_KEYS
 
 
