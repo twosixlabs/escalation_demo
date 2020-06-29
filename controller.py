@@ -31,7 +31,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     plot_specs = []
     if display_page is not None:
         single_page_config_dict = available_pages.get(display_page, {}).get(
-            GRAPHICS, []
+            GRAPHICS, {}
         )
         if addendum_dict is None:
             addendum_dict = make_default_addendum(single_page_config_dict)
@@ -62,7 +62,7 @@ def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list
 
     for plot_index, plot_specification in single_page_config_dict.items():
         plot_data_handler = current_app.config.data_handler(
-            plot_specification[DATA_SOURCE]
+            plot_specification[DATA_SOURCES]
         )
 
         (plot_directions_dict, graph_html_template) = assemble_info_for_plot(
@@ -113,7 +113,6 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
     # TO DO what if it is not a valid graphic
     graphic_data = AVAILABLE_GRAPHICS[plot_specification[PLOT_MANAGER]]
     graphic_to_plot = graphic_data[OBJECT]
-
     # makes a json file as required by js plotting documentation
     plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
         plot_data,
