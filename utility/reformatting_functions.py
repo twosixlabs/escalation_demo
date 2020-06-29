@@ -79,7 +79,6 @@ def make_default_addendum(single_page_config_dict: dict) -> dict:
     :return:
     """
     addendum_dict = defaultdict(dict)
-
     for graphic_index, graphic_dict in single_page_config_dict.items():
         for selection_index, selection_option in enumerate(
             graphic_dict.get(SELECTABLE_DATA_LIST, [])

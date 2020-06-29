@@ -19,7 +19,7 @@ from utility.reformatting_functions import (
 
 @pytest.fixture()
 def single_page_config_dict():
-    config_file_path = "tests/test_data/test_app_config.json"
+    config_file_path = "tests/test_data/test_app_local_handler_config.json"
 
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)

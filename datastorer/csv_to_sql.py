@@ -141,6 +141,10 @@ class CreateTablesFromCSVs:
                         "ALTER TABLE {} ADD UNIQUE({});".format(table_name, "index")
                     )
             elif DB_BACKEND == "psql":
+                if table_name.lower() != table_name:
+                    raise ValueError(
+                        "Postgres does not play well with upper cases in table names, please rename your table"
+                    )
                 data.to_sql(
                     table_name,
                     con=cls.__engine,
@@ -173,6 +177,7 @@ if __name__ == "__main__":
     # CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
     # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
 
+    # todo: psql at least enforces lowercase table names.
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
@@ -184,7 +189,8 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguins_size/penguins_size.csv
+    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
+    # python datastorer/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
     # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
 

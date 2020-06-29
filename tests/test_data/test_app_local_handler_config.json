@@ -1,8 +1,8 @@
 {
     "title": "Escalation Test",
     "brief_desc": "This is a test/demo for the Escalation OS",
-    "data_backend": "psql",
-    "data_file_directory": "",
+    "data_backend": "local_csv",
+    "data_file_directory": "tests/test_data/",
     "available_pages": {
         "penguins": {
             "button_label": "Penguins",
