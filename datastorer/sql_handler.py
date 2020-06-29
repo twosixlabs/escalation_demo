@@ -41,13 +41,16 @@ class SqlHandler(DataHandler):
         query = db_session.query(
             *[data_source[DATA_LOCATION] for data_source in self.data_sources]
         )
-        # columns_to_get = []
+        #
+        # columns_to_get = {}
         # for data_source in self.data_sources:
-        #     table_class = data_source[DATA_LOCATION]
-        #     table_columns = table_class.__table__.columns
-        #     # columns_to_get.extend([getattr(table_class, c.name) for c in table_columns])
-        #     columns_to_get.extend([c for c in table_columns])
-        # query = db_session.query(*columns_to_get)
+        #     table_columns = data_source[DATA_LOCATION].__table__.columns
+        #     for column in table_columns:
+        #         # we only include the column in the columns to get if it doesn't match the name of an already included column
+        #         if column.name not in columns_to_get:
+        #             columns_to_get[column.name] = column
+        # query = db_session.query(*columns_to_get).select_from(self.data_sources[0][DATA_LOCATION])
+
         # Assumption: All joins link to IDs in first table, not IDs that were added in previous joins
         for i, data_source in enumerate(self.data_sources):
             table_class = data_source[DATA_LOCATION]
@@ -72,7 +75,8 @@ class SqlHandler(DataHandler):
                 )
 
         class QueryView(Base):
-            # defines the selectable class for the query view
+            # defines the selectable class for the query view. Prefixes all column names with the table_name
+            # todo: can we avoid this prefixing?
             __table__ = query.selectable.alias()
 
         return QueryView
@@ -82,8 +86,25 @@ class SqlHandler(DataHandler):
         :return: a list of the column names in the table referenced by the handler
         """
         # todo: these are prefixed with table_name of the sub table in combined_data_table
-        # return list(self.combined_data_table().__table__.columns.keys())
-        raise NotImplementedError("This function is not used meaningfully, delete?")
+        return list(self.combined_data_table().__table__.columns.keys())
+        # raise NotImplementedError("This function is not used meaningfully, delete?")
+        # return list(self.combined_data_table.columns.keys())
+
+    def get_column_objects_from_config_string(self, columns):
+
+        """
+        rename is switching the '_' separation back to '.'
+        Look up the right classes
+        :return:
+        """
+        column_rename_dict = {
+            config_col.replace(".", "_"): config_col for config_col in columns
+        }
+        column_mapping_dict = {
+            config_col: getattr(self.combined_data_table, database_col)
+            for database_col, config_col in column_rename_dict.items()
+        }
+        return column_rename_dict, column_mapping_dict
 
     def get_column_data(self, columns: list, filters: dict = None) -> dict:
         """
@@ -91,28 +112,18 @@ class SqlHandler(DataHandler):
         :param filters: Optional dict specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
-        query = db_session.query(
-            *[getattr(self.combined_data_table, col) for col in columns]
-        )
+        (
+            column_rename_dict,
+            column_mapping_dict,
+        ) = self.get_column_objects_from_config_string(columns)
+        query = db_session.query(*column_mapping_dict.values())
 
-        # raise NotImplementedError
-        # # todo: filter by inequality
-        # # Build the list of filters to apply to the data
-        # for filter_column, filter_value in filters.items():
-        #     # filter is a single item, evaluate with sql's equality statement
-        #     if isinstance(filter_value, (int, float, str)):
-        #         query = query.filter(
-        #             getattr(self.table_class, filter_column) == filter_value
-        #         )
-        #     # filter is a list of possible items, evaluate with sql's "is in" statement
-        #     elif isinstance(filter_value, (list, dict)):
-        #         query = query.filter(
-        #             getattr(self.table_class, filter_column).in_(filter_value)
-        #         )
-        # response_rows is a list of tuples
+        # todo: implement filters with the refactored version from Alexander
         response_rows = query.all()
         # use pandas to read the sql response and convert to a dict of lists keyed by column names
-        response_dict_of_lists = pd.DataFrame(response_rows).to_dict(orient="list")
+        # rename is switching the '_' separation back to '.'
+        response_as_df = pd.DataFrame(response_rows).rename(columns=column_rename_dict)
+        response_dict_of_lists = response_as_df.to_dict(orient="list")
         return response_dict_of_lists
 
     def get_column_unique_entries(self, cols: list) -> dict:
@@ -121,9 +132,13 @@ class SqlHandler(DataHandler):
         :return: A dict keyed by column names and valued with the unique values in that column
         """
         unique_dict = {}
-        for col in cols:
-            query = db_session.query(getattr(self.combined_data_table, col)).distinct()
+        (
+            column_rename_dict,
+            column_mapping_dict,
+        ) = self.get_column_objects_from_config_string(cols)
+        for config_col, sql_col_class in column_mapping_dict.items():
+            query = db_session.query(sql_col_class).distinct()
             response = query.all()
             # todo: note we're dropping none/missing values from the response. Do we want to be able to include them?
-            unique_dict[col] = [r[0] for r in response if r[0] is not None]
+            unique_dict[config_col] = [r[0] for r in response if r[0] is not None]
         return unique_dict

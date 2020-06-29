@@ -1,7 +1,8 @@
 {
     "title": "Escalation Test",
     "brief_desc": "This is a test/demo for the Escalation OS",
-    "data_backend": "psql",
+    "data_backend": "local_csv",
+    "data_file_directory": "tests/test_data/",
     "available_pages": {
         "penguins": {
             "button_label": "Penguins",
@@ -17,8 +18,8 @@
                     "brief_desc": "This plot looks at the relationship between...",
                     "data": {
                         "points_0": {
-                            "x": "body_mass_g",
-                            "y": "flipper_length_mm"
+                            "x": "penguin_size.body_mass_g",
+                            "y": "penguin_size.flipper_length_mm"
                         }
                     },
                     "plot_specific_info": {
@@ -33,14 +34,14 @@
                         {
                             "type": "hover_data",
                             "column": [
-                                "sex",
-                                "culmen_length_mm"
+                                "penguin_size.sex",
+                                "penguin_size.culmen_length_mm"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "island"
+                                "penguin_size.island"
                             ],
                             "options": {
                                 "styles": {
@@ -66,21 +67,21 @@
                     "selectable_data_list": [
                         {
                             "type": "select",
-                            "column": "sex",
+                            "column": "penguin_size.sex",
                             "options": {
                                 "multiple": false
                             }
                         },
                         {
                             "type": "select",
-                            "column": "island",
+                            "column": "penguin_size.island",
                             "options": {
                                 "multiple": true
                             }
                         },
                         {
                             "type": "numerical_filter",
-                            "column": "culmen_length_mm"
+                            "column": "penguin_size.culmen_length_mm"
                         }
                     ]
                 },
@@ -95,7 +96,7 @@
                     "brief_desc": "",
                     "data": {
                         "points_0": {
-                            "x": "body_mass_g"
+                            "x": "penguin_size.body_mass_g"
                         }
                     },
                     "plot_specific_info": {
@@ -119,10 +120,10 @@
                             "column": "x",
                             "options": {
                                 "entries": [
-                                    "culmen_length_mm",
-                                    "flipper_length_mm",
-                                    "body_mass_g",
-                                    "culmen_depth_mm"
+                                    "penguin_size.culmen_length_mm",
+                                    "penguin_size.flipper_length_mm",
+                                    "penguin_size.body_mass_g",
+                                    "penguin_size.culmen_depth_mm"
                                 ]
                             }
                         }
@@ -142,22 +143,22 @@
                     ],
                     "title": "Do long nosed penguins have long flippers by sex (avg)?",
                     "brief_desc": "A plot",
-                    "data": [
-                        {
-                            "x": "culmen_length_mm",
-                            "y": "flipper_length_mm"
+                    "data": {
+                        "points_0": {
+                            "x": "penguin_size.culmen_length_mm",
+                            "y": "penguin_size.flipper_length_mm"
                         }
-                    ],
+                    },
                     "selectable_data_list": [
                         {
                             "type": "axis",
                             "column": "x",
                             "options": {
                                 "entries": [
-                                    "culmen_length_mm",
-                                    "flipper_length_mm",
-                                    "body_mass_g",
-                                    "culmen_depth_mm"
+                                    "penguin_size.culmen_length_mm",
+                                    "penguin_size.flipper_length_mm",
+                                    "penguin_size.body_mass_g",
+                                    "penguin_size.culmen_depth_mm"
                                 ]
                             }
                         }
@@ -165,8 +166,8 @@
                     "visualization_options": [
                         {
                             "type": "aggregate",
-                            "columns": [
-                                "sex"
+                            "column": [
+                                "penguin_size.sex"
                             ],
                             "options": {
                                 "aggregations": {
@@ -177,12 +178,12 @@
                         },
                         {
                             "type": "groupby",
-                            "columns": [
-                                "sex"
+                            "column": [
+                                "penguin_size.sex"
                             ]
                         }
                     ],
-                    "plot_options": {
+                    "plot_specific_info": {
                         "data": [
                             {
                                 "type": "scatter",

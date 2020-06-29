@@ -1,14 +1,15 @@
 import json
 import os
 
-from utility.constants import DATA_BACKEND, POSTGRES, LOCAL_CSV
+from utility.constants import *
 
 
-def build_config_json(data_backend):
+def build_config_json(data_backend, data_file_directory):
     config_dict = {
         "title": "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
         "data_backend": data_backend,
+        DATA_FILE_DIRECTORY: data_file_directory,
         "available_pages": {
             "penguins": {
                 "button_label": "Penguins",
@@ -19,19 +20,25 @@ def build_config_json(data_backend):
                         "title": "Do massive penguins have long flippers?",
                         "brief_desc": "This plot looks at the relationship between...",
                         "data": {
-                            "points_0": {"x": "body_mass_g", "y": "flipper_length_mm"}
+                            "points_0": {
+                                "x": "penguin_size.body_mass_g",
+                                "y": "penguin_size.flipper_length_mm",
+                            }
                         },
-                        "plot_specific_info": {
+                        PLOT_SPECIFIC_INFO: {
                             "data": [{"type": "scatter", "mode": "markers"}]
                         },
                         "visualization_options": [
                             {
                                 "type": "hover_data",
-                                "column": ["sex", "culmen_length_mm"],
+                                "column": [
+                                    "penguin_size.sex",
+                                    "penguin_size.culmen_length_mm",
+                                ],
                             },
                             {
                                 "type": "groupby",
-                                "column": ["island"],
+                                "column": ["penguin_size.island"],
                                 "options": {
                                     "styles": {
                                         "Torgersen": {"marker": {"color": "green"}},
@@ -44,15 +51,18 @@ def build_config_json(data_backend):
                         "selectable_data_list": [
                             {
                                 "type": "select",
-                                "column": "sex",
+                                "column": "penguin_size.sex",
                                 "options": {"multiple": False},
                             },
                             {
                                 "type": "select",
-                                "column": "island",
+                                "column": "penguin_size.island",
                                 "options": {"multiple": True},
                             },
-                            {"type": "numerical_filter", "column": "culmen_length_mm"},
+                            {
+                                "type": "numerical_filter",
+                                "column": "penguin_size.culmen_length_mm",
+                            },
                         ],
                     },
                     "graphic_1": {
@@ -60,7 +70,7 @@ def build_config_json(data_backend):
                         "data_sources": [{"data_source_type": "penguin_size"}],
                         "title": "How big are penguins?",
                         "brief_desc": "",
-                        "data": {"points_0": {"x": "body_mass_g"}},
+                        "data": {"points_0": {"x": "penguin_size.body_mass_g"}},
                         "plot_specific_info": {
                             "data": [{"type": "histogram"}],
                             "layout": {
@@ -74,10 +84,10 @@ def build_config_json(data_backend):
                                 "column": "x",
                                 "options": {
                                     "entries": [
-                                        "culmen_length_mm",
-                                        "flipper_length_mm",
-                                        "body_mass_g",
-                                        "culmen_depth_mm",
+                                        "penguin_size.culmen_length_mm",
+                                        "penguin_size.flipper_length_mm",
+                                        "penguin_size.body_mass_g",
+                                        "penguin_size.culmen_depth_mm",
                                     ]
                                 },
                             }
@@ -93,17 +103,22 @@ def build_config_json(data_backend):
                         "data_sources": [{"data_source_type": "penguin_size"}],
                         "title": "Do long nosed penguins have long flippers by sex (avg)?",
                         "brief_desc": "A plot",
-                        "data": [{"x": "culmen_length_mm", "y": "flipper_length_mm"}],
+                        "data": {
+                            "points_0": {
+                                "x": "penguin_size.culmen_length_mm",
+                                "y": "penguin_size.flipper_length_mm",
+                            }
+                        },
                         "selectable_data_list": [
                             {
                                 "type": "axis",
                                 "column": "x",
                                 "options": {
                                     "entries": [
-                                        "culmen_length_mm",
-                                        "flipper_length_mm",
-                                        "body_mass_g",
-                                        "culmen_depth_mm",
+                                        "penguin_size.culmen_length_mm",
+                                        "penguin_size.flipper_length_mm",
+                                        "penguin_size.body_mass_g",
+                                        "penguin_size.culmen_depth_mm",
                                     ]
                                 },
                             }
@@ -111,12 +126,12 @@ def build_config_json(data_backend):
                         "visualization_options": [
                             {
                                 "type": "aggregate",
-                                "columns": ["sex"],
+                                "column": ["penguin_size.sex"],
                                 "options": {"aggregations": {"x": "avg", "y": "avg"}},
                             },
-                            {"type": "groupby", "columns": ["sex"]},
+                            {"type": "groupby", "column": ["penguin_size.sex"]},
                         ],
-                        "plot_options": {
+                        PLOT_SPECIFIC_INFO: {
                             "data": [{"type": "scatter", "mode": "markers"}]
                         },
                     }
@@ -130,8 +145,11 @@ def build_config_json(data_backend):
 # todo: don't assume we're running the script from escos root directory?
 if __name__ == "__main__":
     config_file_definitions = {
-        "test_app_config.json": {DATA_BACKEND: POSTGRES},
-        "test_sql_app_config.json": {DATA_BACKEND: LOCAL_CSV},
+        "test_app_config.json": {
+            DATA_BACKEND: LOCAL_CSV,
+            DATA_FILE_DIRECTORY: "tests/test_data/",
+        },
+        "test_sql_app_config.json": {DATA_BACKEND: POSTGRES, DATA_FILE_DIRECTORY: ""},
     }
 
     path_to_test_files = os.path.join("tests", "test_data")

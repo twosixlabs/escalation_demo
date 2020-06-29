@@ -1,8 +1,9 @@
-from datastorer.data_handler import DataHandler
 import pandas as pd
 import glob
 import os
 
+from flask import current_app
+from datastorer.data_handler import DataHandler
 from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
     FILTER,
@@ -12,11 +13,12 @@ from utility.constants import (
     OPERATION,
     OPTION_COL,
     SELECTED,
-    LIST_OF_VALUES,
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     LEFT_KEYS,
     RIGHT_KEYS,
+    DATA_FILE_DIRECTORY,
+    APP_CONFIG_JSON,
 )
 
 
@@ -44,10 +46,15 @@ class LocalCSVHandler(DataHandler):
         RIGHT_KEY: "column_bar_in_file_type_b"}]
         """
         self.data_sources = data_sources
+        self.data_file_directory = current_app.config[APP_CONFIG_JSON][
+            DATA_FILE_DIRECTORY
+        ]
         for data_source in self.data_sources:
             data_source_name = data_source[DATA_SOURCE_TYPE]
-            suffix = "{}*.csv" if data_source_name[-1] == "/" else "{}/*.csv"
-            list_of_files = glob.glob(suffix.format(data_source_name))
+            data_source_subfolder = os.path.join(
+                self.data_file_directory, data_source_name
+            )
+            list_of_files = glob.glob(f"{data_source_subfolder}/*.csv")
             latest_filepath = max(list_of_files, key=os.path.getctime)
             data_source.update({DATA_LOCATION: latest_filepath})
         self.combined_data_table = self.build_combined_data_table()
@@ -63,7 +70,11 @@ class LocalCSVHandler(DataHandler):
         # todo: join on multiple keys
         for data_source in self.data_sources:
             data_source_df = pd.read_csv(data_source[DATA_LOCATION])
-            # the first data source defines the left most of any joins
+            # add the data_source/table name as a prefix to disambiguate columns
+            data_source_df = data_source_df.add_prefix(
+                f"{data_source[DATA_SOURCE_TYPE]}."
+            )
+            # the first data source defines the leftmost of any joins
             if combined_data_table is None:
                 combined_data_table = data_source_df
             else:
@@ -73,8 +84,6 @@ class LocalCSVHandler(DataHandler):
                     how="left",
                     left_on=data_source[LEFT_KEYS],
                     right_on=data_source[RIGHT_KEYS],
-                    # add the data_source/table name as a suffix to new matching columns
-                    suffixes=("", f"_{data_source[DATA_SOURCE_TYPE]}"),
                 )
         return combined_data_table
 
@@ -91,7 +100,7 @@ class LocalCSVHandler(DataHandler):
         if filters is None:
             filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
-        all_to_include_cols = set(cols + list(filters))
+        all_to_include_cols = set(cols + list(cols_for_filters))
         df = self.combined_data_table[all_to_include_cols]
         for filter_dict in filters:
             df = df[filter_operation(df[filter_dict[OPTION_COL]], filter_dict)]
