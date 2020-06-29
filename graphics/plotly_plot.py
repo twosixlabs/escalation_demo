@@ -2,13 +2,13 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
-from utility.constants import OPTION_COLS
+from utility.constants import OPTION_COL
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
 DATA = "data"
 LAYOUT = "layout"
-AXIS = "{}axis"
+PLOT_AXIS = "{}axis"
 TITLE = "title"
 CUSTOM_DATA = "customdata"
 HOVER_TEMPLATE = "hovertemplate"
@@ -21,6 +21,7 @@ GROUPS = "groups"
 OPTIONS = "options"
 STYLES = "styles"
 AGGREGATIONS = "aggregations"
+PLOT_OPTIONS = "plot_options"
 
 
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
@@ -34,7 +35,7 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     """
     # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
     # is equalavent to the two lines function
-    hover_column_names = hover_options[OPTION_COLS]
+    hover_column_names = hover_options[OPTION_COL]
     hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
     # transposes a list of lists of column data to a list of lists of row data
     plot_options_data_dict[CUSTOM_DATA] = list(map(list, zip(*hover_data_list)))
@@ -62,7 +63,7 @@ def get_groupby_or_aggregate_in_plotly_form(
     visualization_type = visualization_property[VISUALIZATION_TYPE]
     property_dict = {
         VISUALIZATION_TYPE: visualization_type,
-        GROUPS: data[visualization_property[OPTION_COLS][0]],
+        GROUPS: data[visualization_property[OPTION_COL][0]],
     }
 
     if visualization_type == GROUPBY and OPTIONS in visualization_property:
@@ -98,16 +99,20 @@ class PlotlyPlot(Graphic):
         self, data, axis_to_data_columns, plot_options, visualization_options=None
     ):
 
-        for index, axis_to_data_dict in enumerate(axis_to_data_columns):
+        for point_index, axis_to_data_dict in axis_to_data_columns.items():
+            # pull out the interger from the string point_index, point_index will always be points_<int>
+            index = int(point_index.split("_")[-1])
             for axis, column_name in axis_to_data_dict.items():
                 plot_options[DATA][index][axis] = data[
                     column_name
                 ]  # three things in path, data, which index and value (x,y)
+                # if there is no label, label the columns with the first lines/scatters column names
                 if index == 0:
-                    if LAYOUT in plot_options:
-                        plot_options[LAYOUT][AXIS.format(axis)] = {TITLE: column_name}
-                    else:
-                        plot_options[LAYOUT] = {AXIS.format(axis): {TITLE: column_name}}
+                    layout_dict = plot_options.get(LAYOUT, {})
+                    if PLOT_AXIS.format(axis) not in layout_dict:
+                        layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
+                    plot_options[LAYOUT] = layout_dict
+
             plot_options[DATA][index][TRANSFORMS] = []
 
             if visualization_options is not None:

@@ -6,7 +6,6 @@ from werkzeug.datastructures import ImmutableMultiDict
 from controller import (
     create_link_buttons_for_available_pages,
     create_data_subselect_info,
-    reformat_filter_form_dict,
     get_unique_set_of_columns_needed,
 )
 from datastorer.local_handler import LocalCSVHandler
@@ -21,6 +20,7 @@ from utility.constants import (
     OPERATION,
     VALUE,
     NUMERICAL_FILTER,
+    SHOW_ALL_ROW,
 )
 
 
@@ -40,31 +40,31 @@ def test_extract_buttons(json_file):
     aval_pg = json_file["available_pages"]
     buttons = create_link_buttons_for_available_pages(aval_pg)
 
-    button1 = {"name": "Penguins", "link": "penguins"}
-    button2 = {"name": "More Penguins!", "link": "more_penguins"}
+    button1 = {"button_label": "Penguins", "link": "penguins"}
     assert button1 in buttons
-    assert button2 in buttons
 
 
 def test_create_data_subselect_info(json_file):
     new_data = LocalCSVHandler("tests/test_data/penguins_size/")
     select_dict = [
-        {"type": "select", "columns": "sex", "options": {"multiple": False}},
-        {"type": "select", "columns": "island", "options": {"multiple": True}},
+        {"type": "select", "column": "sex", "options": {"multiple": False}},
+        {"type": "select", "column": "island", "options": {"multiple": True}},
         {
             "type": "axis",
-            "columns": "x",
+            "column": "x",
             "options": {
                 "entries": ["culmen_length_mm", "flipper_length_mm", "body_mass_g"]
             },
         },
     ]
-    current_axis = {"x": "body_mass_g", "y": "flipper_length_mm"}
+
+    single_addendum_dict = {
+        "selection_0": {"type": "filter", "column": "sex", "selected": "MALE"},
+        "selection_1": {"type": "filter", "column": "island", "selected": SHOW_ALL_ROW},
+        "selection_2": {"type": "axis", "column": "x", "selected": "body_mass_g"},
+    }
     select_info = create_data_subselect_info(
-        select_dict,
-        new_data,
-        {"sex": ["MALE"]},
-        {"x": "body_mass_g", "y": "flipper_length_mm"},
+        select_dict, new_data, single_addendum_dict
     )
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
     assert select_info[1][COLUMN_NAME] == "island"
@@ -75,7 +75,7 @@ def test_create_data_subselect_info(json_file):
     assert "FEMALE" in select_info[0][ENTRIES]
     assert "." in select_info[0][ENTRIES]  # yes this is a unique entry in the data set
     assert "Torgersen" in select_info[1][ENTRIES]
-    assert len(select_info[1][ACTIVE_SELECTORS]) == 0
+    assert SHOW_ALL_ROW in select_info[1][ACTIVE_SELECTORS]
     assert "Biscoe" in select_info[1][ENTRIES]
     assert "Dream" in select_info[1][ENTRIES]
     assert select_info[1][SELECT_OPTION]["multiple"]
@@ -83,41 +83,7 @@ def test_create_data_subselect_info(json_file):
     assert "culmen_length_mm" in select_info[2][ENTRIES]
     assert "flipper_length_mm" in select_info[2][ENTRIES]
     assert "body_mass_g" in select_info[2][ENTRIES]
-    assert "body_mass_g" in select_info[2][ACTIVE_SELECTORS]
-    assert len(select_info[2][ACTIVE_SELECTORS]) == 1
-
-
-def test_reformat_filter_form_dict():
-    test_dict = ImmutableMultiDict(
-        [
-            ("0|filter|sex", "FEMALE"),
-            ("0|filter|isl|and", "Torgersen"),
-            ("1|filter|sex", "FEMALE"),
-            ("1|filter|sex", "MALE"),
-            ("1|filter|island", "SHOW_ALL_ROW"),
-            ("1|axis|x", "flipper_length_mm"),
-            ("0|numerical_filter|0|operation|culmen_length_mm", ">="),
-            ("0|numerical_filter|0|value|culmen_length_mm", "5"),
-            ("0|numerical_filter|1|operation|culmen_length_mm", "<"),
-            ("0|numerical_filter|1|value|culmen_length_mm", ""),
-        ]
-    )
-    [filter_dict, axis_dict] = reformat_filter_form_dict(test_dict)
-
-    assert "FEMALE" in filter_dict[0]["sex"]["value"]
-    assert "Torgersen" in filter_dict[0]["isl|and"]["value"]
-    assert "FEMALE" in filter_dict[1]["sex"]["value"]
-    assert "MALE" in filter_dict[1]["sex"]["value"]
-
-    with pytest.raises(KeyError):
-        filter_dict[1]["island"]
-    assert "flipper_length_mm" == axis_dict[1]["x"]
-    assert NUMERICAL_FILTER == filter_dict[0]["culmen_length_mm"][SELECTOR_TYPE]
-    dict_output = filter_dict[0]["culmen_length_mm"][INEQUALITIES]
-    assert dict_output["0"][OPERATION] == ">="
-    assert dict_output["0"][VALUE] == 5
-    assert dict_output["1"][OPERATION] == "<"
-    assert dict_output["1"][VALUE] is None
+    assert "body_mass_g" == select_info[2][ACTIVE_SELECTORS]
 
 
 def test_get_unique_set_of_columns_needed():
@@ -127,10 +93,13 @@ def test_get_unique_set_of_columns_needed():
     island = "island"
     sex = "sex"
     test_cols_list = get_unique_set_of_columns_needed(
-        [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2}],
+        {
+            "points_0": {"x": culmen, "y": flipper},
+            "points_1": {"x": culmen, "y": flipper2},
+        },
         [
-            {"type": "hover_data", "columns": [sex, culmen]},
-            {"type": "groupby", "columns": [island]},
+            {"type": "hover_data", "column": [sex, culmen]},
+            {"type": "groupby", "column": [island]},
         ],
     )
     assert culmen in test_cols_list

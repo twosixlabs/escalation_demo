@@ -44,20 +44,31 @@ def test_get_column_data(make_local_handler):
     assert test_dict["flipper_length_mm"] == [181, 186, 195]
 
     test_dict = make_local_handler.get_column_data(
-        data_dict, {"sex": {SELECTOR_TYPE: FILTER, "value": ["MALE"]}}
+        data_dict,
+        [
+            {
+                "type": "filter",
+                "column": "sex",
+                "selected": "MALE",
+                "list_of_values": False,
+            }
+        ],
     )
     assert test_dict["body_mass_g"] == [3750]
     assert test_dict["flipper_length_mm"] == [181]
 
     test_dict = make_local_handler.get_column_data(
         data_dict,
-        {
-            "body_mass_g": {
-                SELECTOR_TYPE: NUMERICAL_FILTER,
-                INEQUALITIES: {"0": {OPERATION: ">", VALUE: 3250}},
+        [
+            {
+                "type": "numerical_filter",
+                "column": "body_mass_g",
+                "operation": ">",
+                "value": 3250,
             }
-        },
+        ],
     )
+
     assert test_dict["body_mass_g"] == [3750, 3800]
     assert test_dict["flipper_length_mm"] == [181, 186]
 

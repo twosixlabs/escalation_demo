@@ -8,7 +8,7 @@
   <hr class="my-4">
   <p class="lead">
     {% for button in buttons %}
-        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{ button['name'] }}</a>
+        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{ button['button_label'] }}</a>
     {% endfor %}
   </p>
 </div>
@@ -32,7 +32,7 @@
             {% include selector['select_html_file'] ignore missing %}
          {% endfor %}
 
-         <button type="button" class="btn btn-primary btn-lg" onclick="store_page_location_then_submit({{ index }})">Update</button>
+         <button type="button" class="btn btn-primary btn-lg" onclick="post_json_to_server({{ index }})">Update</button>
      </div>
      </div>
 

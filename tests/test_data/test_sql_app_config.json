@@ -4,30 +4,40 @@
   "data_backend": "psql",
   "available_pages": {
     "penguins": {
-      "name": "Penguins",
-      "graphics": [
-        {
+      "button_label": "Penguins",
+      "graphics": {
+        "graphic_0": {
           "plot_manager": "plotly",
           "data_path": "tests/test_data/penguins_size/",
           "title": "Do massive penguins have long flippers?",
           "brief_desc": "This plot looks at the relationship between...",
-          "data": [
-            {
+          "data": {
+            "points_0": {
               "x": "body_mass_g",
               "y": "flipper_length_mm"
             }
-          ],
+          },
+
+          "plot_specific_info": {
+            "data": [
+              {
+                "type": "scatter",
+                "mode": "markers"
+              }
+            ]
+          },
+
           "visualization_options": [
             {
               "type": "hover_data",
-              "columns": [
+              "column": [
                 "sex",
                 "culmen_length_mm"
               ]
             },
             {
               "type": "groupby",
-              "columns": [
+              "column": [
                 "island"
               ],
               "options": {
@@ -54,57 +64,36 @@
           "selectable_data_list": [
             {
               "type": "select",
-              "columns": "sex",
+              "column": "sex",
               "options": {
                 "multiple": false
               }
             },
             {
               "type": "select",
-              "columns": "island",
+              "column": "island",
               "options": {
                 "multiple": true
               }
             },
             {
               "type": "numerical_filter",
-              "columns": "culmen_length_mm"
+              "column": "culmen_length_mm"
             }
-          ],
-          "plot_options": {
-            "data": [
-              {
-                "type": "scatter",
-                "mode": "markers"
-              }
-            ]
-          }
+          ]
         },
-        {
+        "graphic_1": {
           "plot_manager": "plotly",
           "data_path": "tests/test_data/penguins_size/",
           "title": "How big are penguins?",
           "brief_desc": "",
-          "data": [
-            {
+          "data": {
+            "points_0": {
               "x": "body_mass_g"
             }
-          ],
-          "selectable_data_list": [
-            {
-              "type": "axis",
-              "columns": "x",
-              "options": {
-                "entries": [
-                  "culmen_length_mm",
-                  "flipper_length_mm",
-                  "body_mass_g",
-                  "culmen_depth_mm"
-                ]
-              }
-            }
-          ],
-          "plot_options": {
+          },
+
+          "plot_specific_info": {
             "data": [
               {
                 "type": "histogram"
@@ -118,63 +107,23 @@
                 "title": "count"
               }
             }
-          }
-        }
-      ]
-    },
-    "more_penguins": {
-      "name": "More Penguins!",
-      "graphics": [
-        {
-          "plot_manager": "plotly",
-          "data_path": "tests/test_data/penguins_size/",
-          "title": "Do long nosed penguins have long flippers by sex (avg)?",
-          "brief_desc": "A plot",
-          "data": [
-            {
-              "x": "culmen_length_mm",
-              "y": "flipper_length_mm"
-            }
-          ],
+          },
           "selectable_data_list": [
             {
-              "type": "select",
-              "columns": "island",
+              "type": "axis",
+              "column": "x",
               "options": {
-                "multiple": true
+                "entries": [
+                  "culmen_length_mm",
+                  "flipper_length_mm",
+                  "body_mass_g",
+                  "culmen_depth_mm"
+                ]
               }
             }
-          ],
-          "visualization_options": [
-            {
-              "type": "aggregate",
-              "columns": [
-                "sex"
-              ],
-              "options": {
-                "aggregations": {
-                  "x": "avg",
-                  "y": "avg"
-                }
-              }
-            },
-            {
-              "type": "groupby",
-              "columns": [
-                "sex"
-              ]
-            }
-          ],
-          "plot_options": {
-            "data": [
-              {
-                "type": "scatter",
-                "mode": "markers"
-              }
-            ]
-          }
+          ]
         }
-      ]
+      }
     }
   }
 }
