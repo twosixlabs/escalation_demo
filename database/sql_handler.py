@@ -6,6 +6,7 @@ from sqlalchemy import and_
 
 from database.data_handler import DataHandler
 from database.database import db_session, Base
+from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
@@ -115,16 +116,6 @@ class SqlHandler(DataHandler):
         query = db_session.query(
             *[data_source[DATA_LOCATION] for data_source in self.data_sources]
         )
-        #
-        # columns_to_get = {}
-        # for data_source in self.data_sources:
-        #     table_columns = data_source[DATA_LOCATION].__table__.columns
-        #     for column in table_columns:
-        #         # we only include the column in the columns to get if it doesn't match the name of an already included column
-        #         if column.name not in columns_to_get:
-        #             columns_to_get[column.name] = column
-        # query = db_session.query(*columns_to_get).select_from(self.data_sources[0][DATA_LOCATION])
-
         # Assumption: All joins link to IDs in first table, not IDs that were added in previous joins
         for i, data_source in enumerate(self.data_sources):
             table_class = data_source[DATA_LOCATION]
@@ -148,10 +139,16 @@ class SqlHandler(DataHandler):
                     ),  # on clause matches corresponding table columns
                 )
 
-        class QueryView(Base):
-            # defines the selectable class for the query view. Prefixes all column names with the table_name
-            # todo: can we avoid this prefixing?
-            __table__ = query.selectable.alias()
+        # Dynamically defines the selectable class for the query view
+        # This prefixes all column names with "{table_name}_"
+        query_view_name = "_".join(
+            [data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources]
+        )
+        QueryView = type(
+            query_view_name,
+            (Base,),  # inherit from Base
+            {"__table__": query.selectable.alias()},
+        )
 
         return QueryView
 
@@ -186,13 +183,21 @@ class SqlHandler(DataHandler):
         :param filters: Optional dict specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
+        if filters is None:
+            filters = {}
+        cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
+        all_to_include_cols = list(set(columns + list(cols_for_filters)))
+
         (
             column_rename_dict,
             column_mapping_dict,
-        ) = self.get_column_objects_from_config_string(columns)
+        ) = self.get_column_objects_from_config_string(all_to_include_cols)
         query = db_session.query(*column_mapping_dict.values())
 
         # todo: implement filters with the refactored version from Alexander
+        # for filter_dict in filters:
+        #     query
+
         response_rows = query.all()
         # use pandas to read the sql response and convert to a dict of lists keyed by column names
         # rename is switching the '_' separation back to '.'
@@ -216,3 +221,17 @@ class SqlHandler(DataHandler):
             # todo: note we're dropping none/missing values from the response. Do we want to be able to include them?
             unique_dict[config_col] = [r[0] for r in response if r[0] is not None]
         return unique_dict
+
+
+def filter_operation(data_column, filter_dict):
+    if filter_dict[SELECTOR_TYPE] == FILTER:
+        entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
+        # data storers handle a single value different from multiple values
+        if len(entry_values_to_be_shown_in_plot) > 1:
+            return data_column.isin(entry_values_to_be_shown_in_plot)
+        else:
+            return data_column == entry_values_to_be_shown_in_plot[0]
+    elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
+        return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
+            data_column, filter_dict[VALUE]
+        )

@@ -123,7 +123,7 @@ class LocalCSVHandler(DataHandler):
         :return:
         """
         if filters is None:
-            filters = []
+            filters = {}
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
         all_to_include_cols = set(cols + list(cols_for_filters))
         df = self.combined_data_table[all_to_include_cols]
