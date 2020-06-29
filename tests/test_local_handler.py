@@ -86,9 +86,9 @@ def test_get_column_unique_entries(local_handler_fixture_small):
 
 # define 2 joined data tables as the data_source
 TWO_DATA_SOURCES_CONFIG = [
-    {"data_source_type": "tests/test_data/penguin_size/"},
+    {"data_source_type": "penguin_size"},
     {
-        "data_source_type": "tests/test_data/mean_penguin_stat/",
+        "data_source_type": "mean_penguin_stat",
         "left_keys": [
             "penguin_size.study_name",
             "penguin_size.sex",

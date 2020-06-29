@@ -55,6 +55,7 @@ class LocalCSVHandler(DataHandler):
                 self.data_file_directory, data_source_name
             )
             list_of_files = glob.glob(f"{data_source_subfolder}/*.csv")
+            assert len(list_of_files) > 0
             latest_filepath = max(list_of_files, key=os.path.getctime)
             data_source.update({DATA_LOCATION: latest_filepath})
         self.combined_data_table = self.build_combined_data_table()
