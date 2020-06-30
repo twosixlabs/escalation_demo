@@ -3,6 +3,11 @@
     "brief_desc": "This is a test/demo for the Escalation OS",
     "data_backend": "local_csv",
     "data_file_directory": "tests/test_data/",
+    "data_sources": [
+        "penguin_size",
+        "mean_penguin_stat",
+        "penguin_size_small"
+    ],
     "available_pages": {
         "penguins": {
             "button_label": "Penguins",
