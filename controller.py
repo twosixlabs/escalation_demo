@@ -1,4 +1,5 @@
 from collections import defaultdict
+import copy
 
 from flask import current_app
 from werkzeug.datastructures import ImmutableMultiDict
@@ -11,8 +12,7 @@ from utility.available_selectors import (
 )
 from utility.constants import *
 from utility.reformatting_functions import (
-    make_default_addendum,
-    add_info_from_addendum_to_config_dict,
+    add_instructions_to_config_dict
 )
 
 
@@ -30,16 +30,14 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 
     plot_specs = []
     if display_page is not None:
-        single_page_config_dict = available_pages.get(display_page, {}).get(
-            GRAPHICS, {}
+        single_page_config_dict = copy.deepcopy(
+            available_pages.get(display_page, {}).get(GRAPHICS, {})
         )
         if addendum_dict is None:
-            addendum_dict = make_default_addendum(single_page_config_dict)
-        else:
-            single_page_config_dict = add_info_from_addendum_to_config_dict(
-                single_page_config_dict, addendum_dict
-            )
-            print(single_page_config_dict)
+            addendum_dict = ImmutableMultiDict()
+        single_page_config_dict = add_instructions_to_config_dict(
+            single_page_config_dict, addendum_dict
+        )
         plot_specs = organize_graphic(single_page_config_dict, addendum_dict)
 
     page_info = {
@@ -115,6 +113,8 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
     graphic_data = AVAILABLE_GRAPHICS[plot_specification[PLOT_MANAGER]]
     graphic_to_plot = graphic_data[OBJECT]
     # makes a json file as required by js plotting documentation
+    # plot_specification[PLOT_SPECIFIC_INFO] gets modified to make plot_directions_dict
+    # but I do not want to affect the config file
     plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
         plot_data,
         plot_specification[DATA],

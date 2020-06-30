@@ -47,14 +47,7 @@ def test_get_column_data(local_handler_fixture_small):
 
     test_dict = local_handler_fixture_small.get_column_data(
         data_dict,
-        [
-            {
-                "type": "filter",
-                "column": "penguin_size_small.sex",
-                "selected": "MALE",
-                "list_of_values": False,
-            }
-        ],
+        [{"type": "filter", "column": "penguin_size_small.sex", "selected": ["MALE"]}],
     )
     assert test_dict["penguin_size_small.body_mass_g"] == [3750]
     assert test_dict["penguin_size_small.flipper_length_mm"] == [181]

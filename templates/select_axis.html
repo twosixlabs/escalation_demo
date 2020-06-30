@@ -1,7 +1,7 @@
 {% set col=selector['column'] %}
 
-<h4>{{ col ~ " axis" }}</h4>
-    <select class="custom-select custom-select mb-3" name={{ "graphic_" ~ index ~ "[selection_" ~ selector_index ~ "][selected]" }} id={{ col }} form="the_form">
+<h6>{{ col ~ " axis" }}</h6>
+    <select class="custom-select custom-select mb-3" name={{ "selection_" ~ selector_index }} id={{ col }} form={{ "form_" ~ graphic_index }}>
     {% for col_name in selector['entries'] %}
   <option value={{ col_name }}
                   {% if col_name in selector['active_selector'] %}selected> {% else %}> {% endif %} {{ col_name }}</option>
