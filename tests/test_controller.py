@@ -21,10 +21,6 @@ from utility.constants import (
 )
 
 
-def test_get_graphic():
-    assert False
-
-
 def test_extract_buttons(json_config_fixture):
     aval_pg = json_config_fixture["available_pages"]
     buttons = create_link_buttons_for_available_pages(aval_pg)

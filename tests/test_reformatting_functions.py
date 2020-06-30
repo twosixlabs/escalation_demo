@@ -16,6 +16,7 @@ from utility.constants import (
     VALUE,
     OPERATION,
     ACTIVE_SELECTORS,
+    DATA_FILTERS,
 )
 from utility.reformatting_functions import (
     add_operations_to_the_data,
@@ -150,4 +151,13 @@ def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
     single_page_config_dict_test = add_instructions_to_config_dict(
         single_page_config_dict_test, None
     )
-    assert False
+    # add instructions should call the other two methods which I am already testing for.
+    # So I want to make sure it in actually doing something
+    assert single_page_config_dict_test != single_page_config_dict
+    assert DATA_FILTERS not in single_page_config_dict_test[GRAPHIC_NUM.format(0)]
+
+    single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
+    single_page_config_dict_test = add_instructions_to_config_dict(
+        single_page_config_dict_test, addendum_dict
+    )
+    assert DATA_FILTERS in single_page_config_dict_test[GRAPHIC_NUM.format(0)]

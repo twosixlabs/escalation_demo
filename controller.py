@@ -143,7 +143,7 @@ def get_unique_set_of_columns_needed(
 
 def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
     """
-    :param available_pages:
+    :param available_pages_dict:
     :return:
     """
     buttons = []
@@ -195,7 +195,7 @@ def create_data_subselect_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: column_names,
-                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION,{}),
+                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION, {}),
             }
         )
 
