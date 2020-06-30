@@ -25,14 +25,11 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 
     available_pages = config_dict[AVAILABLE_PAGES]
     buttons = create_link_buttons_for_available_pages(available_pages)
-
     plot_specs = []
     if display_page is not None:
         single_page_config_dict = copy.deepcopy(
             available_pages.get(display_page, {}).get(GRAPHICS, {})
         )
-        if addendum_dict is None:
-            addendum_dict = ImmutableMultiDict()
         single_page_config_dict = add_instructions_to_config_dict(
             single_page_config_dict, addendum_dict
         )
@@ -116,7 +113,7 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
         visualization_options,
     )
 
-    return (plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE])
+    return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE]
 
 
 def get_unique_set_of_columns_needed(
@@ -165,9 +162,7 @@ def create_data_subselect_info(
 ) -> list:
     """
     puts selctor data in form to be read by html file
-    :param filters: Contains information on which selection on the webpage have
-    :param axis_to_data_columns: Contains infomation which axis are currently showing up on the plot {'x':'bon'}
-    :param list_of_selection_options_by_plot:
+    :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
     :param new_data:
     :return:
     """
@@ -188,6 +183,8 @@ def create_data_subselect_info(
             column_names = column_names[column]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
+            column_names = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
 
         active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
@@ -198,7 +195,7 @@ def create_data_subselect_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: column_names,
-                SELECT_OPTION: selection_option_dict_for_plot[SELECT_OPTION],
+                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION,{}),
             }
         )
 

@@ -19,7 +19,7 @@ def add_instructions_to_config_dict(
     :param single_page_graphic_config_dict:
     :param addendum_dict: e.g ImmutableMultiDict([('graphic_index', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
-
+    Should not pass an empty ImmutableMultiDict
     :return: modified single_page_config_dict
     """
     if addendum_dict is None:
@@ -47,24 +47,22 @@ def add_active_selectors_to_selectable_data_list(
     """
     Sets which selectors are active based on user choices.
     If none have been selected sets reasonable defaults
-    :param selectable_data_list:
-    :param data_info_dict:
-    :param addendum_dict: submitted from the UI web form
+    :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
+    :param data_info_dict: Dictionary that has which data goes in which plot
+    :param addendum_dict: User selections form the webpage
     :return:
     """
 
     if addendum_dict is None:
-        addendum_dict = {}
+        addendum_dict = ImmutableMultiDict()
     for selection_index, selection_dict in enumerate(selectable_data_list):
         if selection_dict[SELECTOR_TYPE] == SELECTOR:
             # getlist does not not work like get so need to set default "manually"
+
             selection_index_str = SELECTION_NUM.format(selection_index)
-            if selection_index_str in addendum_dict:
-                selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
-                    selection_index_str
-                )
-            else:
-                selection_dict[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
+            selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
+                selection_index_str
+            ) or [SHOW_ALL_ROW]
         elif selection_dict[SELECTOR_TYPE] == AXIS:
             # in the case of no user selected the active selector is the one currently being plotted,
             # taken from the first set of points (index 0)
@@ -90,9 +88,9 @@ def add_operations_to_the_data(
 ) -> dict:
     """
     Adds operations to be passed to the data handlers for the data
-    :param selectable_data_list:
-    :param data_info_dict:
-    :param addendum_dict:
+    :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
+    :param data_info_dict: Dictionary that has which data goes in which plot
+    :param addendum_dict: User selections form the webpage
     :return:
     """
     operation_list = []
@@ -122,6 +120,8 @@ def add_operations_to_the_data(
         elif option_type == NUMERICAL_FILTER:
             # the numerical filter contains two filters so add them separately
             for loc in [UPPER_INEQUALITY, LOWER_INEQUALITY]:
+                # get the value submitted in the web form by using its name
+                # format specified in numeric_filter.html
                 numerical_value = addendum_dict[
                     SELECTION_NUM_LOC_TYPE.format(selection_index, loc, VALUE)
                 ]

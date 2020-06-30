@@ -7,13 +7,10 @@ from werkzeug.datastructures import ImmutableMultiDict
 from utility.constants import (
     AVAILABLE_PAGES,
     DATA,
-    FILTERS,
     GRAPHIC_NUM,
     GRAPHICS,
     POINTS_NUM,
-    DATA_FILTERS,
     SELECTABLE_DATA_LIST,
-    SELECTED,
     SHOW_ALL_ROW,
     UPPER_INEQUALITY,
     VALUE,
@@ -23,7 +20,7 @@ from utility.constants import (
 from utility.reformatting_functions import (
     add_operations_to_the_data,
     add_active_selectors_to_selectable_data_list,
-    NUMERICAL_FILTER_DEFAULT,
+    add_instructions_to_config_dict,
 )
 
 
@@ -85,7 +82,7 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     graphic_0_dict = single_page_config_dict["graphic_0"]
     add_active_selectors_to_selectable_data_list(
-        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], {}
+        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], ImmutableMultiDict()
     )
     assert len(graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]
@@ -145,3 +142,12 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
         single_page_config_dict[GRAPHIC_NUM.format(1)][DATA][POINTS_NUM.format(0)]["x"]
         == "culmen_length_mm"
     )
+
+
+def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
+    single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
+    single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
+    single_page_config_dict_test = add_instructions_to_config_dict(
+        single_page_config_dict_test, None
+    )
+    assert False
