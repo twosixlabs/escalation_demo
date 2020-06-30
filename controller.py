@@ -38,7 +38,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         single_page_config_dict = add_instructions_to_config_dict(
             single_page_config_dict, addendum_dict
         )
-        plot_specs = organize_graphic(single_page_config_dict, addendum_dict)
+        plot_specs = organize_graphic(single_page_config_dict)
 
     page_info = {
         JINJA_PLOT: plot_specs,
@@ -49,7 +49,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     return page_info
 
 
-def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list:
+def organize_graphic(single_page_config_dict: dict) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
@@ -73,7 +73,7 @@ def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list
         if SELECTABLE_DATA_LIST in plot_specification:
             select_dict = plot_specification[SELECTABLE_DATA_LIST]
             select_info = create_data_subselect_info(
-                select_dict, plot_data_handler, addendum_dict[plot_index]
+                select_dict, plot_data_handler
             )
 
         html_dict = {
@@ -168,8 +168,7 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
 
 def create_data_subselect_info(
     list_of_selection_options_by_plot: list,
-    new_data: DataHandler,
-    single_graphic_addendum_dict: dict,
+    new_data: DataHandler
 ) -> list:
     """
     puts selctor data in form to be read by html file
@@ -183,37 +182,21 @@ def create_data_subselect_info(
     for selection_index, selection_option_dict_for_plot in enumerate(
         list_of_selection_options_by_plot
     ):
-        selection_index_str = SELECTION_NUM.format(selection_index)
 
         selector_attributes = AVAILABLE_SELECTORS[
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
         column = selection_option_dict_for_plot[OPTION_COL]
-        active_selection_options = []
         column_names = []
 
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
             column_names = new_data.get_column_unique_entries([column])
             column_names = column_names[column]
-            selected_value = single_graphic_addendum_dict[selection_index_str][SELECTED]
-            if isinstance(selected_value, list):
-                active_selection_options = selected_value
-            else:
-                active_selection_options = [selected_value]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-            active_selection_options = single_graphic_addendum_dict[
-                selection_index_str
-            ][SELECTED]
-        elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
-            active_selection_options = {}
-            selection_option_dict_for_plot[SELECT_OPTION] = {}
-            column_names = list(OPERATIONS_FOR_NUMERICAL_FILTERS.keys())
-            for loc in [UPPER_INEQUALITY, LOWER_INEQUALITY]:
-                active_selection_options[loc] = single_graphic_addendum_dict[
-                    selection_index_str
-                ][INEQUALITY_LOC.format(loc)]
+
+        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
             {

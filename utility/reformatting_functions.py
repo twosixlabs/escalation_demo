@@ -17,7 +17,7 @@ def add_instructions_to_config_dict(
     """
     We build a page based on 2 dictonaries, what is in the config and what is submitted in the HTML form.
     :param single_page_graphic_config_dict:
-    :param addendum_dict: e.g ImmutableMultiDict([('graphic_index', 'graphic0'), ('selection_0', 'SHOW_ALL_ROW'),
+    :param addendum_dict: e.g ImmutableMultiDict([('graphic_index', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
 
     :return: modified single_page_config_dict
