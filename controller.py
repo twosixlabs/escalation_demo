@@ -116,7 +116,7 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
         visualization_options,
     )
 
-    return (plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE])
+    return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE]
 
 
 def get_unique_set_of_columns_needed(
@@ -165,9 +165,7 @@ def create_data_subselect_info(
 ) -> list:
     """
     puts selctor data in form to be read by html file
-    :param filters: Contains information on which selection on the webpage have
-    :param axis_to_data_columns: Contains infomation which axis are currently showing up on the plot {'x':'bon'}
-    :param list_of_selection_options_by_plot:
+    :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
     :param new_data:
     :return:
     """

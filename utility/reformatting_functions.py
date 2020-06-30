@@ -58,17 +58,13 @@ def add_active_selectors_to_selectable_data_list(
     """
 
     if addendum_dict is None:
-        addendum_dict = {}
+        addendum_dict = ImmutableMultiDict()
     for selection_index, selection_dict in enumerate(selectable_data_list):
         if selection_dict[SELECTOR_TYPE] == SELECTOR:
             # getlist does not not work like get so need to set default "manually"
+
             selection_index_str = SELECTION_NUM.format(selection_index)
-            if selection_index_str in addendum_dict:
-                selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
-                    selection_index_str
-                )
-            else:
-                selection_dict[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
+            selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(selection_index_str) or [SHOW_ALL_ROW]
         elif selection_dict[SELECTOR_TYPE] == AXIS:
             # in the case of no user selected the active selector is the one currently being plotted,
             # taken from the first set of points (index 0)

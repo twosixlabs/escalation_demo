@@ -39,11 +39,13 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
             "type": "select",
             "column": "penguin_size.sex",
             "options": {"multiple": False},
+            ACTIVE_SELECTORS: ["MALE"],
         },
         {
             "type": "select",
             "column": "penguin_size.island",
             "options": {"multiple": True},
+            ACTIVE_SELECTORS: [SHOW_ALL_ROW],
         },
         {
             "type": "axis",
@@ -53,31 +55,14 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
                     "penguin_size.culmen_length_mm",
                     "penguin_size.flipper_length_mm",
                     "penguin_size.body_mass_g",
-                ]
+                ],
+                ACTIVE_SELECTORS: ["penguin_size.culmen_length_mm"],
             },
         },
     ]
 
-    single_addendum_dict = {
-        "selection_0": {
-            "type": "filter",
-            "column": "penguin_size.sex",
-            "selected": "MALE",
-        },
-        "selection_1": {
-            "type": "filter",
-            "column": "penguin_size.island",
-            "selected": SHOW_ALL_ROW,
-        },
-        "selection_2": {
-            "type": "axis",
-            "column": "x",
-            "selected": "penguin_size.body_mass_g",
-        },
-    }
-    select_info = create_data_subselect_info(
-        select_dict, local_handler_fixture, single_addendum_dict
-    )
+    select_info = create_data_subselect_info(select_dict, local_handler_fixture)
+
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
     assert select_info[1][COLUMN_NAME] == "penguin_size.island"
     assert select_info[2][JINJA_SELECT_HTML_FILE] == "select_axis.html"

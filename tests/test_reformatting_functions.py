@@ -85,7 +85,7 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     graphic_0_dict = single_page_config_dict["graphic_0"]
     add_active_selectors_to_selectable_data_list(
-        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], {}
+        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], ImmutableMultiDict()
     )
     assert len(graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]
