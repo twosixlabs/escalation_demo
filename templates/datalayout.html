@@ -12,12 +12,14 @@
     {% endfor %}
   </p>
 </div>
-    <form method="post" id="the_form">
-    </form>
+
 <div class="container">
     {% for plot in plots %}
-        {% set index = loop.index0 %}
-     <div class="row" id={{ "graphic" ~ index }}>
+        {% set graphic_index = loop.index0 %}
+        <form method="post" id={{ "form_" ~ graphic_index }}>
+         <input type="hidden" name="graphic_index" value={{ "graphic_" ~ graphic_index }}>
+    </form>
+     <div class="row" id={{ "graphic_" ~ graphic_index }}>
             <h1> {{ plot['title'] }}</h1>
      </div>
         <div class="row">
@@ -29,10 +31,11 @@
          </div>
      <div class="col-2 text-center">
          {% for selector in plot['select_info'] %}
+             {% set selector_index = loop.index0 %}
             {% include selector['select_html_file'] ignore missing %}
          {% endfor %}
 
-         <button type="button" class="btn btn-primary btn-lg" onclick="post_json_to_server({{ index }})">Update</button>
+         <button type="button" class="btn btn-primary btn-lg" onclick="post_to_server({{ graphic_index }})">Update</button>
      </div>
      </div>
 

@@ -1,11 +1,11 @@
 {
   "graphic_0": {
-    "selection_0": {"type": "filter", "column":"sex", "selected": "MALE"},
-    "selection_1": {"type": "filter", "column":"island", "selected": ["Biscoe","Dream"]},
-    "selection_2": {"type": "numerical_filter", "column":"island", "inequality_upper": {"operation": "<=", "value":4}, "inequality_lower": {"operation": ">", "value":null}
+    "selection_0": {"selected": "MALE"},
+    "selection_1": {"selected": ["Biscoe","Dream"]},
+    "selection_2": {"inequality_upper": {"operation": "<=", "value":4}, "inequality_lower": {"operation": ">", "value":null}
     }
   },
   "graphic_1":{
-    "selection_0": {"type": "axis", "column":"x", "selected": "culmen_length_mm"}
+    "selection_0": {"selected": "culmen_length_mm"}
   }
 }

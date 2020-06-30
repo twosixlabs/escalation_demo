@@ -1,4 +1,5 @@
 from collections import defaultdict
+import copy
 
 from flask import current_app
 from werkzeug.datastructures import ImmutableMultiDict
@@ -10,10 +11,7 @@ from utility.available_selectors import (
     OPERATIONS_FOR_NUMERICAL_FILTERS,
 )
 from utility.constants import *
-from utility.reformatting_functions import (
-    make_default_addendum,
-    add_info_from_addendum_to_config_dict,
-)
+from utility.reformatting_functions import add_instructions_to_config_dict
 
 
 def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> dict:
@@ -27,19 +25,15 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 
     available_pages = config_dict[AVAILABLE_PAGES]
     buttons = create_link_buttons_for_available_pages(available_pages)
-
     plot_specs = []
     if display_page is not None:
-        single_page_config_dict = available_pages.get(display_page, {}).get(
-            GRAPHICS, {}
+        single_page_config_dict = copy.deepcopy(
+            available_pages.get(display_page, {}).get(GRAPHICS, {})
         )
-        if addendum_dict is None:
-            addendum_dict = make_default_addendum(single_page_config_dict)
-        else:
-            single_page_config_dict = add_info_from_addendum_to_config_dict(
-                single_page_config_dict, addendum_dict
-            )
-        plot_specs = organize_graphic(single_page_config_dict, addendum_dict)
+        single_page_config_dict = add_instructions_to_config_dict(
+            single_page_config_dict, addendum_dict
+        )
+        plot_specs = organize_graphic(single_page_config_dict)
 
     page_info = {
         JINJA_PLOT: plot_specs,
@@ -50,7 +44,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     return page_info
 
 
-def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list:
+def organize_graphic(single_page_config_dict: dict) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
@@ -73,9 +67,7 @@ def organize_graphic(single_page_config_dict: dict, addendum_dict: dict) -> list
         # checks to see if this plot has selectors
         if SELECTABLE_DATA_LIST in plot_specification:
             select_dict = plot_specification[SELECTABLE_DATA_LIST]
-            select_info = create_data_subselect_info(
-                select_dict, plot_data_handler, addendum_dict[plot_index]
-            )
+            select_info = create_data_subselect_info(select_dict, plot_data_handler)
 
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graph_html_template,
@@ -121,7 +113,7 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
         visualization_options,
     )
 
-    return (plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE])
+    return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE]
 
 
 def get_unique_set_of_columns_needed(
@@ -166,15 +158,11 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
 
 
 def create_data_subselect_info(
-    list_of_selection_options_by_plot: list,
-    new_data: DataHandler,
-    single_graphic_addendum_dict: dict,
+    list_of_selection_options_by_plot: list, new_data: DataHandler
 ) -> list:
     """
     puts selctor data in form to be read by html file
-    :param filters: Contains information on which selection on the webpage have
-    :param axis_to_data_columns: Contains infomation which axis are currently showing up on the plot {'x':'bon'}
-    :param list_of_selection_options_by_plot:
+    :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
     :param new_data:
     :return:
     """
@@ -182,37 +170,23 @@ def create_data_subselect_info(
     for selection_index, selection_option_dict_for_plot in enumerate(
         list_of_selection_options_by_plot
     ):
-        selection_index_str = SELECTION_NUM.format(selection_index)
 
         selector_attributes = AVAILABLE_SELECTORS[
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
         column = selection_option_dict_for_plot[OPTION_COL]
-        active_selection_options = []
         column_names = []
 
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
             column_names = new_data.get_column_unique_entries([column])
             column_names = column_names[column]
-            selected_value = single_graphic_addendum_dict[selection_index_str][SELECTED]
-            if isinstance(selected_value, list):
-                active_selection_options = selected_value
-            else:
-                active_selection_options = [selected_value]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-            active_selection_options = single_graphic_addendum_dict[
-                selection_index_str
-            ][SELECTED]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
-            active_selection_options = {}
-            selection_option_dict_for_plot[SELECT_OPTION] = {}
-            column_names = list(OPERATIONS_FOR_NUMERICAL_FILTERS.keys())
-            for loc in [UPPER_INEQUALITY, LOWER_INEQUALITY]:
-                active_selection_options[loc] = single_graphic_addendum_dict[
-                    selection_index_str
-                ][INEQUALITY_LOC.format(loc)]
+            column_names = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
+
+        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
             {
@@ -221,7 +195,7 @@ def create_data_subselect_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: column_names,
-                SELECT_OPTION: selection_option_dict_for_plot[SELECT_OPTION],
+                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION,{}),
             }
         )
 

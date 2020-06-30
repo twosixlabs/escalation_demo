@@ -1,8 +1,8 @@
 {% set col=selector['column'] %}
 
-<h4>{{ col }}</h4>
-    <select class="custom-select" name={{ index~ "|" ~ selector["type"] ~ "|" ~ col }} id={{ col }} form="the_form"
-            {% if selector['options']['multiple'] %} multiple size="3"> {% else %}> {% endif %}
+<h6>{{ col }}</h6>
+    <select class="custom-select" id={{ col }} name={{ "selection_" ~ selector_index }} form={{ "form_" ~ graphic_index }}
+            {% if selector['options']['multiple'] %}  multiple size="3"> {% else %} > {% endif %}
     <option value="SHOW_ALL_ROW"> {{'All Rows'}}</option>
     {% for col_name in selector['entries'] %}
   <option value={{ col_name }}

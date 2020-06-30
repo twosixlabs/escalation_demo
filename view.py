@@ -16,7 +16,6 @@ def main_page():
 
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET"])
 def graphic_page(page_name):
-
     html_data = get_data_for_page(current_app.config.get(APP_CONFIG_JSON), page_name)
     return render_template(DATALAYOUT, **html_data)
 

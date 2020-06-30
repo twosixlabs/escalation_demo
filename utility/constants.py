@@ -6,7 +6,6 @@ AVAILABLE_PAGES = "available_pages"
 GRAPHICS = "graphics"
 GRAPHIC_NUM = "graphic_{:d}"
 POINTS_NUM = "points_{:d}"
-SELECTION_NUM = "selection_{:d}"
 SITE_TITLE = "title"
 SITE_DESC = "brief_desc"
 BUTTON_LABEL = "button_label"
@@ -76,3 +75,9 @@ DATA_BACKEND = "data_backend"
 POSTGRES = "psql"
 MYSQL = "mysql"
 LOCAL_CSV = "local_csv"
+
+# addendum constants
+
+GRAPHIC_INDEX = "graphic_index"
+SELECTION_NUM = "selection_{:d}"
+SELECTION_NUM_LOC_TYPE = "selection_{:d}_{}_{}"
