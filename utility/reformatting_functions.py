@@ -32,7 +32,7 @@ def add_instructions_to_config_dict(
             add_active_selectors_to_selectable_data_list(
                 selector_list, data_info_dict, addendum_dict
             )
-            if addendum_dict[GRAPHIC_INDEX] == graphic_index:
+            if addendum_dict.get(GRAPHIC_INDEX) == graphic_index:
                 graphic_dict[DATA_FILTERS] = add_operations_to_the_data(
                     selector_list, data_info_dict, addendum_dict
                 )
