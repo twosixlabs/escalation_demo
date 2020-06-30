@@ -1,6 +1,5 @@
 APP_CONFIG_JSON = "app_config_json"
 
-
 # app config keys
 AVAILABLE_PAGES = "available_pages"
 GRAPHICS = "graphics"
@@ -12,10 +11,16 @@ BUTTON_LABEL = "button_label"
 LINK = "link"
 GRAPHIC_TITLE = "title"
 GRAPHIC_DESC = "brief_desc"
+DATA_BACKEND = "data_backend"
+POSTGRES = "psql"
+MYSQL = "mysql"
+LOCAL_CSV = "local_csv"
+
 
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"
+NEW_DATA_SOURCE = "new_data_source"
 DATA_SOURCE_TYPE = "data_source_type"
 LEFT_KEYS = "left_keys"
 RIGHT_KEYS = "right_keys"
@@ -71,10 +76,11 @@ JINJA_SELECT_INFO = "select_info"
 JINJA_PLOT_INFO = "plot_info"
 ACTIVE_SELECTORS = "active_selector"
 
-DATA_BACKEND = "data_backend"
-POSTGRES = "psql"
-MYSQL = "mysql"
-LOCAL_CSV = "local_csv"
+
+# DATA MANAGEMENT
+INDEX_COLUMN = "index"
+UPLOAD_ID = "upload_id"
+UPLOAD_TIME = "upload_time"
 
 # addendum constants
 

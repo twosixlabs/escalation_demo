@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+<h1>{% block title %}Upload CSV{% endblock %}</h1>
+
+<script type="text/javascript">
+  function displayInstructions() {
+  var x = document.getElementById("instructions");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+  }
+
+
+</script>
+
+{% endblock %}
+
+
+{% block content %}
+<h3>Most recent upload</h3>
+<button onclick="displayInstructions()"
+        style="border:none; background-color:#f1f1f1; font-size:16px; margin-bottom:16px;">Show Instructions<i
+        class="fa fa-caret-down"></i></button>
+<div id="instructions" style="margin-bottom:50px; display:none;">
+    <ul>
+        <li><b>Write some instructions for upload</b>
+
+        </li>
+    </ul>
+</div>
+
+<form id="upload_form" method="post" enctype="multipart/form-data">
+
+    <label id="username" for="username">Username</label>
+    <input type="text" name="username" required>
+
+    <label for="data_source">Data File Type</label>
+    Enter new data type name or select existing data type
+    <input list="data_source_list" id="data_source" name="data_source" required>
+    <datalist id="data_source_list">
+        {% for existing_data_source in data_sources %}
+        <option value={{ existing_data_source }}>
+            {% endfor %}
+    </datalist>
+
+    <label id="csvfile" for="csvfile">CSV file</label>
+    <input type="file" name="csvfile" accept="csv" required>
+
+    <label id="notes" for="notes">Notes</label>
+    <textarea placeholder="Enter notes about your submission" name="notes" rows="10" cols="30"></textarea>
+
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
+
+

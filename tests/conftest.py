@@ -3,20 +3,20 @@ Pytest configuration and test fixtures
 """
 
 import json
+import pytest
+from types import MappingProxyType
 
 from app import create_app
 
-import pytest
 
-from datastorer.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler
 from utility.constants import DATA_SOURCE_TYPE, APP_CONFIG_JSON
 
 
 @pytest.fixture()
 def test_app_client(json_config_fixture):
     flask_app = create_app()
-
-    flask_app.config[APP_CONFIG_JSON] = json_config_fixture
+    flask_app.config[APP_CONFIG_JSON] = MappingProxyType(json_config_fixture)
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
     testing_client = flask_app.test_client()

@@ -10,13 +10,14 @@ def build_config_json(data_backend, data_file_directory):
         "brief_desc": "This is a test/demo for the Escalation OS",
         "data_backend": data_backend,
         DATA_FILE_DIRECTORY: data_file_directory,
+        DATA_SOURCES: ["penguin_size", "mean_penguin_stat", "penguin_size_small"],
         "available_pages": {
             "penguins": {
                 "button_label": "Penguins",
                 "graphics": {
                     "graphic_0": {
                         "plot_manager": "plotly",
-                        "data_sources": [{"data_source_type": "penguin_size"}],
+                        DATA_SOURCES: [{"data_source_type": "penguin_size"}],
                         "title": "Do massive penguins have long flippers?",
                         "brief_desc": "This plot looks at the relationship between...",
                         "data": {
@@ -67,7 +68,7 @@ def build_config_json(data_backend, data_file_directory):
                     },
                     "graphic_1": {
                         "plot_manager": "plotly",
-                        "data_sources": [{"data_source_type": "penguin_size"}],
+                        DATA_SOURCES: [{"data_source_type": "penguin_size"}],
                         "title": "How big are penguins?",
                         "brief_desc": "",
                         "data": {"points_0": {"x": "penguin_size.body_mass_g"}},
@@ -100,7 +101,7 @@ def build_config_json(data_backend, data_file_directory):
                 "graphics": {
                     "graphic_0": {
                         "plot_manager": "plotly",
-                        "data_sources": [{"data_source_type": "penguin_size"}],
+                        DATA_SOURCES: [{"data_source_type": "penguin_size"}],
                         "title": "Do long nosed penguins have long flippers by sex (avg)?",
                         "brief_desc": "A plot",
                         "data": {

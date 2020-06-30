@@ -6,8 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from app_settings import PSQL_DATABASE_CONFIG as database_config
 
 try:
-    from datastorer.models import *
-    from datastorer.models import Base
+    from database.models import *
+    from database.models import Base
 except ModuleNotFoundError:
     raise (ModuleNotFoundError, "models.py file not defined- run database setup")
 

@@ -2,15 +2,17 @@
 Inspired by https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
 """
 
-import os
 import sys
 import warnings
+import uuid
 
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy.types import Integer, Text, Date, Float
 from tableschema import Table
+
+from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
 
 DB_BACKEND = "psql"
 if DB_BACKEND == "psql":
@@ -119,6 +121,11 @@ class CreateTablesFromCSVs:
             warnings.simplefilter("ignore")
             # if there is no key specified, include the index
             index = key_columns is None
+            if not index:
+                # assign row numerical index to its own column
+                data = data.reset_index()
+            # add a data upload id and time column to all tables and
+            data[UPLOAD_ID] = uuid.uuid1()
             if DB_BACKEND == "mysql":
                 data.to_sql(
                     table_name,
@@ -127,7 +134,6 @@ class CreateTablesFromCSVs:
                     if_exists="replace",
                     chunksize=300,
                     dtype=schema,
-                    index=index,
                 )
                 if key_columns:
                     cls.__engine.execute(
@@ -138,7 +144,7 @@ class CreateTablesFromCSVs:
                 else:
                     # use the numerical index from pandas as a pk
                     cls.__engine.execute(
-                        "ALTER TABLE {} ADD UNIQUE({});".format(table_name, "index")
+                        f"ALTER TABLE {table_name} ADD UNIQUE({UPLOAD_ID}, {INDEX_COLUMN});"
                     )
             elif DB_BACKEND == "psql":
                 if table_name.lower() != table_name:
@@ -151,7 +157,6 @@ class CreateTablesFromCSVs:
                     if_exists="replace",
                     chunksize=300,
                     dtype=schema,
-                    index=index,
                 )
                 if key_columns:
                     cls.__engine.execute(
@@ -160,7 +165,7 @@ class CreateTablesFromCSVs:
                 else:
                     # use the numerical index from pandas as a pk
                     cls.__engine.execute(
-                        f"ALTER TABLE {table_name} add primary key (index);"
+                        f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
                     )
 
 
@@ -189,9 +194,10 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python datastorer/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
-    # python datastorer/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
+    # python database/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
+    # python database/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
     # create a models.py file with the sqlalchemy model of the table
-    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile datastorer/models.py
+    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile database/models.py
 
-# todo: add columns about upload time, upload id, to df and to sql. How are we choosing which data to show in our later queries?
+# todo: add columns about upload time
+# todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission
