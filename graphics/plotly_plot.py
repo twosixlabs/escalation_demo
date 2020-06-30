@@ -28,9 +28,8 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     """
 
     :param data:
-    :param hover_column_names:
+    :param hover_options:
     :param plot_options_data_dict:
-    :param index:
     :return:
     """
     # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
