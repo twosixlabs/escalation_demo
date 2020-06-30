@@ -14,6 +14,14 @@
   }
   }
 
+function OtherTextbox(val){
+ var element=document.getElementById('data_source');
+ console.log("foo")
+ if(val=="new_data_source")
+   element.style.display='block';
+ else
+   element.style.display='none';
+}
 
 </script>
 
@@ -21,7 +29,6 @@
 
 
 {% block content %}
-
 <h3>Most recent upload</h3>
 <button onclick="displayInstructions()"
         style="border:none; background-color:#f1f1f1; font-size:16px; margin-bottom:16px;">Show Instructions<i
@@ -34,51 +41,27 @@
     </ul>
 </div>
 
-    <form method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data">
 
-        {% if 'crank' in session %}
-        <label for="crank">Crank</label>
-        <input type="text" name="crank" maxlength="4" value=22 required>
+    <label id="username" for="username">Username</label>
+    <input type="text" name="username" required>
 
-        <label for="username">Username</label>
-        <input type="text" name="username" value=23 required>
+    <label for="data_source">Data File Type</label>
+    <select name="data_source_selector" id="data_source_selector" required onchange='OtherTextbox(this.value)'>
+        {% for existing_data_source in data_sources %}
+        <option value={{ existing_data_source }}>{{ existing_data_source }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" name="data_source" id="data_source" style="display:none;"/>
 
-        <label for="expname">Experiment Name</label>
-        <input type="text" name="expname" value=24 required>
+    <label id="csvfile" for="csvfile">CSV file</label>
+    <input type="file" name="csvfile" accept="csv" required>
 
-        <label for="githash">Versioned data githash</label>
-        <input type="text" name="githash" value="abc123" required>
+    <label id="notes" for="notes">Notes</label>
+    <textarea placeholder="Enter notes about your submission" name="notes" rows="10" cols="30"></textarea>
 
-        <label for="csvfile">CSV file</label>
-        <input type="file" name="csvfile" accept="csv" required>
-
-
-        <label for="notes">Notes</label>
-        <textarea placeholder="Enter notes about your submission" name="notes" rows="10" cols="30"
-                  value="NOTES_FOO"></textarea>
-
-        {% else %}
-        <label for="crank">Crank</label>
-        <input type="text" name="crank" maxlength="4" required>
-
-        <label for="username">Username</label>
-        <input type="text" name="username" required>
-
-        <label for="expname">Experiment Name</label>
-        <input type="text" name="expname" required>
-
-        <label for="githash">Versioned data 7-char git hash</label>
-        <input type="text" name="githash" required>
-
-        <label for="csvfile">CSV file</label>
-        <input type="file" name="csvfile" accept="csv" required>
-
-        <label for="notes">Notes</label>
-        <textarea placeholder="Enter notes about your submission" name="notes" rows="10" cols="30"></textarea>
-
-        {% endif %}
-        <input type="submit" value="Submit">
-    </form>
+    <input type="submit" value="Submit">
+</form>
 {% endblock %}
 
 
