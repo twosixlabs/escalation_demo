@@ -11,9 +11,7 @@ from utility.available_selectors import (
     OPERATIONS_FOR_NUMERICAL_FILTERS,
 )
 from utility.constants import *
-from utility.reformatting_functions import (
-    add_instructions_to_config_dict
-)
+from utility.reformatting_functions import add_instructions_to_config_dict
 
 
 def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> dict:
@@ -72,9 +70,7 @@ def organize_graphic(single_page_config_dict: dict) -> list:
         # checks to see if this plot has selectors
         if SELECTABLE_DATA_LIST in plot_specification:
             select_dict = plot_specification[SELECTABLE_DATA_LIST]
-            select_info = create_data_subselect_info(
-                select_dict, plot_data_handler
-            )
+            select_info = create_data_subselect_info(select_dict, plot_data_handler)
 
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graph_html_template,
@@ -113,8 +109,6 @@ def assemble_info_for_plot(plot_specification, plot_data_handler):
     graphic_data = AVAILABLE_GRAPHICS[plot_specification[PLOT_MANAGER]]
     graphic_to_plot = graphic_data[OBJECT]
     # makes a json file as required by js plotting documentation
-    # plot_specification[PLOT_SPECIFIC_INFO] gets modified to make plot_directions_dict
-    # but I do not want to affect the config file
     plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
         plot_data,
         plot_specification[DATA],
@@ -167,8 +161,7 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
 
 
 def create_data_subselect_info(
-    list_of_selection_options_by_plot: list,
-    new_data: DataHandler
+    list_of_selection_options_by_plot: list, new_data: DataHandler
 ) -> list:
     """
     puts selctor data in form to be read by html file

@@ -17,7 +17,8 @@ from utility.constants import (
     SHOW_ALL_ROW,
     UPPER_INEQUALITY,
     VALUE,
-    OPERATION, ACTIVE_SELECTORS,
+    OPERATION,
+    ACTIVE_SELECTORS,
 )
 from utility.reformatting_functions import (
     add_operations_to_the_data,
@@ -32,7 +33,9 @@ def single_page_config_dict_and_addendum():
 
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)
-    single_page_config_dict = copy.deepcopy(config_dict[AVAILABLE_PAGES]["penguins"][GRAPHICS])
+    single_page_config_dict = copy.deepcopy(
+        config_dict[AVAILABLE_PAGES]["penguins"][GRAPHICS]
+    )
     addendum_dict = ImmutableMultiDict(
         [
             ("graphic_index", "graphic_0"),
@@ -63,10 +66,15 @@ def test_add_active_selectors_to_selectable_data_list_with_addendum(
     assert "Torgersen" in graphic_0_dict[SELECTABLE_DATA_LIST][1][ACTIVE_SELECTORS]
     assert "Dream" in graphic_0_dict[SELECTABLE_DATA_LIST][1][ACTIVE_SELECTORS]
     assert (
-        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][VALUE] == '4'
+        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][
+            VALUE
+        ]
+        == "4"
     )
     assert (
-        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][OPERATION]
+        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][
+            OPERATION
+        ]
         == ">"
     )
 
@@ -84,10 +92,15 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
     assert len(graphic_0_dict[SELECTABLE_DATA_LIST][1][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][1][ACTIVE_SELECTORS]
     assert (
-        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][VALUE] == ""
+        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][
+            VALUE
+        ]
+        == ""
     )
     assert (
-        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][OPERATION]
+        graphic_0_dict[SELECTABLE_DATA_LIST][2][ACTIVE_SELECTORS][UPPER_INEQUALITY][
+            OPERATION
+        ]
         == "<="
     )
 
@@ -103,7 +116,7 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     assert operations_list[0] == {
         "type": "filter",
         "column": "penguin_size.sex",
-        "selected": ["MALE"]
+        "selected": ["MALE"],
     }
     assert operations_list[1] == {
         "type": "filter",
@@ -125,7 +138,7 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     )
 
     operations_list = add_operations_to_the_data(
-        graphic_1_dict[SELECTABLE_DATA_LIST], graphic_1_dict[DATA],addendum_dict
+        graphic_1_dict[SELECTABLE_DATA_LIST], graphic_1_dict[DATA], addendum_dict
     )
 
     assert (

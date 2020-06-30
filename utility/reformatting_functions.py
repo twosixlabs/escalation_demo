@@ -80,7 +80,7 @@ def add_active_selectors_to_selectable_data_list(
             locations = [UPPER_INEQUALITY, LOWER_INEQUALITY]
             active_numerical_filter_dict = dict.fromkeys(locations, None)
             for loc in locations:
-                active_numerical_filter_dict[loc]={}
+                active_numerical_filter_dict[loc] = {}
                 for input_type in [OPERATION, VALUE]:
                     active_numerical_filter_dict[loc][input_type] = addendum_dict.get(
                         SELECTION_NUM_LOC_TYPE.format(selection_index, loc, input_type),
