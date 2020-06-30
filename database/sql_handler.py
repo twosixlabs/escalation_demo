@@ -1,10 +1,89 @@
+from datetime import datetime
+import uuid
+
 import pandas as pd
 from sqlalchemy import and_
-from sqlalchemy.orm.query import Query
 
 from database.data_handler import DataHandler
 from database.database import db_session, Base
-from utility.constants import DATA_SOURCE_TYPE, DATA_LOCATION, LEFT_KEYS, RIGHT_KEYS
+from utility.constants import (
+    DATA_SOURCE_TYPE,
+    DATA_LOCATION,
+    LEFT_KEYS,
+    RIGHT_KEYS,
+    UPLOAD_ID,
+    UPLOAD_TIME,
+    INDEX_COLUMN,
+)
+
+
+class SqlDataInventory:
+    @staticmethod
+    def get_available_data_source():
+        return list(Base.metadata.tables.keys())
+
+    @staticmethod
+    def get_schema_for_data_source(data_source_name):
+        """
+        :param data_source_name: str
+        :return: list of sqlalchemy column objects
+        """
+        table = Base.metadata.tables[data_source_name]
+        schema_columns = table.columns.values()
+        return schema_columns
+
+    @staticmethod
+    def get_sqlalchemy_model_class_for_data_source_name(data_source_name):
+        """
+
+        :param data_source_name:
+        :return: sqlalchemy model class
+        """
+        for c in Base._decl_class_registry.values():
+            if hasattr(c, "__tablename__") and c.__tablename__ == data_source_name:
+                return c
+        raise KeyError(f"{data_source_name} not found in available model classes")
+
+    def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
+        """
+        :param uploaded_data_df: pandas dataframe on which we have already done validation
+        :param data_source_name:
+        Assumption: data_source for this upload is only one table, even though they can generally refer to more than one table
+
+        :return:
+        """
+        sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name(
+            data_source_name
+        )
+        table = sqlalchemy_model_class.__table__
+        uploaded_data_df[UPLOAD_ID] = uuid.uuid1()
+        # todo: write upload time and other upload information from the form to an uploads metadata table
+        upload_time = datetime.utcnow()
+
+        # if we are adding an index pk column, get it from the pandas df
+        if INDEX_COLUMN in [c.name for c in table.primary_key]:
+            if INDEX_COLUMN not in uploaded_data_df.columns:
+                uploaded_data_df = uploaded_data_df.reset_index()
+            else:
+                # verify that all indices in the existing index column are unique
+                num_uploaded_rows = uploaded_data_df.shape[0]
+                num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
+                assert (
+                    num_unique_indexes == num_uploaded_rows
+                ), f"{INDEX_COLUMN} has non-unique values"
+        row_dicts_to_write = uploaded_data_df.to_dict("records")
+        # todo: writing all of this to memory- could get gross for large uploads
+        row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
+        db_session.bulk_save_objects(row_to_write)
+        db_session.commit()
+        return upload_time
+
+    def write_new_data_file_type(self):
+        """
+        Handle the case where the user wants to upload a new data file type
+        :return:
+        """
+        raise NotImplementedError
 
 
 class SqlHandler(DataHandler):
@@ -23,12 +102,7 @@ class SqlHandler(DataHandler):
         :param tablename str
         :return: class name
         """
-        for class_ in Base._decl_class_registry.values():
-            if hasattr(class_, "__tablename__") and class_.__tablename__ == table_name:
-                return class_
-        raise KeyError(
-            f"Sqlalchemy class not found corresponding to table {table_name})"
-        )
+        return Base.metadata.tables[table_name]
 
     def build_combined_data_table(self):
         """
