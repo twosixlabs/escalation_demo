@@ -22,8 +22,8 @@ from utility.constants import (
 )
 
 
-class CsvDataInventory:
-    raise NotImplementedError
+class LocalCSVDataInventory:
+    pass
 
 
 def filter_operation(data_column, filter_dict):
