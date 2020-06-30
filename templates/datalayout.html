@@ -2,42 +2,45 @@
 
 
 {% block content %}
-    <div class="jumbotron">
-  <h1 class="display-4">{{ title }}</h1>
-  <p class="lead">{{ brief_desc }}</p>
-  <hr class="my-4">
-  <p class="lead">
-    {% for button in buttons %}
-        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{ button['button_label'] }}</a>
-    {% endfor %}
-  </p>
+<div class="jumbotron">
+    <h1 class="display-4">{{ title }}</h1>
+    <p class="lead">{{ brief_desc }}</p>
+    <hr class="my-4">
+    <p class="lead">
+        {% for button in buttons %}
+        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{
+        button['button_label'] }}</a>
+        {% endfor %}
+    </p>
 </div>
 
 <div class="container">
     {% for plot in plots %}
-        {% set graphic_index = loop.index0 %}
-        <form method="post" id={{ "form_" ~ graphic_index }}>
-         <input type="hidden" name="graphic_index" value={{ "graphic_" ~ graphic_index }}>
+    {% set graphic_index = loop.index0 %}
+    <form method="post" id={{
+    "form_" ~ graphic_index }}>
+    <input type="hidden" name="graphic_index" value={{ "graphic_" ~ graphic_index }}>
     </form>
-     <div class="row" id={{ "graphic_" ~ graphic_index }}>
-            <h1> {{ plot['title'] }}</h1>
-     </div>
-        <div class="row">
+    <div class="row" id={{
+    "graphic_" ~ graphic_index }}>
+    <h1> {{ plot['title'] }}</h1>
+    <div class="row">
         {{ plot['brief_desc'] }}
-        </div>
-        <div class="row">
-         <div class="col-10">
+    </div>
+    <div class="row">
+        <div class="col-10">
             {% include plot['graph_html_file']%}
-         </div>
-     <div class="col-2 text-center">
-         {% for selector in plot['select_info'] %}
-             {% set selector_index = loop.index0 %}
+        </div>
+        <div class="col-2 text-center">
+            {% for selector in plot['select_info'] %}
+            {% set selector_index = loop.index0 %}
             {% include selector['select_html_file'] ignore missing %}
-         {% endfor %}
+            {% endfor %}
 
-         <button type="button" class="btn btn-primary btn-lg" onclick="post_to_server({{ graphic_index }})">Update</button>
-     </div>
-     </div>
+            <button type="button" class="btn btn-primary btn-lg" onclick="post_to_server({{ graphic_index }})">Update
+            </button>
+        </div>
+    </div>
 
     {% endfor %}
 </div>
