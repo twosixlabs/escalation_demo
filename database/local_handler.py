@@ -22,6 +22,10 @@ from utility.constants import (
 )
 
 
+class CsvDataInventory:
+    raise NotImplementedError
+
+
 def filter_operation(data_column, filter_dict):
     if filter_dict[SELECTOR_TYPE] == FILTER:
         entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
