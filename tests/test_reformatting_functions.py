@@ -11,7 +11,6 @@ from utility.constants import (
     GRAPHICS,
     POINTS_NUM,
     SELECTABLE_DATA_LIST,
-
     SHOW_ALL_ROW,
     UPPER_INEQUALITY,
     VALUE,
@@ -21,6 +20,7 @@ from utility.constants import (
 from utility.reformatting_functions import (
     add_operations_to_the_data,
     add_active_selectors_to_selectable_data_list,
+    add_instructions_to_config_dict,
 )
 
 
@@ -142,3 +142,12 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
         single_page_config_dict[GRAPHIC_NUM.format(1)][DATA][POINTS_NUM.format(0)]["x"]
         == "culmen_length_mm"
     )
+
+
+def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
+    single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
+    single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
+    single_page_config_dict_test = add_instructions_to_config_dict(
+        single_page_config_dict_test, None
+    )
+    assert False

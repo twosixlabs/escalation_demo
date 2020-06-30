@@ -30,8 +30,6 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         single_page_config_dict = copy.deepcopy(
             available_pages.get(display_page, {}).get(GRAPHICS, {})
         )
-        if addendum_dict is None:
-            addendum_dict = ImmutableMultiDict()
         single_page_config_dict = add_instructions_to_config_dict(
             single_page_config_dict, addendum_dict
         )
@@ -185,6 +183,9 @@ def create_data_subselect_info(
             column_names = column_names[column]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
+            column_names = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
+
         active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
@@ -194,7 +195,7 @@ def create_data_subselect_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: column_names,
-                SELECT_OPTION: selection_option_dict_for_plot[SELECT_OPTION],
+                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION,{}),
             }
         )
 

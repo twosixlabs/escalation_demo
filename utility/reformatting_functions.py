@@ -19,7 +19,7 @@ def add_instructions_to_config_dict(
     :param single_page_graphic_config_dict:
     :param addendum_dict: e.g ImmutableMultiDict([('graphic_index', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
-
+    Should not pass an empty ImmutableMultiDict
     :return: modified single_page_config_dict
     """
 
@@ -65,7 +65,9 @@ def add_active_selectors_to_selectable_data_list(
             # getlist does not not work like get so need to set default "manually"
 
             selection_index_str = SELECTION_NUM.format(selection_index)
-            selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(selection_index_str) or [SHOW_ALL_ROW]
+            selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
+                selection_index_str
+            ) or [SHOW_ALL_ROW]
         elif selection_dict[SELECTOR_TYPE] == AXIS:
             # in the case of no user selected the active selector is the one currently being plotted,
             # taken from the first set of points (index 0)

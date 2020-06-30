@@ -55,9 +55,9 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
                     "penguin_size.culmen_length_mm",
                     "penguin_size.flipper_length_mm",
                     "penguin_size.body_mass_g",
-                ]},
+                ]
+            },
             ACTIVE_SELECTORS: ["penguin_size.culmen_length_mm"],
-
         },
     ]
     select_info = create_data_subselect_info(select_dict, local_handler_fixture)
