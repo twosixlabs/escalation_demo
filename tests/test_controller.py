@@ -66,10 +66,8 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     assert "MALE" in select_info[0][ENTRIES]
     assert "FEMALE" in select_info[0][ENTRIES]
     assert "." in select_info[0][ENTRIES]  # yes this is a unique entry in the data set
-    assert "Torgersen" in select_info[1][ENTRIES]
     assert SHOW_ALL_ROW in select_info[1][ACTIVE_SELECTORS]
     assert "Biscoe" in select_info[1][ENTRIES]
-    assert "Dream" in select_info[1][ENTRIES]
     assert select_info[1][SELECT_OPTION]["multiple"]
     assert not select_info[0][SELECT_OPTION]["multiple"]
     assert "penguin_size.culmen_length_mm" in select_info[2][ENTRIES]

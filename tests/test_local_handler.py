@@ -101,7 +101,7 @@ def test_init(test_app_client):
     # test that init gets the correct file for each data source folder
     assert (
         handler.data_sources[0][DATA_LOCATION]
-        == "tests/test_data/penguin_size/penguin_size.csv"
+        == "tests/test_data/penguin_size/penguin_size_2.csv"
     )
     assert (
         handler.data_sources[1][DATA_LOCATION]
