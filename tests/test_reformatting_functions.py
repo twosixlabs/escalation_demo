@@ -7,13 +7,11 @@ from werkzeug.datastructures import ImmutableMultiDict
 from utility.constants import (
     AVAILABLE_PAGES,
     DATA,
-    FILTERS,
     GRAPHIC_NUM,
     GRAPHICS,
     POINTS_NUM,
-    DATA_FILTERS,
     SELECTABLE_DATA_LIST,
-    SELECTED,
+
     SHOW_ALL_ROW,
     UPPER_INEQUALITY,
     VALUE,
@@ -23,7 +21,6 @@ from utility.constants import (
 from utility.reformatting_functions import (
     add_operations_to_the_data,
     add_active_selectors_to_selectable_data_list,
-    NUMERICAL_FILTER_DEFAULT,
 )
 
 

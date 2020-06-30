@@ -55,12 +55,11 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
                     "penguin_size.culmen_length_mm",
                     "penguin_size.flipper_length_mm",
                     "penguin_size.body_mass_g",
-                ],
-                ACTIVE_SELECTORS: ["penguin_size.culmen_length_mm"],
-            },
+                ]},
+            ACTIVE_SELECTORS: ["penguin_size.culmen_length_mm"],
+
         },
     ]
-
     select_info = create_data_subselect_info(select_dict, local_handler_fixture)
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
@@ -80,7 +79,7 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     assert "penguin_size.culmen_length_mm" in select_info[2][ENTRIES]
     assert "penguin_size.flipper_length_mm" in select_info[2][ENTRIES]
     assert "penguin_size.body_mass_g" in select_info[2][ENTRIES]
-    assert "penguin_size.body_mass_g" == select_info[2][ACTIVE_SELECTORS]
+    assert "penguin_size.culmen_length_mm" in select_info[2][ACTIVE_SELECTORS]
 
 
 def test_get_unique_set_of_columns_needed():

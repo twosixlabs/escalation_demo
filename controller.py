@@ -25,7 +25,6 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 
     available_pages = config_dict[AVAILABLE_PAGES]
     buttons = create_link_buttons_for_available_pages(available_pages)
-
     plot_specs = []
     if display_page is not None:
         single_page_config_dict = copy.deepcopy(
@@ -186,7 +185,6 @@ def create_data_subselect_info(
             column_names = column_names[column]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-
         active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
