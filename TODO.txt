@@ -19,14 +19,13 @@ Simplify the config file
 Implement Administrator class
  - walk through
 limitations/decisions:
-Graph can only use a single data set, defined by the handler
 Assuming csv in local handler
 Local handler currently gets most recent data set
 Cannot select along nan values in the db or file
 
 Enforce no spaces or weird characters in column names
 Validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
-
+Break config file up for easier management. Config goes in one folder- one overall app config json, one config file per graph
 
 # Admin
 Choose and add a software license to Escalation OS
