@@ -22,24 +22,19 @@ def add_instructions_to_config_dict(
     Should not pass an empty ImmutableMultiDict
     :return: modified single_page_config_dict
     """
+    if addendum_dict is None:
+        addendum_dict = ImmutableMultiDict()
 
     for graphic_index, graphic_dict in single_page_graphic_config_dict.items():
         if SELECTABLE_DATA_LIST in graphic_dict:
             selector_list = graphic_dict[SELECTABLE_DATA_LIST]
             data_info_dict = graphic_dict[DATA]
-            if (
-                addendum_dict is not None
-                and addendum_dict[GRAPHIC_INDEX] == graphic_index
-            ):
-                add_active_selectors_to_selectable_data_list(
-                    selector_list, data_info_dict, addendum_dict
-                )
+            add_active_selectors_to_selectable_data_list(
+                selector_list, data_info_dict, addendum_dict
+            )
+            if addendum_dict[GRAPHIC_INDEX] == graphic_index:
                 graphic_dict[DATA_FILTERS] = add_operations_to_the_data(
                     selector_list, data_info_dict, addendum_dict
-                )
-            else:
-                add_active_selectors_to_selectable_data_list(
-                    selector_list, data_info_dict, ImmutableMultiDict()
                 )
     return single_page_graphic_config_dict
 
@@ -77,10 +72,10 @@ def add_active_selectors_to_selectable_data_list(
             )
         elif selection_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
             locations = [UPPER_INEQUALITY, LOWER_INEQUALITY]
-            active_numerical_filter_dict = dict.fromkeys(locations, None)
+            active_numerical_filter_dict = defaultdict(dict)
             for loc in locations:
-                active_numerical_filter_dict[loc] = {}
                 for input_type in [OPERATION, VALUE]:
+                    # pull the relevant filter info from the submitted form
                     active_numerical_filter_dict[loc][input_type] = addendum_dict.get(
                         SELECTION_NUM_LOC_TYPE.format(selection_index, loc, input_type),
                         NUMERICAL_FILTER_DEFAULT[loc][input_type],
