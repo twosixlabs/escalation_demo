@@ -35,14 +35,6 @@ class LocalCSVDataInventory:
         """
         pass
 
-    @staticmethod
-    def get_sqlalchemy_model_class_for_data_source_name(data_source_name):
-        """
-
-        :param data_source_name:
-        :return: sqlalchemy model class
-        """
-        pass
 
     def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
         """
