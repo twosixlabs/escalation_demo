@@ -4,7 +4,7 @@ import os
 
 from flask import current_app
 from database.data_handler import DataHandler
-from database.utils import filter_operation
+from database.utils import local_csv_handler_filter_operation
 from utility.constants import (
     OPTION_COL,
     DATA_SOURCE_TYPE,
@@ -28,7 +28,6 @@ class LocalCSVDataInventory:
         :return: list of sqlalchemy column objects
         """
         pass
-
 
     def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
         """
@@ -108,7 +107,8 @@ class LocalCSVHandler(DataHandler):
         all_to_include_cols = set(cols + list(cols_for_filters))
         df = self.combined_data_table[all_to_include_cols]
         for filter_dict in filters:
-            df = df[filter_operation(df[filter_dict[OPTION_COL]], filter_dict)]
+            column = df[filter_dict[OPTION_COL]]
+            df = df[local_csv_handler_filter_operation(column, filter_dict)]
 
         return df[cols].to_dict("list")
 

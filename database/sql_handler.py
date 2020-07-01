@@ -6,7 +6,7 @@ from sqlalchemy import and_
 
 from database.data_handler import DataHandler
 from database.database import db_session, Base
-from database.utils import filter_operation
+from database.utils import sql_handler_filter_operation
 from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
@@ -199,7 +199,9 @@ class SqlHandler(DataHandler):
         filter_tuples = []
         for filter_dict in filters:
             column_object = column_mapping_dict[filter_dict[OPTION_COL]]
-            filter_tuples.append(filter_operation(column_object, filter_dict))
+            filter_tuples.append(
+                sql_handler_filter_operation(column_object, filter_dict)
+            )
         if filter_tuples:
             query = query.filter(*filter_tuples)
 
