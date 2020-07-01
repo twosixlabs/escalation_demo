@@ -3,7 +3,7 @@ import glob
 import os
 from pathvalidate import sanitize_filename
 from werkzeug.utils import secure_filename
-import time
+from datetime import datetime
 
 from flask import current_app
 from database.data_handler import DataHandler
@@ -18,18 +18,22 @@ from utility.constants import (
     APP_CONFIG_JSON,
 )
 
-TEST_DIR = "tests/test_data/"
-
 
 class LocalCSVDataInventory:
     @staticmethod
     def get_available_data_source():
         # todo: have a data directory not in test
-        return [f.name for f in os.scandir(TEST_DIR) if f.is_dir()]
+        return [
+            f.name
+            for f in os.scandir(current_app.config[DATA_FILE_DIRECTORY])
+            if f.is_dir()
+        ]
 
     @staticmethod
     def get_schema_for_data_source(data_source_name):
-        full_path = "".join([TEST_DIR, data_source_name])
+        full_path = os.path.join(
+            current_app.config[DATA_FILE_DIRECTORY], data_source_name
+        )
         list_of_files = glob.glob(f"{full_path}/*.csv")
         assert len(list_of_files) > 0
         latest_filepath = max(list_of_files, key=os.path.getctime)
@@ -51,17 +55,16 @@ class LocalCSVDataInventory:
                 :return: list column_name strs
                 """
         file_name = (
-            time.time()
+            datetime.utcnow().strftime("%Y%m%d-%H%M%S")
             if (file_name is None)
             else sanitize_filename(secure_filename(file_name))
         )
-        file_path = "".join(
-            [
-                TEST_DIR,
-                data_source_name,
-                file_name,
-                "" if file_name.endswith(".csv") else ".csv",
-            ]
+        file_name = (
+            file_name if file_name.endswith(".csv") else "".join([file_name, ".csv"])
+        )
+
+        file_path = os.path.join(
+            current_app.config[DATA_FILE_DIRECTORY], data_source_name, file_name
         )
         uploaded_data_df.to_csv(file_path)
 

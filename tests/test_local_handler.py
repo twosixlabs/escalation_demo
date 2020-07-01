@@ -1,5 +1,7 @@
 import pandas as pd
+import pytest
 
+from app import create_app
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
 from utility.constants import (
     SELECTOR_TYPE,
@@ -9,8 +11,25 @@ from utility.constants import (
     VALUE,
     INEQUALITIES,
     DATA_SOURCE_TYPE,
-    DATA_LOCATION,
+    DATA_LOCATION, DATA_FILE_DIRECTORY,
 )
+
+
+@pytest.fixture(scope='module')
+def test_client():
+    flask_app = create_app()
+    flask_app.config[DATA_FILE_DIRECTORY]="tests/test_data"
+    # Flask provides a way to test your application by exposing the Werkzeug test Client
+    # and handling the context locals for you.
+    testing_client = flask_app.test_client()
+
+    # Establish an application context before running the tests.
+    ctx = flask_app.app_context()
+    ctx.push()
+
+    yield testing_client  # this is where the testing happens!
+
+    ctx.pop()
 
 
 def test_local_handler_init(local_handler_fixture_small):
@@ -120,22 +139,16 @@ def test_build_combined_data_table(test_app_client):
     # todo: one to many join, where we expect the number of rows to change
 
 
-def test_get_available_data_source():
+def test_get_available_data_source(test_client):
     test_inventory = LocalCSVDataInventory()
     file_names = test_inventory.get_available_data_source()
-    expected_file_names = [
-        "penguin_size_small",
-        "penguin_size",
-        "mean_penguin_stat",
-        "penguin_Iter",
-    ]
-    assert expected_file_names[0] in file_names
-    assert expected_file_names[1] in file_names
-    assert expected_file_names[2] in file_names
-    assert expected_file_names[3] in file_names
+    assert "penguin_size_small" in file_names
+    assert "penguin_size" in file_names
+    assert "mean_penguin_stat" in file_names
+    assert "penguin_Iter" in file_names
 
 
-def test_get_schema_for_data_source():
+def test_get_schema_for_data_source(test_client):
     test_inventory = LocalCSVDataInventory()
     column_names = test_inventory.get_schema_for_data_source("penguin_size")
     expected_column_names = [
