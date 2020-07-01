@@ -28,12 +28,12 @@ def make_data():
     return data
 
 
-def test_plotly_draw_scatter(make_data):
+def test_plotly_draw_scatter(make_data,test_app_client):
     plot_options = {DATA: [{"type": "scatter", "mode": "markers"}]}
     axis_to_data_dict = {POINTS_NUM.format(0): {"x": TITLE1, "y": TITLE2}}
 
     visualization_options = [
-        # {VISUALIZATION_TYPE: "hover_data", OPTION_COL: [TITLE1]},# need a flask app to run
+        {VISUALIZATION_TYPE: "hover_data", OPTION_COL: [TITLE1]},# need a flask app to run
         {
             VISUALIZATION_TYPE: AGGREGATE,
             OPTION_COL: [TITLE2],

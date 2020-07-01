@@ -1,7 +1,5 @@
 import pandas as pd
-import pytest
 
-from app import create_app
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
 from utility.constants import (
     SELECTOR_TYPE,
@@ -11,25 +9,10 @@ from utility.constants import (
     VALUE,
     INEQUALITIES,
     DATA_SOURCE_TYPE,
-    DATA_LOCATION, DATA_FILE_DIRECTORY,
+    DATA_LOCATION, DATA_FILE_DIRECTORY, APP_CONFIG_JSON,
 )
+from flask import current_app
 
-
-@pytest.fixture(scope='module')
-def test_client():
-    flask_app = create_app()
-    flask_app.config[DATA_FILE_DIRECTORY]="tests/test_data"
-    # Flask provides a way to test your application by exposing the Werkzeug test Client
-    # and handling the context locals for you.
-    testing_client = flask_app.test_client()
-
-    # Establish an application context before running the tests.
-    ctx = flask_app.app_context()
-    ctx.push()
-
-    yield testing_client  # this is where the testing happens!
-
-    ctx.pop()
 
 
 def test_local_handler_init(local_handler_fixture_small):
@@ -139,7 +122,7 @@ def test_build_combined_data_table(test_app_client):
     # todo: one to many join, where we expect the number of rows to change
 
 
-def test_get_available_data_source(test_client):
+def test_get_available_data_source(test_app_client):
     test_inventory = LocalCSVDataInventory()
     file_names = test_inventory.get_available_data_source()
     assert "penguin_size_small" in file_names
@@ -148,7 +131,7 @@ def test_get_available_data_source(test_client):
     assert "penguin_Iter" in file_names
 
 
-def test_get_schema_for_data_source(test_client):
+def test_get_schema_for_data_source(test_app_client):
     test_inventory = LocalCSVDataInventory()
     column_names = test_inventory.get_schema_for_data_source("penguin_size")
     expected_column_names = [
