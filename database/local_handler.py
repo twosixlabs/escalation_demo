@@ -4,15 +4,9 @@ import os
 
 from flask import current_app
 from database.data_handler import DataHandler
-from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
+from database.utils import filter_operation
 from utility.constants import (
-    FILTER,
-    VALUE,
-    NUMERICAL_FILTER,
-    SELECTOR_TYPE,
-    OPERATION,
     OPTION_COL,
-    SELECTED,
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     LEFT_KEYS,
@@ -44,20 +38,6 @@ class LocalCSVDataInventory:
         :return:
         """
         pass
-
-
-def filter_operation(data_column, filter_dict):
-    if filter_dict[SELECTOR_TYPE] == FILTER:
-        entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
-        # data storers handle a single value different from multiple values
-        if len(entry_values_to_be_shown_in_plot) > 1:
-            return data_column.isin(entry_values_to_be_shown_in_plot)
-        else:
-            return data_column == entry_values_to_be_shown_in_plot[0]
-    elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
-        return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
-            data_column, filter_dict[VALUE]
-        )
 
 
 class LocalCSVHandler(DataHandler):
@@ -123,7 +103,7 @@ class LocalCSVHandler(DataHandler):
         :return:
         """
         if filters is None:
-            filters = {}
+            filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
         all_to_include_cols = set(cols + list(cols_for_filters))
         df = self.combined_data_table[all_to_include_cols]
