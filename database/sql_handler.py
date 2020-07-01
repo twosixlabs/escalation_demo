@@ -204,9 +204,15 @@ class SqlHandler(DataHandler):
             query = query.filter(*filter_tuples)
 
         response_rows = query.all()
-        # use pandas to read the sql response and convert to a dict of lists keyed by column names
-        # rename is switching the '_' separation back to '.'
-        response_as_df = pd.DataFrame(response_rows).rename(columns=column_rename_dict)
+        if response_rows:
+            # use pandas to read the sql response and convert to a dict of lists keyed by column names
+            # rename is switching the '_' separation back to '.'
+            response_as_df = pd.DataFrame(response_rows).rename(
+                columns=column_rename_dict
+            )
+        else:
+            # if the sql query returns no rows, we want an empty df to format our response
+            response_as_df = pd.DataFrame(columns=columns)
         response_dict_of_lists = response_as_df[columns].to_dict(orient="list")
         return response_dict_of_lists
 

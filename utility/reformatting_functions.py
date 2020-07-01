@@ -85,7 +85,7 @@ def add_active_selectors_to_selectable_data_list(
 
 def add_operations_to_the_data(
     selectable_data_list: list, data_info_dict: dict, addendum_dict: ImmutableMultiDict
-) -> dict:
+) -> list:
     """
     Adds operations to be passed to the data handlers for the data
     :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
