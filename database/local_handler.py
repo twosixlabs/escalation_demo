@@ -50,9 +50,18 @@ class LocalCSVDataInventory:
                 :param data_source_name: str
                 :return: list column_name strs
                 """
-        file_name = time.time() if (file_name is None) else sanitize_filename(secure_filename(file_name))
+        file_name = (
+            time.time()
+            if (file_name is None)
+            else sanitize_filename(secure_filename(file_name))
+        )
         file_path = "".join(
-            [TEST_DIR, data_source_name, file_name, "" if file_name.endswith(".csv") else ".csv"]
+            [
+                TEST_DIR,
+                data_source_name,
+                file_name,
+                "" if file_name.endswith(".csv") else ".csv",
+            ]
         )
         uploaded_data_df.to_csv(file_path)
 
