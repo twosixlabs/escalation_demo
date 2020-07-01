@@ -1,6 +1,6 @@
 import pandas as pd
 
-from database.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
 from utility.constants import (
     SELECTOR_TYPE,
     FILTER,
@@ -118,3 +118,36 @@ def test_build_combined_data_table(test_app_client):
     # the number of rows of final table should equal the left/first table
     assert num_rows_in_leftmost_table == num_rows_in_combined_table
     # todo: one to many join, where we expect the number of rows to change
+
+
+def test_get_available_data_source():
+    test_inventory = LocalCSVDataInventory()
+    file_names = test_inventory.get_available_data_source()
+    expected_file_names = [
+        "penguin_size_small",
+        "penguin_size",
+        "mean_penguin_stat",
+        "penguin_Iter",
+    ]
+    assert expected_file_names[0] in file_names
+    assert expected_file_names[1] in file_names
+    assert expected_file_names[2] in file_names
+    assert expected_file_names[3] in file_names
+
+
+def test_get_schema_for_data_source():
+    test_inventory = LocalCSVDataInventory()
+    column_names = test_inventory.get_schema_for_data_source("penguin_size")
+    expected_column_names = [
+        "study_name",
+        "species",
+        "island",
+        "sex",
+        "region",
+        "culmen_depth_mm",
+        "culmen_length_mm",
+        "flipper_length_mm",
+        "body_mass_g",
+    ]
+
+    assert column_names == expected_column_names
