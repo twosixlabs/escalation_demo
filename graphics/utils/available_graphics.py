@@ -9,7 +9,7 @@ AVAILABLE_GRAPHICS = {
 }
 
 """
-I am going to repurpose this when I am making admin UI set up  
+I am going to repurpose this when I am making admin UI set up
 AVAILABLE_GRAPHICS = {
     "table": {
         "object": PlotlyPlot(),

@@ -1,17 +1,13 @@
-from collections import defaultdict
 import copy
 
 from flask import current_app
-from werkzeug.datastructures import ImmutableMultiDict
 
 from database.data_handler import DataHandler
-from utility.available_graphics import AVAILABLE_GRAPHICS
-from utility.available_selectors import (
-    AVAILABLE_SELECTORS,
-    OPERATIONS_FOR_NUMERICAL_FILTERS,
-)
+from graphics.utils.available_graphics import AVAILABLE_GRAPHICS
+from graphics.utils.available_selectors import AVAILABLE_SELECTORS
+from graphics.utils.reformatting_functions import add_instructions_to_config_dict
+from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import *
-from utility.reformatting_functions import add_instructions_to_config_dict
 
 
 def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> dict:
@@ -158,12 +154,12 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
 
 
 def create_data_subselect_info(
-    list_of_selection_options_by_plot: list, new_data: DataHandler
+    list_of_selection_options_by_plot: list, data_handler: DataHandler
 ) -> list:
     """
-    puts selctor data in form to be read by html file
+    puts selector data in form to be read by html file
     :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
-    :param new_data:
+    :param data_handler:
     :return:
     """
     select_info = []
@@ -179,7 +175,7 @@ def create_data_subselect_info(
         column_names = []
 
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
-            column_names = new_data.get_column_unique_entries([column])
+            column_names = data_handler.get_column_unique_entries([column])
             column_names = column_names[column]
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]

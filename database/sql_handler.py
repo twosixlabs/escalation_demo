@@ -6,13 +6,14 @@ from sqlalchemy import and_
 
 from database.data_handler import DataHandler
 from database.database import db_session, Base
+from database.utils import sql_handler_filter_operation
 from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     LEFT_KEYS,
     RIGHT_KEYS,
     UPLOAD_ID,
-    UPLOAD_TIME,
+    OPTION_COL,
     INDEX_COLUMN,
 )
 
@@ -115,16 +116,6 @@ class SqlHandler(DataHandler):
         query = db_session.query(
             *[data_source[DATA_LOCATION] for data_source in self.data_sources]
         )
-        #
-        # columns_to_get = {}
-        # for data_source in self.data_sources:
-        #     table_columns = data_source[DATA_LOCATION].__table__.columns
-        #     for column in table_columns:
-        #         # we only include the column in the columns to get if it doesn't match the name of an already included column
-        #         if column.name not in columns_to_get:
-        #             columns_to_get[column.name] = column
-        # query = db_session.query(*columns_to_get).select_from(self.data_sources[0][DATA_LOCATION])
-
         # Assumption: All joins link to IDs in first table, not IDs that were added in previous joins
         for i, data_source in enumerate(self.data_sources):
             table_class = data_source[DATA_LOCATION]
@@ -148,10 +139,16 @@ class SqlHandler(DataHandler):
                     ),  # on clause matches corresponding table columns
                 )
 
-        class QueryView(Base):
-            # defines the selectable class for the query view. Prefixes all column names with the table_name
-            # todo: can we avoid this prefixing?
-            __table__ = query.selectable.alias()
+        # Dynamically defines the selectable class for the query view
+        # This prefixes all column names with "{table_name}_"
+        query_view_name = "_".join(
+            [data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources]
+        )
+        QueryView = type(
+            query_view_name,  # name the class
+            (Base,),  # inherit from Base
+            {"__table__": query.selectable.alias()},  # give the class our selectable
+        )
 
         return QueryView
 
@@ -180,24 +177,45 @@ class SqlHandler(DataHandler):
         }
         return column_rename_dict, column_mapping_dict
 
-    def get_column_data(self, columns: list, filters: dict = None) -> dict:
+    def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
         :param columns: A complete list of the columns to be returned
         :param filters: Optional dict specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
+        if filters is None:
+            filters = []
+        cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
+        all_to_include_cols = list(set(columns + list(cols_for_filters)))
+
         (
             column_rename_dict,
             column_mapping_dict,
-        ) = self.get_column_objects_from_config_string(columns)
+        ) = self.get_column_objects_from_config_string(all_to_include_cols)
+        # build basic query requesting all of the columns needed
         query = db_session.query(*column_mapping_dict.values())
 
-        # todo: implement filters with the refactored version from Alexander
+        # add filters to the query dynamically
+        filter_tuples = []
+        for filter_dict in filters:
+            column_object = column_mapping_dict[filter_dict[OPTION_COL]]
+            filter_tuples.append(
+                sql_handler_filter_operation(column_object, filter_dict)
+            )
+        if filter_tuples:
+            query = query.filter(*filter_tuples)
+
         response_rows = query.all()
-        # use pandas to read the sql response and convert to a dict of lists keyed by column names
-        # rename is switching the '_' separation back to '.'
-        response_as_df = pd.DataFrame(response_rows).rename(columns=column_rename_dict)
-        response_dict_of_lists = response_as_df.to_dict(orient="list")
+        if response_rows:
+            # use pandas to read the sql response and convert to a dict of lists keyed by column names
+            # rename is switching the '_' separation back to '.'
+            response_as_df = pd.DataFrame(response_rows).rename(
+                columns=column_rename_dict
+            )
+        else:
+            # if the sql query returns no rows, we want an empty df to format our response
+            response_as_df = pd.DataFrame(columns=columns)
+        response_dict_of_lists = response_as_df[columns].to_dict(orient="list")
         return response_dict_of_lists
 
     def get_column_unique_entries(self, cols: list) -> dict:

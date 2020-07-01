@@ -4,15 +4,9 @@ import os
 
 from flask import current_app
 from database.data_handler import DataHandler
-from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
+from database.utils import local_csv_handler_filter_operation
 from utility.constants import (
-    FILTER,
-    VALUE,
-    NUMERICAL_FILTER,
-    SELECTOR_TYPE,
-    OPERATION,
     OPTION_COL,
-    SELECTED,
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     LEFT_KEYS,
@@ -35,7 +29,6 @@ class LocalCSVDataInventory:
         """
         pass
 
-
     def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
         """
         :param uploaded_data_df: pandas dataframe on which we have already done validation
@@ -44,20 +37,6 @@ class LocalCSVDataInventory:
         :return:
         """
         pass
-
-
-def filter_operation(data_column, filter_dict):
-    if filter_dict[SELECTOR_TYPE] == FILTER:
-        entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
-        # data storers handle a single value different from multiple values
-        if len(entry_values_to_be_shown_in_plot) > 1:
-            return data_column.isin(entry_values_to_be_shown_in_plot)
-        else:
-            return data_column == entry_values_to_be_shown_in_plot[0]
-    elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
-        return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
-            data_column, filter_dict[VALUE]
-        )
 
 
 class LocalCSVHandler(DataHandler):
@@ -128,7 +107,8 @@ class LocalCSVHandler(DataHandler):
         all_to_include_cols = set(cols + list(cols_for_filters))
         df = self.combined_data_table[all_to_include_cols]
         for filter_dict in filters:
-            df = df[filter_operation(df[filter_dict[OPTION_COL]], filter_dict)]
+            column = df[filter_dict[OPTION_COL]]
+            df = df[local_csv_handler_filter_operation(column, filter_dict)]
 
         return df[cols].to_dict("list")
 

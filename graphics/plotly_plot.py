@@ -33,7 +33,7 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     :return:
     """
     # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
-    # is equalavent to the two lines function
+    # is equivalent to the two lines function
     hover_column_names = hover_options[OPTION_COL]
     hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
     # transposes a list of lists of column data to a list of lists of row data
@@ -97,14 +97,12 @@ class PlotlyPlot(Graphic):
     def make_dict_for_html_plot(
         self, data, axis_to_data_columns, plot_options, visualization_options=None
     ):
-
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
             index = int(point_index.split("_")[-1])
             for axis, column_name in axis_to_data_dict.items():
-                plot_options[DATA][index][axis] = data[
-                    column_name
-                ]  # three things in path, data, which index and value (x,y)
+                # three things in path, data, which index and value (x,y)
+                plot_options[DATA][index][axis] = data[column_name]
                 # if there is no label, label the columns with the first lines/scatters column names
                 if index == 0:
                     layout_dict = plot_options.get(LAYOUT, {})
