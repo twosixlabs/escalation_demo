@@ -1,6 +1,3 @@
-from collections import OrderedDict
-from operator import lt, le, eq, ge, gt
-
 # selectors are dropdowns, checkboxes etc.
 AVAILABLE_SELECTORS = {
     "select": {"select_html_template": "select_filter.html", "type": "filter"},
@@ -10,7 +7,3 @@ AVAILABLE_SELECTORS = {
         "type": "numerical_filter",
     },
 }
-
-OPERATIONS_FOR_NUMERICAL_FILTERS = OrderedDict(
-    [(">", gt), (">=", ge), ("=", eq), ("<=", le), ("<", lt)]
-)

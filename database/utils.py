@@ -1,6 +1,6 @@
-from operator import eq
+from collections.__init__ import OrderedDict
+from operator import eq, gt, ge, le, lt
 
-from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
     SELECTOR_TYPE,
     FILTER,
@@ -22,3 +22,8 @@ def filter_operation(data_column, filter_dict):
     elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
         operation_function = OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]]
         return operation_function(data_column, filter_dict[VALUE])
+
+
+OPERATIONS_FOR_NUMERICAL_FILTERS = OrderedDict(
+    [(">", gt), (">=", ge), ("=", eq), ("<=", le), ("<", lt)]
+)

@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from werkzeug.datastructures import ImmutableMultiDict
 
-from utility.available_selectors import AVAILABLE_SELECTORS
+from graphics.utils.available_selectors import AVAILABLE_SELECTORS
 from utility.constants import *
 
 NUMERICAL_FILTER_DEFAULT = {

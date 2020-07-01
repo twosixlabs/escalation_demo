@@ -1,17 +1,13 @@
-from collections import defaultdict
 import copy
 
 from flask import current_app
-from werkzeug.datastructures import ImmutableMultiDict
 
 from database.data_handler import DataHandler
-from utility.available_graphics import AVAILABLE_GRAPHICS
-from utility.available_selectors import (
-    AVAILABLE_SELECTORS,
-    OPERATIONS_FOR_NUMERICAL_FILTERS,
-)
+from graphics.utils.available_graphics import AVAILABLE_GRAPHICS
+from graphics.utils.available_selectors import AVAILABLE_SELECTORS
+from graphics.utils.reformatting_functions import add_instructions_to_config_dict
+from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import *
-from utility.reformatting_functions import add_instructions_to_config_dict
 
 
 def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> dict:
