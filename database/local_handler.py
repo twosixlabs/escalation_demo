@@ -1,6 +1,9 @@
 import pandas as pd
 import glob
 import os
+from pathvalidate import sanitize_filename
+from werkzeug.utils import secure_filename
+from datetime import datetime
 
 from flask import current_app
 from database.data_handler import DataHandler
@@ -19,24 +22,51 @@ from utility.constants import (
 class LocalCSVDataInventory:
     @staticmethod
     def get_available_data_source():
-        pass
+        # todo: have a data directory not in test
+        return [
+            f.name
+            for f in os.scandir(current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY])
+            if f.is_dir()
+        ]
 
     @staticmethod
     def get_schema_for_data_source(data_source_name):
-        """
-        :param data_source_name: str
-        :return: list of sqlalchemy column objects
-        """
-        pass
+        full_path = os.path.join(
+            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY], data_source_name
+        )
+        list_of_files = glob.glob(f"{full_path}/*.csv")
+        assert len(list_of_files) > 0
+        latest_filepath = max(list_of_files, key=os.path.getctime)
+        return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
 
-    def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
+    def write_data_upload_to_backend(
+        self, uploaded_data_df, data_source_name, file_name=None
+    ):
         """
+        :param file_name:
         :param uploaded_data_df: pandas dataframe on which we have already done validation
         :param data_source_name:
 
-        :return:
+        :return: Nothing
         """
-        pass
+
+        """
+                :param data_source_name: str
+                :return: list column_name strs
+                """
+        file_name = (
+            datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+            if (file_name is None)
+            else sanitize_filename(secure_filename(file_name))
+        )
+        file_name = (
+            file_name if file_name.endswith(".csv") else "".join([file_name, ".csv"])
+        )
+
+        file_path = os.path.join(
+            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY], data_source_name, file_name
+        )
+        uploaded_data_df.to_csv(file_path)
 
 
 class LocalCSVHandler(DataHandler):

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from database.local_handler import LocalCSVHandler
+from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
 from utility.constants import (
     SELECTOR_TYPE,
     FILTER,
@@ -9,8 +9,10 @@ from utility.constants import (
     VALUE,
     INEQUALITIES,
     DATA_SOURCE_TYPE,
-    DATA_LOCATION,
+    DATA_LOCATION, DATA_FILE_DIRECTORY, APP_CONFIG_JSON,
 )
+from flask import current_app
+
 
 
 def test_local_handler_init(local_handler_fixture_small):
@@ -118,3 +120,30 @@ def test_build_combined_data_table(test_app_client):
     # the number of rows of final table should equal the left/first table
     assert num_rows_in_leftmost_table == num_rows_in_combined_table
     # todo: one to many join, where we expect the number of rows to change
+
+
+def test_get_available_data_source(test_app_client):
+    test_inventory = LocalCSVDataInventory()
+    file_names = test_inventory.get_available_data_source()
+    assert "penguin_size_small" in file_names
+    assert "penguin_size" in file_names
+    assert "mean_penguin_stat" in file_names
+    assert "penguin_Iter" in file_names
+
+
+def test_get_schema_for_data_source(test_app_client):
+    test_inventory = LocalCSVDataInventory()
+    column_names = test_inventory.get_schema_for_data_source("penguin_size")
+    expected_column_names = [
+        "study_name",
+        "species",
+        "island",
+        "sex",
+        "region",
+        "culmen_depth_mm",
+        "culmen_length_mm",
+        "flipper_length_mm",
+        "body_mass_g",
+    ]
+
+    assert column_names == expected_column_names
