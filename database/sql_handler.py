@@ -6,14 +6,14 @@ from sqlalchemy import and_
 
 from database.data_handler import DataHandler
 from database.database import db_session, Base
-from utility.available_selectors import OPERATIONS_FOR_NUMERICAL_FILTERS
+from database.utils import filter_operation
 from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     LEFT_KEYS,
     RIGHT_KEYS,
     UPLOAD_ID,
-    UPLOAD_TIME,
+    OPTION_COL,
     INDEX_COLUMN,
 )
 
@@ -145,9 +145,9 @@ class SqlHandler(DataHandler):
             [data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources]
         )
         QueryView = type(
-            query_view_name,
+            query_view_name,  # name the class
             (Base,),  # inherit from Base
-            {"__table__": query.selectable.alias()},
+            {"__table__": query.selectable.alias()},  # give the class our selectable
         )
 
         return QueryView
@@ -177,14 +177,14 @@ class SqlHandler(DataHandler):
         }
         return column_rename_dict, column_mapping_dict
 
-    def get_column_data(self, columns: list, filters: dict = None) -> dict:
+    def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
         :param columns: A complete list of the columns to be returned
         :param filters: Optional dict specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
         if filters is None:
-            filters = {}
+            filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
         all_to_include_cols = list(set(columns + list(cols_for_filters)))
 
@@ -192,17 +192,22 @@ class SqlHandler(DataHandler):
             column_rename_dict,
             column_mapping_dict,
         ) = self.get_column_objects_from_config_string(all_to_include_cols)
+        # build basic query requesting all of the columns needed
         query = db_session.query(*column_mapping_dict.values())
 
-        # todo: implement filters with the refactored version from Alexander
-        # for filter_dict in filters:
-        #     query
+        # add filters to the query dynamically
+        filter_tuples = []
+        for filter_dict in filters:
+            column_object = column_mapping_dict[filter_dict[OPTION_COL]]
+            filter_tuples.append(filter_operation(column_object, filter_dict))
+        if filter_tuples:
+            query = query.filter(*filter_tuples)
 
         response_rows = query.all()
         # use pandas to read the sql response and convert to a dict of lists keyed by column names
         # rename is switching the '_' separation back to '.'
         response_as_df = pd.DataFrame(response_rows).rename(columns=column_rename_dict)
-        response_dict_of_lists = response_as_df.to_dict(orient="list")
+        response_dict_of_lists = response_as_df[columns].to_dict(orient="list")
         return response_dict_of_lists
 
     def get_column_unique_entries(self, cols: list) -> dict:
@@ -221,17 +226,3 @@ class SqlHandler(DataHandler):
             # todo: note we're dropping none/missing values from the response. Do we want to be able to include them?
             unique_dict[config_col] = [r[0] for r in response if r[0] is not None]
         return unique_dict
-
-
-def filter_operation(data_column, filter_dict):
-    if filter_dict[SELECTOR_TYPE] == FILTER:
-        entry_values_to_be_shown_in_plot = filter_dict[SELECTED]
-        # data storers handle a single value different from multiple values
-        if len(entry_values_to_be_shown_in_plot) > 1:
-            return data_column.isin(entry_values_to_be_shown_in_plot)
-        else:
-            return data_column == entry_values_to_be_shown_in_plot[0]
-    elif filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
-        return OPERATIONS_FOR_NUMERICAL_FILTERS[filter_dict[OPERATION]](
-            data_column, filter_dict[VALUE]
-        )
