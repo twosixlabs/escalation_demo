@@ -49,7 +49,7 @@ def build_config_json(data_backend, data_file_directory):
                                 },
                             },
                         ],
-                        "selectable_data_list": [
+                        SELECTABLE_DATA_LIST: [
                             {
                                 "type": "select",
                                 "column": "penguin_size.sex",

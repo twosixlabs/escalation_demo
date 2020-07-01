@@ -23,7 +23,27 @@ from utility.constants import (
 
 
 class LocalCSVDataInventory:
-    pass
+    @staticmethod
+    def get_available_data_source():
+        pass
+
+    @staticmethod
+    def get_schema_for_data_source(data_source_name):
+        """
+        :param data_source_name: str
+        :return: list of sqlalchemy column objects
+        """
+        pass
+
+
+    def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
+        """
+        :param uploaded_data_df: pandas dataframe on which we have already done validation
+        :param data_source_name:
+
+        :return:
+        """
+        pass
 
 
 def filter_operation(data_column, filter_dict):
