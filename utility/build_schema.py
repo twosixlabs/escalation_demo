@@ -1,7 +1,16 @@
 from utility.constants import *
 
+NO_DOTS = "^[^\\.]*$"
+ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
+ONE_LETTER = "^[a-zA-Z]$"
 
-def build_schema():
+
+def build_schema(data_source_names=None, column_names=None):
+    """
+    :param data_source_names: names from DATA_SOURCES, already checked against the file system
+    :param column_names: possible column names from files or database (format data_source_name.column_name)
+    :return:
+    """
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "escalation_config",
@@ -84,6 +93,15 @@ def build_schema():
                                             DATA_SOURCES: {
                                                 "type": "array",
                                                 "description": "What tables are use to define this graphic",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        DATA_SOURCE_TYPE: {
+                                                            "type": "string",
+                                                            "enum": data_source_names,
+                                                        }
+                                                    },
+                                                },
                                             },
                                             DATA: {
                                                 "type": "object",
@@ -93,6 +111,12 @@ def build_schema():
                                                     "^points_[0-9]*$": {
                                                         "type": "object",
                                                         "description": "use POINTS_NUM.format(int) contians a dictionary: Key: axis (e.g.), Value: Data Column",
+                                                        "patternProperties": {
+                                                            ONE_LETTER: {
+                                                                "type": "string",
+                                                                "enum": column_names,
+                                                            }
+                                                        },
                                                     }
                                                 },
                                             },
@@ -120,7 +144,10 @@ def build_schema():
                                                         },
                                                         COLUMN_NAME: {
                                                             "type": "array",
-                                                            "items": {"type": "string"},
+                                                            "items": {
+                                                                "type": "string",
+                                                                "enum": column_names,
+                                                            },
                                                         },
                                                         "options": {"type": "object"},
                                                     },
@@ -147,10 +174,29 @@ def build_schema():
                                                             ],
                                                         },
                                                     },
-                                                    "properties": {
-                                                        COLUMN_NAME: {
-                                                            "type": "string",
-                                                            "description": "name in table (select, numerical_filter) or axis name (axis)",
+                                                    "if": {
+                                                        "properties": {
+                                                            SELECTOR_TYPE: {
+                                                                "const": "axis"
+                                                            }
+                                                        }
+                                                    },
+                                                    "then": {
+                                                        "properties": {
+                                                            COLUMN_NAME: {
+                                                                "type": "string",
+                                                                "description": "name in table (select, numerical_filter) or axis name (axis)",
+                                                                "pattern": ONE_LETTER,
+                                                            },
+                                                        },
+                                                    },
+                                                    "else": {
+                                                        "properties": {
+                                                            COLUMN_NAME: {
+                                                                "type": "string",
+                                                                "description": "name in table (select, numerical_filter) or axis name (axis)",
+                                                                "enum": column_names,
+                                                            },
                                                         },
                                                     },
                                                     "allOf": [
@@ -197,7 +243,11 @@ def build_schema():
                                                                         "additionalProperties": False,
                                                                         "properties": {
                                                                             "entries": {
-                                                                                "type": "array"
+                                                                                "type": "array",
+                                                                                "items": {
+                                                                                    "type": "string",
+                                                                                    "enum": column_names,
+                                                                                },
                                                                             }
                                                                         },
                                                                     }
