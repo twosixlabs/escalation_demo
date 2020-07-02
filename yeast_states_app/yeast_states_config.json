@@ -1,0 +1,331 @@
+{
+    "title": "Yeast States Escalation",
+    "brief_desc": "This is a demo for the Yeast States Escalation OS",
+    "data_backend": "psql",
+    "data_sources": [
+        "flow_meta",
+        "dose_response",
+        "plate_reader"
+    ],
+    "available_pages": {
+        "summary": {
+            "button_label": "Data Converge Summary",
+            "graphics": {
+                "graphic_0": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "plate_reader"
+                        }
+                    ],
+                    "title": "Growth data from plate reader",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "plate_reader:od",
+                            "x": "plate_reader:timepoint"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "box",
+                                "mode": "overlay"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "plate_reader:well",
+                                "plate_reader:sample_id"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "plate_reader:replicate_group_string"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "plate_reader:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        }
+                    ]
+                },
+                "graphic_1": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "flow_meta"
+                        }
+                    ],
+                    "title": "Growth data from flow",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "x": "flow_meta:timepoint",
+                            "y": "flow_meta:cells/mL"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "lines+markers"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:replicate_group_string"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "flow_meta:well"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "flow_meta:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        }
+                    ]
+                },
+                "graphic_2": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "plate_reader"
+                        }
+                    ],
+                    "title": "Circuit function data from plate reader",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "x": "plate_reader:timepoint",
+                            "y": "plate_reader:fluor_gain_0.10/od"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "lines+markers"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "plate_reader:well",
+                                "plate_reader:replicate_group_string"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "plate_reader:well"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "plate_reader:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "axis",
+                            "column": "y",
+                            "options": {
+                                "entries": [
+                                    "plate_reader:fluor_gain_0.10/od",
+                                    "plate_reader:fluor_gain_0.16/od",
+                                    "plate_reader:fluor_gain_0.20/od"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "axis",
+                            "column": "x",
+                            "options": {
+                                "entries": [
+                                    "plate_reader:timepoint",
+                                    "plate_reader:inducer_concentration"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "growth_curves": {
+            "button_label": "Growth Curves",
+            "graphics": {
+                "graphic_0": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "plate_reader"
+                        },
+                        {
+                            "data_source_type": "dose_response",
+                            "left_keys": [
+                                "well"
+                            ],
+                            "right_keys": [
+                                "well"
+                            ]
+                        }
+                    ],
+                    "title": "Growth data from plate reader with rate calculations",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "plate_reader:od",
+                            "x": "plate_reader:timepoint"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "lines+markers"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "plate_reader:well",
+                                "plate_reader:strain",
+                                "plate_reader:sample_id",
+                                "dose_response:doubling_time"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "plate_reader:well"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "plate_reader:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "dose_response:doubling_time"
+                        }
+                    ]
+                }
+            }
+        },
+        "circuit_function": {
+            "button_label": "Circuit Function",
+            "graphics": {
+                "graphic_0": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "flow_meta"
+                        },
+                        {
+                            "data_source_type": "flow_stat",
+                            "left_keys": [
+                                "aliquot_id"
+                            ],
+                            "right_keys": [
+                                "aliquot_id"
+                            ]
+                        }
+                    ],
+                    "title": "Circuit function measured by flow fluorescence",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "flow_stat:bin(log10)_0.05",
+                            "x": "flow_meta:timepoint"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "lines+markers"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:strain"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "flow_meta:well"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
