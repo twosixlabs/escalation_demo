@@ -15,12 +15,14 @@ from utility.constants import (
     UPLOAD_ID,
     OPTION_COL,
     INDEX_COLUMN,
+    # JOIN_KEYS
 )
 
 
 class SqlDataInventory:
     @staticmethod
     def get_available_data_source():
+        # todo: intersect this with available sources in the config?
         return list(Base.metadata.tables.keys())
 
     @staticmethod
@@ -121,14 +123,15 @@ class SqlHandler(DataHandler):
             table_class = data_source[DATA_LOCATION]
             if i > 0:
                 # how do we join in this data source to the previous ones in the query
-                previous_data_source = self.data_sources[i - 1]
+                previous_data_source = self.data_sources[0]
                 previous_table_class = previous_data_source[DATA_LOCATION]
-                # todo: join on multiple keys
+                # todo: join on multiple keys?
+                # Reconfigure config json to be [(table_1:key1, table2:key2),...]
                 matched_keys = zip(data_source[LEFT_KEYS], data_source[RIGHT_KEYS])
                 join_clauses = [
                     (
-                        getattr(previous_table_class, matched_key[0])
-                        == getattr(table_class, matched_key[1])
+                        previous_table_class.columns[matched_key[0]]
+                        == table_class.columns[matched_key[1]]
                     )
                     for matched_key in matched_keys
                 ]
@@ -149,7 +152,6 @@ class SqlHandler(DataHandler):
             (Base,),  # inherit from Base
             {"__table__": query.selectable.alias()},  # give the class our selectable
         )
-
         return QueryView
 
     def get_column_names(self):
@@ -161,6 +163,11 @@ class SqlHandler(DataHandler):
         # raise NotImplementedError("This function is not used meaningfully, delete?")
         # return list(self.combined_data_table.columns.keys())
 
+    @staticmethod
+    def sanitize_column_name(column_name):
+        # todo: better match how our auto schema is working to catch all rename logic
+        return column_name.replace(":", "_")
+
     def get_column_objects_from_config_string(self, columns):
 
         """
@@ -169,7 +176,7 @@ class SqlHandler(DataHandler):
         :return:
         """
         column_rename_dict = {
-            config_col.replace(".", "_"): config_col for config_col in columns
+            self.sanitize_column_name(config_col): config_col for config_col in columns
         }
         column_mapping_dict = {
             config_col: getattr(self.combined_data_table, database_col)
@@ -194,7 +201,6 @@ class SqlHandler(DataHandler):
         ) = self.get_column_objects_from_config_string(all_to_include_cols)
         # build basic query requesting all of the columns needed
         query = db_session.query(*column_mapping_dict.values())
-
         # add filters to the query dynamically
         filter_tuples = []
         for filter_dict in filters:
@@ -231,6 +237,5 @@ class SqlHandler(DataHandler):
         for config_col, sql_col_class in column_mapping_dict.items():
             query = db_session.query(sql_col_class).distinct()
             response = query.all()
-            # todo: note we're dropping none/missing values from the response. Do we want to be able to include them?
-            unique_dict[config_col] = [r[0] for r in response if r[0] is not None]
+            unique_dict[config_col] = [r[0] for r in response]
         return unique_dict
