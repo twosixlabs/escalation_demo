@@ -15,6 +15,7 @@ def build_schema():
             DATA_SOURCES,
             AVAILABLE_PAGES,
         ],
+        "additionalProperties": False,
         "properties": {
             SITE_TITLE: {
                 "type": "string",
@@ -36,11 +37,12 @@ def build_schema():
             DATA_SOURCES: {
                 "type": "array",
                 "description": "list of tables or folders that server will use for the plots",
-                "items": {"type": "number"},
+                "items": {"type": "string"},
             },
             AVAILABLE_PAGES: {
                 "type": "object",
-                "properties": {
+                "additionalProperties": False,
+                "patternProperties": {
                     ".*": {
                         "type": "object",
                         "required": [BUTTON_LABEL],
@@ -49,116 +51,162 @@ def build_schema():
                                 "type": "string",
                                 "description": "label on button that will show at the top of the website",
                             },
-                            "graphic_[0-9]*": {
+                            GRAPHICS: {
                                 "type": "object",
-                                "description": "graphic index use GRAPHIC_NUM.format(int)",
-                                "required": [
-                                    PLOT_MANAGER,
-                                    GRAPHIC_TITLE,
-                                    GRAPHIC_DESC,
-                                    DATA_SOURCES,
-                                    DATA,
-                                    PLOT_SPECIFIC_INFO,
-                                ],
-                                "properties": {
-                                    PLOT_MANAGER: {
-                                        "type": "string",
-                                        "description": "plot library you would like to use",
-                                        "enum": ["plotly"],
-                                    },
-                                    GRAPHIC_TITLE: {
-                                        "type": "string",
-                                        "description": "title shown above the graph",
-                                    },
-                                    GRAPHIC_DESC: {
-                                        "type": "string",
-                                        "description": "description shown above the graph",
-                                    },
-                                    DATA_SOURCES: {
-                                        "type": "array",
-                                        "description": "Nick, I am not sure what this is",  # todo: fix
-                                    },
-                                    DATA: {
+                                "additionalProperties": False,
+                                "patternProperties": {
+                                    "^graphic_[0-9]*$": {
                                         "type": "object",
-                                        "description": "contains which data goes on which plot",
+                                        "description": "graphic index use GRAPHIC_NUM.format(int)",
+                                        "required": [
+                                            PLOT_MANAGER,
+                                            GRAPHIC_TITLE,
+                                            GRAPHIC_DESC,
+                                            DATA_SOURCES,
+                                            DATA,
+                                            PLOT_SPECIFIC_INFO,
+                                        ],
+                                        "additionalProperties": False,
                                         "properties": {
-                                            "points_[0-9]*": {
-                                                "type": "pbject",
-                                                "description": "use POINTS_NUM.format(int) contians a dictionary: Key: axis (e.g.), Value: Data Column",
-                                            }
-                                        },
-                                    },
-                                    PLOT_SPECIFIC_INFO: {
-                                        "type": "object",
-                                        "description": "this dictionary depends on the graphing library",
-                                    },
-                                    SELECTABLE_DATA_LIST: {
-                                        "type": "array",
-                                        "description": "list of selectors per page",
-                                        "maxItems": 6,
-                                        "items": {
-                                            "type": "object",
-                                            "required": [SELECTOR_TYPE, COLUMN_NAME],
-                                            "properties": {
-                                                SELECTOR_TYPE: {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "select",
-                                                        "numerical_filter",
-                                                        "axis",
-                                                    ],
-                                                },
-                                                COLUMN_NAME: {
-                                                    "type": "string",
-                                                    "description": "name in table (select, numerical_filter) or axis name (axis)",
+                                            PLOT_MANAGER: {
+                                                "type": "string",
+                                                "description": "plot library you would like to use",
+                                                "enum": ["plotly"],
+                                            },
+                                            GRAPHIC_TITLE: {
+                                                "type": "string",
+                                                "description": "title shown above the graph",
+                                            },
+                                            GRAPHIC_DESC: {
+                                                "type": "string",
+                                                "description": "description shown above the graph",
+                                            },
+                                            DATA_SOURCES: {
+                                                "type": "array",
+                                                "description": "What tables are use to define this graphic",
+                                            },
+                                            DATA: {
+                                                "type": "object",
+                                                "description": "contains which data goes on which plot",
+                                                "additionalProperties": False,
+                                                "patternProperties": {
+                                                    "^points_[0-9]*$": {
+                                                        "type": "object",
+                                                        "description": "use POINTS_NUM.format(int) contians a dictionary: Key: axis (e.g.), Value: Data Column",
+                                                    }
                                                 },
                                             },
-                                            "allOf": [
-                                                {
-                                                    "if": {
-                                                        "properties": {
-                                                            SELECTOR_TYPE: {
-                                                                "const": "select"
-                                                            }
-                                                        }
-                                                    },
-                                                    "then": {
-                                                        "required": [SELECT_OPTION],
-                                                        "properties": {
-                                                            SELECT_OPTION: {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "multiple": {
-                                                                        "type": "boolean"
-                                                                    }
-                                                                },
-                                                            }
+                                            PLOT_SPECIFIC_INFO: {
+                                                "type": "object",
+                                                "description": "this dictionary depends on the graphing library",
+                                            },
+                                            VISUALIZATION_OPTIONS: {
+                                                "type": "array",
+                                                "description": "modifications to the existing graph",
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        OPTION_TYPE,
+                                                        COLUMN_NAME,
+                                                    ],
+                                                    "properties": {
+                                                        OPTION_TYPE: {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "hover_data",
+                                                                "groupby",
+                                                                "aggregate",
+                                                            ],
                                                         },
+                                                        COLUMN_NAME: {
+                                                            "type": "array",
+                                                            "items": {"type": "string"},
+                                                        },
+                                                        "options": {"type": "object"},
                                                     },
                                                 },
-                                                {
-                                                    "if": {
-                                                        "properties": {
-                                                            SELECTOR_TYPE: {
-                                                                "const": "axis"
-                                                            }
-                                                        }
-                                                    },
-                                                    "then": {
-                                                        "required": [SELECT_OPTION],
-                                                        "properties": {
-                                                            SELECT_OPTION: {
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "entries": {
-                                                                        "type": "array"
-                                                                    }
-                                                                },
-                                                            }
+                                            },
+                                            SELECTABLE_DATA_LIST: {
+                                                "type": "array",
+                                                "description": "list of selectors per page",
+                                                "maxItems": 6,
+                                                "items": {
+                                                    "type": "object",
+                                                    "required": [
+                                                        SELECTOR_TYPE,
+                                                        COLUMN_NAME,
+                                                    ],
+                                                    "additionalProperties": True,  # cannot have false and if statements
+                                                    "properties": {
+                                                        SELECTOR_TYPE: {
+                                                            "type": "string",
+                                                            "enum": [
+                                                                "select",
+                                                                "numerical_filter",
+                                                                "axis",
+                                                            ],
                                                         },
                                                     },
+                                                    "properties": {
+                                                        COLUMN_NAME: {
+                                                            "type": "string",
+                                                            "description": "name in table (select, numerical_filter) or axis name (axis)",
+                                                        },
+                                                    },
+                                                    "allOf": [
+                                                        {
+                                                            "if": {
+                                                                "properties": {
+                                                                    SELECTOR_TYPE: {
+                                                                        "const": "select"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "then": {
+                                                                "required": [
+                                                                    SELECT_OPTION
+                                                                ],
+                                                                "properties": {
+                                                                    SELECT_OPTION: {
+                                                                        "type": "object",
+                                                                        "additionalProperties": False,
+                                                                        "properties": {
+                                                                            "multiple": {
+                                                                                "type": "boolean"
+                                                                            }
+                                                                        },
+                                                                    }
+                                                                },
+                                                            },
+                                                        },
+                                                        {
+                                                            "if": {
+                                                                "properties": {
+                                                                    SELECTOR_TYPE: {
+                                                                        "const": "axis"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "then": {
+                                                                "required": [
+                                                                    SELECT_OPTION
+                                                                ],
+                                                                "properties": {
+                                                                    SELECT_OPTION: {
+                                                                        "type": "object",
+                                                                        "additionalProperties": False,
+                                                                        "properties": {
+                                                                            "entries": {
+                                                                                "type": "array"
+                                                                            }
+                                                                        },
+                                                                    }
+                                                                },
+                                                            },
+                                                        },
+                                                    ],
                                                 },
-                                            ],
+                                            },
                                         },
                                     },
                                 },
@@ -173,6 +221,7 @@ def build_schema():
 
 
 def build_plotly_schema():
+    # todo: pull documentation from plotly website
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "plotly dict",
@@ -184,22 +233,6 @@ def build_plotly_schema():
                 "type": "array",
                 "description": "list of graphs to be plotted on a single plot, see https://plotly.com/javascript/reference/ for options, axis information is found from data property",
                 "items": {"type": "object",},
-            },
-            VISUALIZATION_OPTIONS: {
-                "type": "array",
-                "description": "modifications to the exisiting graph",
-                "items": {
-                    "type": "object",
-                    "required": [OPTION_TYPE, COLUMN_NAME],
-                    "properties": {
-                        OPTION_TYPE: {
-                            "type": "string",
-                            "enum": ["hover_data", "groupby", "aggregate"],
-                        },
-                        COLUMN_NAME: {"type": "array", "items": {"type": "string"}},
-                        "options": {"type": "object"},
-                    },
-                },
             },
         },
     }

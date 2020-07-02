@@ -18,3 +18,4 @@ cython
 pytest
 sqlalchemy
 pathvalidate
+jsonschema

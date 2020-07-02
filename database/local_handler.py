@@ -22,7 +22,6 @@ from utility.constants import (
 class LocalCSVDataInventory:
     @staticmethod
     def get_available_data_source():
-        # todo: have a data directory not in test
         return [
             f.name
             for f in os.scandir(
