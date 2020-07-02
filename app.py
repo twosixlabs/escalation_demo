@@ -29,14 +29,7 @@ def create_app():
     return app
 
 
-if __name__ == "__main__":
-    config_file_path = "tests/test_data/test_sql_app_config.json"
-    #config_file_path = "tests/test_data/test_app_local_handler_config.json"
-
-    with open(config_file_path, "r") as config_file:
-        config_dict = json.load(config_file)
-
-    app = create_app()
+def configure_app(app, config_dict):
     # write the config dict to app config as a read-only proxy of a mutable dict
     app.config[APP_CONFIG_JSON] = MappingProxyType(config_dict)
 
@@ -62,5 +55,18 @@ if __name__ == "__main__":
 
     app.config.data_handler = data_backend_class
     app.config.data_backend_writer = data_backend_writer
+    return app
+
+
+if __name__ == "__main__":
+    # config_file_path = "tests/test_data/test_sql_app_config.json"
+    config_file_path = "tests/test_data/test_app_local_handler_config.json"
+    # config_file_path = "yeast_states_app/yeast_states_config.json"
+
+    with open(config_file_path, "r") as config_file:
+        config_dict = json.load(config_file)
+
+    app = create_app()
+    app = configure_app(app, config_dict)
 
     app.run()
