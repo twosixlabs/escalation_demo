@@ -1,9 +1,11 @@
 {
     "title": "Yeast States Escalation",
-    "brief_desc": "This is a demo for the Yeast States Escalation OS",
+    "brief_desc": "Demo for the Yeast States Escalation OS",
     "data_backend": "psql",
     "data_sources": [
         "flow_meta",
+        "flow_stat",
+        "flow_stat_wide",
         "dose_response",
         "plate_reader"
     ],
@@ -30,7 +32,7 @@
                         "data": [
                             {
                                 "type": "box",
-                                "mode": "overlay"
+                                "mode": "group"
                             }
                         ]
                     },
@@ -39,13 +41,13 @@
                             "type": "hover_data",
                             "column": [
                                 "plate_reader:well",
-                                "plate_reader:sample_id"
+                                "plate_reader:sample_contents"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "plate_reader:replicate_group_string"
+                                "plate_reader:sample_contents"
                             ]
                         }
                     ],
@@ -94,13 +96,15 @@
                             "type": "hover_data",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:replicate_group_string"
+                                "flow_meta:replicate_group_string",
+                                "flow_meta:date_of_experiment"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "flow_meta:well"
+                                "flow_meta:well",
+                                "flow_meta:experiment_id"
                             ]
                         }
                     ],
@@ -115,6 +119,13 @@
                         {
                             "type": "select",
                             "column": "flow_meta:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:date_of_experiment",
                             "options": {
                                 "multiple": true
                             }
@@ -240,7 +251,7 @@
                             "column": [
                                 "plate_reader:well",
                                 "plate_reader:strain",
-                                "plate_reader:sample_id",
+                                "plate_reader:sample_contents",
                                 "dose_response:doubling_time"
                             ]
                         },
@@ -284,7 +295,7 @@
                             "data_source_type": "flow_meta"
                         },
                         {
-                            "data_source_type": "flow_stat",
+                            "data_source_type": "flow_stat_wide",
                             "left_keys": [
                                 "aliquot_id"
                             ],
@@ -297,15 +308,16 @@
                     "brief_desc": "",
                     "data": {
                         "points_0": {
-                            "y": "flow_stat:bin(log10)_0.05",
-                            "x": "flow_meta:timepoint"
+                            "y": "flow_stat_wide:BL1-H",
+                            "x": "flow_stat_wide:bin"
                         }
                     },
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "scatter",
-                                "mode": "lines+markers"
+                                "type": "bar",
+                                "mode": "overlay",
+                                "opacity": 0.5
                             }
                         ]
                     },
@@ -314,14 +326,40 @@
                             "type": "hover_data",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:strain"
+                                "flow_meta:control_type",
+                                "flow_meta:strain",
+                                "flow_meta:experiment_id"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "flow_meta:well"
+                                "flow_meta:well",
+                                "flow_meta:timepoint"
                             ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "flow_meta:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:date_of_experiment",
+                            "options": {
+                                "multiple": true
+                            }
                         }
                     ]
                 }

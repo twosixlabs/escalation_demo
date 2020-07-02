@@ -2,19 +2,25 @@ import json
 from utility.constants import *
 
 config_dict = {
-    "title": "Yeast States Escalation",
-    "brief_desc": "This is a demo for the Yeast States Escalation OS",
+    SITE_TITLE: "Yeast States Escalation",
+    SITE_DESC: "Demo for the Yeast States Escalation OS",
     DATA_BACKEND: POSTGRES,
-    DATA_SOURCES: ["flow_meta", "dose_response", "plate_reader"],
+    DATA_SOURCES: [
+        "flow_meta",
+        "flow_stat",
+        "flow_stat_wide",
+        "dose_response",
+        "plate_reader",
+    ],
     AVAILABLE_PAGES: {
         "summary": {
-            "button_label": "Data Converge Summary",
+            BUTTON_LABEL: "Data Converge Summary",
             "graphics": {
                 "graphic_0": {
-                    "plot_manager": "plotly",
+                    PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [{DATA_SOURCE_TYPE: "plate_reader"}],
-                    "title": "Growth data from plate reader",
-                    "brief_desc": "",
+                    GRAPHIC_TITLE: "Growth data from plate reader",
+                    GRAPHIC_DESC: "",
                     "data": {
                         "points_0": {
                             "y": "plate_reader:od",
@@ -22,17 +28,20 @@ config_dict = {
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "box", "mode": "overlay"}],
+                        "data": [{"type": "box", "mode": "group"}],
                         # "data": [{"type": "scatter", "mode": "lines+markers"}],
                     },
                     VISUALIZATION_OPTIONS: [
                         {
                             "type": "hover_data",
-                            "column": ["plate_reader:well", "plate_reader:sample_id"],
+                            "column": [
+                                "plate_reader:well",
+                                "plate_reader:sample_contents",
+                            ],
                         },
                         {
                             "type": "groupby",
-                            "column": ["plate_reader:replicate_group_string"],
+                            "column": ["plate_reader:sample_contents"],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -49,10 +58,10 @@ config_dict = {
                     ],
                 },
                 "graphic_1": {
-                    "plot_manager": "plotly",
+                    PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [{DATA_SOURCE_TYPE: "flow_meta"}],
-                    "title": "Growth data from flow",
-                    "brief_desc": "",
+                    GRAPHIC_TITLE: "Growth data from flow",
+                    GRAPHIC_DESC: "",
                     "data": {
                         "points_0": {
                             "x": "flow_meta:timepoint",
@@ -68,9 +77,13 @@ config_dict = {
                             "column": [
                                 "flow_meta:well",
                                 "flow_meta:replicate_group_string",
+                                "flow_meta:date_of_experiment",
                             ],
                         },
-                        {"type": "groupby", "column": ["flow_meta:well"]},
+                        {
+                            "type": "groupby",
+                            "column": ["flow_meta:well", "flow_meta:experiment_id"],
+                        },
                     ],
                     SELECTABLE_DATA_LIST: [
                         {
@@ -83,13 +96,18 @@ config_dict = {
                             "column": "flow_meta:strain",
                             "options": {"multiple": True},
                         },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:date_of_experiment",
+                            "options": {"multiple": True},
+                        },
                     ],
                 },
                 "graphic_2": {
-                    "plot_manager": "plotly",
+                    PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [{DATA_SOURCE_TYPE: "plate_reader"}],
-                    "title": "Circuit function data from plate reader",
-                    "brief_desc": "",
+                    GRAPHIC_TITLE: "Circuit function data from plate reader",
+                    GRAPHIC_DESC: "",
                     "data": {
                         "points_0": {
                             "x": "plate_reader:timepoint",
@@ -146,10 +164,10 @@ config_dict = {
             },
         },
         "growth_curves": {
-            "button_label": "Growth Curves",
+            BUTTON_LABEL: "Growth Curves",
             "graphics": {
                 "graphic_0": {
-                    "plot_manager": "plotly",
+                    PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "plate_reader"},
                         {
@@ -158,8 +176,8 @@ config_dict = {
                             RIGHT_KEYS: ["well"],
                         },
                     ],
-                    "title": "Growth data from plate reader with rate calculations",
-                    "brief_desc": "",
+                    GRAPHIC_TITLE: "Growth data from plate reader with rate calculations",
+                    GRAPHIC_DESC: "",
                     "data": {
                         "points_0": {
                             "y": "plate_reader:od",
@@ -175,7 +193,7 @@ config_dict = {
                             "column": [
                                 "plate_reader:well",
                                 "plate_reader:strain",
-                                "plate_reader:sample_id",
+                                "plate_reader:sample_contents",
                                 "dose_response:doubling_time",
                             ],
                         },
@@ -201,61 +219,69 @@ config_dict = {
             },
         },
         "circuit_function": {
-            "button_label": "Circuit Function",
-            "graphics": {
+            BUTTON_LABEL: "Circuit Function",
+            GRAPHICS: {
                 "graphic_0": {
-                    "plot_manager": "plotly",
+                    PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "flow_meta"},
                         # {DATA_SOURCE_TYPE: "dose_response",
                         #  LEFT_KEYS: ["well"],
                         #  RIGHT_KEYS: ["well"]},
                         {
-                            DATA_SOURCE_TYPE: "flow_stat",
+                            DATA_SOURCE_TYPE: "flow_stat_wide",
                             LEFT_KEYS: ["aliquot_id"],
                             RIGHT_KEYS: ["aliquot_id"],
                         },
                     ],
-                    "title": "Circuit function measured by flow fluorescence",
-                    "brief_desc": "",
-                    "data": {
+                    GRAPHIC_TITLE: "Circuit function measured by flow fluorescence",
+                    GRAPHIC_DESC: "",
+                    DATA: {
                         "points_0": {
-                            "y": "flow_stat:bin(log10)_0.05",
-                            "x": "flow_meta:timepoint",
+                            "y": "flow_stat_wide:BL1-H",
+                            "x": "flow_stat_wide:bin",
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "scatter", "mode": "lines+markers"}],
+                        "data": [{"type": "bar", "mode": "overlay", "opacity": 0.5}],
                     },
                     VISUALIZATION_OPTIONS: [
                         {
                             "type": "hover_data",
-                            "column": ["flow_meta:well", "flow_meta:strain"],
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:control_type",
+                                "flow_meta:strain",
+                                "flow_meta:experiment_id",
+                            ],
                         },
-                        {"type": "groupby", "column": ["flow_meta:well"]},
+                        {
+                            "type": "groupby",
+                            "column": ["flow_meta:well", "flow_meta:timepoint"],
+                        },
                     ],
-                    # SELECTABLE_DATA_LIST: [
-                    #     {
-                    #         "type": "select",
-                    #         "column": "plate_reader:control_type",
-                    #         "options": {"multiple": True},
-                    #     },
-                    #     {
-                    #         "type": "select",
-                    #         "column": "plate_reader:strain",
-                    #         "options": {"multiple": True},
-                    #     },
-                    #     {
-                    #         "type": "numerical_filter",
-                    #         "column": "dose_response:doubling_time"
-                    #     }
-                    # ]
+                    SELECTABLE_DATA_LIST: [
+                        {
+                            "type": "select",
+                            "column": "flow_meta:strain",
+                            "options": {"multiple": True},
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:control_type",
+                            "options": {"multiple": True},
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:date_of_experiment",
+                            "options": {"multiple": True},
+                        },
+                    ],
                 },
             },
         },
     },
 }
-
 
 if __name__ == "__main__":
     with open("yeast_states_app/yeast_states_config.json", "w") as fout:
