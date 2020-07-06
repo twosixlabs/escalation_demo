@@ -122,9 +122,6 @@ class LocalCSVHandler(DataHandler):
                 )
         return combined_data_table
 
-    def get_column_names(self):
-        return self.combined_data_table.columns.tolist()
-
     def get_column_data(self, cols: list, filters: list = None) -> dict:
         # error checking would be good
         """

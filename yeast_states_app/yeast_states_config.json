@@ -89,7 +89,10 @@
                                 "type": "scatter",
                                 "mode": "lines+markers"
                             }
-                        ]
+                        ],
+                        "layout": {
+                            "hovermode": "closest"
+                        }
                     },
                     "visualization_options": [
                         {
@@ -153,7 +156,10 @@
                                 "type": "scatter",
                                 "mode": "lines+markers"
                             }
-                        ]
+                        ],
+                        "layout": {
+                            "hovermode": "closest"
+                        }
                     },
                     "visualization_options": [
                         {
@@ -241,7 +247,10 @@
                                 "type": "scatter",
                                 "mode": "lines+markers"
                             }
-                        ]
+                        ],
+                        "layout": {
+                            "hovermode": "closest"
+                        }
                     },
                     "visualization_options": [
                         {

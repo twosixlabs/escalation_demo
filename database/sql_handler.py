@@ -1,6 +1,7 @@
 from datetime import datetime
 import uuid
 
+from flask import current_app
 import pandas as pd
 from sqlalchemy import and_
 
@@ -97,6 +98,7 @@ class SqlHandler(DataHandler):
             table_class = self.get_class_name_from_table_name(table_name)
             self.table_lookup_by_name[table_name] = table_class
             data_source.update({DATA_LOCATION: table_class})
+        self.column_lookup_by_name = {}  # defined in build_combined_data_table
         self.combined_data_table = self.build_combined_data_table()
 
     @staticmethod
@@ -108,6 +110,46 @@ class SqlHandler(DataHandler):
         """
         return Base.metadata.tables[table_name]
 
+    def join_tables_for_query(self):
+        query = db_session.query(
+            *[data_source[DATA_LOCATION] for data_source in self.data_sources]
+        )
+        for i, data_source in enumerate(self.data_sources):
+            if i == 0:
+                continue
+            # sources after the first must have join information linking them to each other
+            join_clauses = []
+            for join_key_pair in data_source[JOIN_KEYS]:
+                left_table_name, left_column_name = join_key_pair[0].split(
+                    TABLE_COLUMN_SEPARATOR
+                )
+                right_table_name, right_column_name = join_key_pair[1].split(
+                    TABLE_COLUMN_SEPARATOR
+                )
+                left_table = self.table_lookup_by_name[left_table_name]
+                right_table = self.table_lookup_by_name[right_table_name]
+                join_clauses.append(
+                    (
+                        getattr(left_table.columns, left_column_name)
+                        == getattr(right_table.columns, right_column_name)
+                    )
+                )
+            query = query.join(data_source[DATA_LOCATION], and_(*join_clauses))
+        return query
+
+    def apply_filters_to_query(self, query, filters):
+        # add filters to the query dynamically
+        filter_tuples = []
+        for filter_dict in filters:
+            column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
+            column_object = self.column_lookup_by_name[column_name]
+            filter_tuples.append(
+                sql_handler_filter_operation(column_object, filter_dict)
+            )
+        if filter_tuples:
+            query = query.filter(*filter_tuples)
+        return query
+
     def build_combined_data_table(self):
         """
         This takes the tables specified in self.data_sources and combines them into one easily referenceable selectable.
@@ -115,36 +157,14 @@ class SqlHandler(DataHandler):
 
         :return: SqlAlchemy DeclarativeMeta selectable class
         """
-        # first build a query that will get all of the columns for all of the requested tables
-        # look in current_ app for which takes and columns
-        query = db_session.query(
-            *[data_source[DATA_LOCATION] for data_source in self.data_sources]
+        # first build a query that will get all of the columns for all of active data in the requested tables
+        query = self.join_tables_for_query()
+        self.column_lookup_by_name = {
+            c.name: c for c in query.selectable.alias().columns
+        }
+        query = self.apply_filters_to_query(
+            query, filters=current_app.config.active_data_source_filters
         )
-        for i, data_source in enumerate(self.data_sources):
-            if i > 0:
-                # sources after the first must have join information linking them to each other
-                join_clauses = []
-                for join_key_pair in data_source[JOIN_KEYS]:
-                    left_table_name, left_column_name = join_key_pair[0].split(
-                        TABLE_COLUMN_SEPARATOR
-                    )
-                    right_table_name, right_column_name = join_key_pair[1].split(
-                        TABLE_COLUMN_SEPARATOR
-                    )
-                    left_table = self.table_lookup_by_name[left_table_name]
-                    right_table = self.table_lookup_by_name[right_table_name]
-                    join_clauses.append(
-                        (
-                            getattr(left_table.columns, left_column_name)
-                            == getattr(right_table.columns, right_column_name)
-                        )
-                    )
-                query = query.join(
-                    data_source[DATA_LOCATION],
-                    and_(*join_clauses),
-                    # on clause matches corresponding table columns
-                )
-
         # Dynamically defines the selectable class for the query view
         # This prefixes all column names with "{table_name}_"
         query_view_name = "_".join(
@@ -157,35 +177,10 @@ class SqlHandler(DataHandler):
         )
         return QueryView
 
-    def get_column_names(self):
-        """
-        :return: a list of the column names in the table referenced by the handler
-        """
-        # todo: these are prefixed with table_name of the sub table in combined_data_table
-        return list(self.combined_data_table().__table__.columns.keys())
-        # raise NotImplementedError("This function is not used meaningfully, delete?")
-        # return list(self.combined_data_table.columns.keys())
-
     @staticmethod
     def sanitize_column_name(column_name):
         # todo: better match how our auto schema is working to catch all rename logic
         return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
-
-    def get_column_objects_from_config_string(self, columns):
-
-        """
-        rename is switching the '_' separation back to '.'
-        Look up the right classes
-        :return:
-        """
-        column_rename_dict = {
-            self.sanitize_column_name(config_col): config_col for config_col in columns
-        }
-        column_mapping_dict = {
-            config_col: getattr(self.combined_data_table, database_col)
-            for database_col, config_col in column_rename_dict.items()
-        }
-        return column_rename_dict, column_mapping_dict
 
     def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
@@ -197,29 +192,20 @@ class SqlHandler(DataHandler):
             filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
         all_to_include_cols = list(set(columns + list(cols_for_filters)))
+        all_column_rename_dict = {
+            self.sanitize_column_name(c): c for c in all_to_include_cols
+        }
 
-        (
-            column_rename_dict,
-            column_mapping_dict,
-        ) = self.get_column_objects_from_config_string(all_to_include_cols)
         # build basic query requesting all of the columns needed
-        query = db_session.query(*column_mapping_dict.values())
-        # add filters to the query dynamically
-        filter_tuples = []
-        for filter_dict in filters:
-            column_object = column_mapping_dict[filter_dict[OPTION_COL]]
-            filter_tuples.append(
-                sql_handler_filter_operation(column_object, filter_dict)
-            )
-        if filter_tuples:
-            query = query.filter(*filter_tuples)
-
+        query = db_session.query(
+            *[self.column_lookup_by_name[c] for c in all_column_rename_dict.keys()]
+        )
+        query = self.apply_filters_to_query(query, filters)
         response_rows = query.all()
         if response_rows:
-            # use pandas to read the sql response and convert to a dict of lists keyed by column names
-            # rename is switching the '_' separation back to '.'
+            # rename is switching the '_' separation back to TABLE_COLUMN_SEPARATOR
             response_as_df = pd.DataFrame(response_rows).rename(
-                columns=column_rename_dict
+                columns=all_column_rename_dict
             )
         else:
             # if the sql query returns no rows, we want an empty df to format our response
@@ -232,11 +218,9 @@ class SqlHandler(DataHandler):
         :return: A dict keyed by column names and valued with the unique values in that column
         """
         unique_dict = {}
-        (
-            column_rename_dict,
-            column_mapping_dict,
-        ) = self.get_column_objects_from_config_string(cols)
-        for config_col, sql_col_class in column_mapping_dict.items():
+        for config_col in cols:
+            renamed_col = self.sanitize_column_name(config_col)
+            sql_col_class = self.column_lookup_by_name[renamed_col]
             query = db_session.query(sql_col_class).distinct()
             response = query.all()
             unique_dict[config_col] = [r[0] for r in response]
