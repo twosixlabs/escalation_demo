@@ -24,7 +24,7 @@ NEW_DATA_SOURCE = "new_data_source"
 DATA_SOURCE_TYPE = "data_source_type"
 JOIN_KEYS = "join_keys"
 DATA_LOCATION = "filepath"
-TABLE_COLUMN_SEPARATOR = "."
+TABLE_COLUMN_SEPARATOR = ":"
 
 DATA = "data"
 DATA_FILTERS = "data_filters"
