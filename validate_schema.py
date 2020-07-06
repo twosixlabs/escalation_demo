@@ -1,6 +1,7 @@
 import json
-from collections import defaultdict, deque
+from collections import deque
 
+from flask import has_app_context
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
@@ -73,8 +74,6 @@ def validate_config_data_references(config_dict):
         print("The Config file is not valid:")
         print(valid_error.message)
         print("The error can be found in the config at:", list(valid_error.path))
-    finally:
-        ctx.pop()
 
 
 if __name__ == "__main__":
