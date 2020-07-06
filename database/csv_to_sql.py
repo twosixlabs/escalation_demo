@@ -9,7 +9,7 @@ import uuid
 import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
-from sqlalchemy.types import Integer, Text, Date, Float
+from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
 
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
@@ -20,22 +20,23 @@ if DB_BACKEND == "psql":
 elif DB_BACKEND == "mysql":
     from app_settings import MYSQL_DATABASE_CONFIG as database_config
 
-DATA_TYPE_MAP = {"integer": Integer, "number": Float, "string": Text, "date": Date}
+DATA_TYPE_MAP = {
+    "integer": Integer,
+    "number": Float,
+    "string": Text,
+    "date": DateTime,
+    "boolean": Boolean,
+}
 
-
-# todo: bigger map:
-# int: sqlalchemy.sql.sqltypes.BigInteger,
-#  str: sqlalchemy.sql.sqltypes.Unicode,
-#  float: sqlalchemy.sql.sqltypes.Float,
-#  decimal.Decimal: sqlalchemy.sql.sqltypes.Numeric,
-#  datetime.datetime: sqlalchemy.sql.sqltypes.DateTime,
-#  bytes: sqlalchemy.sql.sqltypes.LargeBinary,
-#  bool: sqlalchemy.sql.sqltypes.Boolean,
-#  datetime.date: sqlalchemy.sql.sqltypes.Date,
-#  datetime.time: sqlalchemy.sql.sqltypes.Time,
-#  datetime.timedelta: sqlalchemy.sql.sqltypes.Interval,
-#  list: sqlalchemy.sql.sqltypes.ARRAY,
-#  dict: sqlalchemy.sql.sqltypes.JSON
+# # todo: bigger map:
+# import sqlalchemy.types
+#  decimal.Decimal: sqlalchemy.types.Numeric,
+#  bytes: sqlalchemy.types.LargeBinary,
+#  datetime.date: sqlalchemy.types.Date,
+#  datetime.time: sqlalchemy.types.Time,
+#  datetime.timedelta: sqlalchemy.types.Interval,
+#  list: sqlalchemy.types.ARRAY,
+#  dict: sqlalchemy.types.JSON
 
 
 def extract_values(obj, key):
@@ -65,7 +66,6 @@ class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
     connection_url = URL(**database_config)
-    print(connection_url)
     __engine = create_engine(connection_url)
 
     @staticmethod
@@ -106,7 +106,7 @@ class CreateTablesFromCSVs:
         sqlalchemy_data_types = []
         for tableschema_data_type in tableschema_data_types:
             try:
-                sqlalchemy_data_types.append(DATA_TYPE_MAP.get(tableschema_data_type))
+                sqlalchemy_data_types.append(DATA_TYPE_MAP[tableschema_data_type])
             except KeyError:
                 raise KeyError(
                     f"Mapping to sqlalchemy data type not found for {tableschema_data_type}"
@@ -182,12 +182,12 @@ if __name__ == "__main__":
     # CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
     # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
 
-    # todo: psql at least enforces lowercase table names.
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
     key_column = None
+
     CreateTablesFromCSVs.create_new_table(
         table_name, data, schema, key_columns=key_column
     )
@@ -196,8 +196,12 @@ if __name__ == "__main__":
     # create a table in your db defined by a csv file
     # python database/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
     # python database/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
+
     # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile database/models.py
 
 # todo: add columns about upload time
 # todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission
+# todo: psql at least enforces lowercase table names- sanitize table names
+# todo: write table create from schema and bulk insert the rows rather than using the pandas to_sql, which can be very slow
+# todo: enforce no : in column or table names

@@ -12,8 +12,7 @@ from utility.constants import (
     OPTION_COL,
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
-    LEFT_KEYS,
-    RIGHT_KEYS,
+    JOIN_KEYS,
     DATA_FILE_DIRECTORY,
     APP_CONFIG_JSON,
 )
@@ -109,18 +108,16 @@ class LocalCSVHandler(DataHandler):
             data_source_df = pd.read_csv(data_source[DATA_LOCATION])
             # add the data_source/table name as a prefix to disambiguate columns
             data_source_df = data_source_df.add_prefix(
-                f"{data_source[DATA_SOURCE_TYPE]}."
+                f"{data_source[DATA_SOURCE_TYPE]}:"
             )
             # the first data source defines the leftmost of any joins
             if combined_data_table is None:
                 combined_data_table = data_source_df
             else:
+                left_keys, right_keys = zip(*data_source[JOIN_KEYS])
                 # left join the next data source to our combined data table
                 combined_data_table = combined_data_table.merge(
-                    data_source_df,
-                    how="left",
-                    left_on=data_source[LEFT_KEYS],
-                    right_on=data_source[RIGHT_KEYS],
+                    data_source_df, how="left", left_on=left_keys, right_on=right_keys,
                 )
         return combined_data_table
 
@@ -149,5 +146,5 @@ class LocalCSVHandler(DataHandler):
         unique_dict = {}
         for col in cols:
             # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
-            unique_dict[col] = self.combined_data_table[col].dropna().unique().tolist()
+            unique_dict[col] = self.combined_data_table[col].unique().tolist()
         return unique_dict
