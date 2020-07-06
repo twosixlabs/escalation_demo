@@ -14,6 +14,7 @@ from utility.constants import (
     OPTION_COL,
     INDEX_COLUMN,
     JOIN_KEYS,
+    TABLE_COLUMN_SEPARATOR,
 )
 
 
@@ -115,6 +116,7 @@ class SqlHandler(DataHandler):
         :return: SqlAlchemy DeclarativeMeta selectable class
         """
         # first build a query that will get all of the columns for all of the requested tables
+        # look in current_ app for which takes and columns
         query = db_session.query(
             *[data_source[DATA_LOCATION] for data_source in self.data_sources]
         )
@@ -123,8 +125,12 @@ class SqlHandler(DataHandler):
                 # sources after the first must have join information linking them to each other
                 join_clauses = []
                 for join_key_pair in data_source[JOIN_KEYS]:
-                    left_table_name, left_column_name = join_key_pair[0].split(":")
-                    right_table_name, right_column_name = join_key_pair[1].split(":")
+                    left_table_name, left_column_name = join_key_pair[0].split(
+                        TABLE_COLUMN_SEPARATOR
+                    )
+                    right_table_name, right_column_name = join_key_pair[1].split(
+                        TABLE_COLUMN_SEPARATOR
+                    )
                     left_table = self.table_lookup_by_name[left_table_name]
                     right_table = self.table_lookup_by_name[right_table_name]
                     join_clauses.append(
@@ -163,7 +169,7 @@ class SqlHandler(DataHandler):
     @staticmethod
     def sanitize_column_name(column_name):
         # todo: better match how our auto schema is working to catch all rename logic
-        return column_name.replace(":", "_")
+        return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
 
     def get_column_objects_from_config_string(self, columns):
 

@@ -15,6 +15,7 @@ from utility.constants import (
     JOIN_KEYS,
     DATA_FILE_DIRECTORY,
     APP_CONFIG_JSON,
+    TABLE_COLUMN_SEPARATOR,
 )
 
 
@@ -108,7 +109,7 @@ class LocalCSVHandler(DataHandler):
             data_source_df = pd.read_csv(data_source[DATA_LOCATION])
             # add the data_source/table name as a prefix to disambiguate columns
             data_source_df = data_source_df.add_prefix(
-                f"{data_source[DATA_SOURCE_TYPE]}:"
+                f"{data_source[DATA_SOURCE_TYPE]}{TABLE_COLUMN_SEPARATOR}"
             )
             # the first data source defines the leftmost of any joins
             if combined_data_table is None:
