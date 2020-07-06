@@ -16,6 +16,7 @@ from utility.constants import (
     DATA_FILE_DIRECTORY,
     APP_CONFIG_JSON,
     TABLE_COLUMN_SEPARATOR,
+    SELECTED,
 )
 
 
@@ -51,10 +52,6 @@ class LocalCSVDataInventory:
         :return: Nothing
         """
 
-        """
-                :param data_source_name: str
-                :return: list column_name strs
-                """
         file_name = (
             datetime.utcnow().strftime("%Y%m%d-%H%M%S")
             if (file_name is None)
@@ -78,23 +75,31 @@ class LocalCSVHandler(DataHandler):
         :param data_sources: list of objects defining data files and join rules
         e.g., [{DATA_SOURCE_TYPE: "file_type_a"},
         {DATA_SOURCE_TYPE: "file_type_b",
-        LEFT_KEY: "column_foo_in_file_type_a",
-        RIGHT_KEY: "column_bar_in_file_type_b"}]
+        JOIN_KEYS: [("column_foo_in_file_type_a", "column_bar_in_file_type_b"), (..., ...)]
         """
         self.data_sources = data_sources
         self.data_file_directory = current_app.config[APP_CONFIG_JSON][
             DATA_FILE_DIRECTORY
         ]
         for data_source in self.data_sources:
-            data_source_name = data_source[DATA_SOURCE_TYPE]
-            data_source_subfolder = os.path.join(
-                self.data_file_directory, data_source_name
-            )
-            list_of_files = glob.glob(f"{data_source_subfolder}/*.csv")
-            assert len(list_of_files) > 0
-            latest_filepath = max(list_of_files, key=os.path.getctime)
-            data_source.update({DATA_LOCATION: latest_filepath})
+            filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source)
+            data_source.update({DATA_LOCATION: filepaths_list})
         self.combined_data_table = self.build_combined_data_table()
+
+    def assemble_list_of_active_data_source_csvs(self, data_source):
+        data_source_name = data_source[DATA_SOURCE_TYPE]
+        data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
+        filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
+        for filter_dict in current_app.config.active_data_source_filters:
+            table, _ = filter_dict[OPTION_COL].split(TABLE_COLUMN_SEPARATOR)
+            if table == data_source_name:
+                included_files = [
+                    os.path.join(data_source_subfolder, included_file)
+                    for included_file in filter_dict[SELECTED]
+                ]
+                filepaths_list = [f for f in filepaths_list if f in included_files]
+        assert len(filepaths_list) > 0
+        return filepaths_list
 
     def build_combined_data_table(self):
         """
@@ -106,7 +111,9 @@ class LocalCSVHandler(DataHandler):
         combined_data_table = None
         # todo: join on multiple keys
         for data_source in self.data_sources:
-            data_source_df = pd.read_csv(data_source[DATA_LOCATION])
+            data_source_df = pd.concat(
+                [pd.read_csv(filepath) for filepath in data_source[DATA_LOCATION]]
+            )
             # add the data_source/table name as a prefix to disambiguate columns
             data_source_df = data_source_df.add_prefix(
                 f"{data_source[DATA_SOURCE_TYPE]}{TABLE_COLUMN_SEPARATOR}"
