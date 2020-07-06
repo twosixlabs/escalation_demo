@@ -6,7 +6,7 @@
         "flow_meta",
         "flow_stat",
         "flow_stat_wide",
-        "dose_response",
+        "growth_rate",
         "plate_reader"
     ],
     "available_pages": {
@@ -104,7 +104,7 @@
                             "type": "groupby",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:experiment_id"
+                                "flow_meta:experiment_id_short"
                             ]
                         }
                     ],
@@ -144,7 +144,7 @@
                     "data": {
                         "points_0": {
                             "x": "plate_reader:timepoint",
-                            "y": "plate_reader:fluor_gain_0.10/od"
+                            "y": "plate_reader:fluor_gain_0.16/od"
                         }
                     },
                     "plot_specific_info": {
@@ -190,9 +190,7 @@
                             "column": "y",
                             "options": {
                                 "entries": [
-                                    "plate_reader:fluor_gain_0.10/od",
-                                    "plate_reader:fluor_gain_0.16/od",
-                                    "plate_reader:fluor_gain_0.20/od"
+                                    "plate_reader:fluor_gain_0.16/od"
                                 ]
                             }
                         },
@@ -220,12 +218,12 @@
                             "data_source_type": "plate_reader"
                         },
                         {
-                            "data_source_type": "dose_response",
-                            "left_keys": [
-                                "well"
-                            ],
-                            "right_keys": [
-                                "well"
+                            "data_source_type": "growth_rate",
+                            "join_keys": [
+                                [
+                                    "plate_reader:well",
+                                    "growth_rate:well"
+                                ]
                             ]
                         }
                     ],
@@ -252,7 +250,7 @@
                                 "plate_reader:well",
                                 "plate_reader:strain",
                                 "plate_reader:sample_contents",
-                                "dose_response:doubling_time"
+                                "growth_rate:doubling_time"
                             ]
                         },
                         {
@@ -279,7 +277,7 @@
                         },
                         {
                             "type": "numerical_filter",
-                            "column": "dose_response:doubling_time"
+                            "column": "growth_rate:doubling_time"
                         }
                     ]
                 }
@@ -296,11 +294,24 @@
                         },
                         {
                             "data_source_type": "flow_stat_wide",
-                            "left_keys": [
-                                "aliquot_id"
-                            ],
-                            "right_keys": [
-                                "aliquot_id"
+                            "join_keys": [
+                                [
+                                    "flow_meta:aliquot_id",
+                                    "flow_stat_wide:aliquot_id"
+                                ]
+                            ]
+                        },
+                        {
+                            "data_source_type": "growth_rate",
+                            "join_keys": [
+                                [
+                                    "flow_meta:experiment_id_short",
+                                    "growth_rate:experiment_id"
+                                ],
+                                [
+                                    "flow_meta:well",
+                                    "growth_rate:well"
+                                ]
                             ]
                         }
                     ],
@@ -309,7 +320,7 @@
                     "data": {
                         "points_0": {
                             "y": "flow_stat_wide:BL1-H",
-                            "x": "flow_stat_wide:bin"
+                            "x": "flow_stat_wide:log10_bin"
                         }
                     },
                     "plot_specific_info": {
@@ -319,7 +330,11 @@
                                 "mode": "overlay",
                                 "opacity": 0.5
                             }
-                        ]
+                        ],
+                        "layout": {
+                            "hovermode": " closest",
+                            "mode": "overlay"
+                        }
                     },
                     "visualization_options": [
                         {
@@ -328,14 +343,15 @@
                                 "flow_meta:well",
                                 "flow_meta:control_type",
                                 "flow_meta:strain",
-                                "flow_meta:experiment_id"
+                                "flow_meta:experiment_id",
+                                "growth_rate:doubling_time"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:timepoint"
+                                "flow_meta:experiment_id_short"
                             ]
                         }
                     ],
@@ -360,6 +376,10 @@
                             "options": {
                                 "multiple": true
                             }
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "growth_rate:doubling_time"
                         }
                     ]
                 }

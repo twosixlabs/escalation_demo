@@ -9,7 +9,7 @@ config_dict = {
         "flow_meta",
         "flow_stat",
         "flow_stat_wide",
-        "dose_response",
+        "growth_rate",
         "plate_reader",
     ],
     AVAILABLE_PAGES: {
@@ -82,7 +82,10 @@ config_dict = {
                         },
                         {
                             "type": "groupby",
-                            "column": ["flow_meta:well", "flow_meta:experiment_id"],
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:experiment_id_short",
+                            ],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -111,7 +114,7 @@ config_dict = {
                     "data": {
                         "points_0": {
                             "x": "plate_reader:timepoint",
-                            "y": "plate_reader:fluor_gain_0.10/od",
+                            "y": "plate_reader:fluor_gain_0.16/od",
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
@@ -143,9 +146,9 @@ config_dict = {
                             "column": "y",
                             "options": {
                                 "entries": [
-                                    "plate_reader:fluor_gain_0.10/od",
+                                    # "plate_reader:fluor_gain_0.10/od", # todo: these aren't all present in individual csv uploads. e.g., not NovelChassis-OR-Circuit-Cycle0-24hour__platereader.csv
                                     "plate_reader:fluor_gain_0.16/od",
-                                    "plate_reader:fluor_gain_0.20/od",
+                                    # "plate_reader:fluor_gain_0.20/od",
                                 ]
                             },
                         },
@@ -171,9 +174,8 @@ config_dict = {
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "plate_reader"},
                         {
-                            DATA_SOURCE_TYPE: "dose_response",
-                            LEFT_KEYS: ["well"],
-                            RIGHT_KEYS: ["well"],
+                            DATA_SOURCE_TYPE: "growth_rate",
+                            JOIN_KEYS: [("plate_reader:well", "growth_rate:well")],
                         },
                     ],
                     GRAPHIC_TITLE: "Growth data from plate reader with rate calculations",
@@ -194,7 +196,7 @@ config_dict = {
                                 "plate_reader:well",
                                 "plate_reader:strain",
                                 "plate_reader:sample_contents",
-                                "dose_response:doubling_time",
+                                "growth_rate:doubling_time",
                             ],
                         },
                         {"type": "groupby", "column": ["plate_reader:well"]},
@@ -212,7 +214,7 @@ config_dict = {
                         },
                         {
                             "type": "numerical_filter",
-                            "column": "dose_response:doubling_time",
+                            "column": "growth_rate:doubling_time",
                         },
                     ],
                 },
@@ -225,13 +227,22 @@ config_dict = {
                     PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "flow_meta"},
-                        # {DATA_SOURCE_TYPE: "dose_response",
-                        #  LEFT_KEYS: ["well"],
-                        #  RIGHT_KEYS: ["well"]},
                         {
                             DATA_SOURCE_TYPE: "flow_stat_wide",
-                            LEFT_KEYS: ["aliquot_id"],
-                            RIGHT_KEYS: ["aliquot_id"],
+                            JOIN_KEYS: [
+                                ("flow_meta:aliquot_id", "flow_stat_wide:aliquot_id")
+                            ],
+                        },
+                        {
+                            DATA_SOURCE_TYPE: "growth_rate",
+                            # todo: this isn't the right join
+                            JOIN_KEYS: [
+                                (
+                                    "flow_meta:experiment_id_short",
+                                    "growth_rate:experiment_id",
+                                ),
+                                ("flow_meta:well", "growth_rate:well"),
+                            ],
                         },
                     ],
                     GRAPHIC_TITLE: "Circuit function measured by flow fluorescence",
@@ -239,11 +250,13 @@ config_dict = {
                     DATA: {
                         "points_0": {
                             "y": "flow_stat_wide:BL1-H",
-                            "x": "flow_stat_wide:bin",
+                            "x": "flow_stat_wide:log10_bin",
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "bar", "mode": "overlay", "opacity": 0.5}],
+                        "layout": {"hovermode": " closest", "mode": "overlay"},
+                        # todo: why are these ignored?
                     },
                     VISUALIZATION_OPTIONS: [
                         {
@@ -253,11 +266,15 @@ config_dict = {
                                 "flow_meta:control_type",
                                 "flow_meta:strain",
                                 "flow_meta:experiment_id",
+                                "growth_rate:doubling_time",
                             ],
                         },
                         {
                             "type": "groupby",
-                            "column": ["flow_meta:well", "flow_meta:timepoint"],
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:experiment_id_short",
+                            ],  # todo: is this actually grouping by both and just showing 1?
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -275,6 +292,10 @@ config_dict = {
                             "type": "select",
                             "column": "flow_meta:date_of_experiment",
                             "options": {"multiple": True},
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "growth_rate:doubling_time",
                         },
                     ],
                 },
