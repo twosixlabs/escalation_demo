@@ -23,8 +23,8 @@
                     "brief_desc": "This plot looks at the relationship between...",
                     "data": {
                         "points_0": {
-                            "x": "penguin_size.body_mass_g",
-                            "y": "penguin_size.flipper_length_mm"
+                            "x": "penguin_size:body_mass_g",
+                            "y": "penguin_size:flipper_length_mm"
                         }
                     },
                     "plot_specific_info": {
@@ -39,14 +39,14 @@
                         {
                             "type": "hover_data",
                             "column": [
-                                "penguin_size.sex",
-                                "penguin_size.culmen_length_mm"
+                                "penguin_size:sex",
+                                "penguin_size:culmen_length_mm"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "penguin_size.island"
+                                "penguin_size:island"
                             ],
                             "options": {
                                 "styles": {
@@ -72,21 +72,21 @@
                     "selectable_data_list": [
                         {
                             "type": "select",
-                            "column": "penguin_size.sex",
+                            "column": "penguin_size:sex",
                             "options": {
                                 "multiple": false
                             }
                         },
                         {
                             "type": "select",
-                            "column": "penguin_size.island",
+                            "column": "penguin_size:island",
                             "options": {
                                 "multiple": true
                             }
                         },
                         {
                             "type": "numerical_filter",
-                            "column": "penguin_size.culmen_length_mm"
+                            "column": "penguin_size:culmen_length_mm"
                         }
                     ]
                 },
@@ -101,7 +101,7 @@
                     "brief_desc": "",
                     "data": {
                         "points_0": {
-                            "x": "penguin_size.body_mass_g"
+                            "x": "penguin_size:body_mass_g"
                         }
                     },
                     "plot_specific_info": {
@@ -125,10 +125,10 @@
                             "column": "x",
                             "options": {
                                 "entries": [
-                                    "penguin_size.culmen_length_mm",
-                                    "penguin_size.flipper_length_mm",
-                                    "penguin_size.body_mass_g",
-                                    "penguin_size.culmen_depth_mm"
+                                    "penguin_size:culmen_length_mm",
+                                    "penguin_size:flipper_length_mm",
+                                    "penguin_size:body_mass_g",
+                                    "penguin_size:culmen_depth_mm"
                                 ]
                             }
                         }
@@ -150,8 +150,8 @@
                     "brief_desc": "A plot",
                     "data": {
                         "points_0": {
-                            "x": "penguin_size.culmen_length_mm",
-                            "y": "penguin_size.flipper_length_mm"
+                            "x": "penguin_size:culmen_length_mm",
+                            "y": "penguin_size:flipper_length_mm"
                         }
                     },
                     "selectable_data_list": [
@@ -160,10 +160,10 @@
                             "column": "x",
                             "options": {
                                 "entries": [
-                                    "penguin_size.culmen_length_mm",
-                                    "penguin_size.flipper_length_mm",
-                                    "penguin_size.body_mass_g",
-                                    "penguin_size.culmen_depth_mm"
+                                    "penguin_size:culmen_length_mm",
+                                    "penguin_size:flipper_length_mm",
+                                    "penguin_size:body_mass_g",
+                                    "penguin_size:culmen_depth_mm"
                                 ]
                             }
                         }
@@ -172,7 +172,7 @@
                         {
                             "type": "aggregate",
                             "column": [
-                                "penguin_size.sex"
+                                "penguin_size:sex"
                             ],
                             "options": {
                                 "aggregations": {
@@ -184,7 +184,97 @@
                         {
                             "type": "groupby",
                             "column": [
-                                "penguin_size.sex"
+                                "penguin_size:sex"
+                            ]
+                        }
+                    ],
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "markers"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "radio_penguins": {
+            "button_label": "Radioactive Penguins!",
+            "graphics": {
+                "graphic_0": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "penguin_size"
+                        },
+                        {
+                            "data_source_type": "mean_penguin_stat",
+                            "join_keys": [
+                                [
+                                    "penguin_size:study_name",
+                                    "mean_penguin_stat:study_name"
+                                ],
+                                [
+                                    "penguin_size:sex",
+                                    "mean_penguin_stat:sex"
+                                ],
+                                [
+                                    "penguin_size:species",
+                                    "mean_penguin_stat:species"
+                                ]
+                            ]
+                        }
+                    ],
+                    "title": "Can we join tables to find whether radioactive penguins are any different?",
+                    "brief_desc": "A plot",
+                    "data": {
+                        "points_0": {
+                            "x": "penguin_size:culmen_length_mm",
+                            "y": "mean_penguin_stat:delta_15_n"
+                        }
+                    },
+                    "selectable_data_list": [
+                        {
+                            "type": "axis",
+                            "column": "x",
+                            "options": {
+                                "entries": [
+                                    "penguin_size:culmen_length_mm",
+                                    "penguin_size:flipper_length_mm",
+                                    "penguin_size:body_mass_g",
+                                    "penguin_size:culmen_depth_mm"
+                                ]
+                            }
+                        },
+                        {
+                            "type": "axis",
+                            "column": "y",
+                            "options": {
+                                "entries": [
+                                    "mean_penguin_stat:delta_15_n",
+                                    "mean_penguin_stat:delta_13_c"
+                                ]
+                            }
+                        }
+                    ],
+                    "visualization_options": [
+                        {
+                            "type": "aggregate",
+                            "column": [
+                                "penguin_size:sex"
+                            ],
+                            "options": {
+                                "aggregations": {
+                                    "x": "avg",
+                                    "y": "avg"
+                                }
+                            }
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "penguin_size:sex"
                             ]
                         }
                     ],

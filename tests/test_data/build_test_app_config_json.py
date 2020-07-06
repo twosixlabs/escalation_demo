@@ -22,8 +22,8 @@ def build_config_json(data_backend, data_file_directory):
                         "brief_desc": "This plot looks at the relationship between...",
                         "data": {
                             "points_0": {
-                                "x": "penguin_size.body_mass_g",
-                                "y": "penguin_size.flipper_length_mm",
+                                "x": "penguin_size:body_mass_g",
+                                "y": "penguin_size:flipper_length_mm",
                             }
                         },
                         PLOT_SPECIFIC_INFO: {
@@ -33,13 +33,13 @@ def build_config_json(data_backend, data_file_directory):
                             {
                                 "type": "hover_data",
                                 "column": [
-                                    "penguin_size.sex",
-                                    "penguin_size.culmen_length_mm",
+                                    "penguin_size:sex",
+                                    "penguin_size:culmen_length_mm",
                                 ],
                             },
                             {
                                 "type": "groupby",
-                                "column": ["penguin_size.island"],
+                                "column": ["penguin_size:island"],
                                 "options": {
                                     "styles": {
                                         "Torgersen": {"marker": {"color": "green"}},
@@ -52,17 +52,17 @@ def build_config_json(data_backend, data_file_directory):
                         SELECTABLE_DATA_LIST: [
                             {
                                 "type": "select",
-                                "column": "penguin_size.sex",
+                                "column": "penguin_size:sex",
                                 "options": {"multiple": False},
                             },
                             {
                                 "type": "select",
-                                "column": "penguin_size.island",
+                                "column": "penguin_size:island",
                                 "options": {"multiple": True},
                             },
                             {
                                 "type": "numerical_filter",
-                                "column": "penguin_size.culmen_length_mm",
+                                "column": "penguin_size:culmen_length_mm",
                             },
                         ],
                     },
@@ -71,7 +71,7 @@ def build_config_json(data_backend, data_file_directory):
                         DATA_SOURCES: [{"data_source_type": "penguin_size"}],
                         "title": "How big are penguins?",
                         "brief_desc": "",
-                        "data": {"points_0": {"x": "penguin_size.body_mass_g"}},
+                        "data": {"points_0": {"x": "penguin_size:body_mass_g"}},
                         "plot_specific_info": {
                             "data": [{"type": "histogram"}],
                             "layout": {
@@ -85,10 +85,10 @@ def build_config_json(data_backend, data_file_directory):
                                 "column": "x",
                                 "options": {
                                     "entries": [
-                                        "penguin_size.culmen_length_mm",
-                                        "penguin_size.flipper_length_mm",
-                                        "penguin_size.body_mass_g",
-                                        "penguin_size.culmen_depth_mm",
+                                        "penguin_size:culmen_length_mm",
+                                        "penguin_size:flipper_length_mm",
+                                        "penguin_size:body_mass_g",
+                                        "penguin_size:culmen_depth_mm",
                                     ]
                                 },
                             }
@@ -106,8 +106,8 @@ def build_config_json(data_backend, data_file_directory):
                         "brief_desc": "A plot",
                         "data": {
                             "points_0": {
-                                "x": "penguin_size.culmen_length_mm",
-                                "y": "penguin_size.flipper_length_mm",
+                                "x": "penguin_size:culmen_length_mm",
+                                "y": "penguin_size:flipper_length_mm",
                             }
                         },
                         "selectable_data_list": [
@@ -116,10 +116,10 @@ def build_config_json(data_backend, data_file_directory):
                                 "column": "x",
                                 "options": {
                                     "entries": [
-                                        "penguin_size.culmen_length_mm",
-                                        "penguin_size.flipper_length_mm",
-                                        "penguin_size.body_mass_g",
-                                        "penguin_size.culmen_depth_mm",
+                                        "penguin_size:culmen_length_mm",
+                                        "penguin_size:flipper_length_mm",
+                                        "penguin_size:body_mass_g",
+                                        "penguin_size:culmen_depth_mm",
                                     ]
                                 },
                             }
@@ -127,10 +127,78 @@ def build_config_json(data_backend, data_file_directory):
                         VISUALIZATION_OPTIONS: [
                             {
                                 "type": "aggregate",
-                                "column": ["penguin_size.sex"],
+                                "column": ["penguin_size:sex"],
                                 "options": {"aggregations": {"x": "avg", "y": "avg"}},
                             },
-                            {"type": "groupby", "column": ["penguin_size.sex"]},
+                            {"type": "groupby", "column": ["penguin_size:sex"]},
+                        ],
+                        PLOT_SPECIFIC_INFO: {
+                            "data": [{"type": "scatter", "mode": "markers"}]
+                        },
+                    }
+                },
+            },
+            "radio_penguins": {
+                BUTTON_LABEL: "Radioactive Penguins!",
+                GRAPHICS: {
+                    "graphic_0": {
+                        "plot_manager": "plotly",
+                        DATA_SOURCES: [
+                            {"data_source_type": "penguin_size"},
+                            {
+                                "data_source_type": "mean_penguin_stat",
+                                JOIN_KEYS: [
+                                    (
+                                        "penguin_size:study_name",
+                                        "mean_penguin_stat:study_name",
+                                    ),
+                                    ("penguin_size:sex", "mean_penguin_stat:sex"),
+                                    (
+                                        "penguin_size:species",
+                                        "mean_penguin_stat:species",
+                                    ),
+                                ],
+                            },
+                        ],
+                        "title": "Can we join tables to find whether radio isotopes are connected to penguin size?",
+                        "brief_desc": "A plot",
+                        "data": {
+                            "points_0": {
+                                "x": "penguin_size:culmen_length_mm",
+                                "y": "mean_penguin_stat:delta_15_n",
+                            }
+                        },
+                        "selectable_data_list": [
+                            {
+                                "type": "axis",
+                                "column": "x",
+                                "options": {
+                                    "entries": [
+                                        "penguin_size:culmen_length_mm",
+                                        "penguin_size:flipper_length_mm",
+                                        "penguin_size:body_mass_g",
+                                        "penguin_size:culmen_depth_mm",
+                                    ]
+                                },
+                            },
+                            {
+                                "type": "axis",
+                                "column": "y",
+                                "options": {
+                                    "entries": [
+                                        "mean_penguin_stat:delta_15_n",
+                                        "mean_penguin_stat:delta_13_c",
+                                    ]
+                                },
+                            },
+                        ],
+                        VISUALIZATION_OPTIONS: [
+                            {
+                                "type": "aggregate",
+                                "column": ["penguin_size:sex"],
+                                "options": {"aggregations": {"x": "avg", "y": "avg"}},
+                            },
+                            {"type": "groupby", "column": ["penguin_size:sex"]},
                         ],
                         PLOT_SPECIFIC_INFO: {
                             "data": [{"type": "scatter", "mode": "markers"}]
@@ -145,6 +213,7 @@ def build_config_json(data_backend, data_file_directory):
 
 # todo: don't assume we're running the script from escos root directory?
 if __name__ == "__main__":
+
     config_file_definitions = {
         "test_app_local_handler_config.json": {
             DATA_BACKEND: LOCAL_CSV,

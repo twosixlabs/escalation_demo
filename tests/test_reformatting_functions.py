@@ -113,17 +113,17 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     # TO DO break up
     assert operations_list[0] == {
         "type": "filter",
-        "column": "penguin_size.sex",
+        "column": "penguin_size:sex",
         "selected": ["MALE"],
     }
     assert operations_list[1] == {
         "type": "filter",
-        "column": "penguin_size.island",
+        "column": "penguin_size:island",
         "selected": ["Torgersen", "Dream"],
     }
     assert operations_list[2] == {
         "type": "numerical_filter",
-        "column": "penguin_size.culmen_length_mm",
+        "column": "penguin_size:culmen_length_mm",
         "operation": ">",
         "value": 4.0,
     }

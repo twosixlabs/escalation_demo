@@ -17,9 +17,9 @@ EscOS is geared towards the scientific community. Allowing for plots
 ## What are EscOS limitations?
 As of the current version:
 * Plots only a single line or scatter plot.
-* Graph use a single data set
 * Need to be connected to the internet
-* Use a SQL database or local csv files
+* Use a SQL database or local csv files (assuming csv in local handler)
+* Local handler currently gets most recent data set
 
 ## How can I contribute?
 
