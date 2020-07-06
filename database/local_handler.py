@@ -22,10 +22,11 @@ from utility.constants import (
 class LocalCSVDataInventory:
     @staticmethod
     def get_available_data_source():
-        # todo: have a data directory not in test
         return [
             f.name
-            for f in os.scandir(current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY])
+            for f in os.scandir(
+                current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY]
+            )
             if f.is_dir()
         ]
 
@@ -64,7 +65,9 @@ class LocalCSVDataInventory:
         )
 
         file_path = os.path.join(
-            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY], data_source_name, file_name
+            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
+            data_source_name,
+            file_name,
         )
         uploaded_data_df.to_csv(file_path)
 

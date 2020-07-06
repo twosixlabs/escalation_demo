@@ -25,7 +25,7 @@ DATA_SOURCE_TYPE = "data_source_type"
 LEFT_KEYS = "left_keys"
 RIGHT_KEYS = "right_keys"
 DATA_LOCATION = "filepath"
-
+TABLE_COLUMN_SEPARATOR = "."
 
 DATA = "data"
 DATA_FILTERS = "data_filters"

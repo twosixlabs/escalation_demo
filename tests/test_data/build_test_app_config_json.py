@@ -8,7 +8,7 @@ def build_config_json(data_backend, data_file_directory):
     config_dict = {
         "title": "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
-        "data_backend": data_backend,
+        DATA_BACKEND: data_backend,
         DATA_FILE_DIRECTORY: data_file_directory,
         DATA_SOURCES: ["penguin_size", "mean_penguin_stat", "penguin_size_small"],
         "available_pages": {

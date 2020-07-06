@@ -9,10 +9,11 @@ from utility.constants import (
     VALUE,
     INEQUALITIES,
     DATA_SOURCE_TYPE,
-    DATA_LOCATION, DATA_FILE_DIRECTORY, APP_CONFIG_JSON,
+    DATA_LOCATION,
+    DATA_FILE_DIRECTORY,
+    APP_CONFIG_JSON,
 )
 from flask import current_app
-
 
 
 def test_local_handler_init(local_handler_fixture_small):
