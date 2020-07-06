@@ -46,7 +46,8 @@
                         {
                             "type": "groupby",
                             "column": [
-                                "penguin_size:island"
+                                "penguin_size:island",
+                                "penguin_size:sex"
                             ],
                             "options": {
                                 "styles": {
@@ -119,6 +120,7 @@
                             }
                         }
                     },
+
                     "selectable_data_list": [
                         {
                             "type": "axis",

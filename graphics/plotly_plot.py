@@ -22,6 +22,7 @@ OPTIONS = "options"
 STYLES = "styles"
 AGGREGATIONS = "aggregations"
 PLOT_OPTIONS = "plot_options"
+NA_FILL_IN = "NA"
 
 
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
@@ -35,9 +36,11 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
     # if data is a dataframe: plot_options[DATA][index]["customdata"] = data[hover_data].values.tolist()
     # is equivalent to the two lines function
     hover_column_names = hover_options[OPTION_COL]
-    hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
+    # hover_data_list = [data[hover_col_name] for hover_col_name in hover_column_names]
     # transposes a list of lists of column data to a list of lists of row data
-    plot_options_data_dict[CUSTOM_DATA] = list(map(list, zip(*hover_data_list)))
+    plot_options_data_dict[CUSTOM_DATA] = (
+        data[hover_column_names].astype(str).values.tolist()
+    )
 
     plot_options_data_dict[HOVER_TEMPLATE] = render_template(
         HOVER_TEMPLATE_HTML, hover_column_names=hover_column_names
@@ -59,10 +62,16 @@ def get_groupby_or_aggregate_in_plotly_form(
     :param plot_options_data_dict:
     :return:
     """
+    group_labels = [
+        ", ".join(data_list)
+        for data_list in data[visualization_property[OPTION_COL]]
+        .astype(str)
+        .values.tolist()
+    ]
     visualization_type = visualization_property[VISUALIZATION_TYPE]
     property_dict = {
         VISUALIZATION_TYPE: visualization_type,
-        GROUPS: data[visualization_property[OPTION_COL][0]],
+        GROUPS: group_labels,
     }
 
     if visualization_type == GROUPBY and OPTIONS in visualization_property:
