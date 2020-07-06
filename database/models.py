@@ -1,36 +1,13 @@
 # coding: utf-8
-from sqlalchemy import BigInteger, Boolean, Column, Float, Integer, Text
+from sqlalchemy import BigInteger, Boolean, Column, Float, Integer, Text, text
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 metadata = Base.metadata
 
 
-class DoseResponse(Base):
-    __tablename__ = "dose_response"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    experiment_id = Column(Text)
-    well = Column(Text)
-    strain = Column(Text)
-    lab = Column(Text)
-    strain_name = Column(Text)
-    media_type = Column(Text)
-    inducer_type = Column(Text)
-    inducer_concentration = Column(Float(53))
-    inducer_concentration_unit = Column(Text)
-    temperature = Column(Float(53))
-    temperature_unit = Column(Text)
-    od = Column(Float(53))
-    dead = Column(Boolean)
-    ungrowing = Column(Boolean)
-    doubling_time = Column(Float(53))
-    n0 = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
 class FlowMeta(Base):
-    __tablename__ = "flow_meta"
+    __tablename__ = 'flow_meta'
 
     index = Column(BigInteger, primary_key=True, nullable=False, index=True)
     _id = Column(Text)
@@ -56,7 +33,7 @@ class FlowMeta(Base):
     timepoint = Column(Float(53))
     timepoint_unit = Column(Text)
     aliquot_id = Column(Text)
-    flow_rate_uL_min = Column("flow_rate_uL/min", Integer)
+    flow_rate_uL_min = Column('flow_rate_uL/min', Integer)
     date_of_experiment = Column(Text)
     TX_plate_name = Column(Text)
     TX_project_name = Column(Text)
@@ -64,120 +41,36 @@ class FlowMeta(Base):
     total_counts = Column(Integer)
     flow_volume = Column(Integer)
     well = Column(Text)
-    cells_mL = Column("cells/mL", Float(53))
+    cells_mL = Column('cells/mL', Float(53))
     upload_id = Column(Text, primary_key=True, nullable=False)
     experiment_id_short = Column(Text)
 
 
-class FlowStat(Base):
-    __tablename__ = "flow_stat"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    sample_id = Column(Text)
-    experiment_id = Column(Text)
-    aliquot_id = Column(Text)
-    channel = Column(Text)
-    mean_log10 = Column(Float(53))
-    std_log10 = Column(Float(53))
-    bin_log10__0_05 = Column("bin(log10)_0.05", Integer)
-    bin_log10__0_15 = Column("bin(log10)_0.15", Integer)
-    bin_log10__0_25 = Column("bin(log10)_0.25", Integer)
-    bin_log10__0_35 = Column("bin(log10)_0.35", Integer)
-    bin_log10__0_45 = Column("bin(log10)_0.45", Integer)
-    bin_log10__0_55 = Column("bin(log10)_0.55", Integer)
-    bin_log10__0_65 = Column("bin(log10)_0.65", Integer)
-    bin_log10__0_75 = Column("bin(log10)_0.75", Integer)
-    bin_log10__0_85 = Column("bin(log10)_0.85", Integer)
-    bin_log10__0_95 = Column("bin(log10)_0.95", Integer)
-    bin_log10__1_05 = Column("bin(log10)_1.05", Integer)
-    bin_log10__1_15 = Column("bin(log10)_1.15", Integer)
-    bin_log10__1_25 = Column("bin(log10)_1.25", Integer)
-    bin_log10__1_35 = Column("bin(log10)_1.35", Integer)
-    bin_log10__1_45 = Column("bin(log10)_1.45", Integer)
-    bin_log10__1_55 = Column("bin(log10)_1.55", Integer)
-    bin_log10__1_65 = Column("bin(log10)_1.65", Integer)
-    bin_log10__1_75 = Column("bin(log10)_1.75", Integer)
-    bin_log10__1_85 = Column("bin(log10)_1.85", Integer)
-    bin_log10__1_95 = Column("bin(log10)_1.95", Integer)
-    bin_log10__2_05 = Column("bin(log10)_2.05", Integer)
-    bin_log10__2_15 = Column("bin(log10)_2.15", Integer)
-    bin_log10__2_25 = Column("bin(log10)_2.25", Integer)
-    bin_log10__2_35 = Column("bin(log10)_2.35", Integer)
-    bin_log10__2_45 = Column("bin(log10)_2.45", Integer)
-    bin_log10__2_55 = Column("bin(log10)_2.55", Integer)
-    bin_log10__2_65 = Column("bin(log10)_2.65", Integer)
-    bin_log10__2_75 = Column("bin(log10)_2.75", Integer)
-    bin_log10__2_85 = Column("bin(log10)_2.85", Integer)
-    bin_log10__2_95 = Column("bin(log10)_2.95", Integer)
-    bin_log10__3_05 = Column("bin(log10)_3.05", Integer)
-    bin_log10__3_15 = Column("bin(log10)_3.15", Integer)
-    bin_log10__3_25 = Column("bin(log10)_3.25", Integer)
-    bin_log10__3_35 = Column("bin(log10)_3.35", Integer)
-    bin_log10__3_45 = Column("bin(log10)_3.45", Integer)
-    bin_log10__3_55 = Column("bin(log10)_3.55", Integer)
-    bin_log10__3_65 = Column("bin(log10)_3.65", Integer)
-    bin_log10__3_75 = Column("bin(log10)_3.75", Integer)
-    bin_log10__3_85 = Column("bin(log10)_3.85", Integer)
-    bin_log10__3_95 = Column("bin(log10)_3.95", Integer)
-    bin_log10__4_05 = Column("bin(log10)_4.05", Integer)
-    bin_log10__4_15 = Column("bin(log10)_4.15", Integer)
-    bin_log10__4_25 = Column("bin(log10)_4.25", Integer)
-    bin_log10__4_35 = Column("bin(log10)_4.35", Integer)
-    bin_log10__4_45 = Column("bin(log10)_4.45", Integer)
-    bin_log10__4_55 = Column("bin(log10)_4.55", Integer)
-    bin_log10__4_65 = Column("bin(log10)_4.65", Integer)
-    bin_log10__4_75 = Column("bin(log10)_4.75", Integer)
-    bin_log10__4_85 = Column("bin(log10)_4.85", Integer)
-    bin_log10__4_95 = Column("bin(log10)_4.95", Integer)
-    bin_log10__5_05 = Column("bin(log10)_5.05", Integer)
-    bin_log10__5_15 = Column("bin(log10)_5.15", Integer)
-    bin_log10__5_25 = Column("bin(log10)_5.25", Integer)
-    bin_log10__5_35 = Column("bin(log10)_5.35", Integer)
-    bin_log10__5_45 = Column("bin(log10)_5.45", Integer)
-    bin_log10__5_55 = Column("bin(log10)_5.55", Integer)
-    bin_log10__5_65 = Column("bin(log10)_5.65", Integer)
-    bin_log10__5_75 = Column("bin(log10)_5.75", Integer)
-    bin_log10__5_85 = Column("bin(log10)_5.85", Integer)
-    bin_log10__5_95 = Column("bin(log10)_5.95", Integer)
-    bin_log10__6_05 = Column("bin(log10)_6.05", Integer)
-    bin_log10__6_15 = Column("bin(log10)_6.15", Integer)
-    bin_log10__6_25 = Column("bin(log10)_6.25", Integer)
-    bin_log10__6_35 = Column("bin(log10)_6.35", Integer)
-    bin_log10__6_45 = Column("bin(log10)_6.45", Integer)
-    bin_log10__6_55 = Column("bin(log10)_6.55", Integer)
-    bin_log10__6_65 = Column("bin(log10)_6.65", Integer)
-    bin_log10__6_75 = Column("bin(log10)_6.75", Integer)
-    bin_log10__6_85 = Column("bin(log10)_6.85", Integer)
-    bin_log10__6_95 = Column("bin(log10)_6.95", Integer)
-    bin_log10__7_05 = Column("bin(log10)_7.05", Integer)
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
 class FlowStatWide(Base):
-    __tablename__ = "flow_stat_wide"
+    __tablename__ = 'flow_stat_wide'
 
     index = Column(BigInteger, primary_key=True, nullable=False, index=True)
     sample_id = Column(Text)
     experiment_id = Column(Text)
     aliquot_id = Column(Text)
     log10_bin = Column(Float(53))
-    BL1_A = Column("BL1-A", Integer)
-    BL1_H = Column("BL1-H", Integer)
-    BL1_W = Column("BL1-W", Integer)
-    FSC_A = Column("FSC-A", Integer)
-    FSC_H = Column("FSC-H", Integer)
-    FSC_W = Column("FSC-W", Integer)
-    RL1_A = Column("RL1-A", Integer)
-    RL1_H = Column("RL1-H", Integer)
-    RL1_W = Column("RL1-W", Integer)
-    SSC_A = Column("SSC-A", Integer)
-    SSC_H = Column("SSC-H", Integer)
-    SSC_W = Column("SSC-W", Integer)
+    BL1_A = Column('BL1-A', Integer)
+    BL1_H = Column('BL1-H', Integer)
+    BL1_W = Column('BL1-W', Integer)
+    FSC_A = Column('FSC-A', Integer)
+    FSC_H = Column('FSC-H', Integer)
+    FSC_W = Column('FSC-W', Integer)
+    RL1_A = Column('RL1-A', Integer)
+    RL1_H = Column('RL1-H', Integer)
+    RL1_W = Column('RL1-W', Integer)
+    SSC_A = Column('SSC-A', Integer)
+    SSC_H = Column('SSC-H', Integer)
+    SSC_W = Column('SSC-W', Integer)
     upload_id = Column(Text, primary_key=True, nullable=False)
 
 
 class GrowthRate(Base):
-    __tablename__ = "growth_rate"
+    __tablename__ = 'growth_rate'
 
     index = Column(BigInteger, primary_key=True, nullable=False, index=True)
     experiment_id = Column(Text)
@@ -205,9 +98,9 @@ class GrowthRate(Base):
 
 
 class MeanPenguinStat(Base):
-    __tablename__ = "mean_penguin_stat"
+    __tablename__ = 'mean_penguin_stat'
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    index = Column(BigInteger, primary_key=True, index=True, server_default=text("nextval('mean_penguin_stat_index_seq'::regclass)"))
     study_name = Column(Text)
     species = Column(Text)
     sex = Column(Text)
@@ -217,13 +110,12 @@ class MeanPenguinStat(Base):
     body_mass = Column(Float(53))
     delta_15_n = Column(Float(53))
     delta_13_c = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
 
 
 class PenguinSize(Base):
-    __tablename__ = "penguin_size"
+    __tablename__ = 'penguin_size'
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    index = Column(BigInteger, primary_key=True, index=True, server_default=text("nextval('penguin_size_index_seq'::regclass)"))
     study_name = Column(Text)
     species = Column(Text)
     island = Column(Text)
@@ -233,11 +125,10 @@ class PenguinSize(Base):
     culmen_length_mm = Column(Float(53))
     flipper_length_mm = Column(Float(53))
     body_mass_g = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
 
 
 class PlateReader(Base):
-    __tablename__ = "plate_reader"
+    __tablename__ = 'plate_reader'
 
     index = Column(BigInteger, primary_key=True, nullable=False, index=True)
     _id = Column(Text)
@@ -266,6 +157,6 @@ class PlateReader(Base):
     container_id = Column(Text)
     aliquot_id = Column(Text)
     od = Column(Float(53))
-    fluor_gain_0_16 = Column("fluor_gain_0.16", Float(53))
-    fluor_gain_0_16_od = Column("fluor_gain_0.16/od", Float(53))
+    fluor_gain_0_16 = Column('fluor_gain_0.16', Float(53))
+    fluor_gain_0_16_od = Column('fluor_gain_0.16/od', Float(53))
     upload_id = Column(Text, primary_key=True, nullable=False)
