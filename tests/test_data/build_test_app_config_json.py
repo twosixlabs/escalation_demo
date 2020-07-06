@@ -139,20 +139,33 @@ def build_config_json(data_backend, data_file_directory):
                 },
             },
             "radio_penguins": {
-                "button_label": "More Penguins!",
-                "graphics": {
+                BUTTON_LABEL: "Radioactive Penguins!",
+                GRAPHICS: {
                     "graphic_0": {
                         "plot_manager": "plotly",
                         DATA_SOURCES: [
                             {"data_source_type": "penguin_size"},
-                            {"data_source_type": "mean_penguin_stat", LEFT_KEYS: []},
+                            {
+                                "data_source_type": "mean_penguin_stat",
+                                JOIN_KEYS: [
+                                    (
+                                        "penguin_size:study_name",
+                                        "mean_penguin_stat:study_name",
+                                    ),
+                                    ("penguin_size:sex", "mean_penguin_stat:sex"),
+                                    (
+                                        "penguin_size:species",
+                                        "mean_penguin_stat:species",
+                                    ),
+                                ],
+                            },
                         ],
-                        "title": "Do long nosed penguins have long flippers by sex (avg)?",
+                        "title": "Can we join tables to find whether radio isotopes are connected to penguin size?",
                         "brief_desc": "A plot",
                         "data": {
                             "points_0": {
                                 "x": "penguin_size:culmen_length_mm",
-                                "y": "penguin_size:flipper_length_mm",
+                                "y": "mean_penguin_stat:delta_15_n",
                             }
                         },
                         "selectable_data_list": [
@@ -167,7 +180,17 @@ def build_config_json(data_backend, data_file_directory):
                                         "penguin_size:culmen_depth_mm",
                                     ]
                                 },
-                            }
+                            },
+                            {
+                                "type": "axis",
+                                "column": "y",
+                                "options": {
+                                    "entries": [
+                                        "mean_penguin_stat:delta_15_n",
+                                        "mean_penguin_stat:delta_13_c",
+                                    ]
+                                },
+                            },
                         ],
                         VISUALIZATION_OPTIONS: [
                             {
