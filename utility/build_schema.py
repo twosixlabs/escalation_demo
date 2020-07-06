@@ -5,7 +5,7 @@ ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 
 
-def build_schema(data_source_names=None, column_names=None):
+def build_higher_level_schema(data_source_names=None, column_names=None):
     """
     :param data_source_names: names from DATA_SOURCES, already checked against the file system
     :param column_names: possible column names from files or database (format data_source_name.column_name)
@@ -16,38 +16,8 @@ def build_schema(data_source_names=None, column_names=None):
         "title": "escalation_config",
         "description": "config file needed to use escalation OS",
         "type": "object",
-        "required": [
-            SITE_TITLE,
-            SITE_DESC,
-            DATA_BACKEND,
-            DATA_FILE_DIRECTORY,
-            DATA_SOURCES,
-            AVAILABLE_PAGES,
-        ],
-        "additionalProperties": False,
+        "additionalProperties": True,
         "properties": {
-            SITE_TITLE: {
-                "type": "string",
-                "description": "title shown at the top of the website",
-            },
-            SITE_DESC: {
-                "type": "string",
-                "description": "description shown at the top of the website",
-            },
-            DATA_BACKEND: {
-                "type": "string",
-                "description": "How the data is being managed on the server",
-                "enum": [POSTGRES, MYSQL, LOCAL_CSV],
-            },
-            DATA_FILE_DIRECTORY: {
-                "type": "string",
-                "description": "Where the data is on the server",
-            },
-            DATA_SOURCES: {
-                "type": "array",
-                "description": "list of tables or folders that server will use for the plots",
-                "items": {"type": "string"},
-            },
             AVAILABLE_PAGES: {
                 "type": "object",
                 "additionalProperties": False,
@@ -265,6 +235,54 @@ def build_schema(data_source_names=None, column_names=None):
                     }
                 },
             },
+        },
+    }
+    return schema
+
+
+def build_first_level_schema():
+    """
+    :param data_source_names: names from DATA_SOURCES, already checked against the file system
+    :param column_names: possible column names from files or database (format data_source_name.column_name)
+    :return:
+    """
+    schema = {
+        "$schema": "http://json-schema.org/draft/2019-09/schema#",
+        "title": "escalation_config",
+        "description": "config file needed to use escalation OS",
+        "type": "object",
+        "required": [
+            SITE_TITLE,
+            SITE_DESC,
+            DATA_BACKEND,
+            DATA_FILE_DIRECTORY,
+            DATA_SOURCES,
+        ],
+        "additionalProperties": False,
+        "properties": {
+            SITE_TITLE: {
+                "type": "string",
+                "description": "title shown at the top of the website",
+            },
+            SITE_DESC: {
+                "type": "string",
+                "description": "description shown at the top of the website",
+            },
+            DATA_BACKEND: {
+                "type": "string",
+                "description": "How the data is being managed on the server",
+                "enum": [POSTGRES, MYSQL, LOCAL_CSV],
+            },
+            DATA_FILE_DIRECTORY: {
+                "type": "string",
+                "description": "Where the data is on the server",
+            },
+            DATA_SOURCES: {
+                "type": "array",
+                "description": "list of tables or folders that server will use for the plots",
+                "items": {"type": "string"},
+            },
+            AVAILABLE_PAGES: {"type": "object"},
         },
     }
     return schema

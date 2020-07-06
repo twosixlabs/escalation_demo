@@ -5,9 +5,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from app import create_app, configure_app
-from database.local_handler import LocalCSVDataInventory
-from database.sql_handler import SqlDataInventory
-from utility.build_schema import build_plotly_schema, build_schema
+from utility.build_schema import build_higher_level_schema, build_first_level_schema
 from utility.constants import *
 
 
@@ -19,29 +17,38 @@ def validate_config_data_references(config_dict):
     :param config_dict:
     :return:
     """
-    app = create_app()
-    app = configure_app(app, config_dict)
-    ctx = app.app_context()
-    ctx.push()
-    # handle code differently at two spots depending on whether we are dealing with file system or database
-    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
-    data_source_names = config_dict[DATA_SOURCES]
-    data_inventory = LocalCSVDataInventory if csv_flag else SqlDataInventory
-    data_source_names_found = data_inventory.get_available_data_source()
     try:
+        schema = build_first_level_schema()
+        validate(instance=config_dict, schema=schema)
+        app = create_app()
+        app = configure_app(app, config_dict)
+        ctx = app.app_context()
+        ctx.push()
+        # handle code differently at two spots depending on whether we are dealing with file system or database
+        csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
+        data_source_names = config_dict[DATA_SOURCES]
+
+        if csv_flag:
+            from database.local_handler import LocalCSVDataInventory
+
+            data_inventory = LocalCSVDataInventory
+        else:
+            from database.sql_handler import SqlDataInventory
+
+            data_inventory = SqlDataInventory
+
+        data_source_names_found = data_inventory.get_available_data_source()
+
         # Checking if data source names are valid
         for index, data_source_name in enumerate(data_source_names):
             if data_source_name not in data_source_names_found:
                 raise ValidationError(
-                    "".join(
-                        [
-                            data_source_name,
-                            " is an invalid data source name, needs to be one of [",
-                            ", ".join(data_source_names_found),
-                            "]",
-                        ]
-                    ),
-                    path=deque([DATA_SOURCES, index]),
+                    f"{data_source_name} is an invalid data source name, needs to be"
+                    f" one of [{', '.join(data_source_names_found)}].\nHave you added the data source as"
+                    f" described in the setup instructions in README.md?",
+                    path=deque(
+                        [DATA_SOURCES, index]
+                    ),  # jsonschema looking for a deque with the path to the error
                 )
         # put column names in format "data_source_name.column_name"
         possible_column_names = []
@@ -49,7 +56,7 @@ def validate_config_data_references(config_dict):
             column_names = data_inventory.get_schema_for_data_source(data_source_name)
             possible_column_names.extend(
                 [
-                    ".".join(
+                    TABLE_COLUMN_SEPARATOR.join(
                         [
                             data_source_name,
                             column_name if csv_flag else column_name.name,
@@ -59,7 +66,7 @@ def validate_config_data_references(config_dict):
                 ]
             )
 
-        schema = build_schema(data_source_names, possible_column_names)
+        schema = build_higher_level_schema(data_source_names, possible_column_names)
         validate(instance=config_dict, schema=schema)
         print("Your config file is valid")
     except ValidationError as valid_error:
@@ -72,7 +79,7 @@ def validate_config_data_references(config_dict):
 
 if __name__ == "__main__":
     # todo: take this in as a command line argument
-    config_file_path = "tests/test_data/test_sql_app_config.json"
+    config_file_path = "tests/test_data/test_app_local_handler_config.json"
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)
     validate_config_data_references(config_dict)
