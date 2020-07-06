@@ -31,3 +31,10 @@ Break config file up for easier management. Config goes in one folder- one overa
 
 # Admin
 Choose and add a software license to Escalation OS
+
+4) implement a web app selector for which of the uploaded data files gets rendered
+
+Mock sql backend for testing
+Test file upload
+
+# todo: note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?

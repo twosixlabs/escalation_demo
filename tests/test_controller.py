@@ -33,13 +33,13 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     select_dict = [
         {
             "type": "select",
-            "column": "penguin_size.sex",
+            "column": "penguin_size:sex",
             "options": {"multiple": False},
             ACTIVE_SELECTORS: ["MALE"],
         },
         {
             "type": "select",
-            "column": "penguin_size.island",
+            "column": "penguin_size:island",
             "options": {"multiple": True},
             ACTIVE_SELECTORS: [SHOW_ALL_ROW],
         },
@@ -48,18 +48,18 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
             "column": "x",
             "options": {
                 "entries": [
-                    "penguin_size.culmen_length_mm",
-                    "penguin_size.flipper_length_mm",
-                    "penguin_size.body_mass_g",
+                    "penguin_size:culmen_length_mm",
+                    "penguin_size:flipper_length_mm",
+                    "penguin_size:body_mass_g",
                 ]
             },
-            ACTIVE_SELECTORS: ["penguin_size.culmen_length_mm"],
+            ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
         },
     ]
     select_info = create_data_subselect_info(select_dict, local_handler_fixture)
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
-    assert select_info[1][COLUMN_NAME] == "penguin_size.island"
+    assert select_info[1][COLUMN_NAME] == "penguin_size:island"
     assert select_info[2][JINJA_SELECT_HTML_FILE] == "select_axis.html"
 
     assert "MALE" in select_info[0][ACTIVE_SELECTORS]
@@ -70,18 +70,18 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
     assert "Biscoe" in select_info[1][ENTRIES]
     assert select_info[1][SELECT_OPTION]["multiple"]
     assert not select_info[0][SELECT_OPTION]["multiple"]
-    assert "penguin_size.culmen_length_mm" in select_info[2][ENTRIES]
-    assert "penguin_size.flipper_length_mm" in select_info[2][ENTRIES]
-    assert "penguin_size.body_mass_g" in select_info[2][ENTRIES]
-    assert "penguin_size.culmen_length_mm" in select_info[2][ACTIVE_SELECTORS]
+    assert "penguin_size:culmen_length_mm" in select_info[2][ENTRIES]
+    assert "penguin_size:flipper_length_mm" in select_info[2][ENTRIES]
+    assert "penguin_size:body_mass_g" in select_info[2][ENTRIES]
+    assert "penguin_size:culmen_length_mm" in select_info[2][ACTIVE_SELECTORS]
 
 
 def test_get_unique_set_of_columns_needed():
-    culmen = "penguin_size.culmen_length_mm"
-    flipper = "penguin_size.flipper_length_mm"
-    flipper2 = "penguin_size.flipper_length_mm2"
-    island = "penguin_size.island"
-    sex = "penguin_size.sex"
+    culmen = "penguin_size:culmen_length_mm"
+    flipper = "penguin_size:flipper_length_mm"
+    flipper2 = "penguin_size:flipper_length_mm2"
+    island = "penguin_size:island"
+    sex = "penguin_size:sex"
     test_cols_list = get_unique_set_of_columns_needed(
         {
             "points_0": {"x": culmen, "y": flipper},
