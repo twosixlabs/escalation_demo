@@ -26,7 +26,6 @@ def make_data():
         TITLE2: [4, 8, 1],
     }
 
-
     return pd.DataFrame(data)
 
 
