@@ -69,10 +69,10 @@ def submission_view():
     data_inventory = current_app.config.data_backend_writer
     existing_data_sources = data_inventory().get_available_data_source()
     data_sources = sorted(existing_data_sources)
-
+    # used for the navigation bar
     available_pages = current_app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
     buttons = create_link_buttons_for_available_pages(available_pages)
-    return render_template(UPLOAD_HTML, data_sources=data_sources,buttons=buttons)
+    return render_template(UPLOAD_HTML, data_sources=data_sources, buttons=buttons)
 
 
 @upload_blueprint.route("/upload", methods=("POST",))
@@ -105,5 +105,8 @@ def submission():
         # if the request came from a script and API
         return jsonify({"success": "Added submission"})
     else:
+
+        available_pages = current_app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
+        buttons = create_link_buttons_for_available_pages(available_pages)
         # if the request came from the web browser, provide an HTML repsonse
-        return render_template("success.html", username="Captain Kirk")
+        return render_template("success.html", username="Captain Kirk", buttons=buttons)
