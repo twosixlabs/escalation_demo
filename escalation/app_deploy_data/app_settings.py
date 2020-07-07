@@ -1,3 +1,4 @@
+# todo: move this to config json
 MYSQL_DATABASE_CONFIG = {
     "drivername": "mysql+pymysql",
     "host": "localhost",
