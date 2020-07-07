@@ -141,7 +141,7 @@ class LocalCSVHandler(DataHandler):
             column = df[filter_dict[OPTION_COL]]
             df = df[local_csv_handler_filter_operation(column, filter_dict)]
 
-        return df[cols].to_dict("list")
+        return df[cols]
 
     def get_column_unique_entries(self, cols: list) -> dict:
         unique_dict = {}

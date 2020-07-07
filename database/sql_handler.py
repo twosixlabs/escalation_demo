@@ -224,8 +224,7 @@ class SqlHandler(DataHandler):
         else:
             # if the sql query returns no rows, we want an empty df to format our response
             response_as_df = pd.DataFrame(columns=columns)
-        response_dict_of_lists = response_as_df[columns].to_dict(orient="list")
-        return response_dict_of_lists
+        return response_as_df[columns]
 
     def get_column_unique_entries(self, cols: list) -> dict:
         """

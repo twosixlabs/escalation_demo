@@ -255,7 +255,7 @@ config_dict = {
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "bar", "mode": "overlay", "opacity": 0.5}],
-                        "layout": {"hovermode": "closest", "mode": "overlay"},
+                        "layout": {"hovermode": "closest", "barmode": "stack"},
                         # todo: why are these ignored?
                     },
                     VISUALIZATION_OPTIONS: [

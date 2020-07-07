@@ -332,8 +332,8 @@
                             }
                         ],
                         "layout": {
-                            "hovermode": " closest",
-                            "mode": "overlay"
+                            "hovermode": "closest",
+                            "barmode": "stack"
                         }
                     },
                     "visualization_options": [

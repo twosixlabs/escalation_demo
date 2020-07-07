@@ -45,15 +45,15 @@ def test_get_column_data(local_handler_fixture_small):
         "penguin_size_small:flipper_length_mm",
     ]
     test_dict = local_handler_fixture_small.get_column_data(data_dict)
-    assert test_dict["penguin_size_small:body_mass_g"] == [3750, 3800, 3250]
-    assert test_dict["penguin_size_small:flipper_length_mm"] == [181, 186, 195]
+    assert (test_dict["penguin_size_small:body_mass_g"] == [3750, 3800, 3250]).all()
+    assert (test_dict["penguin_size_small:flipper_length_mm"] == [181, 186, 195]).all()
 
     test_dict = local_handler_fixture_small.get_column_data(
         data_dict,
         [{"type": "filter", "column": "penguin_size_small:sex", "selected": ["MALE"]}],
     )
-    assert test_dict["penguin_size_small:body_mass_g"] == [3750]
-    assert test_dict["penguin_size_small:flipper_length_mm"] == [181]
+    assert (test_dict["penguin_size_small:body_mass_g"] == [3750]).all()
+    assert (test_dict["penguin_size_small:flipper_length_mm"] == [181]).all()
 
     test_dict = local_handler_fixture_small.get_column_data(
         data_dict,
@@ -67,8 +67,8 @@ def test_get_column_data(local_handler_fixture_small):
         ],
     )
 
-    assert test_dict["penguin_size_small:body_mass_g"] == [3750, 3800]
-    assert test_dict["penguin_size_small:flipper_length_mm"] == [181, 186]
+    assert (test_dict["penguin_size_small:body_mass_g"] == [3750, 3800]).all()
+    assert (test_dict["penguin_size_small:flipper_length_mm"] == [181, 186]).all()
 
 
 def test_get_column_unique_entries(local_handler_fixture_small):

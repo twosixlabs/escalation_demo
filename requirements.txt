@@ -19,3 +19,5 @@ pytest
 sqlalchemy
 pathvalidate
 jsonschema
+tableschema
+sqlacodegen

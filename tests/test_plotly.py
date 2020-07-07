@@ -11,6 +11,7 @@ from graphics.plotly_plot import (
 )
 import pytest
 import json
+import pandas as pd
 
 from utility.constants import POINTS_NUM, DATA, OPTION_COL
 
@@ -25,7 +26,7 @@ def make_data():
         TITLE2: [4, 8, 1],
     }
 
-    return data
+    return pd.DataFrame(data)
 
 
 def test_plotly_draw_scatter(make_data, test_app_client):
@@ -50,8 +51,8 @@ def test_plotly_draw_scatter(make_data, test_app_client):
     )
     graph_dict = json.loads(graph_json)
 
-    assert graph_dict[DATA][0]["x"] == make_data[TITLE1]
-    assert graph_dict[DATA][0]["y"] == make_data[TITLE2]
+    assert (graph_dict[DATA][0]["x"] == make_data[TITLE1]).all()
+    assert (graph_dict[DATA][0]["y"] == make_data[TITLE2]).all()
     assert graph_dict[LAYOUT][PLOT_AXIS.format("x")][TITLE] == TITLE1
     assert graph_dict[LAYOUT][PLOT_AXIS.format("y")][TITLE] == TITLE2
     assert len(graph_dict[DATA][0][TRANSFORMS]) == 0
