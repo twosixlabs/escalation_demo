@@ -1,6 +1,5 @@
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 import pandas as pd
-from werkzeug.utils import secure_filename
 
 from controller import create_link_buttons_for_available_pages
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, APP_CONFIG_JSON, AVAILABLE_PAGES

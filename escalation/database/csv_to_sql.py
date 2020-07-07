@@ -12,7 +12,7 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
 
-from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
+from utility.constants import INDEX_COLUMN, UPLOAD_ID
 
 DB_BACKEND = "psql"
 if DB_BACKEND == "psql":

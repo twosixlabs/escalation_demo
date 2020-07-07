@@ -95,7 +95,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-.idea
+**/.idea
 
 # Spyder project settings
 .spyderproject
@@ -117,3 +117,6 @@ dmypy.json
 
 # local/temp files
 scratch/*
+
+# mac junk
+**/.DS_Store

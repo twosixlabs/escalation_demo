@@ -1,5 +1,5 @@
 import json
-from utility.constants import *
+from escalation.utility.constants import *
 
 config_dict = {
     SITE_TITLE: "Yeast States Escalation",

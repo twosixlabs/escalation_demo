@@ -1,6 +1,3 @@
-import pytest
-from werkzeug.datastructures import ImmutableMultiDict
-
 from controller import (
     create_link_buttons_for_available_pages,
     create_data_subselect_info,
@@ -12,11 +9,6 @@ from utility.constants import (
     ENTRIES,
     SELECT_OPTION,
     ACTIVE_SELECTORS,
-    INEQUALITIES,
-    SELECTOR_TYPE,
-    OPERATION,
-    VALUE,
-    NUMERICAL_FILTER,
     SHOW_ALL_ROW,
 )
 

@@ -1,13 +1,15 @@
 import json
 from collections import deque
 
-from flask import has_app_context
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from app import create_app, configure_app
-from utility.build_schema import build_higher_level_schema, build_first_level_schema
-from utility.constants import *
+from escalation.app import create_app, configure_app
+from escalation.utility.build_schema import (
+    build_higher_level_schema,
+    build_first_level_schema,
+)
+from escalation.utility.constants import *
 
 
 def validate_config_data_references(config_dict):
@@ -30,11 +32,11 @@ def validate_config_data_references(config_dict):
         data_source_names = config_dict[DATA_SOURCES]
 
         if csv_flag:
-            from database.local_handler import LocalCSVDataInventory
+            from escalation.database.local_handler import LocalCSVDataInventory
 
             data_inventory = LocalCSVDataInventory
         else:
-            from database.sql_handler import SqlDataInventory
+            from escalation.database.sql_handler import SqlDataInventory
 
             data_inventory = SqlDataInventory
 
