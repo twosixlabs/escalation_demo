@@ -18,7 +18,7 @@ from utility.constants import (
     ACTIVE_SELECTORS,
     DATA_FILTERS,
 )
-from graphics import (
+from graphics.utils.reformatting_functions import (
     add_operations_to_the_data,
     add_active_selectors_to_selectable_data_list,
     add_instructions_to_config_dict,

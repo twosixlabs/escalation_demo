@@ -1,4 +1,4 @@
-from graphics import (
+from graphics.plotly_plot import (
     PlotlyPlot,
     LAYOUT,
     TITLE,
