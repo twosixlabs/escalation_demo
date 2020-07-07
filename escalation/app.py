@@ -16,7 +16,7 @@ from utility.constants import (
     MYSQL,
     AVAILABLE_PAGES,
 )
-from app_settings import PSQL_DATABASE_CONFIG as database_config
+from app_deploy_data.app_settings import PSQL_DATABASE_CONFIG as database_config
 
 
 def create_app():
@@ -79,15 +79,15 @@ def configure_app(app, config_dict):
     return app
 
 
+config_file_path = os.path.join("app_deploy_data", "app_config.json")
+# config_file_path = "tests/test_data/test_sql_app_config.json"
+# config_file_path = "tests/test_data/test_app_local_handler_config.json"
+# config_file_path = "../yeast_states_app/yeast_states_config.json"
+
+with open(config_file_path, "r") as config_file:
+    config_dict = json.load(config_file)
+app = create_app()
+app = configure_app(app, config_dict)
+
 if __name__ == "__main__":
-    # config_file_path = "tests/test_data/test_sql_app_config.json"
-    config_file_path = "tests/test_data/test_app_local_handler_config.json"
-    # config_file_path = "../yeast_states_app/yeast_states_config.json"
-
-    with open(config_file_path, "r") as config_file:
-        config_dict = json.load(config_file)
-
-    app = create_app()
-    app = configure_app(app, config_dict)
-
     app.run()

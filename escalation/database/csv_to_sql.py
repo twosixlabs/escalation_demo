@@ -19,9 +19,9 @@ from utility.constants import INDEX_COLUMN, UPLOAD_ID
 
 DB_BACKEND = "psql"
 if DB_BACKEND == "psql":
-    from app_settings import PSQL_DATABASE_CONFIG as database_config
+    from app_deploy_data.app_settings import PSQL_DATABASE_CONFIG as database_config
 elif DB_BACKEND == "mysql":
-    from app_settings import MYSQL_DATABASE_CONFIG as database_config
+    from app_deploy_data.app_settings import MYSQL_DATABASE_CONFIG as database_config
 
 DATA_TYPE_MAP = {
     "integer": Integer,
@@ -208,11 +208,11 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python database/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
-    # python database/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
+    # python database/csv_to_sql.py penguin_size escalation/tests/test_data/penguin_size/penguin_size.csv
+    # python database/csv_to_sql.py mean_penguin_stat escalation/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
 
     # create a models.py file with the sqlalchemy model of the table
-    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile database/models.py
+    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
 
 # todo: add columns about upload time
 # todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission
