@@ -29,6 +29,31 @@
     {% block header %}{% endblock %}
 </head>
 <body>
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" href="#">EscOS</a>
+
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item {% if request.path=="/admin" %} active {% endif %}">
+        <a class="nav-link" href="#">Admin</a>
+      </li>
+      <li class="nav-item {% if request.path=="/upload" %} active {% endif %}">
+        <a class="nav-link" href={{ url_for('upload.submission_view') }}>Upload</a>
+      </li>
+      <li class="nav-item dropdown {% if "/dashboard/" in request.path %} active {% endif %}">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dashboards
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            {% for button in buttons %}
+        <a class="dropdown-item" href={{ url_for('dashboard.graphic_page', page_name=button['link']) }}>{{
+        button['button_label'] }}</a>
+        {% endfor %}
+        </div>
+      </li>
+
+    </ul>
+</nav>
 <section class="content">
 
 

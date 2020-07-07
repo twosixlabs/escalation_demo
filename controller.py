@@ -20,7 +20,6 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     """
 
     available_pages = config_dict[AVAILABLE_PAGES]
-    buttons = create_link_buttons_for_available_pages(available_pages)
     plot_specs = []
     if display_page is not None:
         single_page_config_dict = copy.deepcopy(
@@ -35,7 +34,6 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         JINJA_PLOT: plot_specs,
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
-        JINJA_BUTTONS: buttons,
     }
     return page_info
 
