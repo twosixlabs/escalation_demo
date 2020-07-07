@@ -1,5 +1,5 @@
 import json
-from utility.constants import *
+from escalation.utility.constants import *
 
 config_dict = {
     SITE_TITLE: "Yeast States Escalation",
@@ -258,7 +258,11 @@ config_dict = {
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "bar"}],
-                        "layout": {"hovermode": "closest", "barmode": "stack",  "opacity": 0.5},
+                        "layout": {
+                            "hovermode": "closest",
+                            "barmode": "stack",
+                            "opacity": 0.5,
+                        },
                     },
                     VISUALIZATION_OPTIONS: [
                         {

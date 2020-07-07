@@ -117,3 +117,6 @@ dmypy.json
 
 # local/temp files
 scratch/*
+
+# mac junk
+**/.DS_Store

@@ -1,6 +1,5 @@
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 import pandas as pd
-from werkzeug.utils import secure_filename
 
 from utility.constants import INDEX_COLUMN, UPLOAD_ID
 

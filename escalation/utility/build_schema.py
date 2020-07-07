@@ -300,7 +300,8 @@ def build_plotly_schema():
             DATA: {
                 "type": "array",
                 "description": "list of graphs to be plotted on a single plot, see https://plotly.com/javascript/reference/ for options, axis information is found from data property",
-                "items": {"type": "object",},
+                "items": {"type": "object"},
             },
         },
     }
+    return schema
