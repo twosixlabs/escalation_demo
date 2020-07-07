@@ -119,11 +119,11 @@ class SqlHandler(DataHandler):
                 continue
             # sources after the first must have join information linking them to each other
             join_clauses = []
-            for join_key_pair in data_source[JOIN_KEYS]:
-                left_table_name, left_column_name = join_key_pair[0].split(
+            for left_join_key, right_join_key in data_source[JOIN_KEYS]:
+                left_table_name, left_column_name = left_join_key.split(
                     TABLE_COLUMN_SEPARATOR
                 )
-                right_table_name, right_column_name = join_key_pair[1].split(
+                right_table_name, right_column_name = right_join_key.split(
                     TABLE_COLUMN_SEPARATOR
                 )
                 left_table = self.table_lookup_by_name[left_table_name]
