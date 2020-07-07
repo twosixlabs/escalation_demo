@@ -30,7 +30,7 @@ def validate_config_data_references(config_dict):
         # handle code differently at two spots depending on whether we are dealing with file system or database
         csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
         data_source_names = config_dict[DATA_SOURCES]
-
+        # data_backend_writer may be useful
         if csv_flag:
             from escalation.database.local_handler import LocalCSVDataInventory
 

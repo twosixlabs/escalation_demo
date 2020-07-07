@@ -32,12 +32,19 @@ class LocalCSVDataInventory:
         ]
 
     @staticmethod
-    def get_schema_for_data_source(data_source_name):
+    def get_identifier_for_data_source(data_source_name):
         full_path = os.path.join(
             current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY], data_source_name
         )
         list_of_files = glob.glob(f"{full_path}/*.csv")
         assert len(list_of_files) > 0
+        return list_of_files
+
+    @staticmethod
+    def get_schema_for_data_source(data_source_name):
+        list_of_files = LocalCSVDataInventory.get_identifier_for_data_source(
+            data_source_name
+        )
         latest_filepath = max(list_of_files, key=os.path.getctime)
         return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
 
@@ -90,14 +97,10 @@ class LocalCSVHandler(DataHandler):
         data_source_name = data_source[DATA_SOURCE_TYPE]
         data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
         filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
-        for filter_dict in current_app.config.active_data_source_filters:
-            table, _ = filter_dict[OPTION_COL].split(TABLE_COLUMN_SEPARATOR)
-            if table == data_source_name:
-                included_files = [
-                    os.path.join(data_source_subfolder, included_file)
-                    for included_file in filter_dict[SELECTED]
-                ]
-                filepaths_list = [f for f in filepaths_list if f in included_files]
+        if data_source_name in current_app.config.active_data_source_filters:
+            filepaths_list = current_app.config.active_data_source_filters[
+                data_source_name
+            ]
         assert len(filepaths_list) > 0
         return filepaths_list
 

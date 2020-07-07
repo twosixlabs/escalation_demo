@@ -25,6 +25,9 @@ def create_app():
     from views.file_upload import upload_blueprint
 
     app.register_blueprint(upload_blueprint)
+    from views.admin import admin_blueprint
+
+    app.register_blueprint(admin_blueprint)
 
     return app
 
@@ -55,14 +58,14 @@ def configure_app(app, config_dict):
 
     app.config.data_handler = data_backend_class
     app.config.data_backend_writer = data_backend_writer
-    app.config.active_data_source_filters = []
+    app.config.active_data_source_filters = {}
     return app
 
 
 if __name__ == "__main__":
     # config_file_path = "tests/test_data/test_sql_app_config.json"
-    # config_file_path = "tests/test_data/test_app_local_handler_config.json"
-    config_file_path = "../yeast_states_app/yeast_states_config.json"
+    config_file_path = "tests/test_data/test_app_local_handler_config.json"
+    # config_file_path = "../yeast_states_app/yeast_states_config.json"
 
     with open(config_file_path, "r") as config_file:
         config_dict = json.load(config_file)

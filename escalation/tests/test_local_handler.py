@@ -100,13 +100,9 @@ def test_build_combined_data_table(test_app_client):
 
 def test_build_combined_data_table_with_filtered_data_source(test_app_client):
     FILENAME_PLACEHOLDER = "filename_placeholder"  # this is currently ignored
-    current_app.config.active_data_source_filters = [
-        {
-            "type": "filter",
-            "column": f"penguin_size:{FILENAME_PLACEHOLDER}",
-            "selected": ["penguin_size.csv"],
-        }
-    ]
+    current_app.config.active_data_source_filters = {
+        "penguin_size": ["tests/test_data/penguin_size/penguin_size.csv"]
+    }
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # only the one included penguin size is loaded, not the second
     penguin_size = pd.read_csv("tests/test_data/penguin_size/penguin_size.csv")
@@ -119,8 +115,7 @@ def test_build_combined_data_table_with_filtered_data_source(test_app_client):
 
 
 def test_get_available_data_source(test_app_client):
-    test_inventory = LocalCSVDataInventory()
-    file_names = test_inventory.get_available_data_source()
+    file_names = LocalCSVDataInventory.get_available_data_source()
     assert "penguin_size_small" in file_names
     assert "penguin_size" in file_names
     assert "mean_penguin_stat" in file_names
@@ -128,8 +123,7 @@ def test_get_available_data_source(test_app_client):
 
 
 def test_get_schema_for_data_source(test_app_client):
-    test_inventory = LocalCSVDataInventory()
-    column_names = test_inventory.get_schema_for_data_source("penguin_size")
+    column_names = LocalCSVDataInventory.get_schema_for_data_source("penguin_size")
     expected_column_names = [
         "study_name",
         "species",
@@ -143,3 +137,10 @@ def test_get_schema_for_data_source(test_app_client):
     ]
 
     assert column_names == expected_column_names
+
+
+def test_get_identifier_for_data_source(test_app_client):
+    file_names = LocalCSVDataInventory.get_identifier_for_data_source("penguin_size")
+
+    assert "tests/test_data/penguin_size/penguin_size.csv" in file_names
+    assert "tests/test_data/penguin_size/penguin_size_2.csv" in file_names

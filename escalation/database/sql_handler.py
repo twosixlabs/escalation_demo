@@ -16,6 +16,9 @@ from utility.constants import (
     INDEX_COLUMN,
     JOIN_KEYS,
     TABLE_COLUMN_SEPARATOR,
+    OPTION_TYPE,
+    FILTER,
+    SELECTED,
 )
 
 
@@ -24,6 +27,12 @@ class SqlDataInventory:
     def get_available_data_source():
         # todo: intersect this with available sources in the config?
         return list(Base.metadata.tables.keys())
+
+    @staticmethod
+    def get_identifier_for_data_source(data_source_name):
+        return SqlHandler(data_source_name).get_column_unique_entries(UPLOAD_ID)[
+            UPLOAD_ID
+        ]
 
     @staticmethod
     def get_schema_for_data_source(data_source_name):
@@ -162,8 +171,9 @@ class SqlHandler(DataHandler):
         self.column_lookup_by_name = {
             c.name: c for c in query.selectable.alias().columns
         }
+
         query = self.apply_filters_to_query(
-            query, filters=current_app.config.active_data_source_filters
+            query, filters=SqlHandler.build_filters_from_active_data_source()
         )
         # Dynamically defines the selectable class for the query view
         # This prefixes all column names with "{table_name}_"
@@ -176,6 +186,22 @@ class SqlHandler(DataHandler):
             {"__table__": query.selectable.alias()},  # give the class our selectable
         )
         return QueryView
+
+    @staticmethod
+    def build_filters_from_active_data_source():
+        active_data_source_filters = []
+        for (
+            data_source,
+            upload_ids,
+        ) in current_app.config.active_data_source_filters.items():
+            active_data_source_filters.append(
+                {
+                    OPTION_TYPE: FILTER,
+                    OPTION_COL: f"{data_source}:{UPLOAD_ID}",
+                    SELECTED: upload_ids,
+                }
+            )
+        return active_data_source_filters
 
     @staticmethod
     def sanitize_column_name(column_name):

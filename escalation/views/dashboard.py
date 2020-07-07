@@ -31,3 +31,11 @@ def new_graphic_page(page_name):
         current_app.config.get(APP_CONFIG_JSON), page_name, request.form
     )
     return render_template(DATALAYOUT, buttons=buttons, **html_data)
+
+
+@dashboard_blueprint.context_processor
+def get_dashboard_pages():
+    # used for the navigation bar
+    available_pages = current_app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
+    dashboard_pages = create_link_buttons_for_available_pages(available_pages)
+    return dict(dashboard_pages=dashboard_pages)

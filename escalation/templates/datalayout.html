@@ -1,15 +1,14 @@
 {% extends 'base.html' %}
 
-
 {% block content %}
 <div class="jumbotron">
     <h1 class="display-4">{{ title }}</h1>
     <p class="lead">{{ brief_desc }}</p>
     <hr class="my-4">
     <p class="lead">
-        {% for button in buttons %}
-        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=button['link']) }} role="button">{{
-        button['button_label'] }}</a>
+        {% for dashboard_page in dashboard_pages %}
+        <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=dashboard_page['link']) }} role="button">{{
+        dashboard_page['button_label'] }}</a>
         {% endfor %}
     </p>
 </div>
@@ -18,7 +17,7 @@
     {% for plot in plots %}
     {% set graphic_index = loop.index0 %}
     <form method="post" id={{
-    "form_" ~ graphic_index }}>
+    "form_" ~ "graphic_" ~ graphic_index  }}>
     <input type="hidden" name="graphic_index" value={{ "graphic_" ~ graphic_index }}>
     </form>
     <div class="row" id={{
@@ -37,8 +36,7 @@
             {% set selector_index = loop.index0 %}
             {% include selector['select_html_file'] ignore missing %}
             {% endfor %}
-
-            <button type="button" class="btn btn-primary btn-lg" onclick="post_to_server({{ graphic_index }})">Update
+            <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ "graphic_" ~ graphic_index }}')>Update
             </button>
         </div>
     </div>

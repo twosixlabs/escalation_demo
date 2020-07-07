@@ -31,13 +31,13 @@
 <body>
 
 <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="#">EscOS</a>
+  <a class="navbar-brand" href="{{ url_for('dashboard.main_page') }}">EscOS</a>
 
     <ul class="navbar-nav mr-auto">
       <li class="nav-item {% if request.path=="/admin" %} active {% endif %}">
-        <a class="nav-link" href="#">Admin</a>
+        <a class="nav-link" href={{ url_for('admin.admin_page') }}>Admin</a>
       </li>
-      <li class="nav-item {% if request.path=="/upload" %} active {% endif %}">
+      <li class="nav-item {% if request.path==url_for('upload.submission_view') %} active {% endif %}">
         <a class="nav-link" href={{ url_for('upload.submission_view') }}>Upload</a>
       </li>
       <li class="nav-item dropdown {% if "/dashboard/" in request.path %} active {% endif %}">
@@ -45,9 +45,9 @@
           Dashboards
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            {% for button in buttons %}
-        <a class="dropdown-item" href={{ url_for('dashboard.graphic_page', page_name=button['link']) }}>{{
-        button['button_label'] }}</a>
+            {% for dashboard_page in dashboard_pages %}
+        <a class="dropdown-item" href={{ url_for('dashboard.graphic_page', page_name=dashboard_page['link']) }}>{{
+        dashboard_page['button_label'] }}</a>
         {% endfor %}
         </div>
       </li>
