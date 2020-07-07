@@ -1,0 +1,26 @@
+# mysqlclient # todo- rebuild and make sure this is unnecessary
+click
+colorama
+cython
+flask
+flask_sqlalchemy
+Flask-Migrate
+gunicorn
+jinja2
+jsonschema
+markupsafe
+numpy
+pandas
+pathvalidate
+pg8000
+plotly
+pymysql
+pyyaml
+requests
+setuptools
+six
+sqlacodegen
+sqlalchemy
+tableschema
+werkzeug
+wheel
