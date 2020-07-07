@@ -11,13 +11,6 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
-    def get_column_names(self) -> list:
-        """
-        :return: a list of the column names in the data source referenced by the handler
-        """
-        pass
-
-    @abstractmethod
     def get_column_data(self, cols: list, filters: dict) -> list:
         """
         :param cols: list of column names, including all columns for which data should be returned

@@ -70,6 +70,7 @@ config_dict = {
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "scatter", "mode": "lines+markers"}],
+                        "layout": {"hovermode": "closest"},
                     },
                     VISUALIZATION_OPTIONS: [
                         {
@@ -119,6 +120,7 @@ config_dict = {
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "scatter", "mode": "lines+markers"}],
+                        "layout": {"hovermode": "closest"},
                     },
                     VISUALIZATION_OPTIONS: [
                         {
@@ -188,6 +190,7 @@ config_dict = {
                     },
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "scatter", "mode": "lines+markers"}],
+                        "layout": {"hovermode": "closest"},
                     },
                     VISUALIZATION_OPTIONS: [
                         {
@@ -254,9 +257,8 @@ config_dict = {
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "bar", "mode": "overlay", "opacity": 0.5}],
-                        "layout": {"hovermode": "closest", "barmode": "stack"},
-                        # todo: why are these ignored?
+                        "data": [{"type": "bar"}],
+                        "layout": {"hovermode": "closest", "barmode": "stack",  "opacity": 0.5},
                     },
                     VISUALIZATION_OPTIONS: [
                         {

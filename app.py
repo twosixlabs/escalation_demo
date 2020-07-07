@@ -55,6 +55,7 @@ def configure_app(app, config_dict):
 
     app.config.data_handler = data_backend_class
     app.config.data_backend_writer = data_backend_writer
+    app.config.active_data_source_filters = []
     return app
 
 

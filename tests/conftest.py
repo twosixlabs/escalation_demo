@@ -17,6 +17,8 @@ from utility.constants import DATA_SOURCE_TYPE, APP_CONFIG_JSON
 def test_app_client(json_config_fixture):
     flask_app = create_app()
     flask_app.config[APP_CONFIG_JSON] = MappingProxyType(json_config_fixture)
+    flask_app.config.active_data_source_filters = []
+
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
     testing_client = flask_app.test_client()
