@@ -2,7 +2,13 @@ from flask import current_app, render_template, Blueprint, request, jsonify, fla
 import pandas as pd
 
 from controller import create_link_buttons_for_available_pages
-from utility.constants import INDEX_COLUMN, UPLOAD_ID, APP_CONFIG_JSON, AVAILABLE_PAGES
+from utility.constants import (
+    INDEX_COLUMN,
+    UPLOAD_ID,
+    APP_CONFIG_JSON,
+    AVAILABLE_PAGES,
+    DATA_SOURCE_TYPE,
+)
 
 UPLOAD_HTML = "data_upload.html"
 
@@ -66,26 +72,26 @@ def validate_submission_content(csvfile, data_source_schema):
 @upload_blueprint.route("/upload", methods=("GET",))
 def submission_view():
     data_inventory = current_app.config.data_backend_writer
-    existing_data_sources = data_inventory().get_available_data_source()
+    existing_data_sources = data_inventory.get_available_data_sources()
     data_sources = sorted(existing_data_sources)
     return render_template(UPLOAD_HTML, data_sources=data_sources)
 
 
 @upload_blueprint.route("/upload", methods=("POST",))
 def submission():
-    data_inventory = current_app.config.data_backend_writer
     try:
         # check the submission form
         username, data_source_name, csvfile = validate_data_form(
             request.form, request.files
         )
         # if the form of the submission is right, let's validate the content of the submitted file
-        data_source_schema = data_inventory().get_schema_for_data_source(
-            data_source_name
+        data_inventory = current_app.config.data_backend_writer(
+            data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
         )
+        data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
         # write upload history table record at the same time
-        data_inventory().write_data_upload_to_backend(df, data_source_name)
+        data_inventory.write_data_upload_to_backend(df)
     except ValidationError as e:
         current_app.logger.info(e)
         # check if POST comes from script instead of web UI

@@ -22,83 +22,6 @@ from utility.constants import (
 )
 
 
-class SqlDataInventory:
-    @staticmethod
-    def get_available_data_source():
-        # todo: intersect this with available sources in the config?
-        return list(Base.metadata.tables.keys())
-
-    @staticmethod
-    def get_identifier_for_data_source(data_source_name):
-        sql_col_class=f"{data_source_name}:{UPLOAD_ID}"
-        query = db_session.query(sql_col_class).distinct()
-        response = query.all()
-        return [r[0] for r in response]
-
-    @staticmethod
-    def get_schema_for_data_source(data_source_name):
-        """
-        :param data_source_name: str
-        :return: list of sqlalchemy column objects
-        """
-        table = Base.metadata.tables[data_source_name]
-        schema_columns = table.columns.values()
-        return schema_columns
-
-    @staticmethod
-    def get_sqlalchemy_model_class_for_data_source_name(data_source_name):
-        """
-
-        :param data_source_name:
-        :return: sqlalchemy model class
-        """
-        for c in Base._decl_class_registry.values():
-            if hasattr(c, "__tablename__") and c.__tablename__ == data_source_name:
-                return c
-        raise KeyError(f"{data_source_name} not found in available model classes")
-
-    def write_data_upload_to_backend(self, uploaded_data_df, data_source_name):
-        """
-        :param uploaded_data_df: pandas dataframe on which we have already done validation
-        :param data_source_name:
-        Assumption: data_source for this upload is only one table, even though they can generally refer to more than one table
-
-        :return:
-        """
-        sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name(
-            data_source_name
-        )
-        table = sqlalchemy_model_class.__table__
-        uploaded_data_df[UPLOAD_ID] = uuid.uuid1()
-        # todo: write upload time and other upload information from the form to an uploads metadata table
-        upload_time = datetime.utcnow()
-
-        # if we are adding an index pk column, get it from the pandas df
-        if INDEX_COLUMN in [c.name for c in table.primary_key]:
-            if INDEX_COLUMN not in uploaded_data_df.columns:
-                uploaded_data_df = uploaded_data_df.reset_index()
-            else:
-                # verify that all indices in the existing index column are unique
-                num_uploaded_rows = uploaded_data_df.shape[0]
-                num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
-                assert (
-                    num_unique_indexes == num_uploaded_rows
-                ), f"{INDEX_COLUMN} has non-unique values"
-        row_dicts_to_write = uploaded_data_df.to_dict("records")
-        # todo: writing all of this to memory- could get gross for large uploads
-        row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
-        db_session.bulk_save_objects(row_to_write)
-        db_session.commit()
-        return upload_time
-
-    def write_new_data_file_type(self):
-        """
-        Handle the case where the user wants to upload a new data file type
-        :return:
-        """
-        raise NotImplementedError
-
-
 class SqlHandler(DataHandler):
     def __init__(self, data_sources):
         self.data_sources = data_sources
@@ -252,3 +175,85 @@ class SqlHandler(DataHandler):
             response = query.all()
             unique_dict[config_col] = [r[0] for r in response]
         return unique_dict
+
+
+class SqlDataInventory(SqlHandler):
+    def __init__(self, data_sources):
+        # Instance methods for this class refer to single data source table
+        assert len(data_sources) == 1
+        super().__init__(data_sources)
+        self.data_source_name = [*self.table_lookup_by_name.keys()][0]
+
+    @staticmethod
+    def get_available_data_sources():
+        """
+        Lists all data sources available in the db
+        :return:
+        """
+        # todo: intersect this with available sources in the config?
+        return list(Base.metadata.tables.keys())
+
+    def get_identifiers_for_data_source(self):
+        """
+        :return: List of upload_id identifiers for the table source
+        """
+        upload_id_column = TABLE_COLUMN_SEPARATOR.join(
+            [self.data_source_name, UPLOAD_ID]
+        )
+        return self.get_column_unique_entries([upload_id_column])[upload_id_column]
+
+    def get_schema_for_data_source(self):
+        """
+        :param data_source_name: str
+        :return: list of sqlalchemy column objects
+        """
+        return [c for c in self.table_lookup_by_name[self.data_source_name].columns]
+
+    def get_sqlalchemy_model_class_for_data_source_name(self):
+        """
+        :param data_source_name:
+        :return: sqlalchemy model class
+        """
+        for c in Base._decl_class_registry.values():
+            if hasattr(c, "__tablename__") and c.__tablename__ == self.data_source_name:
+                return c
+        raise KeyError(f"{self.data_source_name} not found in available model classes")
+
+    def write_data_upload_to_backend(self, uploaded_data_df):
+        """
+        :param uploaded_data_df: pandas dataframe on which we have already done validation
+        :param data_source_name:
+        Assumption: data_source for this upload is only one table, even though they can generally refer to more than one table
+
+        :return:
+        """
+        sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name()
+        table = self.table_lookup_by_name[self.data_source_name]
+        uploaded_data_df[UPLOAD_ID] = uuid.uuid1()
+        # todo: write upload time and other upload information from the form to an uploads metadata table
+        upload_time = datetime.utcnow()
+
+        # if we are adding an index pk column, get it from the pandas df
+        if INDEX_COLUMN in [c.name for c in table.primary_key]:
+            if INDEX_COLUMN not in uploaded_data_df.columns:
+                uploaded_data_df = uploaded_data_df.reset_index()
+            else:
+                # verify that all indices in the existing index column are unique
+                num_uploaded_rows = uploaded_data_df.shape[0]
+                num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
+                assert (
+                    num_unique_indexes == num_uploaded_rows
+                ), f"{INDEX_COLUMN} has non-unique values"
+        row_dicts_to_write = uploaded_data_df.to_dict("records")
+        # todo: writing all of this to memory- could get gross for large uploads
+        row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
+        db_session.bulk_save_objects(row_to_write)
+        db_session.commit()
+        return upload_time
+
+    def write_new_data_file_type(self):
+        """
+        Handle the case where the user wants to upload a new data file type
+        :return:
+        """
+        raise NotImplementedError
