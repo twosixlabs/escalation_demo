@@ -1,9 +1,29 @@
 {% extends 'base.html' %}
 
+{% block header %}
+<script>
+    function any_identifiers_active(data_source) {
+            const rbs = document.querySelectorAll(`input[form=form_${data_source}]`);
+            let flag=0;
+            for (const rb of rbs) {
+                if (rb.checked && 'active'===rb.value) {
+                    flag=1
+                }
+            }
+            if (flag){
+                post_to_server(data_source)
+            }
+            else{
+               alert('At least one identifier needs to be active');
+            }
 
+        };
+    </script>
+{% endblock %}
 
 
 {% block content %}
+
 <div class="jumbotron">
     <h1 class="display-4">Administration Options</h1>
     <hr class="my-4">
@@ -51,7 +71,7 @@
     </table>
     </div>
     <div class="col-2 align-self-center">
-        <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ data_source }}')>Update
+        <button type="button" class="btn btn-primary btn-lg" onclick=any_identifiers_active('{{ data_source }}')>Update
             </button>
     </div>
     </div>
