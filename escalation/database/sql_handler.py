@@ -194,7 +194,13 @@ class SqlDataInventory(SqlHandler):
         return list(Base.metadata.tables.keys())
 
     def get_identifiers_for_data_source(self):
-        return self.get_column_unique_entries([UPLOAD_ID])[UPLOAD_ID]
+        """
+        :return: List of upload_id identifiers for the table source
+        """
+        upload_id_column = TABLE_COLUMN_SEPARATOR.join(
+            [self.data_source_name, UPLOAD_ID]
+        )
+        return self.get_column_unique_entries([upload_id_column])[upload_id_column]
 
     def get_schema_for_data_source(self):
         """
