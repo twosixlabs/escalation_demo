@@ -31,8 +31,7 @@ class SqlHandler(DataHandler):
             table_class = self.get_class_name_from_table_name(table_name)
             self.table_lookup_by_name[table_name] = table_class
             data_source.update({DATA_LOCATION: table_class})
-        self.column_lookup_by_name = {}  # defined in build_combined_data_table
-        self.combined_data_table = self.build_combined_data_table()
+        self.column_lookup_by_name = self.build_combined_data_table()
 
     @staticmethod
     def get_class_name_from_table_name(table_name):
@@ -43,10 +42,31 @@ class SqlHandler(DataHandler):
         """
         return Base.metadata.tables[table_name]
 
-    def join_tables_for_query(self):
+    def apply_filters_to_query(self, query, filters):
+        # add filters to the query dynamically
+        filter_tuples = []
+        for filter_dict in filters:
+            column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
+            column_object = self.column_lookup_by_name[column_name]
+            filter_tuples.append(
+                sql_handler_filter_operation(column_object, filter_dict)
+            )
+        if filter_tuples:
+            query = query.filter(*filter_tuples)
+        return query
+
+    def build_combined_data_table(self):
+        """
+        This takes the tables specified in self.data_sources and combines them into one easily referenceable selectable.
+        This is essentially a query view- performing the joins and getting all columns that can be filtered in a query.
+
+        :return: dictionary keyed by column names and valued with SqlAlchemy column objects
+        """
+        # first build a query that will get all of the columns for all of active data in the requested tables
         query = db_session.query(
             *[data_source[DATA_LOCATION] for data_source in self.data_sources]
         )
+        # specify how the different data sources are joined
         for i, data_source in enumerate(self.data_sources):
             if i == 0:
                 continue
@@ -68,48 +88,9 @@ class SqlHandler(DataHandler):
                     )
                 )
             query = query.join(data_source[DATA_LOCATION], and_(*join_clauses))
-        return query
 
-    def apply_filters_to_query(self, query, filters):
-        # add filters to the query dynamically
-        filter_tuples = []
-        for filter_dict in filters:
-            column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
-            column_object = self.column_lookup_by_name[column_name]
-            filter_tuples.append(
-                sql_handler_filter_operation(column_object, filter_dict)
-            )
-        if filter_tuples:
-            query = query.filter(*filter_tuples)
-        return query
-
-    def build_combined_data_table(self):
-        """
-        This takes the tables specified in self.data_sources and combines them into one easily referenceable selectable.
-        This is essentially a query view- performing the joins and getting all columns that can be filtered in a query.
-
-        :return: SqlAlchemy DeclarativeMeta selectable class
-        """
-        # first build a query that will get all of the columns for all of active data in the requested tables
-        query = self.join_tables_for_query()
-        self.column_lookup_by_name = {
-            c.name: c for c in query.selectable.alias().columns
-        }
-
-        query = self.apply_filters_to_query(
-            query, filters=self.build_filters_from_active_data_source()
-        )
-        # Dynamically defines the selectable class for the query view
-        # This prefixes all column names with "{table_name}_"
-        query_view_name = "_".join(
-            [data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources]
-        )
-        QueryView = type(
-            query_view_name,  # name the class
-            (Base,),  # inherit from Base
-            {"__table__": query.selectable.alias()},  # give the class our selectable
-        )
-        return QueryView
+        column_lookup_by_name = {c.name: c for c in query.selectable.alias().columns}
+        return column_lookup_by_name
 
     def build_filters_from_active_data_source(self):
         current_tables = [
@@ -148,11 +129,12 @@ class SqlHandler(DataHandler):
         all_column_rename_dict = {
             self.sanitize_column_name(c): c for c in all_to_include_cols
         }
-
         # build basic query requesting all of the columns needed
         query = db_session.query(
             *[self.column_lookup_by_name[c] for c in all_column_rename_dict.keys()]
         )
+        active_data_filters = self.build_filters_from_active_data_source()
+        filters.extend(active_data_filters)
         query = self.apply_filters_to_query(query, filters)
         response_rows = query.all()
         if response_rows:
@@ -165,9 +147,10 @@ class SqlHandler(DataHandler):
             response_as_df = pd.DataFrame(columns=columns)
         return response_as_df[columns]
 
-    def get_column_unique_entries(self, cols: list) -> dict:
+    def get_column_unique_entries(self, cols: list, filter_active_data=True) -> dict:
         """
         :param cols: a list of column names
+        :param filter_active_data: Whether to filter the column entries to only include those for active data sources
         :return: A dict keyed by column names and valued with the unique values in that column
         """
         unique_dict = {}
@@ -175,6 +158,9 @@ class SqlHandler(DataHandler):
             renamed_col = self.sanitize_column_name(config_col)
             sql_col_class = self.column_lookup_by_name[renamed_col]
             query = db_session.query(sql_col_class).distinct()
+            if filter_active_data:
+                active_data_filters = self.build_filters_from_active_data_source()
+                query = self.apply_filters_to_query(query, active_data_filters)
             response = query.all()
             unique_dict[config_col] = [r[0] for r in response]
         return unique_dict
@@ -203,7 +189,9 @@ class SqlDataInventory(SqlHandler):
         upload_id_column = TABLE_COLUMN_SEPARATOR.join(
             [self.data_source_name, UPLOAD_ID]
         )
-        return self.get_column_unique_entries([upload_id_column])[upload_id_column]
+        return self.get_column_unique_entries(
+            cols=[upload_id_column], filter_active_data=False
+        )[upload_id_column]
 
     def get_schema_for_data_source(self):
         """
