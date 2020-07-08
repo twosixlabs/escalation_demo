@@ -37,8 +37,12 @@ Simplify the config file- break it into one main config json with a separate con
 - Mock sql backend for testing
 - Test file upload
 
+## Admin
+- Don't allow all files to be not selected
+
 # USER STORIES
 
 Real time data from fermenter (temp, pH) with updates on dashboard, including
+
 
 
