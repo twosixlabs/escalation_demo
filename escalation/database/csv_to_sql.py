@@ -38,6 +38,8 @@ DATA_TYPE_MAP = {
 #  list: sqlalchemy.types.ARRAY,
 #  dict: sqlalchemy.types.JSON
 
+EXISTS_OPTIONS = ["replace", "append"]
+
 
 def extract_values(obj, key):
     """Recursively pull values of specified key from nested JSON."""
@@ -114,7 +116,9 @@ class CreateTablesFromCSVs:
         return sqlalchemy_data_types
 
     @classmethod
-    def create_new_table(cls, table_name, data, schema, key_columns=None):
+    def create_new_table(
+        cls, table_name, data, schema, key_columns=None, if_exists="replace"
+    ):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
@@ -131,21 +135,23 @@ class CreateTablesFromCSVs:
                     table_name,
                     con=cls.__engine,
                     schema=database_config["database"],
-                    if_exists="replace",
+                    if_exists=if_exists,
                     chunksize=300,
                     dtype=schema,
                 )
-                if key_columns:
-                    cls.__engine.execute(
-                        "ALTER TABLE {} ADD UNIQUE({}({}));".format(
-                            table_name, *key_columns
+                # if we're creating this table new, build the pk
+                if if_exists == "replace":
+                    if key_columns:
+                        cls.__engine.execute(
+                            "ALTER TABLE {} ADD UNIQUE({}({}));".format(
+                                table_name, *key_columns
+                            )
                         )
-                    )
-                else:
-                    # use the numerical index from pandas as a pk
-                    cls.__engine.execute(
-                        f"ALTER TABLE {table_name} ADD UNIQUE({UPLOAD_ID}, {INDEX_COLUMN});"
-                    )
+                    else:
+                        # use the numerical index from pandas as a pk
+                        cls.__engine.execute(
+                            f"ALTER TABLE {table_name} ADD UNIQUE({UPLOAD_ID}, {INDEX_COLUMN});"
+                        )
             elif DB_BACKEND == "psql":
                 if table_name.lower() != table_name:
                     raise ValueError(
@@ -154,19 +160,21 @@ class CreateTablesFromCSVs:
                 data.to_sql(
                     table_name,
                     con=cls.__engine,
-                    if_exists="replace",
+                    if_exists=if_exists,
                     chunksize=300,
                     dtype=schema,
                 )
-                if key_columns:
-                    cls.__engine.execute(
-                        f"ALTER TABLE {table_name} add primary key (index_col[0]);"
-                    )
-                else:
-                    # use the numerical index from pandas as a pk
-                    cls.__engine.execute(
-                        f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
-                    )
+                # if we're creating this table new, build the pk
+                if if_exists == "replace":
+                    if key_columns:
+                        cls.__engine.execute(
+                            f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                        )
+                    else:
+                        # use the numerical index from pandas as a pk
+                        cls.__engine.execute(
+                            f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
+                        )
 
 
 if __name__ == "__main__":
@@ -184,12 +192,15 @@ if __name__ == "__main__":
 
     table_name = sys.argv[1]
     filepath = sys.argv[2]
+    if_exists = sys.argv[3]
+    assert if_exists in EXISTS_OPTIONS
+
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
     key_column = None
 
     CreateTablesFromCSVs.create_new_table(
-        table_name, data, schema, key_columns=key_column
+        table_name, data, schema, key_columns=key_column, if_exists=if_exists
     )
 
     # example usage:
