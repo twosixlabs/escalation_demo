@@ -30,9 +30,9 @@ class SqlDataInventory:
 
     @staticmethod
     def get_identifier_for_data_source(data_source_name):
-        return SqlHandler(data_source_name).get_column_unique_entries(UPLOAD_ID)[
-            UPLOAD_ID
-        ]
+        return SqlHandler(
+            [{DATA_SOURCE_TYPE: data_source_name}]
+        ).get_column_unique_entries([UPLOAD_ID])[UPLOAD_ID]
 
     @staticmethod
     def get_schema_for_data_source(data_source_name):
