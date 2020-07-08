@@ -1,4 +1,4 @@
-# mysqlclient # todo- rebuild and make sure this is unnecessary
+mysql-connector-python # todo- rebuild and make sure this is unnecessary
 click
 colorama
 cython
@@ -14,7 +14,6 @@ pandas
 pathvalidate
 pg8000
 plotly
-pymysql
 pyyaml
 requests
 setuptools

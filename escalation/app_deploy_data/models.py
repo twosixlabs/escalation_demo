@@ -1,5 +1,6 @@
 # coding: utf-8
-from sqlalchemy import BigInteger, Boolean, Column, Float, Integer, Text
+from sqlalchemy import BigInteger, CheckConstraint, Column, Float, Integer, Text
+from sqlalchemy.dialects.mysql import TINYINT
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -9,7 +10,7 @@ metadata = Base.metadata
 class FlowMeta(Base):
     __tablename__ = "flow_meta"
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
     _id = Column(Text)
     sample_id = Column(Text)
     experiment_reference = Column(Text)
@@ -25,12 +26,12 @@ class FlowMeta(Base):
     control_type = Column(Text)
     media_type = Column(Text)
     inducer_type = Column(Text)
-    inducer_concentration = Column(Float(53))
+    inducer_concentration = Column(Float)
     inducer_concentration_unit = Column(Text)
     sample_contents = Column(Text)
-    temperature = Column(Float(53))
+    temperature = Column(Float)
     temperature_unit = Column(Text)
-    timepoint = Column(Float(53))
+    timepoint = Column(Float)
     timepoint_unit = Column(Text)
     aliquot_id = Column(Text)
     flow_rate_uL_min = Column("flow_rate_uL/min", Integer)
@@ -41,7 +42,7 @@ class FlowMeta(Base):
     total_counts = Column(Integer)
     flow_volume = Column(Integer)
     well = Column(Text)
-    cells_mL = Column("cells/mL", Float(53))
+    cells_mL = Column("cells/mL", Float)
     upload_id = Column(Text, primary_key=True, nullable=False)
     experiment_id_short = Column(Text)
 
@@ -49,11 +50,11 @@ class FlowMeta(Base):
 class FlowStatWide(Base):
     __tablename__ = "flow_stat_wide"
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
     sample_id = Column(Text)
     experiment_id = Column(Text)
     aliquot_id = Column(Text)
-    log10_bin = Column(Float(53))
+    log10_bin = Column(Float)
     BL1_A = Column("BL1-A", Integer)
     BL1_H = Column("BL1-H", Integer)
     BL1_W = Column("BL1-W", Integer)
@@ -71,8 +72,12 @@ class FlowStatWide(Base):
 
 class GrowthRate(Base):
     __tablename__ = "growth_rate"
+    __table_args__ = (
+        CheckConstraint("(`dead` in (0,1))"),
+        CheckConstraint("(`ungrowing` in (0,1))"),
+    )
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
     experiment_id = Column(Text)
     well = Column(Text)
     strain = Column(Text)
@@ -84,69 +89,23 @@ class GrowthRate(Base):
     control_type = Column(Text)
     media_type = Column(Text)
     inducer_type = Column(Text)
-    inducer_concentration = Column(Float(53))
+    inducer_concentration = Column(Float)
     inducer_concentration_unit = Column(Text)
     sample_contents = Column(Text)
-    temperature = Column(Float(53))
+    temperature = Column(Float)
     temperature_unit = Column(Text)
-    od = Column(Float(53))
-    dead = Column(Boolean)
-    ungrowing = Column(Boolean)
-    doubling_time = Column(Float(53))
-    n0 = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
-class MeanPenguinStat(Base):
-    __tablename__ = "mean_penguin_stat"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    study_name = Column(Text)
-    species = Column(Text)
-    sex = Column(Text)
-    culmen_length = Column(Float(53))
-    culmen_depth = Column(Float(53))
-    flipper_length = Column(Float(53))
-    body_mass = Column(Float(53))
-    delta_15_n = Column(Float(53))
-    delta_13_c = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
-class PenguinSize(Base):
-    __tablename__ = "penguin_size"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    study_name = Column(Text)
-    species = Column(Text)
-    island = Column(Text)
-    sex = Column(Text)
-    region = Column(Text)
-    culmen_depth_mm = Column(Float(53))
-    culmen_length_mm = Column(Float(53))
-    flipper_length_mm = Column(Float(53))
-    body_mass_g = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
-class PenguinSizeSmall(Base):
-    __tablename__ = "penguin_size_small"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    species = Column(Text)
-    island = Column(Text)
-    culmen_length_mm = Column(Float(53))
-    culmen_depth_mm = Column(Integer)
-    flipper_length_mm = Column(Integer)
-    body_mass_g = Column(Integer)
-    sex = Column(Text)
+    od = Column(Float)
+    dead = Column(TINYINT(1))
+    ungrowing = Column(TINYINT(1))
+    doubling_time = Column(Float)
+    n0 = Column(Float)
     upload_id = Column(Text, primary_key=True, nullable=False)
 
 
 class PlateReader(Base):
     __tablename__ = "plate_reader"
 
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
     _id = Column(Text)
     sample_id = Column(Text)
     experiment_reference = Column(Text)
@@ -162,17 +121,17 @@ class PlateReader(Base):
     control_type = Column(Text)
     media_type = Column(Text)
     inducer_type = Column(Text)
-    inducer_concentration = Column(Float(53))
+    inducer_concentration = Column(Float)
     inducer_concentration_unit = Column(Text)
     sample_contents = Column(Text)
-    temperature = Column(Float(53))
+    temperature = Column(Float)
     temperature_unit = Column(Text)
-    timepoint = Column(Float(53))
+    timepoint = Column(Float)
     timepoint_unit = Column(Text)
     well = Column(Text)
     container_id = Column(Text)
     aliquot_id = Column(Text)
-    od = Column(Float(53))
-    fluor_gain_0_16 = Column("fluor_gain_0.16", Float(53))
-    fluor_gain_0_16_od = Column("fluor_gain_0.16/od", Float(53))
+    od = Column(Float)
+    fluor_gain_0_16 = Column("fluor_gain_0.16", Float)
+    fluor_gain_0_16_od = Column("fluor_gain_0.16/od", Float)
     upload_id = Column(Text, primary_key=True, nullable=False)

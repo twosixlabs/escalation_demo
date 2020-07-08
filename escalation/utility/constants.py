@@ -86,7 +86,7 @@ ACTIVE_SELECTORS = "active_selector"
 
 
 # DATA MANAGEMENT
-INDEX_COLUMN = "index"
+INDEX_COLUMN = "row_index"
 UPLOAD_ID = "upload_id"
 UPLOAD_TIME = "upload_time"
 

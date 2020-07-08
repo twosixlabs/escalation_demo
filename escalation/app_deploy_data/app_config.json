@@ -1,7 +1,7 @@
 {
     "title": "Yeast States Escalation",
     "brief_desc": "Demo for the Yeast States Escalation OS",
-    "data_backend": "psql",
+    "data_backend": "mysql",
     "data_sources": [
         "flow_meta",
         "flow_stat",
