@@ -9,6 +9,7 @@ from utility.constants import (
     APP_CONFIG_JSON,
     AVAILABLE_PAGES,
     DATA_SOURCES,
+    DATA_SOURCE_TYPE,
 )
 
 ADMIN_HTML = "admin.html"
@@ -23,7 +24,9 @@ def admin_page():
     existing_data_sources = data_inventory.get_available_data_sources()
     data_sources = sorted(existing_data_sources)
     data_source_dict = {
-        data_source: data_inventory.get_identifier_for_data_source(data_source)
+        data_source: data_inventory(
+            [{DATA_SOURCE_TYPE: data_source}]
+        ).get_identifiers_for_data_source()
         for data_source in data_sources
     }
     data_source_active_dict = copy.deepcopy(data_source_dict)

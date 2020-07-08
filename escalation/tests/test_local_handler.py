@@ -2,7 +2,7 @@ from flask import current_app
 import pandas as pd
 
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
-from utility.constants import DATA_LOCATION
+from utility.constants import DATA_LOCATION, DATA_SOURCE_TYPE
 
 
 def test_local_handler_init(local_handler_fixture_small):
@@ -114,8 +114,8 @@ def test_build_combined_data_table_with_filtered_data_source(test_app_client):
     # todo: one to many join, where we expect the number of rows to change
 
 
-def test_get_available_data_source(test_app_client):
-    file_names = LocalCSVDataInventory.get_available_data_source()
+def test_get_available_data_sources(test_app_client):
+    file_names = LocalCSVDataInventory.get_available_data_sources()
     assert "penguin_size_small" in file_names
     assert "penguin_size" in file_names
     assert "mean_penguin_stat" in file_names
@@ -123,7 +123,9 @@ def test_get_available_data_source(test_app_client):
 
 
 def test_get_schema_for_data_source(test_app_client):
-    column_names = LocalCSVDataInventory.get_schema_for_data_source("penguin_size")
+    column_names = LocalCSVDataInventory(
+        [{DATA_SOURCE_TYPE: "penguin_size"}]
+    ).get_schema_for_data_source()
     expected_column_names = [
         "study_name",
         "species",
@@ -139,8 +141,10 @@ def test_get_schema_for_data_source(test_app_client):
     assert column_names == expected_column_names
 
 
-def test_get_identifier_for_data_source(test_app_client):
-    file_names = LocalCSVDataInventory.get_identifier_for_data_source("penguin_size")
+def test_get_identifiers_for_data_source(test_app_client):
+    file_names = LocalCSVDataInventory(
+        [{DATA_SOURCE_TYPE: "penguin_size"}]
+    ).get_identifiers_for_data_source()
 
     assert "tests/test_data/penguin_size/penguin_size.csv" in file_names
     assert "tests/test_data/penguin_size/penguin_size_2.csv" in file_names

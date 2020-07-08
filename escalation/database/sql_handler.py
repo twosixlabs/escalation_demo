@@ -97,7 +97,7 @@ class SqlHandler(DataHandler):
         }
 
         query = self.apply_filters_to_query(
-            query, filters=SqlHandler.build_filters_from_active_data_source()
+            query, filters=self.build_filters_from_active_data_source()
         )
         # Dynamically defines the selectable class for the query view
         # This prefixes all column names with "{table_name}_"
@@ -111,20 +111,23 @@ class SqlHandler(DataHandler):
         )
         return QueryView
 
-    @staticmethod
-    def build_filters_from_active_data_source():
+    def build_filters_from_active_data_source(self):
+        current_tables = [
+            data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources
+        ]
         active_data_source_filters = []
         for (
-            data_source,
+            table_name,
             upload_ids,
         ) in current_app.config.active_data_source_filters.items():
-            active_data_source_filters.append(
-                {
-                    OPTION_TYPE: FILTER,
-                    OPTION_COL: f"{data_source}:{UPLOAD_ID}",
-                    SELECTED: upload_ids,
-                }
-            )
+            if table_name in current_tables:
+                active_data_source_filters.append(
+                    {
+                        OPTION_TYPE: FILTER,
+                        OPTION_COL: f"{table_name}:{UPLOAD_ID}",
+                        SELECTED: upload_ids,
+                    }
+                )
         return active_data_source_filters
 
     @staticmethod
