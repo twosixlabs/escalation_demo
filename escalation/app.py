@@ -5,7 +5,8 @@ from types import MappingProxyType
 from flask import Flask
 from sqlalchemy.engine.url import URL
 
-from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL
+from controller import create_link_buttons_for_available_pages
+from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL, AVAILABLE_PAGES
 from app_settings import PSQL_DATABASE_CONFIG as database_config
 
 
@@ -28,6 +29,13 @@ def create_app():
     from views.admin import admin_blueprint
 
     app.register_blueprint(admin_blueprint)
+
+    @app.context_processor
+    def get_dashboard_pages():
+        # used for the navigation bar
+        available_pages = app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
+        dashboard_pages = create_link_buttons_for_available_pages(available_pages)
+        return dict(dashboard_pages=dashboard_pages)
 
     return app
 
@@ -60,7 +68,6 @@ def configure_app(app, config_dict):
     app.config.data_backend_writer = data_backend_writer
     app.config.active_data_source_filters = {}
     return app
-
 
 if __name__ == "__main__":
     config_file_path = "tests/test_data/test_sql_app_config.json"

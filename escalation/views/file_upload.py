@@ -1,12 +1,9 @@
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 import pandas as pd
 
-from controller import create_link_buttons_for_available_pages
 from utility.constants import (
     INDEX_COLUMN,
     UPLOAD_ID,
-    APP_CONFIG_JSON,
-    AVAILABLE_PAGES,
     DATA_SOURCE_TYPE,
 )
 
@@ -110,11 +107,3 @@ def submission():
 
         # if the request came from the web browser, provide an HTML repsonse
         return render_template("success.html", username="Captain Kirk")
-
-
-@upload_blueprint.context_processor
-def get_dashboard_pages():
-    # used for the navigation bar
-    available_pages = current_app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
-    dashboard_pages = create_link_buttons_for_available_pages(available_pages)
-    return dict(dashboard_pages=dashboard_pages)

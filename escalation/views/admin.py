@@ -2,12 +2,7 @@ import copy
 
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 
-from controller import create_link_buttons_for_available_pages
 from utility.constants import (
-    INDEX_COLUMN,
-    UPLOAD_ID,
-    APP_CONFIG_JSON,
-    AVAILABLE_PAGES,
     DATA_SOURCES,
     DATA_SOURCE_TYPE,
 )
@@ -56,10 +51,3 @@ def submission():
         current_app.config.active_data_source_filters.pop(data_source_name, [])
     return admin_page()
 
-
-@admin_blueprint.context_processor
-def get_dashboard_pages():
-    # used for the navigation bar
-    available_pages = current_app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
-    dashboard_pages = create_link_buttons_for_available_pages(available_pages)
-    return dict(dashboard_pages=dashboard_pages)
