@@ -20,7 +20,7 @@ admin_blueprint = Blueprint("admin", __name__)
 @admin_blueprint.route("/admin", methods=("GET",))
 def admin_page():
     data_inventory = current_app.config.data_backend_writer
-    existing_data_sources = data_inventory.get_available_data_source()
+    existing_data_sources = data_inventory.get_available_data_sources()
     data_sources = sorted(existing_data_sources)
     data_source_dict = {
         data_source: data_inventory.get_identifier_for_data_source(data_source)
