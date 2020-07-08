@@ -30,17 +30,17 @@ def validate_config_data_references(config_dict):
         # handle code differently at two spots depending on whether we are dealing with file system or database
         csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
         data_source_names = config_dict[DATA_SOURCES]
-
+        # data_backend_writer may be useful
         if csv_flag:
             from escalation.database.local_handler import LocalCSVDataInventory
 
-            data_inventory = LocalCSVDataInventory
+            data_inventory_class = LocalCSVDataInventory
         else:
             from escalation.database.sql_handler import SqlDataInventory
 
-            data_inventory = SqlDataInventory
+            data_inventory_class = SqlDataInventory
 
-        data_source_names_found = data_inventory.get_available_data_source()
+        data_source_names_found = data_inventory_class.get_available_data_sources()
 
         # Checking if data source names are valid
         for index, data_source_name in enumerate(data_source_names):
@@ -56,7 +56,10 @@ def validate_config_data_references(config_dict):
         # put column names in format "data_source_name.column_name"
         possible_column_names = []
         for data_source_name in data_source_names:
-            column_names = data_inventory.get_schema_for_data_source(data_source_name)
+            data_inventory = data_inventory_class(
+                data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
+            )
+            column_names = data_inventory.get_schema_for_data_source()
             possible_column_names.extend(
                 [
                     TABLE_COLUMN_SEPARATOR.join(

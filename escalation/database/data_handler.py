@@ -7,10 +7,6 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
-    def build_combined_data_table(self):
-        pass
-
-    @abstractmethod
     def get_column_data(self, cols: list, filters: dict) -> list:
         """
         :param cols: list of column names, including all columns for which data should be returned

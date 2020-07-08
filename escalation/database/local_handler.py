@@ -20,55 +20,6 @@ from utility.constants import (
 )
 
 
-class LocalCSVDataInventory:
-    @staticmethod
-    def get_available_data_source():
-        return [
-            f.name
-            for f in os.scandir(
-                current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY]
-            )
-            if f.is_dir()
-        ]
-
-    @staticmethod
-    def get_schema_for_data_source(data_source_name):
-        full_path = os.path.join(
-            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY], data_source_name
-        )
-        list_of_files = glob.glob(f"{full_path}/*.csv")
-        assert len(list_of_files) > 0
-        latest_filepath = max(list_of_files, key=os.path.getctime)
-        return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
-
-    def write_data_upload_to_backend(
-        self, uploaded_data_df, data_source_name, file_name=None
-    ):
-        """
-        :param file_name:
-        :param uploaded_data_df: pandas dataframe on which we have already done validation
-        :param data_source_name:
-
-        :return: Nothing
-        """
-
-        file_name = (
-            datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-            if (file_name is None)
-            else sanitize_filename(secure_filename(file_name))
-        )
-        file_name = (
-            file_name if file_name.endswith(".csv") else "".join([file_name, ".csv"])
-        )
-
-        file_path = os.path.join(
-            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
-            data_source_name,
-            file_name,
-        )
-        uploaded_data_df.to_csv(file_path)
-
-
 class LocalCSVHandler(DataHandler):
     def __init__(self, data_sources):
         """
@@ -90,14 +41,10 @@ class LocalCSVHandler(DataHandler):
         data_source_name = data_source[DATA_SOURCE_TYPE]
         data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
         filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
-        for filter_dict in current_app.config.active_data_source_filters:
-            table, _ = filter_dict[OPTION_COL].split(TABLE_COLUMN_SEPARATOR)
-            if table == data_source_name:
-                included_files = [
-                    os.path.join(data_source_subfolder, included_file)
-                    for included_file in filter_dict[SELECTED]
-                ]
-                filepaths_list = [f for f in filepaths_list if f in included_files]
+        if data_source_name in current_app.config.active_data_source_filters:
+            filepaths_list = current_app.config.active_data_source_filters[
+                data_source_name
+            ]
         assert len(filepaths_list) > 0
         return filepaths_list
 
@@ -153,3 +100,59 @@ class LocalCSVHandler(DataHandler):
             # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
             unique_dict[col] = self.combined_data_table[col].unique().tolist()
         return unique_dict
+
+
+class LocalCSVDataInventory(LocalCSVHandler):
+    def __init__(self, data_sources):
+        # Instance methods for this class refer to single data source table
+        assert len(data_sources) == 1
+        self.data_source_name = data_sources[0][DATA_SOURCE_TYPE]
+
+    @staticmethod
+    def get_available_data_sources():
+        return [
+            f.name
+            for f in os.scandir(
+                current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY]
+            )
+            if f.is_dir()
+        ]
+
+    def get_identifiers_for_data_source(self):
+        full_path = os.path.join(
+            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
+            self.data_source_name,
+        )
+        list_of_files = glob.glob(f"{full_path}/*.csv")
+        assert len(list_of_files) > 0
+        return list_of_files
+
+    def get_schema_for_data_source(self):
+        list_of_files = self.get_identifiers_for_data_source()
+        latest_filepath = max(list_of_files, key=os.path.getctime)
+        return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
+
+    def write_data_upload_to_backend(self, uploaded_data_df, file_name=None):
+        """
+        :param file_name:
+        :param uploaded_data_df: pandas dataframe on which we have already done validation
+        :param data_source_name:
+
+        :return: Nothing
+        """
+
+        file_name = (
+            datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+            if (file_name is None)
+            else sanitize_filename(secure_filename(file_name))
+        )
+        file_name = (
+            file_name if file_name.endswith(".csv") else "".join([file_name, ".csv"])
+        )
+
+        file_path = os.path.join(
+            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
+            self.data_source_name,
+            file_name,
+        )
+        uploaded_data_df.to_csv(file_path)
