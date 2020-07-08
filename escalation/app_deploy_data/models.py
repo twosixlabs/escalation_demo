@@ -1,6 +1,6 @@
 # coding: utf-8
 from sqlalchemy import BigInteger, CheckConstraint, Column, Float, Integer, Text
-from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy.dialects.mysql import TINYINT, TINYTEXT
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -43,7 +43,7 @@ class FlowMeta(Base):
     flow_volume = Column(Integer)
     well = Column(Text)
     cells_mL = Column("cells/mL", Float)
-    upload_id = Column(Text, primary_key=True, nullable=False)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)
     experiment_id_short = Column(Text)
 
 
@@ -67,7 +67,7 @@ class FlowStatWide(Base):
     SSC_A = Column("SSC-A", Integer)
     SSC_H = Column("SSC-H", Integer)
     SSC_W = Column("SSC-W", Integer)
-    upload_id = Column(Text, primary_key=True, nullable=False)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)
 
 
 class GrowthRate(Base):
@@ -99,7 +99,7 @@ class GrowthRate(Base):
     ungrowing = Column(TINYINT(1))
     doubling_time = Column(Float)
     n0 = Column(Float)
-    upload_id = Column(Text, primary_key=True, nullable=False)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)
 
 
 class PlateReader(Base):
@@ -134,4 +134,4 @@ class PlateReader(Base):
     od = Column(Float)
     fluor_gain_0_16 = Column("fluor_gain_0.16", Float)
     fluor_gain_0_16_od = Column("fluor_gain_0.16/od", Float)
-    upload_id = Column(Text, primary_key=True, nullable=False)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)

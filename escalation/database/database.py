@@ -25,7 +25,7 @@ if runtime_defined_db_url:
     engine = create_engine(runtime_defined_db_url)
 else:
     engine = create_engine(URL(**database_config), convert_unicode=True)
-Base.metadata.create_all(bind=engine)
+
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)
 )
