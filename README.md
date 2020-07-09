@@ -20,6 +20,14 @@ As of the current version:
 * Need to be connected to the internet
 * Use a SQL database or local csv files (assuming csv in local handler)
 * Local handler currently gets most recent data set
+## Building a config file:
+Run `python build_app_config_json_template.py` to build a starting file. 
+Everything blank or in `<>` can be changed.
+
+See 
+
+The documentation is at [escalation_config](./escos.md "config file needed to use escalation OS") 
+
 
 ## How can I contribute?
 

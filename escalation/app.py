@@ -6,7 +6,13 @@ from flask import Flask
 from sqlalchemy.engine.url import URL
 
 from controller import create_link_buttons_for_available_pages
-from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES, MYSQL, AVAILABLE_PAGES
+from utility.constants import (
+    APP_CONFIG_JSON,
+    DATA_BACKEND,
+    POSTGRES,
+    MYSQL,
+    AVAILABLE_PAGES,
+)
 from app_settings import PSQL_DATABASE_CONFIG as database_config
 
 
@@ -68,6 +74,7 @@ def configure_app(app, config_dict):
     app.config.data_backend_writer = data_backend_writer
     app.config.active_data_source_filters = {}
     return app
+
 
 if __name__ == "__main__":
     config_file_path = "tests/test_data/test_sql_app_config.json"

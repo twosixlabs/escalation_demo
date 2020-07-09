@@ -1,6 +1,9 @@
+import json
+
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
+NO_SPACES = "^[\\S]+$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 
@@ -13,30 +16,39 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
     """
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "escalation_config",
+        "title": "Escalation Config File",
         "description": "config file needed to use escalation OS",
         "type": "object",
         "additionalProperties": True,
         "properties": {
             AVAILABLE_PAGES: {
                 "type": "object",
+                "title": "Dashboard Dictionary",
+                "description": "a dictionary containing the dashboard pages of the site",
                 "additionalProperties": False,
                 "patternProperties": {
-                    ".*": {
+                    NO_SPACES: {
                         "type": "object",
+                        "title": "Dashboard Page",
+                        "description": "Have one of these for each page of the site",
+
                         "required": [BUTTON_LABEL],
                         "properties": {
                             BUTTON_LABEL: {
                                 "type": "string",
-                                "description": "label on button that will show at the top of the website",
+                                "description": "label of the page that will show up on the website",
                             },
                             GRAPHICS: {
                                 "type": "object",
+                                "title": "Graphics Dictionary",
+                                "description": "a dictionary containing the graphics on the page",
                                 "additionalProperties": False,
                                 "patternProperties": {
                                     "^graphic_[0-9]*$": {
                                         "type": "object",
-                                        "description": "graphic index use GRAPHIC_NUM.format(int)",
+                                        "title": "A single graphic",
+                                        "description": "Have one of these for each graphic on the page,"
+                                                       " start with graphic_0 then graphic_1 etc.",
                                         "required": [
                                             PLOT_MANAGER,
                                             GRAPHIC_TITLE,
@@ -49,7 +61,8 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                         "properties": {
                                             PLOT_MANAGER: {
                                                 "type": "string",
-                                                "description": "plot library you would like to use",
+                                                "description": "plot library you would like to use,"
+                                                               " only plotly is currently available",
                                                 "enum": ["plotly"],
                                             },
                                             GRAPHIC_TITLE: {
@@ -75,12 +88,16 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                             },
                                             DATA: {
                                                 "type": "object",
-                                                "description": "contains which data goes on which plot",
+                                                "title": "Data Dictionary",
+                                                "description": "which data column goes on each axis",
                                                 "additionalProperties": False,
                                                 "patternProperties": {
                                                     "^points_[0-9]*$": {
                                                         "type": "object",
-                                                        "description": "use POINTS_NUM.format(int) contians a dictionary: Key: axis (e.g.), Value: Data Column",
+                                                        "title": "points",
+                                                        "description": "a dictionary for each plot on a single graph:"
+                                                                       " Key: axis (e.g. x), Value: Data Column,"
+                                                                       " use points_0 then points_1 etc.",
                                                         "patternProperties": {
                                                             ONE_LETTER: {
                                                                 "type": "string",
@@ -92,13 +109,16 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                             },
                                             PLOT_SPECIFIC_INFO: {
                                                 "type": "object",
+                                                "title": "Plot Dictionary",
                                                 "description": "this dictionary depends on the graphing library",
                                             },
                                             VISUALIZATION_OPTIONS: {
                                                 "type": "array",
+                                                "title": "Visualization List",
                                                 "description": "modifications to the existing graph",
                                                 "items": {
                                                     "type": "object",
+                                                    "title": "visualization dict",
                                                     "required": [
                                                         OPTION_TYPE,
                                                         COLUMN_NAME,
@@ -106,6 +126,11 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                     "properties": {
                                                         OPTION_TYPE: {
                                                             "type": "string",
+                                                            "description": "hover_data changes what data is shown"
+                                                                           " when scrolling over data. "
+                                                                           "examples of the other two:"
+                                                                           " groupby: https://plotly.com/javascript/group-by/"
+                                                                           " aggregate: https://plotly.com/javascript/aggregations/",
                                                             "enum": [
                                                                 "hover_data",
                                                                 "groupby",
@@ -125,10 +150,12 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                             },
                                             SELECTABLE_DATA_LIST: {
                                                 "type": "array",
-                                                "description": "list of selectors per page",
+                                                "title": "Selector List",
+                                                "description": "list of data selectors for a graphic",
                                                 "maxItems": 6,
                                                 "items": {
                                                     "type": "object",
+                                                    "title": "Selector Dict",
                                                     "required": [
                                                         SELECTOR_TYPE,
                                                         COLUMN_NAME,
@@ -137,6 +164,11 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                     "properties": {
                                                         SELECTOR_TYPE: {
                                                             "type": "string",
+                                                            "description": "select is a filter operation based on label,"
+                                                                           "numerical_filter is a filter operation"
+                                                                           " on numerical data,"
+                                                                           "axis you can use to change what column data "
+                                                                           "is shown on a axis",
                                                             "enum": [
                                                                 "select",
                                                                 "numerical_filter",
@@ -288,6 +320,14 @@ def build_first_level_schema():
     return schema
 
 
+def convert_dict_to_json_file():
+    schema_dict = build_first_level_schema()
+    schema_dict["properties"].update(build_higher_level_schema()["properties"])
+    json_object = json.dumps(schema_dict, indent=4)
+    with open("escos.schema.json", "w") as outfile:
+        outfile.write(json_object)
+
+
 def build_plotly_schema():
     # todo: pull documentation from plotly website
     schema = {
@@ -305,3 +345,8 @@ def build_plotly_schema():
         },
     }
     return schema
+
+
+if __name__ == "__main__":
+    # if the schema is needed as a json file
+    convert_dict_to_json_file()

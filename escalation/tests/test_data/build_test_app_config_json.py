@@ -6,7 +6,7 @@ from utility.constants import *
 
 def build_config_json(data_backend, data_file_directory):
     config_dict = {
-        "title": "Escalation Test",
+        SITE_TITLE: "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
         DATA_BACKEND: data_backend,
         DATA_FILE_DIRECTORY: data_file_directory,
