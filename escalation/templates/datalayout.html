@@ -15,13 +15,13 @@
 
 <div class="container">
     {% for plot in plots %}
-    {% set graphic_index = loop.index0 %}
+    {% set plot_id = plot['plot_id'] %}
     <form method="post" id={{
-    "form_" ~ "graphic_" ~ graphic_index  }}>
-    <input type="hidden" name="graphic_index" value={{ "graphic_" ~ graphic_index }}>
+    "form_" ~ plot_id  }}>
+    <input type="hidden" name="graphic_index" value={{ plot_id }}>
     </form>
     <div class="row" id={{
-    "graphic_" ~ graphic_index }}>
+    plot_id }}>
     <h1> {{ plot['title'] }}</h1>
     </div>
     <div class="row">
@@ -36,7 +36,7 @@
             {% set selector_index = loop.index0 %}
             {% include selector['select_html_file'] ignore missing %}
             {% endfor %}
-            <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ "graphic_" ~ graphic_index }}')>Update
+            <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ plot_id }}')>Update
             </button>
         </div>
     </div>

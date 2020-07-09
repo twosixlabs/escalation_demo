@@ -4,7 +4,7 @@
     {% for position in ['upper', 'lower'] %}
         <div class="input-group">
         <div class="input-group-prepend">
-    <select class="custom-select custom-select-sm" name={{ "selection_" ~ selector_index ~ "_" ~ position ~ "_operation" }}  form={{ "form_" ~ "graphic_" ~ graphic_index }}>
+    <select class="custom-select custom-select-sm" name={{ "selection_" ~ selector_index ~ "_" ~ position ~ "_operation" }}  form={{ "form_" ~ plot_id }}>
       {% for col_name in selector['entries'] %}
         <option value={{ col_name }}
                   {% if col_name == selector['active_selector'][position]['operation'] %}selected> {% else %}> {% endif %} {{ col_name }}</option>
@@ -12,7 +12,7 @@
     </select>
    </div>
 
-    <input class="form-control form-control-sm" name={{ "selection_" ~ selector_index ~ "_" ~ position ~ "_value" }}  type="number" {{ "value="~selector['active_selector'][position]['value'] if selector['active_selector'][position]['value']}} form={{ "form_" ~ "graphic_"~ graphic_index }}>
+    <input class="form-control form-control-sm" name={{ "selection_" ~ selector_index ~ "_" ~ position ~ "_value" }}  type="number" {{ "value="~selector['active_selector'][position]['value'] if selector['active_selector'][position]['value']}} form={{ "form_" ~ plot_id }}>
         </div>
         <!--{% if not loop.last %}<div class="row"><div class="col"><p class="text-center">and </p></div></div>{% endif %}-->
 {% endfor %}

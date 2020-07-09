@@ -48,7 +48,7 @@ def organize_graphic(single_page_config_dict: dict) -> list:
     """
     plot_specs = []
 
-    for plot_index, plot_specification in single_page_config_dict.items():
+    for plot_key, plot_specification in single_page_config_dict.items():
         plot_data_handler = current_app.config.data_handler(
             plot_specification[DATA_SOURCES]
         )
@@ -69,6 +69,7 @@ def organize_graphic(single_page_config_dict: dict) -> list:
             GRAPHIC_TITLE: plot_specification[GRAPHIC_TITLE],
             GRAPHIC_DESC: plot_specification[GRAPHIC_DESC],
             JINJA_PLOT_INFO: plot_directions_dict,
+            PLOT_ID: plot_key,
         }
         plot_specs.append(html_dict)
     return plot_specs

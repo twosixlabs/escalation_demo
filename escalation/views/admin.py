@@ -50,4 +50,3 @@ def submission():
     else:
         current_app.config.active_data_source_filters.pop(data_source_name, [])
     return admin_page()
-

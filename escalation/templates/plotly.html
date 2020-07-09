@@ -1,6 +1,6 @@
-<div class="chart" id={{ "plot_{}".format(graphic_index) }}>
+<div class="chart" id={{ "plot_{}".format(plot_id) }}>
     <script>
         var graphs = {{plot['plot_info'] | safe}};
-        Plotly.newPlot({{ "plot_{}".format(graphic_index) }},graphs || {});
+        Plotly.newPlot({{ "plot_{}".format(plot_id) }},graphs || {});
     </script>
 </div>
