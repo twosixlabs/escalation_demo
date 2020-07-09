@@ -114,7 +114,9 @@ class CreateTablesFromCSVs:
                 )
         return sqlalchemy_data_types
 
-    def create_new_table(self, table_name, data, schema, key_columns=None, if_exists='replace'):
+    def create_new_table(
+        self, table_name, data, schema, key_columns=None, if_exists="replace"
+    ):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
@@ -126,7 +128,8 @@ class CreateTablesFromCSVs:
                 data = data.reset_index()
                 data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
             # add a data upload id and time column to all tables and
-            upload_id = str(uuid.uuid1())
+            # todo: if we're not replacing, get a fresh id
+            upload_id = 1
             data[UPLOAD_ID] = upload_id
             if self.sql_backend == "mysql":
                 data.to_sql(
@@ -134,7 +137,7 @@ class CreateTablesFromCSVs:
                     con=self.engine,
                     schema=database_config["database"],
                     if_exists=if_exists,
-                    chunksize=300,
+                    chunksize=10000,
                     dtype=schema,
                     index=False,
                 )
@@ -159,7 +162,7 @@ class CreateTablesFromCSVs:
                     table_name,
                     con=self.engine,
                     if_exists=if_exists,
-                    chunksize=300,
+                    chunksize=10000,
                     dtype=schema,
                     index=False,
                 )
@@ -196,7 +199,9 @@ if __name__ == "__main__":
     schema = sql_creator.get_schema_from_csv(filepath)
     key_column = None
     print(f"Creating table name {table_name} from file path {filepath}")
-    sql_creator.create_new_table(table_name, data, schema, key_columns=key_column, if_exists=if_exists)
+    sql_creator.create_new_table(
+        table_name, data, schema, key_columns=key_column, if_exists=if_exists
+    )
 
     # example usage:
     # create a table in your db defined by a csv file
