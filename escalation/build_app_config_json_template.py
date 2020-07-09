@@ -21,7 +21,7 @@ def build_config_json_template():
             "<page_identifier_goes_here_no_spaces>": {
                 BUTTON_LABEL: "<page name>",
                 GRAPHICS: {
-                    GRAPHIC_NUM.format(0): {
+                    "<graphic_identifier_goes_here_no_spaces>": {
                         PLOT_MANAGER: "plotly",
                         DATA_SOURCES: [{DATA_SOURCE_TYPE: ""}],
                         GRAPHIC_TITLE: "",

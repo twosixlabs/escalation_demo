@@ -3,7 +3,7 @@ import json
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
-NO_SPACES = "^[\\S]+$"
+ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]*$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 
@@ -27,11 +27,10 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                 "description": "a dictionary containing the dashboard pages of the site",
                 "additionalProperties": False,
                 "patternProperties": {
-                    NO_SPACES: {
+                    ALPHA_NUMERIC_NO_SPACES: {
                         "type": "object",
                         "title": "Dashboard Page",
                         "description": "Have one of these for each page of the site",
-
                         "required": [BUTTON_LABEL],
                         "properties": {
                             BUTTON_LABEL: {
@@ -44,11 +43,10 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                 "description": "a dictionary containing the graphics on the page",
                                 "additionalProperties": False,
                                 "patternProperties": {
-                                    "^graphic_[0-9]*$": {
+                                    ALPHA_NUMERIC_NO_SPACES: {
                                         "type": "object",
                                         "title": "A single graphic",
-                                        "description": "Have one of these for each graphic on the page,"
-                                                       " start with graphic_0 then graphic_1 etc.",
+                                        "description": "Have a unique one of these for each graphic on the page",
                                         "required": [
                                             PLOT_MANAGER,
                                             GRAPHIC_TITLE,
@@ -62,7 +60,7 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                             PLOT_MANAGER: {
                                                 "type": "string",
                                                 "description": "plot library you would like to use,"
-                                                               " only plotly is currently available",
+                                                " only plotly is currently available",
                                                 "enum": ["plotly"],
                                             },
                                             GRAPHIC_TITLE: {
@@ -96,8 +94,8 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                         "type": "object",
                                                         "title": "points",
                                                         "description": "a dictionary for each plot on a single graph:"
-                                                                       " Key: axis (e.g. x), Value: Data Column,"
-                                                                       " use points_0 then points_1 etc.",
+                                                        " Key: axis (e.g. x), Value: Data Column,"
+                                                        " use points_0 then points_1 etc.",
                                                         "patternProperties": {
                                                             ONE_LETTER: {
                                                                 "type": "string",
@@ -127,10 +125,10 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                         OPTION_TYPE: {
                                                             "type": "string",
                                                             "description": "hover_data changes what data is shown"
-                                                                           " when scrolling over data. "
-                                                                           "examples of the other two:"
-                                                                           " groupby: https://plotly.com/javascript/group-by/"
-                                                                           " aggregate: https://plotly.com/javascript/aggregations/",
+                                                            " when scrolling over data. "
+                                                            "examples of the other two:"
+                                                            " groupby: https://plotly.com/javascript/group-by/"
+                                                            " aggregate: https://plotly.com/javascript/aggregations/",
                                                             "enum": [
                                                                 "hover_data",
                                                                 "groupby",
@@ -165,10 +163,10 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                         SELECTOR_TYPE: {
                                                             "type": "string",
                                                             "description": "select is a filter operation based on label,"
-                                                                           "numerical_filter is a filter operation"
-                                                                           " on numerical data,"
-                                                                           "axis you can use to change what column data "
-                                                                           "is shown on a axis",
+                                                            "numerical_filter is a filter operation"
+                                                            " on numerical data,"
+                                                            "axis you can use to change what column data "
+                                                            "is shown on a axis",
                                                             "enum": [
                                                                 "select",
                                                                 "numerical_filter",
@@ -289,6 +287,7 @@ def build_first_level_schema():
             DATA_BACKEND,
             DATA_FILE_DIRECTORY,
             DATA_SOURCES,
+            AVAILABLE_PAGES
         ],
         "additionalProperties": False,
         "properties": {

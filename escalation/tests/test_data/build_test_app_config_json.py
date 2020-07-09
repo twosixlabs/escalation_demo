@@ -39,14 +39,7 @@ def build_config_json(data_backend, data_file_directory):
                             },
                             {
                                 "type": "groupby",
-                                "column": ["penguin_size:island"],
-                                "options": {
-                                    "styles": {
-                                        "Torgersen": {"marker": {"color": "green"}},
-                                        "Biscoe": {"marker": {"color": "blue"}},
-                                        "Dream": {"marker": {"color": "red"}},
-                                    }
-                                },
+                                "column": ["penguin_size:island", "penguin_size:sex"],
                             },
                         ],
                         SELECTABLE_DATA_LIST: [
