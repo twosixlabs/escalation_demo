@@ -15,7 +15,7 @@ DATA_BACKEND = "data_backend"
 POSTGRES = "psql"
 MYSQL = "mysql"
 LOCAL_CSV = "local_csv"
-
+PLOT_ID = "plot_id"
 
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
