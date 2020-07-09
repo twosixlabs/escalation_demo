@@ -66,6 +66,7 @@ class CreateTablesFromCSVs:
 
     def __init__(self, sql_backend, database_config):
         self.sql_backend = sql_backend
+        self.database_config = database_config
         connection_url = URL(**database_config)
         self.engine = create_engine(connection_url)
 
@@ -135,7 +136,7 @@ class CreateTablesFromCSVs:
                 data.to_sql(
                     table_name,
                     con=self.engine,
-                    schema=database_config["database"],
+                    schema=self.database_config["database"],
                     if_exists=if_exists,
                     chunksize=10000,
                     dtype=schema,
@@ -151,7 +152,7 @@ class CreateTablesFromCSVs:
                     else:
                         # use the numerical index from pandas as a pk
                         self.engine.execute(
-                            f"ALTER TABLE {table_name} ADD PRIMARY KEY({UPLOAD_ID}({len(upload_id)}), {INDEX_COLUMN});"
+                            f"ALTER TABLE {table_name} ADD PRIMARY KEY({UPLOAD_ID}, {INDEX_COLUMN});"
                         )
             elif self.sql_backend == "psql":
                 if table_name.lower() != table_name:
@@ -179,22 +180,15 @@ class CreateTablesFromCSVs:
 
 
 if __name__ == "__main__":
-    sql_backend = sys.argv[1]
-    table_name = sys.argv[2]
-    filepath = sys.argv[3]
-    if_exists = sys.argv[4]
+    sql_backend = "psql"
+    table_name = sys.argv[1]
+    filepath = sys.argv[2]
+    if_exists = sys.argv[3]
     assert if_exists in EXISTS_OPTIONS
 
-    if sql_backend == "psql":
-        from app_deploy_data.app_settings import PSQL_DATABASE_CONFIG as database_config
-    elif sql_backend == "mysql":
-        from app_deploy_data.app_settings import (
-            MYSQL_DATABASE_CONFIG as database_config,
-        )
-    else:
-        raise KeyError("Sql backend {sql_backend} not one of psql, mysql")
+    from app_deploy_data.app_settings import DATABASE_CONFIG
 
-    sql_creator = CreateTablesFromCSVs(sql_backend, database_config)
+    sql_creator = CreateTablesFromCSVs(sql_backend, DATABASE_CONFIG)
     data = sql_creator.get_data_from_csv(filepath)
     schema = sql_creator.get_schema_from_csv(filepath)
     key_column = None

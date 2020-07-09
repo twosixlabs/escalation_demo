@@ -9,7 +9,7 @@ from sqlalchemy.engine.url import URL
 from flask_sqlalchemy import SQLAlchemy
 
 # todo: handle mysql config
-from app_deploy_data.app_settings import PSQL_DATABASE_CONFIG as database_config
+from app_deploy_data.app_settings import DATABASE_CONFIG
 
 try:
     from app_deploy_data.models import *
@@ -23,8 +23,12 @@ db = SQLAlchemy()
 runtime_defined_db_url = os.environ.get("DATABASE_URL")
 if runtime_defined_db_url:
     engine = create_engine(runtime_defined_db_url)
+    print(f"Using runtime-defined db url {runtime_defined_db_url}")
 else:
-    engine = create_engine(URL(**database_config), convert_unicode=True)
+    url = URL(**DATABASE_CONFIG)
+    engine = create_engine(URL(**DATABASE_CONFIG), convert_unicode=True)
+    print(f"Using config-defined db url {url}")
+
 
 db_session = scoped_session(
     sessionmaker(autocommit=False, autoflush=False, bind=engine)

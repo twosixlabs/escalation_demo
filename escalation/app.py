@@ -16,14 +16,14 @@ from utility.constants import (
     MYSQL,
     AVAILABLE_PAGES,
 )
-from app_deploy_data.app_settings import PSQL_DATABASE_CONFIG as database_config
+from app_deploy_data.app_settings import DATABASE_CONFIG
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_mapping(
         SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL")
-        or URL(**database_config),
+        or URL(**DATABASE_CONFIG),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         VERSION="0.0.1",
     )

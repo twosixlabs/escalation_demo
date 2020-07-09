@@ -31,16 +31,15 @@
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "box",
-                                "mode": "group"
+                                "type": "box"
                             }
-                        ]
+                        ],
+                        "layout": {"boxmode": "group"}
                     },
                     "visualization_options": [
                         {
                             "type": "hover_data",
                             "column": [
-                                "plate_reader:well",
                                 "plate_reader:sample_contents"
                             ]
                         },
@@ -295,7 +294,8 @@
         "circuit_function": {
             "button_label": "Circuit Function",
             "graphics": {
-                "graphic_0": {
+
+                "graphic_1": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
@@ -324,43 +324,37 @@
                             ]
                         }
                     ],
-                    "title": "Circuit function measured by flow fluorescence",
+                    "title": "Circuit function measured by flow fluorescence 2",
                     "brief_desc": "",
                     "data": {
                         "points_0": {
-                            "y": "flow_stat_wide:BL1-H",
-                            "x": "flow_stat_wide:log10_bin"
+                            "y": "flow_stat_wide:BL1H_mean_log10",
+                            "x": "flow_meta:inducer_concentration"
                         }
                     },
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "bar",
-                                "mode": "overlay",
-                                "opacity": 0.5
+                                "type": "box"
                             }
                         ],
-                        "layout": {
-                            "hovermode": "closest",
-                            "barmode": "stack"
-                        }
+                        "layout": {"boxmode": "group"}
                     },
                     "visualization_options": [
                         {
                             "type": "hover_data",
                             "column": [
-                                "flow_meta:well",
-                                "flow_meta:control_type",
-                                "flow_meta:strain",
-                                "flow_meta:experiment_id",
-                                "growth_rate:doubling_time"
+                                "growth_rate:doubling_time",
+                                "flow_meta:inducer_type"
+
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "flow_meta:well",
-                                "flow_meta:experiment_id_short"
+                                "flow_meta:strain",
+                                "flow_meta:control_type"
+
                             ]
                         }
                     ],
