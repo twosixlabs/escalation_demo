@@ -6,7 +6,7 @@ from utility.constants import *
 
 def build_config_json(data_backend, data_file_directory):
     config_dict = {
-        "title": "Escalation Test",
+        SITE_TITLE: "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
         DATA_BACKEND: data_backend,
         DATA_FILE_DIRECTORY: data_file_directory,
@@ -39,14 +39,7 @@ def build_config_json(data_backend, data_file_directory):
                             },
                             {
                                 "type": "groupby",
-                                "column": ["penguin_size:island"],
-                                "options": {
-                                    "styles": {
-                                        "Torgersen": {"marker": {"color": "green"}},
-                                        "Biscoe": {"marker": {"color": "blue"}},
-                                        "Dream": {"marker": {"color": "red"}},
-                                    }
-                                },
+                                "column": ["penguin_size:island", "penguin_size:sex"],
                             },
                         ],
                         SELECTABLE_DATA_LIST: [

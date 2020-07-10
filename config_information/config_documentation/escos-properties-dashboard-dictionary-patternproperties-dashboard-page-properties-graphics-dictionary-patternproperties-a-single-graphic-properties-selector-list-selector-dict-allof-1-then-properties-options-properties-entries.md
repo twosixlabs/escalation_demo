@@ -1,0 +1,3 @@
+## entries Type
+
+`string[]`
