@@ -288,20 +288,4 @@ def build_first_level_schema():
     return schema
 
 
-def build_plotly_schema():
-    # todo: pull documentation from plotly website
-    schema = {
-        "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "plotly dict",
-        "description": "what PLOT_SPECIFIC_INFO should look like if plot manager is plotly",
-        "type": "object",
-        "reqiured": [DATA],
-        "properties": {
-            DATA: {
-                "type": "array",
-                "description": "list of graphs to be plotted on a single plot, see https://plotly.com/javascript/reference/ for options, axis information is found from data property",
-                "items": {"type": "object"},
-            },
-        },
-    }
-    return schema
+
