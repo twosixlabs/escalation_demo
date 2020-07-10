@@ -4,7 +4,7 @@ import os
 from pathvalidate import sanitize_filename
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
+from math import nan
 from flask import current_app
 from database.data_handler import DataHandler
 from database.utils import local_csv_handler_filter_operation
@@ -98,9 +98,11 @@ class LocalCSVHandler(DataHandler):
         unique_dict = {}
         for col in cols:
             # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
-            unique_dict[col] = (
-                self.combined_data_table[col].astype(str).unique().tolist()
-            )
+            unique_dict[col] = [
+                str(entry)
+                for entry in self.combined_data_table[col].unique()
+                if entry == entry
+            ]
         return unique_dict
 
 

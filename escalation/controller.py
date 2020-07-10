@@ -171,17 +171,17 @@ def create_data_subselect_info(
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
         column = selection_option_dict_for_plot[OPTION_COL]
-        column_names = []
+        selector_entries = []
 
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
-            column_names = data_handler.get_column_unique_entries([column])
-            column_names = column_names[column]
-            column_names.sort()
+            selector_entries = data_handler.get_column_unique_entries([column])
+            selector_entries = selector_entries[column]
+            selector_entries.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
-            column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-            column_names.sort()
+            selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+            selector_entries.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
-            column_names = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
+            selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
 
         active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
@@ -191,7 +191,7 @@ def create_data_subselect_info(
                 SELECTOR_TYPE: selector_attributes[SELECTOR_TYPE],
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
-                ENTRIES: column_names,
+                ENTRIES: selector_entries,
                 SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION, {}),
             }
         )

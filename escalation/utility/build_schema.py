@@ -286,6 +286,3 @@ def build_first_level_schema():
         },
     }
     return schema
-
-
-
