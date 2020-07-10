@@ -164,7 +164,7 @@ class LocalCSVDataInventory(LocalCSVHandler):
         :param uploaded_data_df: pandas dataframe on which we have already done validation
         :param data_source_name:
 
-        :return: Nothing
+        :return: Empty list representing columns not in the new file that are in the old. INcluded for function signature matching
         """
 
         file_name = (
@@ -182,3 +182,4 @@ class LocalCSVDataInventory(LocalCSVHandler):
             file_name,
         )
         uploaded_data_df.to_csv(file_path)
+        return []
