@@ -98,7 +98,9 @@ class LocalCSVHandler(DataHandler):
         unique_dict = {}
         for col in cols:
             # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
-            unique_dict[col] = self.combined_data_table[col].unique().tolist()
+            unique_dict[col] = (
+                self.combined_data_table[col].astype(str).unique().tolist()
+            )
         return unique_dict
 
 

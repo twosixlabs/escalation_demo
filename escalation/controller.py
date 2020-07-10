@@ -176,8 +176,10 @@ def create_data_subselect_info(
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
             column_names = data_handler.get_column_unique_entries([column])
             column_names = column_names[column]
+            column_names.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             column_names = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+            column_names.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
             column_names = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
 
