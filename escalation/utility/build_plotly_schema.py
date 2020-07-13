@@ -1,3 +1,4 @@
+from graphics.plotly_plot import LAYOUT
 from utility.constants import *
 
 
@@ -42,6 +43,24 @@ def build_plotly_schema():
                             ],
                         }
                     },
+                },
+            },
+            LAYOUT: {
+                "title": "layout dict",
+                "description": "Determines how the graph looks",
+                "type": "object",
+                "properties": {
+                    "hovermode": {
+                        "type": "string",
+                        "enum": [
+                            "x",
+                            "y",
+                            "closest",
+                            "false",
+                            "x unified",
+                            "y unified",
+                        ],
+                    }
                 },
             },
         },

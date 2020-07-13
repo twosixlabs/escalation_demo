@@ -1,0 +1,41 @@
+{
+    "title": "Scatter Plot",
+    "brief_desc": "",
+    "data_backend": "local_csv",
+    "data_file_directory": "tests/test_data/",
+    "data_sources": [
+        "penguin_size",
+        "mean_penguin_stat",
+        "penguin_size_small"
+    ],
+    "available_pages": {
+        "table": {
+            "button_label": "A good table",
+            "graphics": {
+                "single_table": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "penguin_size"
+                        }
+                    ],
+                    "title": "Example Table",
+                    "brief_desc": "A table",
+                    "data": {
+                        "points_0": {
+                            "x": "penguin_size:body_mass_g",
+                            "y": "penguin_size:flipper_length_mm"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "table"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

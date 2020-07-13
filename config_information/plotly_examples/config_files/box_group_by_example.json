@@ -1,0 +1,49 @@
+{
+    "title": "Box Plot",
+    "brief_desc": "",
+    "data_backend": "local_csv",
+    "data_file_directory": "tests/test_data/",
+    "data_sources": [
+        "penguin_size",
+        "mean_penguin_stat",
+        "penguin_size_small"
+    ],
+    "available_pages": {
+        "box": {
+            "button_label": "A BOX",
+            "graphics": {
+                "graphic_0": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "penguin_size"
+                        }
+                    ],
+                    "title": "Example Box plot",
+                    "brief_desc": "A box plot grouped other columns",
+                    "data": {
+                        "points_0": {
+                            "y": "penguin_size:body_mass_g"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "box"
+                            }
+                        ]
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "penguin_size:island",
+                                "penguin_size:sex"
+                            ]
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}

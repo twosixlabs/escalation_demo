@@ -24,7 +24,9 @@ As of the current version:
 Run `python build_app_config_json_template.py` to build a base config file. 
 Everything blank or in `<>` should be changed.
 
-See examples of how a [simple config](config_information/config_example/config_example.md) affects the app (Recommended)
+See an example of a [simple config](config_information/config_example/config_example.md) file (Recommended)  
+See examples of [different plots](config_information/plotly_examples/plotly_config_info.md)   
+After creating a json run validate_schema.py to verify that the config has been set up properly.
 
 [Documentation](config_information/config_documentation/escos.md) for the config files
 

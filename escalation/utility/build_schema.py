@@ -287,7 +287,7 @@ def build_first_level_schema():
             DATA_BACKEND,
             DATA_FILE_DIRECTORY,
             DATA_SOURCES,
-            AVAILABLE_PAGES
+            AVAILABLE_PAGES,
         ],
         "additionalProperties": False,
         "properties": {
@@ -325,25 +325,6 @@ def convert_dict_to_json_file():
     json_object = json.dumps(schema_dict, indent=4)
     with open("escos.schema.json", "w") as outfile:
         outfile.write(json_object)
-
-
-def build_plotly_schema():
-    # todo: pull documentation from plotly website
-    schema = {
-        "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "plotly dict",
-        "description": "what PLOT_SPECIFIC_INFO should look like if plot manager is plotly",
-        "type": "object",
-        "reqiured": [DATA],
-        "properties": {
-            DATA: {
-                "type": "array",
-                "description": "list of graphs to be plotted on a single plot, see https://plotly.com/javascript/reference/ for options, axis information is found from data property",
-                "items": {"type": "object"},
-            },
-        },
-    }
-    return schema
 
 
 if __name__ == "__main__":
