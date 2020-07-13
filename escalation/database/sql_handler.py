@@ -162,7 +162,7 @@ class SqlHandler(DataHandler):
                 active_data_filters = self.build_filters_from_active_data_source()
                 query = self.apply_filters_to_query(query, active_data_filters)
             response = query.all()
-            unique_dict[config_col] = [r[0] for r in response]
+            unique_dict[config_col] = [str(r[0]) for r in response if r[0] is not None]
         return unique_dict
 
 
