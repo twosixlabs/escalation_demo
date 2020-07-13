@@ -48,26 +48,7 @@
                             "column": [
                                 "penguin_size:island",
                                 "penguin_size:sex"
-                            ],
-                            "options": {
-                                "styles": {
-                                    "Torgersen": {
-                                        "marker": {
-                                            "color": "green"
-                                        }
-                                    },
-                                    "Biscoe": {
-                                        "marker": {
-                                            "color": "blue"
-                                        }
-                                    },
-                                    "Dream": {
-                                        "marker": {
-                                            "color": "red"
-                                        }
-                                    }
-                                }
-                            }
+                            ]
                         }
                     ],
                     "selectable_data_list": [

@@ -120,3 +120,5 @@ scratch/*
 
 # mac junk
 **/.DS_Store
+/escalation/config_template.json
+/escalation/escos.schema.json

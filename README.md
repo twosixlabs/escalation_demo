@@ -20,6 +20,14 @@ As of the current version:
 * Need to be connected to the internet
 * Use a SQL database or local csv files (assuming csv in local handler)
 * Local handler currently gets most recent data set
+## Building a config file:
+Run `python build_app_config_json_template.py` to build a base config file. 
+Everything blank or in `<>` should be changed.
+
+See examples of how a [simple config](config_information/config_example/config_example.md) affects the app (Recommended)
+
+[Documentation](config_information/config_documentation/escos.md) for the config files
+
 
 ## How can I contribute?
 
