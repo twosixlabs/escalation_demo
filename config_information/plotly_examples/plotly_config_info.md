@@ -29,3 +29,5 @@ For a individual graphic (dictionaries in the "graphics" dictionary):
  ![](images/bar.png)
  - A 3d scatter plot
  ![](images/scatter_3d.png)
+  - A table
+ ![](images/table.png)

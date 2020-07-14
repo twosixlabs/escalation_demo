@@ -1,5 +1,5 @@
 {
-    "title": "Scatter Plot",
+    "title": "Table",
     "brief_desc": "",
     "data_backend": "local_csv",
     "data_file_directory": "tests/test_data/",
@@ -23,14 +23,18 @@
                     "brief_desc": "A table",
                     "data": {
                         "points_0": {
-                            "x": "penguin_size:body_mass_g",
-                            "y": "penguin_size:flipper_length_mm"
+                            "<b>Body Mass</b>": "penguin_size:body_mass_g",
+                            "<b>Flipper Size</b>": "penguin_size:flipper_length_mm"
                         }
                     },
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "table"
+                                "type": "table",
+                                "header":{
+                                    "fill": {"color": "grey"},
+                                    "font": {"family": "Arial", "size": 14, "color": "white"}
+                                }
                             }
                         ]
                     }

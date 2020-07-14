@@ -13,6 +13,7 @@ TITLE = "title"
 CUSTOM_DATA = "customdata"
 HOVER_TEMPLATE = "hovertemplate"
 VISUALIZATION_TYPE = "type"
+PLOTLY_TYPE = "type"
 TRANSFORMS = "transforms"
 GROUPBY = "groupby"
 AGGREGATE = "aggregate"
@@ -23,6 +24,10 @@ STYLES = "styles"
 AGGREGATIONS = "aggregations"
 PLOT_OPTIONS = "plot_options"
 NA_FILL_IN = "NA"
+TABLE = "table"
+CELLS = "cells"
+HEADER = "header"
+VALUES = "values"
 
 
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
@@ -109,15 +114,29 @@ class PlotlyPlot(Graphic):
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
             index = int(point_index.split("_")[-1])
-            for axis, column_name in axis_to_data_dict.items():
-                # three things in path, data, which index and value (x,y)
-                plot_options[DATA][index][axis] = data[column_name]
-                # if there is no label, label the columns with the first lines/scatters column names
-                if index == 0:
-                    layout_dict = plot_options.get(LAYOUT, {})
-                    if PLOT_AXIS.format(axis) not in layout_dict:
-                        layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
-                    plot_options[LAYOUT] = layout_dict
+            if plot_options[DATA][index][PLOTLY_TYPE] == TABLE:
+                values = []
+                header = []
+                # adding the data and headers into the table
+                for axis, column_name in axis_to_data_dict.items():
+                    values.append(data[column_name])
+                    header.append(axis)
+                for table_key, values_for_dict in zip(
+                    [CELLS, HEADER], [values, header]
+                ):
+                    temp_dict = plot_options[DATA][index].get(table_key, {})
+                    temp_dict[VALUES] = values_for_dict
+                    plot_options[DATA][index][table_key] = temp_dict
+            else:
+                for axis, column_name in axis_to_data_dict.items():
+                    # three things in path, data, which index and value (x,y)
+                    plot_options[DATA][index][axis] = data[column_name]
+                    # if there is no label, label the columns with the first lines/scatters column names
+                    if index == 0:
+                        layout_dict = plot_options.get(LAYOUT, {})
+                        if PLOT_AXIS.format(axis) not in layout_dict:
+                            layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
+                        plot_options[LAYOUT] = layout_dict
 
             plot_options[DATA][index][TRANSFORMS] = []
 

@@ -1,8 +1,5 @@
 # MVP Features
 
-- Add navigation toolbar to the top of the page that lets you move between dashboard/upload/download pages
-- implement tables
-- implement a web app interface selector for which of the uploaded data files gets rendered, storing this as application state
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
 - Choose and add a software license to Escalation OS
