@@ -4,20 +4,118 @@
     "data_backend": "psql",
     "data_sources": [
         "flow_meta",
-        "flow_stat",
         "flow_stat_wide",
         "growth_rate",
         "plate_reader"
     ],
     "available_pages": {
-        "summary": {
-            "button_label": "Data Converge Summary",
+        "replicate_summary": {
+            "button_label": "Data Converge Replicate Summary",
             "graphics": {
-                "graphic_0": {
+                "plate_reader_circuit_function": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
                             "data_source_type": "plate_reader"
+                        }
+                    ],
+                    "title": "Circuit function from plate reader",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "plate_reader:fluor_gain_0.16/od",
+                            "x": "plate_reader:replicate_group"
+                        }
+                    },
+                    "data_filters": [
+                        {
+                            "type": "filter",
+                            "column": "plate_reader:experiment_reference",
+                            "selected": [
+                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
+                            ]
+                        }
+                    ],
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "markers"
+                            }
+                        ],
+                        "layout": {
+                            "hovermode": "closest"
+                        }
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "plate_reader:replicate_group_string",
+                                "plate_reader:experiment_reference"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "plate_reader:replicate_group"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "plate_reader:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "plate_reader:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "axis",
+                            "column": "y",
+                            "options": {
+                                "entries": [
+                                    "plate_reader:fluor_gain_0.10/od",
+                                    "plate_reader:fluor_gain_0.16/od",
+                                    "plate_reader:fluor_gain_0.20/od"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "growth_summary": {
+            "button_label": "Basic Growth Summary",
+            "graphics": {
+                "plate_reader_od": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "plate_reader"
+                        }
+                    ],
+                    "data_filters": [
+                        {
+                            "type": "filter",
+                            "column": "plate_reader:experiment_reference",
+                            "selected": [
+                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
+                            ]
                         }
                     ],
                     "title": "Growth data from plate reader",
@@ -34,14 +132,18 @@
                                 "type": "box",
                                 "mode": "group"
                             }
-                        ]
+                        ],
+                        "layout": {
+                            "boxmode": "group"
+                        }
                     },
                     "visualization_options": [
                         {
                             "type": "hover_data",
                             "column": [
                                 "plate_reader:well",
-                                "plate_reader:sample_contents"
+                                "plate_reader:sample_contents",
+                                "plate_reader:experiment_reference"
                             ]
                         },
                         {
@@ -52,6 +154,13 @@
                         }
                     ],
                     "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
                         {
                             "type": "select",
                             "column": "plate_reader:control_type",
@@ -68,11 +177,20 @@
                         }
                     ]
                 },
-                "graphic_1": {
+                "flow_cell_density": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
                             "data_source_type": "flow_meta"
+                        }
+                    ],
+                    "data_filters": [
+                        {
+                            "type": "filter",
+                            "column": "flow_meta:experiment_reference",
+                            "selected": [
+                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
+                            ]
                         }
                     ],
                     "title": "Growth data from flow",
@@ -114,6 +232,13 @@
                     "selectable_data_list": [
                         {
                             "type": "select",
+                            "column": "flow_meta:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
                             "column": "flow_meta:control_type",
                             "options": {
                                 "multiple": true
@@ -134,90 +259,13 @@
                             }
                         }
                     ]
-                },
-                "graphic_2": {
-                    "plot_manager": "plotly",
-                    "data_sources": [
-                        {
-                            "data_source_type": "plate_reader"
-                        }
-                    ],
-                    "title": "Circuit function data from plate reader",
-                    "brief_desc": "",
-                    "data": {
-                        "points_0": {
-                            "x": "plate_reader:timepoint",
-                            "y": "plate_reader:fluor_gain_0.16/od"
-                        }
-                    },
-                    "plot_specific_info": {
-                        "data": [
-                            {
-                                "type": "scatter",
-                                "mode": "lines+markers"
-                            }
-                        ],
-                        "layout": {
-                            "hovermode": "closest"
-                        }
-                    },
-                    "visualization_options": [
-                        {
-                            "type": "hover_data",
-                            "column": [
-                                "plate_reader:well",
-                                "plate_reader:replicate_group_string"
-                            ]
-                        },
-                        {
-                            "type": "groupby",
-                            "column": [
-                                "plate_reader:well"
-                            ]
-                        }
-                    ],
-                    "selectable_data_list": [
-                        {
-                            "type": "select",
-                            "column": "plate_reader:control_type",
-                            "options": {
-                                "multiple": true
-                            }
-                        },
-                        {
-                            "type": "select",
-                            "column": "plate_reader:strain",
-                            "options": {
-                                "multiple": true
-                            }
-                        },
-                        {
-                            "type": "axis",
-                            "column": "y",
-                            "options": {
-                                "entries": [
-                                    "plate_reader:fluor_gain_0.16/od"
-                                ]
-                            }
-                        },
-                        {
-                            "type": "axis",
-                            "column": "x",
-                            "options": {
-                                "entries": [
-                                    "plate_reader:timepoint",
-                                    "plate_reader:inducer_concentration"
-                                ]
-                            }
-                        }
-                    ]
                 }
             }
         },
         "growth_curves": {
-            "button_label": "Growth Curves",
+            "button_label": "Growth Rate Info",
             "graphics": {
-                "graphic_0": {
+                "growth_rate_plate_data": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
@@ -230,6 +278,15 @@
                                     "plate_reader:well",
                                     "growth_rate:well"
                                 ]
+                            ]
+                        }
+                    ],
+                    "data_filters": [
+                        {
+                            "type": "filter",
+                            "column": "plate_reader:experiment_reference",
+                            "selected": [
+                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
                             ]
                         }
                     ],
@@ -270,6 +327,13 @@
                         }
                     ],
                     "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "plate_reader:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
                         {
                             "type": "select",
                             "column": "plate_reader:control_type",
@@ -324,6 +388,15 @@
                             ]
                         }
                     ],
+                    "data_filters": [
+                        {
+                            "type": "filter",
+                            "column": "flow_meta:experiment_reference",
+                            "selected": [
+                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
+                            ]
+                        }
+                    ],
                     "title": "Circuit function measured by flow fluorescence",
                     "brief_desc": "",
                     "data": {
@@ -340,7 +413,7 @@
                         ],
                         "layout": {
                             "hovermode": "closest",
-                            "barmode": "group",
+                            "barmode": "group"
                         }
                     },
                     "visualization_options": [

@@ -33,14 +33,14 @@ class FlowMeta(Base):
     timepoint = Column(Float(53))
     timepoint_unit = Column(Text)
     aliquot_id = Column(Text)
-    flow_rate_uL_min = Column("flow_rate_uL/min", Integer)
-    date_of_experiment = Column(Text)
+    total_counts = Column(Integer)
     TX_plate_name = Column(Text)
     TX_project_name = Column(Text)
     TX_sample_name = Column(Text)
-    total_counts = Column(Integer)
     flow_volume = Column(Integer)
     well = Column(Text)
+    flow_rate_uL_min = Column("flow_rate_uL/min", Integer)
+    date_of_experiment = Column(Text)
     cells_mL = Column("cells/mL", Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
     experiment_id_short = Column(Text)
@@ -54,18 +54,7 @@ class FlowStatWide(Base):
     experiment_id = Column(Text)
     aliquot_id = Column(Text)
     log10_bin = Column(Float(53))
-    BL1_A = Column("BL1-A", Integer)
     BL1_H = Column("BL1-H", Integer)
-    BL1_W = Column("BL1-W", Integer)
-    FSC_A = Column("FSC-A", Integer)
-    FSC_H = Column("FSC-H", Integer)
-    FSC_W = Column("FSC-W", Integer)
-    RL1_A = Column("RL1-A", Integer)
-    RL1_H = Column("RL1-H", Integer)
-    RL1_W = Column("RL1-W", Integer)
-    SSC_A = Column("SSC-A", Integer)
-    SSC_H = Column("SSC-H", Integer)
-    SSC_W = Column("SSC-W", Integer)
     BL1H_mean_log10 = Column(Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
 
@@ -96,52 +85,6 @@ class GrowthRate(Base):
     doubling_time = Column(Float(53))
     n0 = Column(Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
-
-
-class MeanPenguinStat(Base):
-    __tablename__ = "mean_penguin_stat"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    study_name = Column(Text)
-    species = Column(Text)
-    sex = Column(Text)
-    culmen_length = Column(Float(53))
-    culmen_depth = Column(Float(53))
-    flipper_length = Column(Float(53))
-    body_mass = Column(Float(53))
-    delta_15_n = Column(Float(53))
-    delta_13_c = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
-class PenguinSize(Base):
-    __tablename__ = "penguin_size"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    study_name = Column(Text)
-    species = Column(Text)
-    island = Column(Text)
-    sex = Column(Text)
-    region = Column(Text)
-    culmen_depth_mm = Column(Float(53))
-    culmen_length_mm = Column(Float(53))
-    flipper_length_mm = Column(Float(53))
-    body_mass_g = Column(Float(53))
-    upload_id = Column(Text, primary_key=True, nullable=False)
-
-
-class PenguinSizeSmall(Base):
-    __tablename__ = "penguin_size_small"
-
-    index = Column(BigInteger, primary_key=True, nullable=False, index=True)
-    species = Column(Text)
-    island = Column(Text)
-    culmen_length_mm = Column(Float(53))
-    culmen_depth_mm = Column(Integer)
-    flipper_length_mm = Column(Integer)
-    body_mass_g = Column(Integer)
-    sex = Column(Text)
-    upload_id = Column(Text, primary_key=True, nullable=False)
 
 
 class PlateReader(Base):
@@ -176,4 +119,10 @@ class PlateReader(Base):
     od = Column(Float(53))
     fluor_gain_0_16 = Column("fluor_gain_0.16", Float(53))
     fluor_gain_0_16_od = Column("fluor_gain_0.16/od", Float(53))
+    fluor_gain_0_10 = Column("fluor_gain_0.10", Float(53))
+    fluor_gain_0_20 = Column("fluor_gain_0.20", Float(53))
+    fluor_gain_0_10_od = Column("fluor_gain_0.10/od", Float(53))
+    fluor_gain_0_20_od = Column("fluor_gain_0.20/od", Float(53))
+    fluor_gain_0_30 = Column("fluor_gain_0.30", Float(53))
+    fluor_gain_0_30_od = Column("fluor_gain_0.30/od", Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)

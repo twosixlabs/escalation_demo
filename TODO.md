@@ -12,6 +12,7 @@
 
 ## graphics functionality
 
+- Sometimes opening a filter selector, with long strings, results in the selector stretching past the right edge of the screen and introducing a horizontal scroll bar- you can't see which options you've selected
 - Allow user to add their own hand-coded Plotly plots- where do they do the config, how is it included in the HTML?
 - Save state of the website / user's preferences for graph configuration. Store the last form as a cookie and use it as the default? Store the form on the server side with a user-provided name and allow a user to select the form they want from a dropdown? This would work also as a way of sharing a graph config.
 - Shareable graph configs- either a URL-encoded version for a GET that could be shared, or store a config server side that can be selected
