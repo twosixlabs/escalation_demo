@@ -10,5 +10,5 @@
 docker run --name escos-app -it --rm \
     -e DATABASE_URL=mysql+mysqlconnector://escalation_os_user:escalation_os_pwd@dbserver/escalation_os \
     --link escalation-os-mysql:dbserver \
-    -p 5000:5000 \
+    -p 5001:5000 \
     escos-server:latest
