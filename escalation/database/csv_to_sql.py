@@ -116,7 +116,13 @@ class CreateTablesFromCSVs:
         return sqlalchemy_data_types
 
     def create_new_table(
-        self, table_name, data, schema, key_columns=None, if_exists="replace"
+        self,
+        table_name,
+        data,
+        schema,
+        key_columns=None,
+        if_exists="replace",
+        upload_id=None,
     ):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
@@ -130,7 +136,8 @@ class CreateTablesFromCSVs:
                 data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
             # add a data upload id and time column to all tables and
             # todo: if we're not replacing, get a fresh id
-            upload_id = 1
+            if upload_id is None:
+                upload_id = 1
             data[UPLOAD_ID] = upload_id
             if self.sql_backend == "mysql":
                 data.to_sql(
@@ -163,10 +170,11 @@ class CreateTablesFromCSVs:
                     table_name,
                     con=self.engine,
                     if_exists=if_exists,
-                    chunksize=10000,
+                    chunksize=1000,
                     dtype=schema,
                     index=False,
                 )
+
                 if if_exists == "replace":
                     if key_columns:
                         self.engine.execute(
