@@ -188,6 +188,13 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                                 "description": "name in table (select, numerical_filter) or axis name (axis)",
                                                                 "pattern": ONE_LETTER,
                                                             },
+                                                            DEFAULT_SELECTED: {
+                                                                "type": "array",
+                                                                "description": "default filter, list of column values",
+                                                                "items": {
+                                                                    "type": "string"
+                                                                },
+                                                            },
                                                         },
                                                     },
                                                     "else": {
@@ -287,7 +294,7 @@ def build_first_level_schema():
             DATA_BACKEND,
             DATA_FILE_DIRECTORY,
             DATA_SOURCES,
-            AVAILABLE_PAGES
+            AVAILABLE_PAGES,
         ],
         "additionalProperties": False,
         "properties": {

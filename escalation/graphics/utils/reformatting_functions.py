@@ -33,9 +33,13 @@ def add_instructions_to_config_dict(
                 selector_list, data_info_dict, addendum_dict
             )
             if addendum_dict.get(GRAPHIC_INDEX) == graphic_index:
-                graphic_dict[DATA_FILTERS] = add_operations_to_the_data(
+                graphic_dict[DATA_FILTERS] = add_operations_to_the_data_from_addendum(
                     selector_list, data_info_dict, addendum_dict
                 )
+            else:
+                data_filters = add_operations_to_the_data_from_defaults(selector_list)
+                if data_filters:
+                    graphic_dict[DATA_FILTERS] = data_filters
     return single_page_graphic_config_dict
 
 
@@ -58,11 +62,11 @@ def add_active_selectors_to_selectable_data_list(
     for selection_index, selection_dict in enumerate(selectable_data_list):
         if selection_dict[SELECTOR_TYPE] == SELECTOR:
             # getlist does not not work like get so need to set default "manually"
-
+            selection_dict.get(DEFAULT_SELECTED)
             selection_index_str = SELECTION_NUM.format(selection_index)
             selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
                 selection_index_str
-            ) or [SHOW_ALL_ROW]
+            ) or selection_dict.get(DEFAULT_SELECTED, [SHOW_ALL_ROW])
         elif selection_dict[SELECTOR_TYPE] == AXIS:
             # in the case of no user selected the active selector is the one currently being plotted,
             # taken from the first set of points (index 0)
@@ -83,7 +87,7 @@ def add_active_selectors_to_selectable_data_list(
             selection_dict[ACTIVE_SELECTORS] = active_numerical_filter_dict
 
 
-def add_operations_to_the_data(
+def add_operations_to_the_data_from_addendum(
     selectable_data_list: list, data_info_dict: dict, addendum_dict: ImmutableMultiDict
 ) -> list:
     """
@@ -136,4 +140,32 @@ def add_operations_to_the_data(
                 operation_list.append(
                     {**base_info_dict_for_selector, **numerical_filter_info}
                 )
+    return operation_list
+
+
+def add_operations_to_the_data_from_defaults(selectable_data_list: list) -> list:
+    """
+    Adds operations to be passed to the data handlers for the data
+    :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
+    :return:
+    """
+    operation_list = []
+    for selection_index, selection_dict in enumerate(selectable_data_list):
+        if DEFAULT_SELECTED in selection_dict:
+            option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][
+                OPTION_TYPE
+            ]
+            base_info_dict_for_selector = {
+                OPTION_TYPE: option_type,
+                COLUMN_NAME: selection_dict[COLUMN_NAME],
+            }
+            # creates an operations where only the values selected along a column will be shown in the plot
+            if option_type == FILTER:
+                selection = selection_dict.get(DEFAULT_SELECTED)
+                base_info_dict_for_selector[SELECTED] = (
+                    selection if isinstance(selection, list) else [selection]
+                )
+                operation_list.append(base_info_dict_for_selector)
+            elif option_type == NUMERICAL_FILTER:
+                pass  # to be added at a future date
     return operation_list

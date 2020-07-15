@@ -25,6 +25,7 @@ DATA_SOURCE_TYPE = "data_source_type"
 JOIN_KEYS = "join_keys"
 DATA_LOCATION = "filepath"
 TABLE_COLUMN_SEPARATOR = ":"
+DEFAULT_SELECTED = "default_selected"
 
 DATA = "data"
 DATA_FILTERS = "data_filters"

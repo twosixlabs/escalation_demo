@@ -19,7 +19,7 @@ from utility.constants import (
     DATA_FILTERS,
 )
 from graphics.utils.reformatting_functions import (
-    add_operations_to_the_data,
+    add_operations_to_the_data_from_addendum,
     add_active_selectors_to_selectable_data_list,
     add_instructions_to_config_dict,
 )
@@ -106,7 +106,7 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
 def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     graphic_0_dict = single_page_config_dict["graphic_0"]
-    operations_list = add_operations_to_the_data(
+    operations_list = add_operations_to_the_data_from_addendum(
         graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], addendum_dict
     )
     assert len(operations_list) == 3
@@ -135,7 +135,7 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
         [("graphic_index", "graphic_1"), ("selection_0", "culmen_length_mm")]
     )
 
-    operations_list = add_operations_to_the_data(
+    operations_list = add_operations_to_the_data_from_addendum(
         graphic_1_dict[SELECTABLE_DATA_LIST], graphic_1_dict[DATA], addendum_dict
     )
 
