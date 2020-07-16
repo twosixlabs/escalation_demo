@@ -36,7 +36,7 @@ def single_page_config_dict_and_addendum():
     )
     addendum_dict = ImmutableMultiDict(
         [
-            ("graphic_index", "graphic_0"),
+            ("graphic_name", "graphic_0"),
             ("selection_0", "MALE"),
             ("selection_1", "Torgersen"),
             ("selection_1", "Dream"),
@@ -161,3 +161,25 @@ def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
         single_page_config_dict_test, addendum_dict
     )
     assert DATA_FILTERS in single_page_config_dict_test[GRAPHIC_NUM.format(0)]
+
+def test_add_instructions_to_config_dict_with_different_addendum(single_page_config_dict_and_addendum):
+    single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
+    single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
+    addendum_dict = ImmutableMultiDict(
+        [
+            ("graphic_name", "a_different_graph"),
+            ("selection_0", "MALE"),
+            ("selection_1", "Torgersen"),
+            ("selection_1", "Dream"),
+            ("selection_2_upper_operation", ">"),
+            ("selection_2_upper_value", "4"),
+            ("selection_2_lower_operation", ">="),
+            ("selection_2_lower_value", ""),
+        ]
+    )
+    single_page_config_dict_test = add_instructions_to_config_dict(
+        single_page_config_dict_test, addendum_dict
+    )
+    graphic_0_dict=single_page_config_dict_test["graphic_0"]
+    assert len(graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]) == 1
+    assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]

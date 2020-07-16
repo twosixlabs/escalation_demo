@@ -84,6 +84,6 @@ UPLOAD_TIME = "upload_time"
 
 # addendum constants
 
-GRAPHIC_INDEX = "graphic_index"
+GRAPHIC_NAME = "graphic_name"
 SELECTION_NUM = "selection_{:d}"
 SELECTION_NUM_LOC_TYPE = "selection_{:d}_{}_{}"
