@@ -26,7 +26,7 @@ JOIN_KEYS = "join_keys"
 DATA_LOCATION = "filepath"
 TABLE_COLUMN_SEPARATOR = ":"
 DEFAULT_SELECTED = "default_selected"
-
+CURRENT_PAGE = "current_page"
 DATA = "data"
 DATA_FILTERS = "data_filters"
 PLOT_MANAGER = "plot_manager"
