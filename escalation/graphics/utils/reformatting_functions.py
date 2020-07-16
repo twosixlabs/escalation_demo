@@ -17,7 +17,7 @@ def add_instructions_to_config_dict(
     """
     We build a page based on 2 dictonaries, what is in the config and what is submitted in the HTML form.
     :param single_page_graphic_config_dict:
-    :param addendum_dict: e.g ImmutableMultiDict([('graphic_index', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
+    :param addendum_dict: e.g ImmutableMultiDict([('graphic_name', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
     Should not pass an empty ImmutableMultiDict
     :return: modified single_page_config_dict
@@ -25,18 +25,22 @@ def add_instructions_to_config_dict(
     if addendum_dict is None:
         addendum_dict = ImmutableMultiDict()
 
-    for graphic_index, graphic_dict in single_page_graphic_config_dict.items():
+    for graphic_name, graphic_dict in single_page_graphic_config_dict.items():
         if SELECTABLE_DATA_LIST in graphic_dict:
             selector_list = graphic_dict[SELECTABLE_DATA_LIST]
             data_info_dict = graphic_dict[DATA]
-            add_active_selectors_to_selectable_data_list(
-                selector_list, data_info_dict, addendum_dict
-            )
-            if addendum_dict.get(GRAPHIC_INDEX) == graphic_index:
+            if addendum_dict.get(GRAPHIC_NAME) == graphic_name:
+                add_active_selectors_to_selectable_data_list(
+                    selector_list, data_info_dict, addendum_dict
+                )
                 graphic_dict[DATA_FILTERS] = add_operations_to_the_data_from_addendum(
                     selector_list, data_info_dict, addendum_dict
                 )
+
             else:
+                add_active_selectors_to_selectable_data_list(
+                    selector_list, data_info_dict
+                )
                 data_filters = add_operations_to_the_data_from_defaults(selector_list)
                 if data_filters:
                     graphic_dict[DATA_FILTERS] = data_filters
