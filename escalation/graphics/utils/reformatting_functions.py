@@ -100,12 +100,9 @@ def add_operations_to_the_data_from_addendum(
     operation_list = []
     for selection_index, selection_dict in enumerate(selectable_data_list):
         selection_index_str = SELECTION_NUM.format(selection_index)
-        option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][OPTION_TYPE]
-
-        base_info_dict_for_selector = {
-            OPTION_TYPE: option_type,
-            COLUMN_NAME: selection_dict[COLUMN_NAME],
-        }
+        option_type, base_info_dict_for_selector = get_base_info_for_selector(
+            selection_dict
+        )
         # creates an operations where only the values selected along a column will be shown in the plot
         if option_type == FILTER:
             selection = addendum_dict.getlist(selection_index_str)
@@ -152,13 +149,9 @@ def add_operations_to_the_data_from_defaults(selectable_data_list: list) -> list
     operation_list = []
     for selection_index, selection_dict in enumerate(selectable_data_list):
         if DEFAULT_SELECTED in selection_dict:
-            option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][
-                OPTION_TYPE
-            ]
-            base_info_dict_for_selector = {
-                OPTION_TYPE: option_type,
-                COLUMN_NAME: selection_dict[COLUMN_NAME],
-            }
+            option_type, base_info_dict_for_selector = get_base_info_for_selector(
+                selection_dict
+            )
             # creates an operations where only the values selected along a column will be shown in the plot
             if option_type == FILTER:
                 selection = selection_dict.get(DEFAULT_SELECTED)
@@ -169,3 +162,17 @@ def add_operations_to_the_data_from_defaults(selectable_data_list: list) -> list
             elif option_type == NUMERICAL_FILTER:
                 pass  # to be added at a future date
     return operation_list
+
+
+def get_base_info_for_selector(selection_dict):
+    """
+    Sets up the basic dictionary for data filters to be added on the data
+    :param selection_dict:
+    :return:
+    """
+    option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][OPTION_TYPE]
+    base_info_dict_for_selector = {
+        OPTION_TYPE: option_type,
+        COLUMN_NAME: selection_dict[COLUMN_NAME],
+    }
+    return option_type, base_info_dict_for_selector
