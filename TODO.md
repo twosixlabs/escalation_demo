@@ -1,7 +1,5 @@
 # MVP Features
 
-- Add navigation toolbar to the top of the page that lets you move between dashboard/upload/download pages
-- implement a web app interface selector for which of the uploaded data files gets rendered, storing this as application state
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
 - Choose and add a software license to Escalation OS
@@ -24,9 +22,6 @@
 - Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
 - Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
 
-## Multi Select
-
-- tooltip explaining how to use
 
 ## Config format
 
@@ -36,9 +31,6 @@ Simplify the config file- break it into one main config json with a separate con
 
 - Mock sql backend for testing
 - Test file upload
-
-## Admin
-- Don't allow all files to be not selected
 
 # USER STORIES
 
