@@ -27,15 +27,6 @@
                             "x": "plate_reader:replicate_group"
                         }
                     },
-                    "data_filters": [
-                        {
-                            "type": "filter",
-                            "column": "plate_reader:experiment_reference",
-                            "selected": [
-                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
-                            ]
-                        }
-                    ],
                     "plot_specific_info": {
                         "data": [
                             {
@@ -68,7 +59,8 @@
                             "column": "plate_reader:experiment_reference",
                             "options": {
                                 "multiple": true
-                            }
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
                         },
                         {
                             "type": "select",
@@ -107,15 +99,6 @@
                     "data_sources": [
                         {
                             "data_source_type": "plate_reader"
-                        }
-                    ],
-                    "data_filters": [
-                        {
-                            "type": "filter",
-                            "column": "plate_reader:experiment_reference",
-                            "selected": [
-                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
-                            ]
                         }
                     ],
                     "title": "Growth data from plate reader",
@@ -159,7 +142,8 @@
                             "column": "plate_reader:experiment_reference",
                             "options": {
                                 "multiple": true
-                            }
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
                         },
                         {
                             "type": "select",
@@ -182,15 +166,6 @@
                     "data_sources": [
                         {
                             "data_source_type": "flow_meta"
-                        }
-                    ],
-                    "data_filters": [
-                        {
-                            "type": "filter",
-                            "column": "flow_meta:experiment_reference",
-                            "selected": [
-                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
-                            ]
                         }
                     ],
                     "title": "Growth data from flow",
@@ -235,7 +210,8 @@
                             "column": "flow_meta:experiment_reference",
                             "options": {
                                 "multiple": true
-                            }
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
                         },
                         {
                             "type": "select",
@@ -281,15 +257,6 @@
                             ]
                         }
                     ],
-                    "data_filters": [
-                        {
-                            "type": "filter",
-                            "column": "plate_reader:experiment_reference",
-                            "selected": [
-                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
-                            ]
-                        }
-                    ],
                     "title": "Growth data from plate reader with rate calculations",
                     "brief_desc": "",
                     "data": {
@@ -332,7 +299,8 @@
                             "column": "plate_reader:experiment_reference",
                             "options": {
                                 "multiple": true
-                            }
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
                         },
                         {
                             "type": "select",
@@ -388,15 +356,6 @@
                             ]
                         }
                     ],
-                    "data_filters": [
-                        {
-                            "type": "filter",
-                            "column": "flow_meta:experiment_reference",
-                            "selected": [
-                                "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
-                            ]
-                        }
-                    ],
                     "title": "Circuit function measured by flow fluorescence",
                     "brief_desc": "",
                     "data": {
@@ -438,6 +397,14 @@
                     "selectable_data_list": [
                         {
                             "type": "select",
+                            "column": "flow_meta:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+                        },
+                        {
+                            "type": "select",
                             "column": "flow_meta:strain",
                             "options": {
                                 "multiple": true
@@ -446,13 +413,6 @@
                         {
                             "type": "select",
                             "column": "flow_meta:control_type",
-                            "options": {
-                                "multiple": true
-                            }
-                        },
-                        {
-                            "type": "select",
-                            "column": "flow_meta:date_of_experiment",
                             "options": {
                                 "multiple": true
                             }
@@ -535,6 +495,14 @@
                     "selectable_data_list": [
                         {
                             "type": "select",
+                            "column": "flow_meta:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+                        },
+                        {
+                            "type": "select",
                             "column": "flow_meta:strain",
                             "options": {
                                 "multiple": true
@@ -543,13 +511,6 @@
                         {
                             "type": "select",
                             "column": "flow_meta:control_type",
-                            "options": {
-                                "multiple": true
-                            }
-                        },
-                        {
-                            "type": "select",
-                            "column": "flow_meta:date_of_experiment",
                             "options": {
                                 "multiple": true
                             }

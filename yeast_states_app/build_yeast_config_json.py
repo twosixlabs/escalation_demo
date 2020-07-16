@@ -2,7 +2,9 @@ import json
 from utility.constants import *
 
 
-DEFAULT_EXPERIMENT = "YeastSTATES-Beta-Estradiol-OR-Gate-Plant-TF-Dose-Response"
+DEFAULT_EXPERIMENT = "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+
+
 config_dict = {
     SITE_TITLE: "Yeast States Escalation",
     SITE_DESC: "Demo for the Yeast States Escalation OS",
@@ -23,14 +25,6 @@ config_dict = {
                             "x": "plate_reader:replicate_group",
                         },
                     },
-                    # applies a default filter to the data so we don't have to load it all into a plot at once
-                    DATA_FILTERS: [
-                        {
-                            OPTION_TYPE: FILTER,
-                            COLUMN_NAME: "plate_reader:experiment_reference",
-                            SELECTED: [DEFAULT_EXPERIMENT],
-                        }
-                    ],
                     PLOT_SPECIFIC_INFO: {
                         "data": [{"type": "scatter", "mode": "markers"}],
                         "layout": {"hovermode": "closest"},
@@ -53,6 +47,7 @@ config_dict = {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "plate_reader:experiment_reference",
                             SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
                         },
                         {
                             SELECTOR_TYPE: "select",
@@ -77,69 +72,6 @@ config_dict = {
                         },
                     ],
                 },
-                # "graphic_1": {
-                #     PLOT_MANAGER: "plotly",
-                #     DATA_SOURCES: [
-                #         {DATA_SOURCE_TYPE: "flow_meta"},
-                #         {
-                #             DATA_SOURCE_TYPE: "flow_stat_wide",
-                #             JOIN_KEYS: [
-                #                 ("flow_meta:aliquot_id", "flow_stat_wide:aliquot_id")
-                #             ],
-                #         },
-                #     ],
-                #     GRAPHIC_TITLE: "Replicate data from flow",
-                #     GRAPHIC_DESC: "",
-                #     "data": {
-                #         "points_0": {
-                #             "x": "flow_meta:timepoint",
-                #             "y": "flow_stat_wide:BL1H_mean_log10",
-                #         }
-                #     },
-                #     PLOT_SPECIFIC_INFO: {
-                #         "data": [{"type": "box", "mode": "group"}],
-                #         "layout": {"boxmode": "group"},
-                #     },
-                #     VISUALIZATION_OPTIONS: [
-                #         {
-                #             "type": "hover_data",
-                #             COLUMN_NAME: [
-                #                 "flow_meta:well",
-                #                 "flow_meta:replicate_group_string",
-                #                 "flow_meta:date_of_experiment",
-                #                 "flow_meta:experiment_reference",
-                #             ],
-                #         },
-                #         {"type": "groupby", COLUMN_NAME: ["flow_meta:replicate_group",],},
-                #     ],
-                #     SELECTABLE_DATA_LIST: [
-                #         {
-                #             SELECTOR_TYPE: "select",
-                #             OPTION_COL: "flow_meta:experiment_reference",
-                #             SELECT_OPTION: {"multiple": True},
-                #         },
-                #         {
-                #             SELECTOR_TYPE: "select",
-                #             OPTION_COL: "flow_meta:control_type",
-                #             SELECT_OPTION: {"multiple": True},
-                #         },
-                #         {
-                #             SELECTOR_TYPE: "select",
-                #             OPTION_COL: "flow_meta:strain",
-                #             SELECT_OPTION: {"multiple": True},
-                #         },
-                #         {
-                #             SELECTOR_TYPE: "select",
-                #             OPTION_COL: "flow_meta:date_of_experiment",
-                #             SELECT_OPTION: {"multiple": True},
-                #         },
-                #         {
-                #             SELECTOR_TYPE: "select",
-                #             OPTION_COL: "flow_meta:replicate_group_string",
-                #             SELECT_OPTION: {"multiple": True},
-                #         },
-                #     ],
-                # },
             },
         },
         "growth_summary": {
@@ -148,14 +80,6 @@ config_dict = {
                 "plate_reader_od": {
                     PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [{DATA_SOURCE_TYPE: "plate_reader"}],
-                    # applies a default filter to the data so we don't have to load it all into a plot at once
-                    DATA_FILTERS: [
-                        {
-                            OPTION_TYPE: FILTER,
-                            COLUMN_NAME: "plate_reader:experiment_reference",
-                            SELECTED: [DEFAULT_EXPERIMENT],
-                        }
-                    ],
                     GRAPHIC_TITLE: "Growth data from plate reader",
                     GRAPHIC_DESC: "",
                     "data": {
@@ -187,6 +111,7 @@ config_dict = {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "plate_reader:experiment_reference",
                             SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
                         },
                         {
                             SELECTOR_TYPE: "select",
@@ -203,14 +128,6 @@ config_dict = {
                 "flow_cell_density": {
                     PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [{DATA_SOURCE_TYPE: "flow_meta"}],
-                    # applies a default filter to the data so we don't have to load it all into a plot at once
-                    DATA_FILTERS: [
-                        {
-                            OPTION_TYPE: FILTER,
-                            COLUMN_NAME: "flow_meta:experiment_reference",
-                            SELECTED: [DEFAULT_EXPERIMENT],
-                        }
-                    ],
                     GRAPHIC_TITLE: "Growth data from flow",
                     GRAPHIC_DESC: "",
                     "data": {
@@ -245,6 +162,7 @@ config_dict = {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "flow_meta:experiment_reference",
                             SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
                         },
                         {
                             SELECTOR_TYPE: "select",
@@ -277,14 +195,6 @@ config_dict = {
                             JOIN_KEYS: [("plate_reader:well", "growth_rate:well")],
                         },
                     ],
-                    # applies a default filter to the data so we don't have to load it all into a plot at once
-                    DATA_FILTERS: [
-                        {
-                            OPTION_TYPE: FILTER,
-                            COLUMN_NAME: "plate_reader:experiment_reference",
-                            SELECTED: [DEFAULT_EXPERIMENT],
-                        }
-                    ],
                     GRAPHIC_TITLE: "Growth data from plate reader with rate calculations",
                     GRAPHIC_DESC: "",
                     "data": {
@@ -314,6 +224,7 @@ config_dict = {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "plate_reader:experiment_reference",
                             SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
                         },
                         {
                             SELECTOR_TYPE: "select",
@@ -358,14 +269,6 @@ config_dict = {
                             ],
                         },
                     ],
-                    # applies a default filter to the data so we don't have to load it all into a plot at once
-                    DATA_FILTERS: [
-                        {
-                            OPTION_TYPE: FILTER,
-                            COLUMN_NAME: "flow_meta:experiment_reference",
-                            SELECTED: [DEFAULT_EXPERIMENT],
-                        }
-                    ],
                     GRAPHIC_TITLE: "Circuit function measured by flow fluorescence",
                     GRAPHIC_DESC: "",
                     DATA: {
@@ -400,17 +303,18 @@ config_dict = {
                     SELECTABLE_DATA_LIST: [
                         {
                             SELECTOR_TYPE: "select",
+                            OPTION_COL: "flow_meta:experiment_reference",
+                            SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
                             OPTION_COL: "flow_meta:strain",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "flow_meta:control_type",
-                            SELECT_OPTION: {"multiple": True},
-                        },
-                        {
-                            SELECTOR_TYPE: "select",
-                            OPTION_COL: "flow_meta:date_of_experiment",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
@@ -474,17 +378,18 @@ config_dict = {
                     SELECTABLE_DATA_LIST: [
                         {
                             SELECTOR_TYPE: "select",
+                            OPTION_COL: "flow_meta:experiment_reference",
+                            SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
                             OPTION_COL: "flow_meta:strain",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
                             SELECTOR_TYPE: "select",
                             OPTION_COL: "flow_meta:control_type",
-                            SELECT_OPTION: {"multiple": True},
-                        },
-                        {
-                            SELECTOR_TYPE: "select",
-                            OPTION_COL: "flow_meta:date_of_experiment",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
