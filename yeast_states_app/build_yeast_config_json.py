@@ -22,12 +22,12 @@ config_dict = {
                     "data": {
                         "points_0": {
                             "y": "plate_reader:fluor_gain_0.16/od",
-                            "x": "plate_reader:replicate_group",
+                            "x": "plate_reader:strain_name",
                         },
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "scatter", "mode": "markers"}],
-                        "layout": {"hovermode": "closest"},
+                        "data": [{"type": "box", "mode": "group"}],
+                        "layout": {"boxmode": "group"},
                     },
                     VISUALIZATION_OPTIONS: [
                         {
@@ -39,7 +39,7 @@ config_dict = {
                         },
                         {
                             "type": "groupby",
-                            COLUMN_NAME: ["plate_reader:replicate_group"],
+                            COLUMN_NAME: ["plate_reader:experiment_reference"],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -151,10 +151,7 @@ config_dict = {
                         },
                         {
                             "type": "groupby",
-                            COLUMN_NAME: [
-                                "flow_meta:well",
-                                "flow_meta:experiment_id_short",
-                            ],
+                            COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -192,7 +189,14 @@ config_dict = {
                         {DATA_SOURCE_TYPE: "plate_reader"},
                         {
                             DATA_SOURCE_TYPE: "growth_rate",
-                            JOIN_KEYS: [("plate_reader:well", "growth_rate:well")],
+                            JOIN_KEYS: [
+                                ("plate_reader:well", "growth_rate:well"),
+                                (
+                                    "plate_reader:experiment_id",
+                                    "growth_rate:experiment_id_long",
+                                ),
+                                ("plate_reader:strain", "growth_rate:strain"),
+                            ],
                         },
                     ],
                     GRAPHIC_TITLE: "Growth data from plate reader with rate calculations",
@@ -204,7 +208,7 @@ config_dict = {
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "scatter", "mode": "lines+markers"}],
+                        "data": [{"type": "scatter", "mode": "markers"}],
                         "layout": {"hovermode": "closest"},
                     },
                     VISUALIZATION_OPTIONS: [
@@ -215,9 +219,18 @@ config_dict = {
                                 "plate_reader:strain",
                                 "plate_reader:sample_contents",
                                 "growth_rate:doubling_time",
+                                "plate_reader:inducer_concentration",
                             ],
                         },
-                        {"type": "groupby", COLUMN_NAME: ["plate_reader:well"]},
+                        {
+                            "type": "groupby",
+                            COLUMN_NAME: [
+                                "plate_reader:inducer_concentration",
+                                "plate_reader:well",
+                                "plate_reader:experiment_id",
+                                "plate_reader:strain",
+                            ],
+                        },
                     ],
                     SELECTABLE_DATA_LIST: [
                         {
@@ -244,10 +257,10 @@ config_dict = {
                 },
             },
         },
-        "circuit_function_hist": {
+        "circuit_function_line": {
             BUTTON_LABEL: "Circuit Function Histogram",
             GRAPHICS: {
-                "flow_histogram": {
+                "flow_line": {
                     PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "flow_meta"},
@@ -259,11 +272,10 @@ config_dict = {
                         },
                         {
                             DATA_SOURCE_TYPE: "growth_rate",
-                            # todo: this isn't the right join
                             JOIN_KEYS: [
                                 (
-                                    "flow_meta:experiment_id_short",
-                                    "growth_rate:experiment_id",
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long",
                                 ),
                                 ("flow_meta:well", "growth_rate:well"),
                             ],
@@ -278,26 +290,22 @@ config_dict = {
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
-                        "data": [{"type": "bar"}],
-                        "layout": {"hovermode": "closest", "barmode": "group"},
+                        "data": [{"type": "scatter", "mode": "marker"}],
+                        "layout": {"hovermode": "closest"},
                     },
                     VISUALIZATION_OPTIONS: [
                         {
                             "type": "hover_data",
                             COLUMN_NAME: [
                                 "flow_meta:well",
-                                "flow_meta:control_type",
-                                "flow_meta:strain",
+                                "flow_meta:strain_name",
                                 "flow_meta:experiment_id",
                                 "growth_rate:doubling_time",
                             ],
                         },
                         {
                             "type": "groupby",
-                            COLUMN_NAME: [
-                                "flow_meta:well",
-                                "flow_meta:experiment_id_short",
-                            ],
+                            COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -309,12 +317,7 @@ config_dict = {
                         },
                         {
                             SELECTOR_TYPE: "select",
-                            OPTION_COL: "flow_meta:strain",
-                            SELECT_OPTION: {"multiple": True},
-                        },
-                        {
-                            SELECTOR_TYPE: "select",
-                            OPTION_COL: "flow_meta:control_type",
+                            OPTION_COL: "flow_meta:strain_name",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
@@ -323,12 +326,8 @@ config_dict = {
                         },
                     ],
                 },
-            },
-        },
-        "circuit_function_box": {
-            BUTTON_LABEL: "Circuit Function Boxplot",
-            GRAPHICS: {
-                "flow_boxplot": {
+                "flow_boxplot_inducer": {
+                    GRAPHIC_TITLE: "Circuit function across inducer concentration measured by flow fluorescence",
                     PLOT_MANAGER: "plotly",
                     DATA_SOURCES: [
                         {DATA_SOURCE_TYPE: "flow_meta"},
@@ -340,22 +339,20 @@ config_dict = {
                         },
                         {
                             DATA_SOURCE_TYPE: "growth_rate",
-                            # todo: this isn't the right join
                             JOIN_KEYS: [
                                 (
-                                    "flow_meta:experiment_id_short",
-                                    "growth_rate:experiment_id",
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long",
                                 ),
                                 ("flow_meta:well", "growth_rate:well"),
                             ],
                         },
                     ],
-                    GRAPHIC_TITLE: "Circuit function measured by flow fluorescence",
                     GRAPHIC_DESC: "",
                     DATA: {
                         "points_0": {
                             "y": "flow_stat_wide:BL1H_mean_log10",
-                            "x": "flow_meta:inducer_concentration",
+                            "x": "flow_meta:strain_name",
                         }
                     },
                     PLOT_SPECIFIC_INFO: {
@@ -372,7 +369,7 @@ config_dict = {
                         },
                         {
                             "type": "groupby",
-                            COLUMN_NAME: ["flow_meta:strain", "flow_meta:control_type"],
+                            COLUMN_NAME: ["flow_meta:inducer_concentration"],
                         },
                     ],
                     SELECTABLE_DATA_LIST: [
@@ -384,7 +381,7 @@ config_dict = {
                         },
                         {
                             SELECTOR_TYPE: "select",
-                            OPTION_COL: "flow_meta:strain",
+                            OPTION_COL: "flow_meta:timepoint",
                             SELECT_OPTION: {"multiple": True},
                         },
                         {
@@ -396,15 +393,71 @@ config_dict = {
                             "type": "numerical_filter",
                             OPTION_COL: "growth_rate:doubling_time",
                         },
+                    ],
+                },
+                "flow_boxplot_time": {
+                    GRAPHIC_TITLE: "Circuit function across time measured by flow fluorescence",
+                    PLOT_MANAGER: "plotly",
+                    DATA_SOURCES: [
+                        {DATA_SOURCE_TYPE: "flow_meta"},
                         {
-                            SELECTOR_TYPE: "axis",
-                            OPTION_COL: "x",
-                            SELECT_OPTION: {
-                                "entries": [
-                                    "flow_meta:timepoint",
-                                    "flow_meta:inducer_concentration",
-                                ]
-                            },
+                            DATA_SOURCE_TYPE: "flow_stat_wide",
+                            JOIN_KEYS: [
+                                ("flow_meta:aliquot_id", "flow_stat_wide:aliquot_id")
+                            ],
+                        },
+                        {
+                            DATA_SOURCE_TYPE: "growth_rate",
+                            JOIN_KEYS: [
+                                (
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long",
+                                ),
+                                ("flow_meta:well", "growth_rate:well"),
+                            ],
+                        },
+                    ],
+                    GRAPHIC_DESC: "",
+                    DATA: {
+                        "points_0": {
+                            "y": "flow_stat_wide:BL1H_mean_log10",
+                            "x": "flow_meta:strain_name",
+                        }
+                    },
+                    PLOT_SPECIFIC_INFO: {
+                        "data": [{"type": "box"}],
+                        "layout": {"hovermode": "closest", "boxmode": "group"},
+                    },
+                    VISUALIZATION_OPTIONS: [
+                        {
+                            "type": "hover_data",
+                            COLUMN_NAME: [
+                                "growth_rate:doubling_time",
+                                "flow_meta:inducer_type",
+                            ],
+                        },
+                        {"type": "groupby", COLUMN_NAME: ["flow_meta:timepoint"]},
+                    ],
+                    SELECTABLE_DATA_LIST: [
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "flow_meta:experiment_reference",
+                            SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "flow_meta:inducer_concentration",
+                            SELECT_OPTION: {"multiple": True},
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "flow_meta:control_type",
+                            SELECT_OPTION: {"multiple": True},
+                        },
+                        {
+                            "type": "numerical_filter",
+                            OPTION_COL: "growth_rate:doubling_time",
                         },
                     ],
                 },

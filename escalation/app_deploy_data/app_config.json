@@ -24,18 +24,18 @@
                     "data": {
                         "points_0": {
                             "y": "plate_reader:fluor_gain_0.16/od",
-                            "x": "plate_reader:replicate_group"
+                            "x": "plate_reader:strain_name"
                         }
                     },
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "scatter",
-                                "mode": "markers"
+                                "type": "box",
+                                "mode": "group"
                             }
                         ],
                         "layout": {
-                            "hovermode": "closest"
+                            "boxmode": "group"
                         }
                     },
                     "visualization_options": [
@@ -49,7 +49,7 @@
                         {
                             "type": "groupby",
                             "column": [
-                                "plate_reader:replicate_group"
+                                "plate_reader:experiment_reference"
                             ]
                         }
                     ],
@@ -200,7 +200,7 @@
                             "type": "groupby",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:experiment_id_short"
+                                "flow_meta:experiment_id"
                             ]
                         }
                     ],
@@ -253,6 +253,14 @@
                                 [
                                     "plate_reader:well",
                                     "growth_rate:well"
+                                ],
+                                [
+                                    "plate_reader:experiment_id",
+                                    "growth_rate:experiment_id_long"
+                                ],
+                                [
+                                    "plate_reader:strain",
+                                    "growth_rate:strain"
                                 ]
                             ]
                         }
@@ -269,7 +277,7 @@
                         "data": [
                             {
                                 "type": "scatter",
-                                "mode": "lines+markers"
+                                "mode": "markers"
                             }
                         ],
                         "layout": {
@@ -283,13 +291,17 @@
                                 "plate_reader:well",
                                 "plate_reader:strain",
                                 "plate_reader:sample_contents",
-                                "growth_rate:doubling_time"
+                                "growth_rate:doubling_time",
+                                "plate_reader:inducer_concentration"
                             ]
                         },
                         {
                             "type": "groupby",
                             "column": [
-                                "plate_reader:well"
+                                "plate_reader:inducer_concentration",
+                                "plate_reader:well",
+                                "plate_reader:experiment_id",
+                                "plate_reader:strain"
                             ]
                         }
                     ],
@@ -324,10 +336,10 @@
                 }
             }
         },
-        "circuit_function_hist": {
+        "circuit_function_line": {
             "button_label": "Circuit Function Histogram",
             "graphics": {
-                "flow_histogram": {
+                "flow_line": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
@@ -346,8 +358,8 @@
                             "data_source_type": "growth_rate",
                             "join_keys": [
                                 [
-                                    "flow_meta:experiment_id_short",
-                                    "growth_rate:experiment_id"
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long"
                                 ],
                                 [
                                     "flow_meta:well",
@@ -367,12 +379,12 @@
                     "plot_specific_info": {
                         "data": [
                             {
-                                "type": "bar"
+                                "type": "scatter",
+                                "mode": "marker"
                             }
                         ],
                         "layout": {
-                            "hovermode": "closest",
-                            "barmode": "group"
+                            "hovermode": "closest"
                         }
                     },
                     "visualization_options": [
@@ -380,8 +392,7 @@
                             "type": "hover_data",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:control_type",
-                                "flow_meta:strain",
+                                "flow_meta:strain_name",
                                 "flow_meta:experiment_id",
                                 "growth_rate:doubling_time"
                             ]
@@ -390,7 +401,7 @@
                             "type": "groupby",
                             "column": [
                                 "flow_meta:well",
-                                "flow_meta:experiment_id_short"
+                                "flow_meta:experiment_id"
                             ]
                         }
                     ],
@@ -405,14 +416,7 @@
                         },
                         {
                             "type": "select",
-                            "column": "flow_meta:strain",
-                            "options": {
-                                "multiple": true
-                            }
-                        },
-                        {
-                            "type": "select",
-                            "column": "flow_meta:control_type",
+                            "column": "flow_meta:strain_name",
                             "options": {
                                 "multiple": true
                             }
@@ -422,13 +426,9 @@
                             "column": "growth_rate:doubling_time"
                         }
                     ]
-                }
-            }
-        },
-        "circuit_function_box": {
-            "button_label": "Circuit Function Boxplot",
-            "graphics": {
-                "flow_boxplot": {
+                },
+                "flow_boxplot_inducer": {
+                    "title": "Circuit function across inducer concentration measured by flow fluorescence",
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
@@ -447,8 +447,8 @@
                             "data_source_type": "growth_rate",
                             "join_keys": [
                                 [
-                                    "flow_meta:experiment_id_short",
-                                    "growth_rate:experiment_id"
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long"
                                 ],
                                 [
                                     "flow_meta:well",
@@ -457,12 +457,11 @@
                             ]
                         }
                     ],
-                    "title": "Circuit function measured by flow fluorescence",
                     "brief_desc": "",
                     "data": {
                         "points_0": {
                             "y": "flow_stat_wide:BL1H_mean_log10",
-                            "x": "flow_meta:inducer_concentration"
+                            "x": "flow_meta:strain_name"
                         }
                     },
                     "plot_specific_info": {
@@ -487,8 +486,7 @@
                         {
                             "type": "groupby",
                             "column": [
-                                "flow_meta:strain",
-                                "flow_meta:control_type"
+                                "flow_meta:inducer_concentration"
                             ]
                         }
                     ],
@@ -503,7 +501,7 @@
                         },
                         {
                             "type": "select",
-                            "column": "flow_meta:strain",
+                            "column": "flow_meta:timepoint",
                             "options": {
                                 "multiple": true
                             }
@@ -518,16 +516,98 @@
                         {
                             "type": "numerical_filter",
                             "column": "growth_rate:doubling_time"
+                        }
+                    ]
+                },
+                "flow_boxplot_time": {
+                    "title": "Circuit function across time measured by flow fluorescence",
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "flow_meta"
                         },
                         {
-                            "type": "axis",
-                            "column": "x",
-                            "options": {
-                                "entries": [
-                                    "flow_meta:timepoint",
-                                    "flow_meta:inducer_concentration"
+                            "data_source_type": "flow_stat_wide",
+                            "join_keys": [
+                                [
+                                    "flow_meta:aliquot_id",
+                                    "flow_stat_wide:aliquot_id"
                                 ]
+                            ]
+                        },
+                        {
+                            "data_source_type": "growth_rate",
+                            "join_keys": [
+                                [
+                                    "flow_meta:experiment_id",
+                                    "growth_rate:experiment_id_long"
+                                ],
+                                [
+                                    "flow_meta:well",
+                                    "growth_rate:well"
+                                ]
+                            ]
+                        }
+                    ],
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "flow_stat_wide:BL1H_mean_log10",
+                            "x": "flow_meta:strain_name"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "box"
                             }
+                        ],
+                        "layout": {
+                            "hovermode": "closest",
+                            "boxmode": "group"
+                        }
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "growth_rate:doubling_time",
+                                "flow_meta:inducer_type"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "flow_meta:timepoint"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "flow_meta:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:inducer_concentration",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:control_type",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "growth_rate:doubling_time"
                         }
                     ]
                 }

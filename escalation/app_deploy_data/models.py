@@ -6,6 +6,33 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
+class FcInducerDiff(Base):
+    __tablename__ = "fc_inducer_diff"
+
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
+    wasserstein_min = Column(Float(53))
+    wasserstein_median = Column(Float(53))
+    wasserstein_max = Column(Float(53))
+    strain = Column(Text)
+    timepoint = Column(Float(53))
+    experiment_id = Column(Text)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)
+
+
+class FcTimeDiff(Base):
+    __tablename__ = "fc_time_diff"
+
+    row_index = Column(BigInteger, primary_key=True, nullable=False)
+    wasserstein_min = Column(Float(53))
+    wasserstein_median = Column(Float(53))
+    wasserstein_max = Column(Float(53))
+    strain = Column(Text)
+    inducer_concentration = Column(Float(53))
+    experiment_id = Column(Text)
+    well = Column(Text)
+    upload_id = Column(BigInteger, primary_key=True, nullable=False)
+
+
 class FlowMeta(Base):
     __tablename__ = "flow_meta"
 
@@ -43,7 +70,6 @@ class FlowMeta(Base):
     date_of_experiment = Column(Text)
     cells_mL = Column("cells/mL", Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
-    experiment_id_short = Column(Text)
 
 
 class FlowStatWide(Base):
@@ -85,6 +111,7 @@ class GrowthRate(Base):
     doubling_time = Column(Float(53))
     n0 = Column(Float(53))
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
+    experiment_id_long = Column(Text)
 
 
 class PlateReader(Base):

@@ -1,6 +1,9 @@
+from ast import literal_eval
 from glob import glob
 import os
+import re
 
+from block_timer.timer import Timer
 import pandas as pd
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
@@ -13,6 +16,8 @@ relevant_file_types = {
     "_platereader.csv": "plate_reader",
     "_fc_meta.csv": "flow_meta",
     "_od_growth_analysis.csv": "growth_rate",
+    "time_diff_summary_reindexed.csv": "fc_time_diff",
+    "inducer_diff_summary_reindexed.csv": "fc_inducer_diff",
 }
 
 
@@ -60,6 +65,49 @@ def flow_log10_stats_to_wide(input_file_folder, input_filename):
     reshaped_df.to_csv(os.path.join(input_file_folder, output_filename), index=False)
 
 
+def build_fluorescence_fold_change_tables(filepath):
+    input_filename = os.path.basename(filepath)
+    print(f"processing {filepath}")
+    if input_filename.endswith("reindexed.csv"):
+        # already processed
+        return
+
+    pattern = r"(^.*)__(fc_raw_log10_stats_\w+_diff_summary)_(\w+)\.csv$"
+    match = re.match(pattern, input_filename)
+    output_filename = (
+        "_".join(
+            [match.groups(0)[0], match.groups(0)[2], match.groups(0)[1], "reindexed"]
+        )
+        + ".csv"
+    )
+    data = pd.read_csv(filepath)
+    if data.empty:
+        return
+
+    columns_lookup = {
+        "fc_raw_log10_stats_time_diff_summary": [
+            "strain",
+            "inducer_concentration",
+            "experiment_id",
+            "well",
+        ],
+        "fc_raw_log10_stats_inducer_diff_summary": [
+            "strain",
+            "timepoint",
+            "experiment_id",
+        ],
+    }
+    index_columns_for_file = columns_lookup[match.groups(0)[1]]
+    data[index_columns_for_file] = data["Unnamed: 0"].apply(
+        lambda x: pd.Series(literal_eval(x))
+    )
+
+    data.drop(["Unnamed: 0", "sample_ids"], inplace=True, axis=1)
+    output_filepath = os.path.join(os.path.dirname(filepath), output_filename)
+    print(f"Writing output_filepath {output_filepath}")
+    data.to_csv(output_filepath, index=False)
+
+
 if __name__ == "__main__":
     data_converge_output_path = "test/batch_20200713124857_master"
 
@@ -75,9 +123,18 @@ if __name__ == "__main__":
             input_filename=os.path.basename(filepath),
         )
 
-    sql_creator = CreateTablesFromCSVs(sql_backend, DATABASE_CONFIG)
+    # reformat broken indices for fluorescence diff files
+    format_strs = [
+        f"../yeast_states_app/yeast_states_data_files/{data_converge_output_path}/*/pdt_*_fc_raw_log10_stats_time_diff_summary*",
+        f"../yeast_states_app/yeast_states_data_files/{data_converge_output_path}/*/pdt_*_fc_raw_log10_stats_inducer_diff_summary*",
+    ]
+    for format_str in format_strs:
+        list_of_time_diff_files = glob(format_str)
+        print(list_of_time_diff_files)
+        for filepath in list_of_time_diff_files:
+            build_fluorescence_fold_change_tables(filepath)
 
-    from block_timer.timer import Timer
+    sql_creator = CreateTablesFromCSVs(sql_backend, DATABASE_CONFIG)
 
     # create sql tables for relevant file types
     for relevant_file_type, table_name in relevant_file_types.items():
