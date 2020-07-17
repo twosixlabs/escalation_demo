@@ -16,6 +16,7 @@ class FcInducerDiff(Base):
     strain = Column(Text)
     timepoint = Column(Float(53))
     experiment_id = Column(Text)
+    experiment_reference = Column(Text)
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
 
 
@@ -30,6 +31,7 @@ class FcTimeDiff(Base):
     inducer_concentration = Column(Float(53))
     experiment_id = Column(Text)
     well = Column(Text)
+    experiment_reference = Column(Text)
     upload_id = Column(BigInteger, primary_key=True, nullable=False)
 
 

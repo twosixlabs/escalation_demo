@@ -68,6 +68,9 @@ def flow_log10_stats_to_wide(input_file_folder, input_filename):
 def build_fluorescence_fold_change_tables(filepath):
     input_filename = os.path.basename(filepath)
     print(f"processing {filepath}")
+    dirname = os.path.dirname(filepath)
+
+    experiment_reference = dirname.split("/")[-1]
     if input_filename.endswith("reindexed.csv"):
         # already processed
         return
@@ -103,7 +106,8 @@ def build_fluorescence_fold_change_tables(filepath):
     )
 
     data.drop(["Unnamed: 0", "sample_ids"], inplace=True, axis=1)
-    output_filepath = os.path.join(os.path.dirname(filepath), output_filename)
+    data["experiment_reference"] = experiment_reference
+    output_filepath = os.path.join(dirname, output_filename)
     print(f"Writing output_filepath {output_filepath}")
     data.to_csv(output_filepath, index=False)
 
