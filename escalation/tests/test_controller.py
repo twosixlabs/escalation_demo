@@ -10,6 +10,7 @@ from utility.constants import (
     SELECT_OPTION,
     ACTIVE_SELECTORS,
     SHOW_ALL_ROW,
+    SELECTABLE_DATA_LIST,
 )
 
 
@@ -48,8 +49,9 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
             ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
         },
     ]
+    json_config_fixture[SELECTABLE_DATA_LIST] = select_dict
     select_info = create_data_subselect_info_for_plot(
-        select_dict, local_handler_fixture
+        json_config_fixture, local_handler_fixture
     )
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
