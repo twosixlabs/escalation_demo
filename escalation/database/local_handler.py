@@ -1,11 +1,12 @@
-import pandas as pd
+from datetime import datetime
 import glob
 import os
+
+from flask import current_app
+import pandas as pd
 from pathvalidate import sanitize_filename
 from werkzeug.utils import secure_filename
-from datetime import datetime
-from math import nan
-from flask import current_app
+
 from database.data_handler import DataHandler
 from database.utils import local_csv_handler_filter_operation
 from utility.constants import (
@@ -16,7 +17,8 @@ from utility.constants import (
     DATA_FILE_DIRECTORY,
     APP_CONFIG_JSON,
     TABLE_COLUMN_SEPARATOR,
-    SELECTED,
+    UNFILTERED_SELECTOR,
+    COLUMN_NAME,
 )
 
 
@@ -104,9 +106,21 @@ class LocalCSVHandler(DataHandler):
 
         unique_dict = {}
         for col in cols:
+            if any(
+                [
+                    (f[COLUMN_NAME] == col and f.get(UNFILTERED_SELECTOR))
+                    for f in filters
+                ]
+            ):
+                # if this column matches one in the filters dict that is listed as an
+                # UNFILTERED_SELECTOR, don't apply an subsetting on the unique values
+                table = self.combined_data_table
+            else:
+                table = df
             # entry == entry is a shortcut to remove None and NaN values
+
             unique_dict[col] = [
-                str(entry) for entry in df[col].unique() if entry == entry
+                str(entry) for entry in table[col].unique() if entry == entry
             ]
         return unique_dict
 

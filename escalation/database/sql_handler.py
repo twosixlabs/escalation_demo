@@ -19,6 +19,8 @@ from utility.constants import (
     OPTION_TYPE,
     FILTER,
     SELECTED,
+    UNFILTERED_SELECTOR,
+    COLUMN_NAME,
 )
 
 
@@ -159,16 +161,24 @@ class SqlHandler(DataHandler):
         if filters is None:
             filters = []
         unique_dict = {}
-        for config_col in cols:
-            renamed_col = self.sanitize_column_name(config_col)
+        for col in cols:
+            renamed_col = self.sanitize_column_name(col)
             sql_col_class = self.column_lookup_by_name[renamed_col]
             query = db_session.query(sql_col_class).distinct()
             if filter_active_data:
                 active_data_filters = self.build_filters_from_active_data_source()
                 query = self.apply_filters_to_query(query, active_data_filters)
-            query = self.apply_filters_to_query(query, filters)
+            # if the current column matches one in the filter list marked as unfiltered,
+            # skip this and don't apply the filters before looking for unique values
+            if not any(
+                [
+                    (f[COLUMN_NAME] == col and f.get(UNFILTERED_SELECTOR))
+                    for f in filters
+                ]
+            ):
+                query = self.apply_filters_to_query(query, filters)
             response = query.all()
-            unique_dict[config_col] = [str(r[0]) for r in response if r[0] is not None]
+            unique_dict[col] = [str(r[0]) for r in response if r[0] is not None]
         return unique_dict
 
 
