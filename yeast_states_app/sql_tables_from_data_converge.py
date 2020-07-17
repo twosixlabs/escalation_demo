@@ -149,6 +149,12 @@ if __name__ == "__main__":
             data = pd.concat([pd.read_csv(f) for f in list_of_files]).reset_index(
                 drop=True
             )
+            # replace nulls with placeholder to allow for selection in app
+            for odd_null_column in ["control_type", "standard_type"]:
+                if odd_null_column in data.columns:
+                    data[odd_null_column] = data[odd_null_column].fillna(
+                        "not_specified"
+                    )
             key_column = None
             print(f"Creating table name {table_name} with {data.shape[0]} rows")
             sql_creator.create_new_table(

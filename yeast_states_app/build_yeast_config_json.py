@@ -257,6 +257,83 @@ config_dict = {
                 },
             },
         },
+        "on_the_loop": {
+            BUTTON_LABEL: "On the Loop Assistant",
+            "graphics": {
+                "growth_rate_circuit_function_data": {
+                    PLOT_MANAGER: "plotly",
+                    DATA_SOURCES: [
+                        {DATA_SOURCE_TYPE: "plate_reader"},
+                        {
+                            DATA_SOURCE_TYPE: "growth_rate",
+                            JOIN_KEYS: [
+                                ("plate_reader:well", "growth_rate:well"),
+                                (
+                                    "plate_reader:experiment_id",
+                                    "growth_rate:experiment_id_long",
+                                ),
+                                ("plate_reader:strain", "growth_rate:strain"),
+                            ],
+                        },
+                    ],
+                    GRAPHIC_TITLE: "Growth data from plate reader with rate calculations",
+                    GRAPHIC_DESC: "",
+                    "data": {
+                        "points_0": {
+                            "y": "plate_reader:od",
+                            "x": "plate_reader:timepoint",
+                        }
+                    },
+                    PLOT_SPECIFIC_INFO: {
+                        "data": [{"type": "scatter", "mode": "markers"}],
+                        "layout": {"hovermode": "closest"},
+                    },
+                    VISUALIZATION_OPTIONS: [
+                        {
+                            "type": "hover_data",
+                            COLUMN_NAME: [
+                                "plate_reader:well",
+                                "plate_reader:strain",
+                                "plate_reader:sample_contents",
+                                "growth_rate:doubling_time",
+                                "plate_reader:inducer_concentration",
+                            ],
+                        },
+                        {
+                            "type": "groupby",
+                            COLUMN_NAME: [
+                                "plate_reader:inducer_concentration",
+                                "plate_reader:well",
+                                "plate_reader:experiment_id",
+                                "plate_reader:strain",
+                            ],
+                        },
+                    ],
+                    SELECTABLE_DATA_LIST: [
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "plate_reader:experiment_reference",
+                            SELECT_OPTION: {"multiple": True},
+                            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "plate_reader:control_type",
+                            SELECT_OPTION: {"multiple": True},
+                        },
+                        {
+                            SELECTOR_TYPE: "select",
+                            OPTION_COL: "plate_reader:strain",
+                            SELECT_OPTION: {"multiple": True},
+                        },
+                        {
+                            "type": "numerical_filter",
+                            OPTION_COL: "growth_rate:doubling_time",
+                        },
+                    ],
+                },
+            },
+        },
         "circuit_function_line": {
             BUTTON_LABEL: "Circuit Function Histogram",
             GRAPHICS: {

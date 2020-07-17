@@ -7,7 +7,7 @@
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
 - make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
 - rewrite tests that rely on a specific config file
-
+- Fix bug in filter if the filter value has a space in the string, can't select?
 
 # Nice to have Features
 
