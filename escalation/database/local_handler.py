@@ -94,14 +94,18 @@ class LocalCSVHandler(DataHandler):
 
         return df[cols]
 
-    def get_column_unique_entries(self, cols: list) -> dict:
+    def get_column_unique_entries(self, cols: list, filters: list = None) -> dict:
+        if filters is None:
+            filters = []
+        df = self.combined_data_table.copy(deep=False)
+        for filter_dict in filters:
+            column = df[filter_dict[OPTION_COL]]
+            df = df[local_csv_handler_filter_operation(column, filter_dict)]
+
         unique_dict = {}
         for col in cols:
-            # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
             unique_dict[col] = [
-                str(entry)
-                for entry in self.combined_data_table[col].unique()
-                if entry == entry
+                str(entry) for entry in df[col].unique() if entry is not None
             ]
         return unique_dict
 

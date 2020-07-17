@@ -119,7 +119,7 @@ class SqlHandler(DataHandler):
     def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
         :param columns: A complete list of the columns to be returned
-        :param filters: Optional dict specifying how to filter the requested columns based on the row values
+        :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
         if filters is None:
@@ -147,12 +147,17 @@ class SqlHandler(DataHandler):
             response_as_df = pd.DataFrame(columns=columns)
         return response_as_df[columns]
 
-    def get_column_unique_entries(self, cols: list, filter_active_data=True) -> dict:
+    def get_column_unique_entries(
+        self, cols: list, filter_active_data=True, filters: list = None
+    ) -> dict:
         """
         :param cols: a list of column names
+        :param filters: Optional list specifying how to filter the requested columns based on the row values
         :param filter_active_data: Whether to filter the column entries to only include those for active data sources
         :return: A dict keyed by column names and valued with the unique values in that column
         """
+        if filters is None:
+            filters = []
         unique_dict = {}
         for config_col in cols:
             renamed_col = self.sanitize_column_name(config_col)
@@ -161,6 +166,7 @@ class SqlHandler(DataHandler):
             if filter_active_data:
                 active_data_filters = self.build_filters_from_active_data_source()
                 query = self.apply_filters_to_query(query, active_data_filters)
+            query = self.apply_filters_to_query(query, filters)
             response = query.all()
             unique_dict[config_col] = [str(r[0]) for r in response if r[0] is not None]
         return unique_dict

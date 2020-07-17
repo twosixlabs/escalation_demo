@@ -17,10 +17,11 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
-    def get_column_unique_entries(self, cols: list) -> dict:
+    def get_column_unique_entries(self, cols: list, filters: []) -> dict:
         """
 
         :param cols: list of column names
+        :param filters: Optional list specifying how to filter contents of the the requested columns based on the row values
         :return: A dict keyed by column names and valued with the unique values in that column
         """
         pass
