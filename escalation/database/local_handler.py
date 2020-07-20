@@ -1,11 +1,12 @@
-import pandas as pd
+from datetime import datetime
 import glob
 import os
+
+from flask import current_app
+import pandas as pd
 from pathvalidate import sanitize_filename
 from werkzeug.utils import secure_filename
-from datetime import datetime
-from math import nan
-from flask import current_app
+
 from database.data_handler import DataHandler
 from database.utils import local_csv_handler_filter_operation
 from utility.constants import (
@@ -16,7 +17,8 @@ from utility.constants import (
     DATA_FILE_DIRECTORY,
     APP_CONFIG_JSON,
     TABLE_COLUMN_SEPARATOR,
-    SELECTED,
+    UNFILTERED_SELECTOR,
+    COLUMN_NAME,
 )
 
 
@@ -94,14 +96,31 @@ class LocalCSVHandler(DataHandler):
 
         return df[cols]
 
-    def get_column_unique_entries(self, cols: list) -> dict:
+    def get_column_unique_entries(self, cols: list, filters: list = None) -> dict:
+        if filters is None:
+            filters = []
+        df = self.combined_data_table.copy(deep=False)
+        for filter_dict in filters:
+            column = df[filter_dict[OPTION_COL]]
+            df = df[local_csv_handler_filter_operation(column, filter_dict)]
+
         unique_dict = {}
         for col in cols:
-            # todo: note this assumption, we are dropping null values. I think we may want to be able to select them
+            if any(
+                [
+                    (filter_[COLUMN_NAME] == col and filter_.get(UNFILTERED_SELECTOR))
+                    for filter_ in filters
+                ]
+            ):
+                # if this column matches one in the filters dict that is listed as an
+                # UNFILTERED_SELECTOR, don't apply an subsetting on the unique values
+                table = self.combined_data_table
+            else:
+                table = df
+            # entry == entry is a shortcut to remove None and NaN values
+
             unique_dict[col] = [
-                str(entry)
-                for entry in self.combined_data_table[col].unique()
-                if entry == entry
+                str(entry) for entry in table[col].unique() if entry == entry
             ]
         return unique_dict
 

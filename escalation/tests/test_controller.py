@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from controller import (
     create_link_buttons_for_available_pages,
-    create_data_subselect_info,
+    create_data_subselect_info_for_plot,
     get_unique_set_of_columns_needed,
     get_data_selection_info_for_page_render,
     remove_redundant_filters_from_active_selectors,
@@ -56,7 +56,10 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
             ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
         },
     ]
-    select_info = create_data_subselect_info(select_dict, local_handler_fixture)
+    json_config_fixture[SELECTABLE_DATA_LIST] = select_dict
+    select_info = create_data_subselect_info_for_plot(
+        json_config_fixture, local_handler_fixture
+    )
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
     assert select_info[1][COLUMN_NAME] == "penguin_size:island"
