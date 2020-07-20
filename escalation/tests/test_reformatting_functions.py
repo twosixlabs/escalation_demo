@@ -20,6 +20,7 @@ from utility.constants import (
     OPERATION,
     ACTIVE_SELECTORS,
     DATA_FILTERS,
+    VISUALIZATION_OPTIONS,
 )
 from graphics.utils.reformatting_functions import (
     add_operations_to_the_data_from_addendum,
@@ -110,7 +111,10 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     graphic_0_dict = single_page_config_dict["graphic_0"]
     operations_list = add_operations_to_the_data_from_addendum(
-        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], addendum_dict
+        graphic_0_dict[SELECTABLE_DATA_LIST],
+        graphic_0_dict[DATA],
+        graphic_0_dict[VISUALIZATION_OPTIONS],
+        addendum_dict,
     )
     assert len(operations_list) == 3
     # TO DO break up
@@ -139,7 +143,10 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     )
 
     operations_list = add_operations_to_the_data_from_addendum(
-        graphic_1_dict[SELECTABLE_DATA_LIST], graphic_1_dict[DATA], addendum_dict
+        graphic_1_dict[SELECTABLE_DATA_LIST],
+        graphic_1_dict[DATA],
+        graphic_1_dict.get(VISUALIZATION_OPTIONS, []),
+        addendum_dict,
     )
 
     assert (

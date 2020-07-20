@@ -3,7 +3,7 @@
 
 {% set col=selector['column'] %}
 
-<h6>{{ col }}</h6>
+<h6>{{ selector['text'].format(col) }}</h6>
     {% for position in ['upper', 'lower'] %}
         <div class="input-group">
         <div class="input-group-prepend">

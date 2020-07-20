@@ -42,24 +42,10 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     return page_info
 
 
-def remove_redundant_filters_from_active_selectors(data_selectors):
-    """
-    Modifies plot_specification[SELECTABLE_DATA_LIST] in place to remove other filters
-    in the case when SHOW_ALL_ROW is selected
-    :return:
-    """
-    for selector in data_selectors:
-        if SHOW_ALL_ROW in selector.get(ACTIVE_SELECTORS, []):
-            selector[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
-
-
 def get_data_selection_info_for_page_render(plot_specification, plot_data_handler):
     select_info = []
     # checks to see if this plot has selectors
     if SELECTABLE_DATA_LIST in plot_specification:
-        remove_redundant_filters_from_active_selectors(
-            plot_specification[SELECTABLE_DATA_LIST]
-        )
         select_info = create_data_subselect_info_for_plot(
             plot_specification, plot_data_handler
         )
@@ -200,21 +186,33 @@ def create_data_subselect_info_for_plot(
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        column = selection_option_dict_for_plot[OPTION_COL]
+        column = selection_option_dict_for_plot.get(OPTION_COL, "")
         selector_entries = []
+
+        option_dict = selection_option_dict_for_plot.get(SELECT_OPTION, {})
+        if MULTIPLE not in option_dict:
+            option_dict[MULTIPLE] = False
         active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
+
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
             selector_entries = data_handler.get_column_unique_entries(
                 [column], filters=plot_specification.get(DATA_FILTERS)
             )
             selector_entries = selector_entries[column]
             selector_entries.sort()
+            # append show_all_rows to the front of the list
+            selector_entries.insert(0, SHOW_ALL_ROW)
+
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
             selector_entries.sort()
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == GROUPBY:
+            selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+            selector_entries.sort()
+            # append no_group_by to the front of the list
+            selector_entries.insert(0, NO_GROUP_BY)
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
             selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
-        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
             {
@@ -223,7 +221,8 @@ def create_data_subselect_info_for_plot(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: selector_entries,
-                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION, {}),
+                SELECT_OPTION: option_dict,
+                TEXT: selector_attributes[TEXT],
             }
         )
 
