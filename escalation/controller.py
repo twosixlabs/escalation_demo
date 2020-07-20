@@ -38,6 +38,29 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
     return page_info
 
 
+def remove_redundant_filters_from_active_selectors(data_selectors):
+    """
+    Modifies plot_specification[SELECTABLE_DATA_LIST] in place to remove other filters
+    in the case when SHOW_ALL_ROW is selected
+    :return:
+    """
+    for selector in data_selectors:
+        if SHOW_ALL_ROW in selector.get(ACTIVE_SELECTORS, []):
+            selector[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
+
+
+def get_data_selection_info_for_page_render(plot_specification, plot_data_handler):
+    select_info = []
+    # checks to see if this plot has selectors
+    if SELECTABLE_DATA_LIST in plot_specification:
+        remove_redundant_filters_from_active_selectors(
+            plot_specification[SELECTABLE_DATA_LIST]
+        )
+        select_dict = plot_specification[SELECTABLE_DATA_LIST]
+        select_info = create_data_subselect_info(select_dict, plot_data_handler)
+    return select_info
+
+
 def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
@@ -60,7 +83,7 @@ def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) ->
         select_info = []
         # checks to see if this plot has selectors
         if SELECTABLE_DATA_LIST in plot_specification:
-            select_info = create_data_subselect_info_for_plot(
+            select_info = get_data_selection_info_for_page_render(
                 plot_specification, plot_data_handler
             )
 
@@ -186,6 +209,7 @@ def create_data_subselect_info_for_plot(
             selector_entries.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
             selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
+        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
             {
