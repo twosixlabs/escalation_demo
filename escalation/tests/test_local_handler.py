@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 from flask import current_app
 import pandas as pd
 
@@ -99,7 +102,6 @@ def test_build_combined_data_table(test_app_client):
 
 
 def test_build_combined_data_table_with_filtered_data_source(test_app_client):
-    FILENAME_PLACEHOLDER = "filename_placeholder"  # this is currently ignored
     current_app.config.active_data_source_filters = {
         "penguin_size": ["tests/test_data/penguin_size/penguin_size.csv"]
     }
