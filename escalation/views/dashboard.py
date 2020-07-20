@@ -27,6 +27,7 @@ def new_graphic_page(page_name):
     html_data = get_data_for_page(
         current_app.config.get(APP_CONFIG_JSON),
         page_name,
+        # request.form[PROCESS]=='' means the reset button sent the request
         request.form if request.form[PROCESS] else None,
     )
     return render_template(DATALAYOUT, **html_data)
