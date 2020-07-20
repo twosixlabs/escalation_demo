@@ -13,12 +13,13 @@
     </p>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid pl-5 pr-5">
     {% for plot in plots %}
     {% set plot_id = plot['plot_id'] %}
     <form method="post" id={{
     "form_" ~ plot_id  }}>
     <input type="hidden" name="graphic_name" value={{ plot_id }}>
+    <input type="hidden" name="process" value="true">
     </form>
     <div class="row" id={{
     plot_id }}>
@@ -38,8 +39,8 @@
             {% endfor %}
             <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ plot_id }}')>Update
             </button>
-            <a href={{ url_for('.graphic_page', page_name=current_page) }} role="button" class="btn btn-secondary btn-lg">Reset
-            </a>
+            <button type="button" class="btn btn-secondary btn-lg" onclick=reset_form('{{ plot_id }}')>Reset
+            </button>
         </div>
     </div>
 
