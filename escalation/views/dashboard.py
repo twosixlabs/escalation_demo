@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 from flask import current_app, render_template, Blueprint, request
 from utility.constants import APP_CONFIG_JSON, PROCESS
 from controller import get_data_for_page

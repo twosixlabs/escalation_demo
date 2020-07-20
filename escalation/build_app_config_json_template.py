@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import json
 
 from graphics.plotly_plot import (
@@ -44,10 +47,7 @@ def build_config_json_template():
                                 OPTION_TYPE: AGGREGATE,
                                 COLUMN_NAME: [""],
                                 SELECT_OPTION: {
-                                    AGGREGATIONS: {
-                                        "<axis>": "<function e.g. avg>",
-                                        "<axis>": "<function>",
-                                    }
+                                    AGGREGATIONS: {"<axis>": "<function e.g. avg>",}
                                 },
                             },
                         ],

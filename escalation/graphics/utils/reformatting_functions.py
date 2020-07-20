@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 from collections import defaultdict
 
 from werkzeug.datastructures import ImmutableMultiDict
@@ -179,4 +182,6 @@ def get_base_info_for_selector(selection_dict):
         OPTION_TYPE: option_type,
         COLUMN_NAME: selection_dict[COLUMN_NAME],
     }
+    if UNFILTERED_SELECTOR in selection_dict:
+        base_info_dict_for_selector[UNFILTERED_SELECTOR] = True
     return option_type, base_info_dict_for_selector

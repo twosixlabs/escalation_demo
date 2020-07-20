@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import copy
 
 from flask import current_app
@@ -28,7 +31,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         single_page_config_dict = add_instructions_to_config_dict(
             single_page_config_dict, addendum_dict
         )
-        plot_specs = organize_graphic(single_page_config_dict)
+        plot_specs = assemble_html_with_graphs_from_page_config(single_page_config_dict)
 
     page_info = {
         JINJA_PLOT: plot_specs,
@@ -57,12 +60,13 @@ def get_data_selection_info_for_page_render(plot_specification, plot_data_handle
         remove_redundant_filters_from_active_selectors(
             plot_specification[SELECTABLE_DATA_LIST]
         )
-        select_dict = plot_specification[SELECTABLE_DATA_LIST]
-        select_info = create_data_subselect_info(select_dict, plot_data_handler)
+        select_info = create_data_subselect_info_for_plot(
+            plot_specification, plot_data_handler
+        )
     return select_info
 
 
-def organize_graphic(single_page_config_dict: dict) -> list:
+def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
@@ -77,12 +81,16 @@ def organize_graphic(single_page_config_dict: dict) -> list:
             plot_specification[DATA_SOURCES]
         )
 
-        (plot_directions_dict, graph_html_template) = assemble_info_for_plot(
+        (plot_directions_dict, graph_html_template) = assemble_plot_from_instructions(
             plot_specification, plot_data_handler
         )
-        select_info = get_data_selection_info_for_page_render(
-            plot_specification, plot_data_handler
-        )
+
+        select_info = []
+        # checks to see if this plot has selectors
+        if SELECTABLE_DATA_LIST in plot_specification:
+            select_info = get_data_selection_info_for_page_render(
+                plot_specification, plot_data_handler
+            )
 
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graph_html_template,
@@ -96,7 +104,7 @@ def organize_graphic(single_page_config_dict: dict) -> list:
     return plot_specs
 
 
-def assemble_info_for_plot(plot_specification, plot_data_handler):
+def assemble_plot_from_instructions(plot_specification, plot_data_handler):
     """
     assembles the dictionary needed to render the graphic
     a string with the html file that use the aforementioned dictionary
@@ -173,18 +181,19 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
     return buttons
 
 
-def create_data_subselect_info(
-    list_of_selection_options_by_plot: list, data_handler: DataHandler
+def create_data_subselect_info_for_plot(
+    plot_specification, data_handler: DataHandler,
 ) -> list:
     """
     puts selector data in form to be read by html file
-    :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
+    :param plot_specification:
     :param data_handler:
     :return:
     """
+
     select_info = []
     for selection_index, selection_option_dict_for_plot in enumerate(
-        list_of_selection_options_by_plot
+        plot_specification[SELECTABLE_DATA_LIST]
     ):
 
         selector_attributes = AVAILABLE_SELECTORS[
@@ -193,9 +202,11 @@ def create_data_subselect_info(
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
         column = selection_option_dict_for_plot[OPTION_COL]
         selector_entries = []
-
+        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
-            selector_entries = data_handler.get_column_unique_entries([column])
+            selector_entries = data_handler.get_column_unique_entries(
+                [column], filters=plot_specification.get(DATA_FILTERS)
+            )
             selector_entries = selector_entries[column]
             selector_entries.sort()
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
