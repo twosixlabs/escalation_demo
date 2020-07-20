@@ -108,8 +108,8 @@ class LocalCSVHandler(DataHandler):
         for col in cols:
             if any(
                 [
-                    (f[COLUMN_NAME] == col and f.get(UNFILTERED_SELECTOR))
-                    for f in filters
+                    (filter_[COLUMN_NAME] == col and filter_.get(UNFILTERED_SELECTOR))
+                    for filter_ in filters
                 ]
             ):
                 # if this column matches one in the filters dict that is listed as an

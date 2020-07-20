@@ -172,8 +172,8 @@ class SqlHandler(DataHandler):
             # skip this and don't apply the filters before looking for unique values
             if not any(
                 [
-                    (f[COLUMN_NAME] == col and f.get(UNFILTERED_SELECTOR))
-                    for f in filters
+                    (filter_[COLUMN_NAME] == col and filter_.get(UNFILTERED_SELECTOR))
+                    for filter_ in filters
                 ]
             ):
                 query = self.apply_filters_to_query(query, filters)
