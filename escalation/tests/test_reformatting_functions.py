@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import copy
 import json
 
@@ -162,7 +165,10 @@ def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
     )
     assert DATA_FILTERS in single_page_config_dict_test[GRAPHIC_NUM.format(0)]
 
-def test_add_instructions_to_config_dict_with_different_addendum(single_page_config_dict_and_addendum):
+
+def test_add_instructions_to_config_dict_with_different_addendum(
+    single_page_config_dict_and_addendum,
+):
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
     addendum_dict = ImmutableMultiDict(
@@ -180,6 +186,6 @@ def test_add_instructions_to_config_dict_with_different_addendum(single_page_con
     single_page_config_dict_test = add_instructions_to_config_dict(
         single_page_config_dict_test, addendum_dict
     )
-    graphic_0_dict=single_page_config_dict_test["graphic_0"]
+    graphic_0_dict = single_page_config_dict_test["graphic_0"]
     assert len(graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]

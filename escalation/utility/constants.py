@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 APP_CONFIG_JSON = "app_config_json"
 
 # app config keys
