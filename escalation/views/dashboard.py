@@ -2,7 +2,7 @@
 # Licensed under the Apache License, Version 2.0
 
 from flask import current_app, render_template, Blueprint, request
-from utility.constants import APP_CONFIG_JSON
+from utility.constants import APP_CONFIG_JSON, PROCESS
 from controller import get_data_for_page
 
 DATALAYOUT = "datalayout.html"
@@ -25,6 +25,9 @@ def graphic_page(page_name):
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["POST"])
 def new_graphic_page(page_name):
     html_data = get_data_for_page(
-        current_app.config.get(APP_CONFIG_JSON), page_name, request.form
+        current_app.config.get(APP_CONFIG_JSON),
+        page_name,
+        # request.form[PROCESS]=='' means the reset button sent the request
+        request.form if request.form[PROCESS] else None,
     )
     return render_template(DATALAYOUT, **html_data)

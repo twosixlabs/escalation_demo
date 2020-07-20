@@ -37,6 +37,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         JINJA_PLOT: plot_specs,
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
+        CURRENT_PAGE: display_page,
     }
     return page_info
 

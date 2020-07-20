@@ -20,6 +20,7 @@ MYSQL = "mysql"
 LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 
+
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"
@@ -29,11 +30,10 @@ JOIN_KEYS = "join_keys"
 DATA_LOCATION = "filepath"
 TABLE_COLUMN_SEPARATOR = ":"
 DEFAULT_SELECTED = "default_selected"
-
+CURRENT_PAGE = "current_page"
 DATA = "data"
 DATA_FILTERS = "data_filters"
 PLOT_MANAGER = "plot_manager"
-
 VISUALIZATION_OPTIONS = "visualization_options"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_SPECIFIC_INFO = "plot_specific_info"
@@ -91,3 +91,6 @@ UPLOAD_TIME = "upload_time"
 GRAPHIC_NAME = "graphic_name"
 SELECTION_NUM = "selection_{:d}"
 SELECTION_NUM_LOC_TYPE = "selection_{:d}_{}_{}"
+
+
+PROCESS = "process"
