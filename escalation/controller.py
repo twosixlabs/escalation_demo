@@ -56,8 +56,9 @@ def get_data_selection_info_for_page_render(plot_specification, plot_data_handle
         remove_redundant_filters_from_active_selectors(
             plot_specification[SELECTABLE_DATA_LIST]
         )
-        select_dict = plot_specification[SELECTABLE_DATA_LIST]
-        select_info = create_data_subselect_info(select_dict, plot_data_handler)
+        select_info = create_data_subselect_info_for_plot(
+            plot_specification, plot_data_handler
+        )
     return select_info
 
 

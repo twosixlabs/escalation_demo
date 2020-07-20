@@ -104,8 +104,9 @@ class LocalCSVHandler(DataHandler):
 
         unique_dict = {}
         for col in cols:
+            # entry == entry is a shortcut to remove None and NaN values
             unique_dict[col] = [
-                str(entry) for entry in df[col].unique() if entry is not None
+                str(entry) for entry in df[col].unique() if entry == entry
             ]
         return unique_dict
 
