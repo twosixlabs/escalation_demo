@@ -2,9 +2,10 @@
 
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
-- Choose and add a software license to Escalation OS
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
+- make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
+- rewrite tests that rely on a specific config file
 
 
 # Nice to have Features

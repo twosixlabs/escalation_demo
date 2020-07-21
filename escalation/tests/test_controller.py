@@ -8,7 +8,6 @@ from controller import (
     create_data_subselect_info_for_plot,
     get_unique_set_of_columns_needed,
     get_data_selection_info_for_page_render,
-    remove_redundant_filters_from_active_selectors,
 )
 from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
@@ -21,6 +20,7 @@ from utility.constants import (
     AVAILABLE_PAGES,
     GRAPHICS,
     SELECTABLE_DATA_LIST,
+    TEXT,
 )
 
 
@@ -64,9 +64,9 @@ def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
         json_config_fixture, local_handler_fixture
     )
 
-    assert select_info[0][JINJA_SELECT_HTML_FILE] == "select_filter.html"
+    assert select_info[0][JINJA_SELECT_HTML_FILE] == "selector.html"
     assert select_info[1][COLUMN_NAME] == "penguin_size:island"
-    assert select_info[2][JINJA_SELECT_HTML_FILE] == "select_axis.html"
+    assert select_info[2][JINJA_SELECT_HTML_FILE] == "selector.html"
 
     assert "MALE" in select_info[0][ACTIVE_SELECTORS]
     assert "MALE" in select_info[0][ENTRIES]
@@ -109,6 +109,7 @@ def test_get_unique_set_of_columns_needed():
 def test_get_data_selection_info_for_page_render(
     local_handler_fixture, json_config_fixture
 ):
+    # todo rewrite test
     plot_specification = json_config_fixture[AVAILABLE_PAGES]["penguins"][GRAPHICS][
         "graphic_0"
     ]
@@ -119,22 +120,25 @@ def test_get_data_selection_info_for_page_render(
         plot_specification, local_handler_fixture
     )
 
+    print(select_info)
     expected_select_info = [
         {
-            "select_html_file": "select_filter.html",
+            "select_html_file": "selector.html",
             "type": "filter",
             "column": "penguin_size:sex",
             "active_selector": ["SHOW_ALL_ROW"],
-            "entries": [".", "FEMALE", "MALE"],
+            "entries": [SHOW_ALL_ROW, ".", "FEMALE", "MALE"],
             "options": {"multiple": False},
+            TEXT: "Filter by {}",
         },
         {
-            "select_html_file": "select_filter.html",
+            "select_html_file": "selector.html",
             "type": "filter",
             "column": "penguin_size:island",
             "active_selector": ["SHOW_ALL_ROW"],
-            "entries": ["Biscoe", "Dream", "Torgersen"],
+            "entries": [SHOW_ALL_ROW, "Biscoe", "Dream", "Torgersen"],
             "options": {"multiple": True},
+            TEXT: "Filter by {}",
         },
         {
             "select_html_file": "numerical_filter.html",
@@ -142,26 +146,8 @@ def test_get_data_selection_info_for_page_render(
             "column": "penguin_size:culmen_length_mm",
             "active_selector": ["SHOW_ALL_ROW"],
             "entries": OPERATIONS_FOR_NUMERICAL_FILTERS.keys(),
-            "options": {},
+            "options": {"multiple": False},
+            TEXT: "Filter by {}",
         },
     ]
-    assert select_info == expected_select_info
-
-
-def test_remove_redundant_filters_from_active_selectors(
-    local_handler_fixture, json_config_fixture
-):
-    plot_specification = json_config_fixture[AVAILABLE_PAGES]["penguins"][GRAPHICS][
-        "graphic_0"
-    ]
-    # Male should be removed from this because we're also selecting SHOW_ALL_ROW
-    selectable_list_1 = plot_specification[SELECTABLE_DATA_LIST][0]
-    selectable_list_1.update({ACTIVE_SELECTORS: [SHOW_ALL_ROW, "MALE"]})
-    selectable_list_2 = plot_specification[SELECTABLE_DATA_LIST][1]
-    selectable_list_2.update({ACTIVE_SELECTORS: ["Biscoe"]})
-    remove_redundant_filters_from_active_selectors(
-        plot_specification[SELECTABLE_DATA_LIST]
-    )
-
-    assert selectable_list_2[ACTIVE_SELECTORS] == ["Biscoe"]
-    assert selectable_list_1[ACTIVE_SELECTORS] == [SHOW_ALL_ROW]
+    assert False

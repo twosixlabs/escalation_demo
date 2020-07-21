@@ -19,7 +19,8 @@ def add_instructions_to_config_dict(
 ) -> dict:
     """
     We build a page based on 2 dictonaries, what is in the config and what is submitted in the HTML form.
-    :param single_page_graphic_config_dict:
+    :param single_page_graphic_config_dict: Copy of part of the original config dict.
+    Outside of getting the data, only functions in reformatting_functions.py should modifies the copy of config dict.
     :param addendum_dict: e.g ImmutableMultiDict([('graphic_name', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
     Should not pass an empty ImmutableMultiDict
@@ -32,12 +33,16 @@ def add_instructions_to_config_dict(
         if SELECTABLE_DATA_LIST in graphic_dict:
             selector_list = graphic_dict[SELECTABLE_DATA_LIST]
             data_info_dict = graphic_dict[DATA]
+            visualization_info_list = graphic_dict.get(VISUALIZATION_OPTIONS, [])
             if addendum_dict.get(GRAPHIC_NAME) == graphic_name:
                 add_active_selectors_to_selectable_data_list(
                     selector_list, data_info_dict, addendum_dict
                 )
                 graphic_dict[DATA_FILTERS] = add_operations_to_the_data_from_addendum(
-                    selector_list, data_info_dict, addendum_dict
+                    selector_list,
+                    data_info_dict,
+                    visualization_info_list,
+                    addendum_dict,
                 )
 
             else:
@@ -69,11 +74,15 @@ def add_active_selectors_to_selectable_data_list(
     for selection_index, selection_dict in enumerate(selectable_data_list):
         if selection_dict[SELECTOR_TYPE] == SELECTOR:
             # getlist does not not work like get so need to set default "manually"
-            selection_dict.get(DEFAULT_SELECTED)
             selection_index_str = SELECTION_NUM.format(selection_index)
-            selection_dict[ACTIVE_SELECTORS] = addendum_dict.getlist(
-                selection_index_str
-            ) or selection_dict.get(DEFAULT_SELECTED, [SHOW_ALL_ROW])
+            selected_filters = addendum_dict.getlist(selection_index_str)
+            if SHOW_ALL_ROW in selected_filters:
+                selection_dict[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
+            else:
+                selection_dict[ACTIVE_SELECTORS] = (
+                    selected_filters
+                    or selection_dict.get(DEFAULT_SELECTED, [SHOW_ALL_ROW])
+                )
         elif selection_dict[SELECTOR_TYPE] == AXIS:
             # in the case of no user selected the active selector is the one currently being plotted,
             # taken from the first set of points (index 0)
@@ -81,6 +90,17 @@ def add_active_selectors_to_selectable_data_list(
                 SELECTION_NUM.format(selection_index),
                 data_info_dict[POINTS_NUM.format(0)][selection_dict[COLUMN_NAME]],
             )
+        elif selection_dict[SELECTOR_TYPE] == GROUPBY:
+            selected_groupby = addendum_dict.getlist(
+                SELECTION_NUM.format(selection_index)
+            )
+            if NO_GROUP_BY in selected_groupby:
+                selection_dict[ACTIVE_SELECTORS] = [NO_GROUP_BY]
+            else:
+                selection_dict[ACTIVE_SELECTORS] = (
+                    selected_groupby
+                    or selection_dict.get(DEFAULT_SELECTED, [NO_GROUP_BY])
+                )
         elif selection_dict[SELECTOR_TYPE] == NUMERICAL_FILTER:
             locations = [UPPER_INEQUALITY, LOWER_INEQUALITY]
             active_numerical_filter_dict = defaultdict(dict)
@@ -95,12 +115,18 @@ def add_active_selectors_to_selectable_data_list(
 
 
 def add_operations_to_the_data_from_addendum(
-    selectable_data_list: list, data_info_dict: dict, addendum_dict: ImmutableMultiDict
+    selectable_data_list: list,
+    data_info_dict: dict,
+    visualization_info_list: list,
+    addendum_dict: ImmutableMultiDict,
 ) -> list:
     """
     Adds operations to be passed to the data handlers for the data
+    Broken into two major parts read in info from selection_dict and addendum_dict and then
+     output a filter dict or change visualization_info_list or data_info_dict depending on the kind of filter
     :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
     :param data_info_dict: Dictionary that has which data goes in which plot
+    :param visualization_info_list: List of visualization options (todo: this will be changed to dict)
     :param addendum_dict: User selections form the webpage
     :return:
     """
@@ -123,6 +149,15 @@ def add_operations_to_the_data_from_addendum(
             axis = selection_dict[COLUMN_NAME]
             for line_index, axis_dict in data_info_dict.items():
                 axis_dict[axis] = new_column_for_axis
+        # adds a group by
+        elif option_type == GROUPBY:
+            selection = addendum_dict.getlist(selection_index_str)
+            if len(selection) == 0 or NO_GROUP_BY in selection:
+                continue
+            visualization_info_list.append(
+                {SELECTOR_TYPE: GROUPBY, COLUMN_NAME: selection}
+            )
+
         # creates an operations where only the values following an (in)equality
         # along a column will be shown in the plot
         elif option_type == NUMERICAL_FILTER:
@@ -150,6 +185,7 @@ def add_operations_to_the_data_from_addendum(
 def add_operations_to_the_data_from_defaults(selectable_data_list: list) -> list:
     """
     Adds operations to be passed to the data handlers for the data
+    Broken into two major parts read in info from selection_dict and then output a filter dict
     :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
     :return:
     """
@@ -180,7 +216,7 @@ def get_base_info_for_selector(selection_dict):
     option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][OPTION_TYPE]
     base_info_dict_for_selector = {
         OPTION_TYPE: option_type,
-        COLUMN_NAME: selection_dict[COLUMN_NAME],
+        COLUMN_NAME: selection_dict.get(COLUMN_NAME, ""),
     }
     if UNFILTERED_SELECTOR in selection_dict:
         base_info_dict_for_selector[UNFILTERED_SELECTOR] = True
