@@ -186,9 +186,9 @@ def create_data_subselect_info_for_plot(
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        column = selection_option_dict_for_plot.get(OPTION_COL, "")
+        # Group_by selectors do not have to have a column entry.
+        column = selection_option_dict_for_plot.get(OPTION_COL, "selector_{}".format(selection_index))
         selector_entries = []
-
         option_dict = selection_option_dict_for_plot.get(SELECT_OPTION, {})
         if MULTIPLE not in option_dict:
             option_dict[MULTIPLE] = False

@@ -159,7 +159,6 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                     "title": "Selector Dict",
                                                     "required": [
                                                         SELECTOR_TYPE,
-                                                        COLUMN_NAME,
                                                     ],
                                                     "additionalProperties": True,  # cannot have false and if statements
                                                     "properties": {
@@ -185,6 +184,9 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                         }
                                                     },
                                                     "then": {
+                                                        "required": [
+                                                            COLUMN_NAME,
+                                                        ],
                                                         "properties": {
                                                             COLUMN_NAME: {
                                                                 "type": "string",
