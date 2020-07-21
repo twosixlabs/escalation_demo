@@ -54,17 +54,6 @@ def add_instructions_to_config_dict(
     return single_page_graphic_config_dict
 
 
-def remove_redundant_filters_from_active_selectors(data_selectors):
-    """
-    Modifies plot_specification[SELECTABLE_DATA_LIST] in place to remove other filters
-    in the case when SHOW_ALL_ROW is selected
-    :return:
-    """
-    for selector in data_selectors:
-        if SHOW_ALL_ROW in selector.get(ACTIVE_SELECTORS, []):
-            selector[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
-
-
 def add_active_selectors_to_selectable_data_list(
     selectable_data_list: list,
     data_info_dict: dict,
@@ -224,7 +213,7 @@ def get_base_info_for_selector(selection_dict):
     option_type = AVAILABLE_SELECTORS[selection_dict[SELECTOR_TYPE]][OPTION_TYPE]
     base_info_dict_for_selector = {
         OPTION_TYPE: option_type,
-        COLUMN_NAME: selection_dict.get(COLUMN_NAME, ''),
+        COLUMN_NAME: selection_dict.get(COLUMN_NAME, ""),
     }
     if UNFILTERED_SELECTOR in selection_dict:
         base_info_dict_for_selector[UNFILTERED_SELECTOR] = True
