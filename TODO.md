@@ -12,6 +12,7 @@
 # Nice to have Features
 
 ## graphics functionality
+- Move plot_manager to the top level of the config? I think we can assume we don't have more than one plot manager for a dashboard?
 - Use more of the screen real estate. How is Plotly deciding how big to make a plot? How can we control it?
 - Sometimes opening a filter selector, with long strings, results in the selector stretching past the right edge of the screen and introducing a horizontal scroll bar- you can't see which options you've selected
 - Allow user to add their own hand-coded Plotly plots- where do they do the config, how is it included in the HTML?

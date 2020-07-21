@@ -56,7 +56,7 @@ circuit_function_line = {
             OPTION_COL: "flow_meta:strain_name",
             SELECT_OPTION: {"multiple": True},
         },
-        {"type": "numerical_filter", OPTION_COL: "growth_rate:doubling_time"},
+        {SELECTOR_TYPE: "numerical_filter", OPTION_COL: "growth_rate:doubling_time"},
     ],
 }
 
@@ -276,57 +276,56 @@ plate_reader_od = {
     ],
 }
 
-flow_cell_density = (
-    {
-        PLOT_MANAGER: "plotly",
-        DATA_SOURCES: [{DATA_SOURCE_TYPE: "flow_meta"}],
-        GRAPHIC_TITLE: "Growth data from flow",
-        GRAPHIC_DESC: "",
-        "data": {"points_0": {"x": "flow_meta:timepoint", "y": "flow_meta:cells/mL",}},
-        PLOT_SPECIFIC_INFO: {
-            "data": [{"type": "scatter", "mode": "lines+markers"}],
-            "layout": {"hovermode": "closest"},
-        },
-        VISUALIZATION_OPTIONS: [
-            {
-                "type": "hover_data",
-                COLUMN_NAME: [
-                    "flow_meta:well",
-                    "flow_meta:replicate_group_string",
-                    "flow_meta:date_of_experiment",
-                ],
-            },
-            {
-                "type": "groupby",
-                COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
-            },
-        ],
-        SELECTABLE_DATA_LIST: [
-            {
-                SELECTOR_TYPE: "select",
-                OPTION_COL: "flow_meta:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
-                UNFILTERED_SELECTOR: True,
-            },
-            {
-                SELECTOR_TYPE: "select",
-                OPTION_COL: "flow_meta:control_type",
-                SELECT_OPTION: {"multiple": True},
-            },
-            {
-                SELECTOR_TYPE: "select",
-                OPTION_COL: "flow_meta:strain",
-                SELECT_OPTION: {"multiple": True},
-            },
-            {
-                SELECTOR_TYPE: "select",
-                OPTION_COL: "flow_meta:date_of_experiment",
-                SELECT_OPTION: {"multiple": True},
-            },
-        ],
+flow_cell_density = {
+    PLOT_MANAGER: "plotly",
+    DATA_SOURCES: [{DATA_SOURCE_TYPE: "flow_meta"}],
+    GRAPHIC_TITLE: "Growth data from flow",
+    GRAPHIC_DESC: "",
+    "data": {"points_0": {"x": "flow_meta:timepoint", "y": "flow_meta:cells/mL",}},
+    PLOT_SPECIFIC_INFO: {
+        "data": [{"type": "scatter", "mode": "lines+markers"}],
+        "layout": {"hovermode": "closest"},
     },
-)
+    VISUALIZATION_OPTIONS: [
+        {
+            "type": "hover_data",
+            COLUMN_NAME: [
+                "flow_meta:well",
+                "flow_meta:replicate_group_string",
+                "flow_meta:date_of_experiment",
+            ],
+        },
+        {
+            "type": "groupby",
+            COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
+        },
+    ],
+    SELECTABLE_DATA_LIST: [
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "flow_meta:experiment_reference",
+            SELECT_OPTION: {"multiple": True},
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            UNFILTERED_SELECTOR: True,
+        },
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "flow_meta:control_type",
+            SELECT_OPTION: {"multiple": True},
+        },
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "flow_meta:strain",
+            SELECT_OPTION: {"multiple": True},
+        },
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "flow_meta:date_of_experiment",
+            SELECT_OPTION: {"multiple": True},
+        },
+    ],
+}
+
 
 growth_rate_plate_data = {
     PLOT_MANAGER: "plotly",
@@ -346,7 +345,7 @@ growth_rate_plate_data = {
     "data": {"points_0": {"y": "plate_reader:od", "x": "plate_reader:timepoint",}},
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        "layout": {"hovermode": "closest"},
+        "layout": {"hovermode": "closest", "height": 1000},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -392,31 +391,23 @@ growth_rate_plate_data = {
 }
 
 
-growth_rate_circuit_function_data = {
+inducer_diff_growth_rate = {
     PLOT_MANAGER: "plotly",
     DATA_SOURCES: [
         {DATA_SOURCE_TYPE: "fc_inducer_diff"},
         {
-            DATA_SOURCE_TYPE: "fc_time_diff",
+            DATA_SOURCE_TYPE: "growth_rate",
             JOIN_KEYS: [
                 (
                     "fc_inducer_diff:experiment_reference",
-                    "fc_time_diff:experiment_reference",
+                    "growth_rate:experiment_reference",
                 ),
-                ("fc_inducer_diff:experiment_id", "fc_time_diff:experiment_id",),
-                ("fc_inducer_diff:strain", "fc_time_diff:strain"),
-            ],
-        },
-        {
-            DATA_SOURCE_TYPE: "growth_rate",
-            JOIN_KEYS: [
-                ("fc_time_diff:well", "growth_rate:well"),
-                ("fc_time_diff:experiment_id", "growth_rate:experiment_id_long",),
-                ("fc_time_diff:strain", "growth_rate:strain"),
+                ("fc_inducer_diff:experiment_id", "growth_rate:experiment_id_long",),
+                ("fc_inducer_diff:strain", "growth_rate:strain"),
             ],
         },
     ],
-    GRAPHIC_TITLE: "On the Loop",
+    GRAPHIC_TITLE: "Fluorescence fold change by inducer",
     GRAPHIC_DESC: "",
     "data": {
         "points_0": {
@@ -434,7 +425,6 @@ growth_rate_circuit_function_data = {
             COLUMN_NAME: [
                 "fc_inducer_diff:experiment_reference",
                 "fc_inducer_diff:timepoint",
-                "fc_time_diff:inducer_concentration",
                 "growth_rate:doubling_time",
                 "growth_rate:well",
             ],
@@ -454,7 +444,86 @@ growth_rate_circuit_function_data = {
             SELECT_OPTION: {"multiple": True},
         },
         {"type": "numerical_filter", OPTION_COL: "growth_rate:doubling_time",},
-        {"type": "numerical_filter", OPTION_COL: "fc_inducer_diff:wasserstein_median",},
+        {"type": "numerical_filter", OPTION_COL: "fc_inducer_diff:wasserstein_median"},
+        {
+            SELECTOR_TYPE: "axis",
+            OPTION_COL: "y",
+            SELECT_OPTION: {
+                "entries": [
+                    "fc_inducer_diff:wasserstein_min",
+                    "fc_inducer_diff:wasserstein_median",
+                    "fc_inducer_diff:wasserstein_max",
+                ]
+            },
+        },
+    ],
+}
+
+
+time_diff_growth_rate = {
+    GRAPHIC_TITLE: "Fluorescence fold change over time",
+    PLOT_MANAGER: "plotly",
+    DATA_SOURCES: [
+        {DATA_SOURCE_TYPE: "fc_time_diff"},
+        {
+            DATA_SOURCE_TYPE: "growth_rate",
+            JOIN_KEYS: [
+                (
+                    "fc_time_diff:experiment_reference",
+                    "growth_rate:experiment_reference",
+                ),
+                ("fc_time_diff:experiment_id", "growth_rate:experiment_id_long",),
+                ("fc_time_diff:strain", "growth_rate:strain"),
+            ],
+        },
+    ],
+    GRAPHIC_DESC: "",
+    "data": {
+        "points_0": {
+            "y": "fc_time_diff:wasserstein_median",
+            "x": "fc_time_diff:strain",
+        }
+    },
+    PLOT_SPECIFIC_INFO: {
+        "data": [{"type": "scatter", "mode": "markers"}],
+        "layout": {"hovermode": "closest"},
+    },
+    VISUALIZATION_OPTIONS: [
+        {
+            "type": "hover_data",
+            COLUMN_NAME: [
+                "fc_time_diff:experiment_reference",
+                "growth_rate:doubling_time",
+                "fc_time_diff:well",
+            ],
+        },
+    ],
+    SELECTABLE_DATA_LIST: [
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "fc_time_diff:experiment_reference",
+            SELECT_OPTION: {"multiple": True},
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            UNFILTERED_SELECTOR: True,
+        },
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "fc_time_diff:strain",
+            SELECT_OPTION: {"multiple": True},
+        },
+        {"type": "numerical_filter", OPTION_COL: "growth_rate:doubling_time",},
+        {"type": "numerical_filter", OPTION_COL: "fc_time_diff:wasserstein_median"},
+        {
+            SELECTOR_TYPE: "axis",
+            OPTION_COL: "y",
+            SELECT_OPTION: {
+                "entries": [
+                    "fc_time_diff:wasserstein_min",
+                    "fc_time_diff:wasserstein_median",
+                    "fc_time_diff:wasserstein_max",
+                ]
+            },
+        },
     ],
 }
 
@@ -545,25 +614,24 @@ config_dict = {
     AVAILABLE_PAGES: {
         "replicate_summary": {
             BUTTON_LABEL: "Data Converge Replicate Summary",
-            "graphics": {
-                "plate_reader_circuit_function": plate_reader_circuit_function
-            },
+            GRAPHICS: {"plate_reader_circuit_function": plate_reader_circuit_function},
         },
         "growth_summary": {
             BUTTON_LABEL: "Basic Growth Summary",
-            "graphics": {
+            GRAPHICS: {
                 "plate_reader_od": plate_reader_od,
                 "flow_cell_density": flow_cell_density,
             },
         },
         "growth_curves": {
             BUTTON_LABEL: "Growth Rate Info",
-            "graphics": {"growth_rate_plate_data": growth_rate_plate_data},
+            GRAPHICS: {"growth_rate_plate_data": growth_rate_plate_data},
         },
         "on_the_loop": {
             BUTTON_LABEL: "On the Loop Assistant",
-            "graphics": {
-                "growth_rate_circuit_function_data": growth_rate_circuit_function_data,
+            GRAPHICS: {
+                "growth_rate_circuit_function_inducer_diff": inducer_diff_growth_rate,
+                "growth_rate_circuit_function_time_diff": time_diff_growth_rate,
                 "growth_rates_circuit_function": growth_rates_vs_circuit_function,
             },
         },

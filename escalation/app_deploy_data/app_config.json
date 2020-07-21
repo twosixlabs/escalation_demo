@@ -165,84 +165,82 @@
                         }
                     ]
                 },
-                "flow_cell_density": [
-                    {
-                        "plot_manager": "plotly",
-                        "data_sources": [
+                "flow_cell_density": {
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "flow_meta"
+                        }
+                    ],
+                    "title": "Growth data from flow",
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "x": "flow_meta:timepoint",
+                            "y": "flow_meta:cells/mL"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
                             {
-                                "data_source_type": "flow_meta"
+                                "type": "scatter",
+                                "mode": "lines+markers"
                             }
                         ],
-                        "title": "Growth data from flow",
-                        "brief_desc": "",
-                        "data": {
-                            "points_0": {
-                                "x": "flow_meta:timepoint",
-                                "y": "flow_meta:cells/mL"
+                        "layout": {
+                            "hovermode": "closest"
+                        }
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:replicate_group_string",
+                                "flow_meta:date_of_experiment"
+                            ]
+                        },
+                        {
+                            "type": "groupby",
+                            "column": [
+                                "flow_meta:well",
+                                "flow_meta:experiment_id"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "flow_meta:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
+                            "unfiltered_selector": true
+                        },
+                        {
+                            "type": "select",
+                            "column": "flow_meta:control_type",
+                            "options": {
+                                "multiple": true
                             }
                         },
-                        "plot_specific_info": {
-                            "data": [
-                                {
-                                    "type": "scatter",
-                                    "mode": "lines+markers"
-                                }
-                            ],
-                            "layout": {
-                                "hovermode": "closest"
+                        {
+                            "type": "select",
+                            "column": "flow_meta:strain",
+                            "options": {
+                                "multiple": true
                             }
                         },
-                        "visualization_options": [
-                            {
-                                "type": "hover_data",
-                                "column": [
-                                    "flow_meta:well",
-                                    "flow_meta:replicate_group_string",
-                                    "flow_meta:date_of_experiment"
-                                ]
-                            },
-                            {
-                                "type": "groupby",
-                                "column": [
-                                    "flow_meta:well",
-                                    "flow_meta:experiment_id"
-                                ]
+                        {
+                            "type": "select",
+                            "column": "flow_meta:date_of_experiment",
+                            "options": {
+                                "multiple": true
                             }
-                        ],
-                        "selectable_data_list": [
-                            {
-                                "type": "select",
-                                "column": "flow_meta:experiment_reference",
-                                "options": {
-                                    "multiple": true
-                                },
-                                "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
-                                "unfiltered_selector": true
-                            },
-                            {
-                                "type": "select",
-                                "column": "flow_meta:control_type",
-                                "options": {
-                                    "multiple": true
-                                }
-                            },
-                            {
-                                "type": "select",
-                                "column": "flow_meta:strain",
-                                "options": {
-                                    "multiple": true
-                                }
-                            },
-                            {
-                                "type": "select",
-                                "column": "flow_meta:date_of_experiment",
-                                "options": {
-                                    "multiple": true
-                                }
-                            }
-                        ]
-                    }
-                ]
+                        }
+                    ]
+                }
             }
         },
         "growth_curves": {
@@ -347,48 +345,31 @@
         "on_the_loop": {
             "button_label": "On the Loop Assistant",
             "graphics": {
-                "growth_rate_circuit_function_data": {
+                "growth_rate_circuit_function_inducer_diff": {
                     "plot_manager": "plotly",
                     "data_sources": [
                         {
                             "data_source_type": "fc_inducer_diff"
                         },
                         {
-                            "data_source_type": "fc_time_diff",
-                            "join_keys": [
-                                [
-                                    "fc_inducer_diff:experiment_reference",
-                                    "fc_time_diff:experiment_reference"
-                                ],
-                                [
-                                    "fc_inducer_diff:experiment_id",
-                                    "fc_time_diff:experiment_id"
-                                ],
-                                [
-                                    "fc_inducer_diff:strain",
-                                    "fc_time_diff:strain"
-                                ]
-                            ]
-                        },
-                        {
                             "data_source_type": "growth_rate",
                             "join_keys": [
                                 [
-                                    "fc_time_diff:well",
-                                    "growth_rate:well"
+                                    "fc_inducer_diff:experiment_reference",
+                                    "growth_rate:experiment_reference"
                                 ],
                                 [
-                                    "fc_time_diff:experiment_id",
+                                    "fc_inducer_diff:experiment_id",
                                     "growth_rate:experiment_id_long"
                                 ],
                                 [
-                                    "fc_time_diff:strain",
+                                    "fc_inducer_diff:strain",
                                     "growth_rate:strain"
                                 ]
                             ]
                         }
                     ],
-                    "title": "On the Loop",
+                    "title": "Fluorescence fold change by inducer",
                     "brief_desc": "",
                     "data": {
                         "points_0": {
@@ -413,7 +394,6 @@
                             "column": [
                                 "fc_inducer_diff:experiment_reference",
                                 "fc_inducer_diff:timepoint",
-                                "fc_time_diff:inducer_concentration",
                                 "growth_rate:doubling_time",
                                 "growth_rate:well"
                             ]
@@ -443,6 +423,108 @@
                         {
                             "type": "numerical_filter",
                             "column": "fc_inducer_diff:wasserstein_median"
+                        },
+                        {
+                            "type": "axis",
+                            "column": "y",
+                            "options": {
+                                "entries": [
+                                    "fc_inducer_diff:wasserstein_min",
+                                    "fc_inducer_diff:wasserstein_median",
+                                    "fc_inducer_diff:wasserstein_max"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "growth_rate_circuit_function_time_diff": {
+                    "title": "Fluorescence fold change over time",
+                    "plot_manager": "plotly",
+                    "data_sources": [
+                        {
+                            "data_source_type": "fc_time_diff"
+                        },
+                        {
+                            "data_source_type": "growth_rate",
+                            "join_keys": [
+                                [
+                                    "fc_time_diff:experiment_reference",
+                                    "growth_rate:experiment_reference"
+                                ],
+                                [
+                                    "fc_time_diff:experiment_id",
+                                    "growth_rate:experiment_id_long"
+                                ],
+                                [
+                                    "fc_time_diff:strain",
+                                    "growth_rate:strain"
+                                ]
+                            ]
+                        }
+                    ],
+                    "brief_desc": "",
+                    "data": {
+                        "points_0": {
+                            "y": "fc_time_diff:wasserstein_median",
+                            "x": "fc_time_diff:strain"
+                        }
+                    },
+                    "plot_specific_info": {
+                        "data": [
+                            {
+                                "type": "scatter",
+                                "mode": "markers"
+                            }
+                        ],
+                        "layout": {
+                            "hovermode": "closest"
+                        }
+                    },
+                    "visualization_options": [
+                        {
+                            "type": "hover_data",
+                            "column": [
+                                "fc_time_diff:experiment_reference",
+                                "growth_rate:doubling_time",
+                                "fc_time_diff:well"
+                            ]
+                        }
+                    ],
+                    "selectable_data_list": [
+                        {
+                            "type": "select",
+                            "column": "fc_time_diff:experiment_reference",
+                            "options": {
+                                "multiple": true
+                            },
+                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
+                            "unfiltered_selector": true
+                        },
+                        {
+                            "type": "select",
+                            "column": "fc_time_diff:strain",
+                            "options": {
+                                "multiple": true
+                            }
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "growth_rate:doubling_time"
+                        },
+                        {
+                            "type": "numerical_filter",
+                            "column": "fc_time_diff:wasserstein_median"
+                        },
+                        {
+                            "type": "axis",
+                            "column": "y",
+                            "options": {
+                                "entries": [
+                                    "fc_time_diff:wasserstein_min",
+                                    "fc_time_diff:wasserstein_median",
+                                    "fc_time_diff:wasserstein_max"
+                                ]
+                            }
                         }
                     ]
                 },
