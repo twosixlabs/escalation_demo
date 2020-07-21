@@ -26,10 +26,12 @@
     </form>
     <div class="row" id={{
     plot_id }}>
-    <h1> {{ plot['title'] }}</h1>
+    <div class="col-10">
+            <h1> {{ plot['title'] }} </h1>
+            <p>{{ plot['brief_desc'] }}</p>
     </div>
-    <div class="row">
-        {{ plot['brief_desc'] }}
+    <div class="col-2">
+    </div>
     </div>
     <div class="row">
         <div class="col-10">
