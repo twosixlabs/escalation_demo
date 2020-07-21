@@ -19,7 +19,8 @@ def add_instructions_to_config_dict(
 ) -> dict:
     """
     We build a page based on 2 dictonaries, what is in the config and what is submitted in the HTML form.
-    :param single_page_graphic_config_dict:
+    :param single_page_graphic_config_dict: Copy of part of the original config dict.
+    Outside of getting the data, only functions in reformatting_functions.py should modifies the copy of config dict.
     :param addendum_dict: e.g ImmutableMultiDict([('graphic_name', 'graphic_0'), ('selection_0', 'SHOW_ALL_ROW'),
      ('selection_2_upper_operation', '<='), ('selection_2_upper_value', '4'))])
     Should not pass an empty ImmutableMultiDict
@@ -121,10 +122,11 @@ def add_operations_to_the_data_from_addendum(
 ) -> list:
     """
     Adds operations to be passed to the data handlers for the data
-
+    Broken into two major parts read in info from selection_dict and addendum_dict and then
+     output a filter dict or change visualization_info_list or data_info_dict depending on the kind of filter
     :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
     :param data_info_dict: Dictionary that has which data goes in which plot
-    :param visualization_info_list: List of visualization options (to be changed to dict)
+    :param visualization_info_list: List of visualization options (todo: this will be changed to dict)
     :param addendum_dict: User selections form the webpage
     :return:
     """
@@ -183,6 +185,7 @@ def add_operations_to_the_data_from_addendum(
 def add_operations_to_the_data_from_defaults(selectable_data_list: list) -> list:
     """
     Adds operations to be passed to the data handlers for the data
+    Broken into two major parts read in info from selection_dict and then output a filter dict
     :param selectable_data_list: each element of the list is a dictionary on how to build the selector on the webpage
     :return:
     """

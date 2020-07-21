@@ -172,6 +172,8 @@ def create_data_subselect_info_for_plot(
 ) -> list:
     """
     puts selector data in form to be read by html file
+    Broken into two major parts read in info from selection_option_dict_for_plot and then populate
+     select_info elements
     :param plot_specification:
     :param data_handler:
     :return:
@@ -186,7 +188,9 @@ def create_data_subselect_info_for_plot(
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        # Group_by selectors do not have to have a column entry.
+        # In the config file Group_by selectors do not have to have a column entry
+        # because they do not act on a specific column however in the html the column entry is
+        # used as an identifier so we need a non empty column in our select_info items
         column = selection_option_dict_for_plot.get(
             OPTION_COL, "selector_{}".format(selection_index)
         )
