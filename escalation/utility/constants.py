@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 APP_CONFIG_JSON = "app_config_json"
 
 # app config keys
@@ -17,6 +20,7 @@ MYSQL = "mysql"
 LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 
+
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"
@@ -26,11 +30,10 @@ JOIN_KEYS = "join_keys"
 DATA_LOCATION = "filepath"
 TABLE_COLUMN_SEPARATOR = ":"
 DEFAULT_SELECTED = "default_selected"
-
+CURRENT_PAGE = "current_page"
 DATA = "data"
 DATA_FILTERS = "data_filters"
 PLOT_MANAGER = "plot_manager"
-
 VISUALIZATION_OPTIONS = "visualization_options"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_SPECIFIC_INFO = "plot_specific_info"
@@ -50,11 +53,14 @@ OBJECT = "object"
 SELECT_HTML_TEMPLATE = "select_html_template"
 COLUMN_NAME = "column"
 ENTRIES = "entries"
+TEXT = "text"
 SELECT_OPTION = "options"
 AXIS = "axis"
+GROUPBY = "groupby"
 SELECTOR = "select"
 SELECTOR_TYPE = "type"
 FILTER = "filter"
+UNFILTERED_SELECTOR = "unfiltered_selector"
 NUMERICAL_FILTER = "numerical_filter"
 INEQUALITIES = "inequalities"
 OPERATION = "operation"
@@ -64,8 +70,10 @@ INEQUALITY_LOC = "inequality_{}"
 UPPER_INEQUALITY = "upper"
 LOWER_INEQUALITY = "lower"
 LIST_OF_VALUES = "list_of_values"
+MULTIPLE = "multiple"
+NO_GROUP_BY = "NO_GROUP_BY"
 # ALL of row
-SHOW_ALL_ROW = "SHOW_ALL_ROW"
+SHOW_ALL_ROW = "SHOW_ALL_ROWS"
 
 # JINJA CONSTANTS
 JINJA_PLOT = "plots"
@@ -87,3 +95,6 @@ UPLOAD_TIME = "upload_time"
 GRAPHIC_NAME = "graphic_name"
 SELECTION_NUM = "selection_{:d}"
 SELECTION_NUM_LOC_TYPE = "selection_{:d}_{}_{}"
+
+
+PROCESS = "process"

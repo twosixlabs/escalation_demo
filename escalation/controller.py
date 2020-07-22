@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import copy
 
 from flask import current_app
@@ -28,17 +31,28 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
         single_page_config_dict = add_instructions_to_config_dict(
             single_page_config_dict, addendum_dict
         )
-        plot_specs = organize_graphic(single_page_config_dict)
+        plot_specs = assemble_html_with_graphs_from_page_config(single_page_config_dict)
 
     page_info = {
         JINJA_PLOT: plot_specs,
         SITE_TITLE: config_dict[SITE_TITLE],
         SITE_DESC: config_dict[SITE_DESC],
+        CURRENT_PAGE: display_page,
     }
     return page_info
 
 
-def organize_graphic(single_page_config_dict: dict) -> list:
+def get_data_selection_info_for_page_render(plot_specification, plot_data_handler):
+    select_info = []
+    # checks to see if this plot has selectors
+    if SELECTABLE_DATA_LIST in plot_specification:
+        select_info = create_data_subselect_info_for_plot(
+            plot_specification, plot_data_handler
+        )
+    return select_info
+
+
+def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) -> list:
     """
     creates dictionary to be read in by the html file to plot the graphics and selectors
     :param plot_list:
@@ -53,15 +67,16 @@ def organize_graphic(single_page_config_dict: dict) -> list:
             plot_specification[DATA_SOURCES]
         )
 
-        (plot_directions_dict, graph_html_template) = assemble_info_for_plot(
+        (plot_directions_dict, graph_html_template) = assemble_plot_from_instructions(
             plot_specification, plot_data_handler
         )
 
         select_info = []
         # checks to see if this plot has selectors
         if SELECTABLE_DATA_LIST in plot_specification:
-            select_dict = plot_specification[SELECTABLE_DATA_LIST]
-            select_info = create_data_subselect_info(select_dict, plot_data_handler)
+            select_info = get_data_selection_info_for_page_render(
+                plot_specification, plot_data_handler
+            )
 
         html_dict = {
             JINJA_GRAPH_HTML_FILE: graph_html_template,
@@ -75,7 +90,7 @@ def organize_graphic(single_page_config_dict: dict) -> list:
     return plot_specs
 
 
-def assemble_info_for_plot(plot_specification, plot_data_handler):
+def assemble_plot_from_instructions(plot_specification, plot_data_handler):
     """
     assembles the dictionary needed to render the graphic
     a string with the html file that use the aforementioned dictionary
@@ -152,38 +167,58 @@ def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
     return buttons
 
 
-def create_data_subselect_info(
-    list_of_selection_options_by_plot: list, data_handler: DataHandler
+def create_data_subselect_info_for_plot(
+    plot_specification, data_handler: DataHandler,
 ) -> list:
     """
     puts selector data in form to be read by html file
-    :param list_of_selection_options_by_plot: SELECTABLE_DATA_LIST entry in the json
+    Broken into two major parts read in info from selection_option_dict_for_plot and then populate
+     select_info elements
+    :param plot_specification:
     :param data_handler:
     :return:
     """
+
     select_info = []
     for selection_index, selection_option_dict_for_plot in enumerate(
-        list_of_selection_options_by_plot
+        plot_specification[SELECTABLE_DATA_LIST]
     ):
 
         selector_attributes = AVAILABLE_SELECTORS[
             selection_option_dict_for_plot[OPTION_TYPE]
         ]
         select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        column = selection_option_dict_for_plot[OPTION_COL]
+        # In the config file Group_by selectors do not have to have a column entry
+        # because they do not act on a specific column however in the html the column entry is
+        # used as an identifier so we need a non empty column in our select_info items
+        column = selection_option_dict_for_plot.get(
+            OPTION_COL, "selector_{}".format(selection_index)
+        )
         selector_entries = []
+        option_dict = selection_option_dict_for_plot.get(SELECT_OPTION, {})
+        if MULTIPLE not in option_dict:
+            option_dict[MULTIPLE] = False
+        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
-            selector_entries = data_handler.get_column_unique_entries([column])
+            selector_entries = data_handler.get_column_unique_entries(
+                [column], filters=plot_specification.get(DATA_FILTERS)
+            )
             selector_entries = selector_entries[column]
             selector_entries.sort()
+            # append show_all_rows to the front of the list
+            selector_entries.insert(0, SHOW_ALL_ROW)
+
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
             selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
             selector_entries.sort()
+        elif selection_option_dict_for_plot[SELECTOR_TYPE] == GROUPBY:
+            selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
+            selector_entries.sort()
+            # append no_group_by to the front of the list
+            selector_entries.insert(0, NO_GROUP_BY)
         elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
             selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
-
-        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
 
         select_info.append(
             {
@@ -192,7 +227,8 @@ def create_data_subselect_info(
                 COLUMN_NAME: column,
                 ACTIVE_SELECTORS: active_selection_options,
                 ENTRIES: selector_entries,
-                SELECT_OPTION: selection_option_dict_for_plot.get(SELECT_OPTION, {}),
+                SELECT_OPTION: option_dict,
+                TEXT: selector_attributes[TEXT],
             }
         )
 

@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 from abc import ABC, abstractmethod
 
 
@@ -17,10 +20,11 @@ class DataHandler(ABC):
         pass
 
     @abstractmethod
-    def get_column_unique_entries(self, cols: list) -> dict:
+    def get_column_unique_entries(self, cols: list, filters: []) -> dict:
         """
 
         :param cols: list of column names
+        :param filters: Optional list specifying how to filter contents of the the requested columns based on the row values
         :return: A dict keyed by column names and valued with the unique values in that column
         """
         pass

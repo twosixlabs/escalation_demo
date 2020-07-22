@@ -1,3 +1,6 @@
+<!--# Copyright [2020] [Two Six Labs, LLC]-->
+<!--# Licensed under the Apache License, Version 2.0-->
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -13,19 +16,22 @@
     </p>
 </div>
 
-<div class="container">
+<div class="container-fluid pl-5 pr-5">
     {% for plot in plots %}
     {% set plot_id = plot['plot_id'] %}
     <form method="post" id={{
     "form_" ~ plot_id  }}>
     <input type="hidden" name="graphic_name" value={{ plot_id }}>
+    <input type="hidden" name="process" value="true">
     </form>
     <div class="row" id={{
     plot_id }}>
-    <h1> {{ plot['title'] }}</h1>
+    <div class="col-10">
+            <h1> {{ plot['title'] }} </h1>
+            <p>{{ plot['brief_desc'] }}</p>
     </div>
-    <div class="row">
-        {{ plot['brief_desc'] }}
+    <div class="col-2">
+    </div>
     </div>
     <div class="row">
         <div class="col-10">
@@ -37,6 +43,8 @@
             {% include selector['select_html_file'] ignore missing %}
             {% endfor %}
             <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ plot_id }}')>Update
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick=reset_form('{{ plot_id }}')>Reset
             </button>
         </div>
     </div>

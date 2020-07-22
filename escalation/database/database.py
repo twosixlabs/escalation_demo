@@ -1,3 +1,7 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
+
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL

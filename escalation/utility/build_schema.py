@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import json
 
 from utility.constants import *
@@ -154,10 +157,7 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                 "items": {
                                                     "type": "object",
                                                     "title": "Selector Dict",
-                                                    "required": [
-                                                        SELECTOR_TYPE,
-                                                        COLUMN_NAME,
-                                                    ],
+                                                    "required": [SELECTOR_TYPE,],
                                                     "additionalProperties": True,  # cannot have false and if statements
                                                     "properties": {
                                                         SELECTOR_TYPE: {
@@ -182,6 +182,7 @@ def build_higher_level_schema(data_source_names=None, column_names=None):
                                                         }
                                                     },
                                                     "then": {
+                                                        "required": [COLUMN_NAME,],
                                                         "properties": {
                                                             COLUMN_NAME: {
                                                                 "type": "string",

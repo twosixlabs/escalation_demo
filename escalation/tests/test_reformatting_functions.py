@@ -1,3 +1,6 @@
+# Copyright [2020] [Two Six Labs, LLC]
+# Licensed under the Apache License, Version 2.0
+
 import copy
 import json
 
@@ -17,6 +20,7 @@ from utility.constants import (
     OPERATION,
     ACTIVE_SELECTORS,
     DATA_FILTERS,
+    VISUALIZATION_OPTIONS,
 )
 from graphics.utils.reformatting_functions import (
     add_operations_to_the_data_from_addendum,
@@ -107,7 +111,10 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     graphic_0_dict = single_page_config_dict["graphic_0"]
     operations_list = add_operations_to_the_data_from_addendum(
-        graphic_0_dict[SELECTABLE_DATA_LIST], graphic_0_dict[DATA], addendum_dict
+        graphic_0_dict[SELECTABLE_DATA_LIST],
+        graphic_0_dict[DATA],
+        graphic_0_dict[VISUALIZATION_OPTIONS],
+        addendum_dict,
     )
     assert len(operations_list) == 3
     # TO DO break up
@@ -136,7 +143,10 @@ def test_add_operations_to_the_data(single_page_config_dict_and_addendum):
     )
 
     operations_list = add_operations_to_the_data_from_addendum(
-        graphic_1_dict[SELECTABLE_DATA_LIST], graphic_1_dict[DATA], addendum_dict
+        graphic_1_dict[SELECTABLE_DATA_LIST],
+        graphic_1_dict[DATA],
+        graphic_1_dict.get(VISUALIZATION_OPTIONS, []),
+        addendum_dict,
     )
 
     assert (
@@ -162,7 +172,10 @@ def test_add_instructions_to_config_dict(single_page_config_dict_and_addendum):
     )
     assert DATA_FILTERS in single_page_config_dict_test[GRAPHIC_NUM.format(0)]
 
-def test_add_instructions_to_config_dict_with_different_addendum(single_page_config_dict_and_addendum):
+
+def test_add_instructions_to_config_dict_with_different_addendum(
+    single_page_config_dict_and_addendum,
+):
     single_page_config_dict, addendum_dict = single_page_config_dict_and_addendum
     single_page_config_dict_test = copy.deepcopy(single_page_config_dict)
     addendum_dict = ImmutableMultiDict(
@@ -180,6 +193,6 @@ def test_add_instructions_to_config_dict_with_different_addendum(single_page_con
     single_page_config_dict_test = add_instructions_to_config_dict(
         single_page_config_dict_test, addendum_dict
     )
-    graphic_0_dict=single_page_config_dict_test["graphic_0"]
+    graphic_0_dict = single_page_config_dict_test["graphic_0"]
     assert len(graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in graphic_0_dict[SELECTABLE_DATA_LIST][0][ACTIVE_SELECTORS]
