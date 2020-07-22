@@ -31,6 +31,9 @@ TABLE = "table"
 CELLS = "cells"
 HEADER = "header"
 VALUES = "values"
+MODE = "mode"
+LINES = "lines"
+AXIS_TO_SORT_ALONG = "x"
 
 
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
@@ -110,10 +113,33 @@ VISUALIZATION_OPTIONS = {
 }
 
 
+def does_data_need_to_be_sorted(plot_info_data_dict: dict):
+    """
+    Determines whether the data needs to be sorted if so does it inplace
+    :param data_dict:
+    :return:
+    """
+    # conditions when data needs to be sorted
+    if plot_info_data_dict[PLOTLY_TYPE] == "scatter" and (
+        MODE not in plot_info_data_dict or LINES in plot_info_data_dict[MODE]
+    ):
+        return True
+    return False
+
+
 class PlotlyPlot(Graphic):
     def make_dict_for_html_plot(
         self, data, axis_to_data_columns, plot_options, visualization_options=None
     ):
+        """
+        Makes the json file that plotly takes in
+        :param data: a pandas dataframe
+        :param axis_to_data_columns:
+        :param plot_options:
+        :param visualization_options:
+        :return:
+        """
+        data_sorted = False
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
             index = int(point_index.split("_")[-1])
@@ -131,6 +157,13 @@ class PlotlyPlot(Graphic):
                     temp_dict[VALUES] = values_for_dict
                     plot_options[DATA][index][table_key] = temp_dict
             else:
+                if not data_sorted and does_data_need_to_be_sorted(
+                    plot_options[DATA][index]
+                ):
+                    data.sort_values(
+                        axis_to_data_dict[AXIS_TO_SORT_ALONG], inplace=True
+                    )
+                    data_sorted = True
                 for axis, column_name in axis_to_data_dict.items():
                     # three things in path, data, which index and value (x,y)
                     plot_options[DATA][index][axis] = data[column_name]
