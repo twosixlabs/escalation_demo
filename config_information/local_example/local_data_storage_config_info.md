@@ -1,5 +1,5 @@
-# How to set up local file system for EscOS
-In the config file you need 
+# How to set up a local file system for EscOS
+In the config file, you need 
 1. "data_backend": "local_csv".
 2. "data_file_directory": <path (relative or absolute) ending with folder_with_data>.
 The application assumes that your data structure is laid out something like: 
@@ -15,7 +15,7 @@ The application assumes that your data structure is laid out something like:
            - <data_source_3_file_1>.csv  
 3. "data_sources":\[<data_source_1_folder>,<data_source_2_folder>, etc.\] -- list of folders that contain the data
  the application will use. All csv files in the same folder should have the same schema.
-  By default it will use all the csv files in the folder.
+  By default, it will use all the csv files in the folder.
 This can be changed on the Admin tab on the webpage.
 4. available_pages.<page_name>.graphics.<graphic_name>.data_sources -- list of which data sources the graphic uses and 
 instructions on how to combine the files
@@ -29,7 +29,7 @@ instructions on how to combine the files
     \[
         <data_source>:<column_name>,
         <another_data_source>:<column_name>,
-    \], etc.]} -- Second folder that has your data. The application will preform a left
+    \], etc.]} -- The second folder that has your data. The application will perform a left 
     join between the data in the first folder and this data using the pairs of keys as specified in the join_keys list.
     - And so on, as many folders as the graphic needs
 
