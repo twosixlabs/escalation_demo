@@ -344,8 +344,8 @@ growth_rate_plate_data = {
     GRAPHIC_DESC: "",
     "data": {"points_0": {"y": "plate_reader:od", "x": "plate_reader:timepoint",}},
     PLOT_SPECIFIC_INFO: {
-        "data": [{"type": "scatter", "mode": "markers"}],
-        "layout": {"hovermode": "closest", "height": 1000},
+        "data": [{"type": "scatter", "mode": "lines+markers"}],
+        "layout": {"hovermode": "closest", "height": 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -379,6 +379,11 @@ growth_rate_plate_data = {
         {
             SELECTOR_TYPE: "select",
             OPTION_COL: "plate_reader:control_type",
+            SELECT_OPTION: {"multiple": True},
+        },
+        {
+            SELECTOR_TYPE: "select",
+            OPTION_COL: "plate_reader:well",
             SELECT_OPTION: {"multiple": True},
         },
         {
