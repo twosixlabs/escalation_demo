@@ -22,7 +22,7 @@
                         }
                     ],
                     "title": "Circuit function from plate reader",
-                    "brief_desc": "",
+                    "brief_desc": "The plots on this page are supposed to look at variance in outcome within an experiment",
                     "data": {
                         "points_0": {
                             "y": "plate_reader:fluor_gain_0.16/od",
@@ -38,7 +38,10 @@
                         ],
                         "layout": {
                             "boxmode": "group",
-                            "height": 700
+                            "height": 700,
+                            "xaxis": {
+                                "automargin": true
+                            }
                         }
                     },
                     "visualization_options": [
@@ -106,7 +109,7 @@
             }
         },
         "growth_summary": {
-            "button_label": "Basic Growth Summary",
+            "button_label": "Raw Growth Observations",
             "graphics": {
                 "plate_reader_od": {
                     "plot_manager": "plotly",
@@ -257,7 +260,7 @@
             }
         },
         "growth_curves": {
-            "button_label": "Growth Rate Info",
+            "button_label": "Growth Rate",
             "graphics": {
                 "growth_rate_plate_data": {
                     "plot_manager": "plotly",
@@ -407,7 +410,10 @@
                         ],
                         "layout": {
                             "hovermode": "closest",
-                            "height": 700
+                            "height": 700,
+                            "xaxis": {
+                                "automargin": true
+                            }
                         }
                     },
                     "visualization_options": [
@@ -428,7 +434,7 @@
                             "options": {
                                 "multiple": true
                             },
-                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
+                            "default_selected": "YeastSTATES-CRISPR-Short-Duration-Time-Series-35C",
                             "unfiltered_selector": true
                         },
                         {
@@ -500,7 +506,10 @@
                         ],
                         "layout": {
                             "hovermode": "closest",
-                            "height": 700
+                            "height": 700,
+                            "xaxis": {
+                                "automargin": true
+                            }
                         }
                     },
                     "visualization_options": [
@@ -520,7 +529,7 @@
                             "options": {
                                 "multiple": true
                             },
-                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
+                            "default_selected": "YeastSTATES-CRISPR-Short-Duration-Time-Series-35C",
                             "unfiltered_selector": true
                         },
                         {
@@ -637,7 +646,7 @@
                             "options": {
                                 "multiple": true
                             },
-                            "default_selected": "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208",
+                            "default_selected": "YeastSTATES-CRISPR-Short-Duration-Time-Series-35C",
                             "unfiltered_selector": true
                         },
                         {
@@ -808,6 +817,9 @@
                         ],
                         "layout": {
                             "hovermode": "closest",
+                            "xaxis": {
+                                "automargin": true
+                            },
                             "boxmode": "group",
                             "height": 700
                         }
@@ -902,6 +914,9 @@
                         ],
                         "layout": {
                             "hovermode": "closest",
+                            "xaxis": {
+                                "automargin": true
+                            },
                             "boxmode": "group",
                             "height": 700
                         }

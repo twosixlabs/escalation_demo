@@ -2,7 +2,8 @@ import json
 from utility.constants import *
 
 
-DEFAULT_EXPERIMENT = "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+DEFAULT_EXPERIMENT_LONG = "YeastSTATES-CRISPR-Long-Duration-Time-Series-20191208"
+DEFAULT_EXPERIMENT_SHORT = "YeastSTATES-CRISPR-Short-Duration-Time-Series-35C"
 
 
 circuit_function_line = {
@@ -48,7 +49,7 @@ circuit_function_line = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -86,7 +87,12 @@ flow_boxplot_inducer = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box"}],
-        LAYOUT: {"hovermode": "closest", "boxmode": "group", HEIGHT: 700},
+        LAYOUT: {
+            "hovermode": "closest",
+            "xaxis": {"automargin": True},
+            "boxmode": "group",
+            HEIGHT: 700,
+        },
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -100,7 +106,7 @@ flow_boxplot_inducer = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -144,7 +150,12 @@ flow_boxplot_time = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box"}],
-        LAYOUT: {"hovermode": "closest", "boxmode": "group", HEIGHT: 700},
+        LAYOUT: {
+            "hovermode": "closest",
+            "xaxis": {"automargin": True},
+            "boxmode": "group",
+            HEIGHT: 700,
+        },
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -158,7 +169,7 @@ flow_boxplot_time = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -180,7 +191,7 @@ plate_reader_circuit_function = {
     PLOT_MANAGER: "plotly",
     DATA_SOURCES: [{DATA_SOURCE_TYPE: "plate_reader"}],
     GRAPHIC_TITLE: "Circuit function from plate reader",
-    GRAPHIC_DESC: "",
+    GRAPHIC_DESC: "The plots on this page are supposed to look at variance in outcome within an experiment",
     "data": {
         "points_0": {
             "y": "plate_reader:fluor_gain_0.16/od",
@@ -189,7 +200,7 @@ plate_reader_circuit_function = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box", "mode": "group"}],
-        LAYOUT: {"boxmode": "group", HEIGHT: 700},
+        LAYOUT: {"boxmode": "group", HEIGHT: 700, "xaxis": {"automargin": True}},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -207,14 +218,14 @@ plate_reader_circuit_function = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -268,7 +279,7 @@ plate_reader_od = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -313,7 +324,7 @@ flow_cell_density = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -381,7 +392,7 @@ growth_rate_plate_data = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -430,7 +441,7 @@ inducer_diff_growth_rate = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        LAYOUT: {"hovermode": "closest", HEIGHT: 700},
+        LAYOUT: {"hovermode": "closest", HEIGHT: 700, "xaxis": {"automargin": True}},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -448,7 +459,7 @@ inducer_diff_growth_rate = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -499,7 +510,7 @@ time_diff_growth_rate = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        LAYOUT: {"hovermode": "closest", "height": 700},
+        LAYOUT: {"hovermode": "closest", "height": 700, "xaxis": {"automargin": True}},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -516,7 +527,7 @@ time_diff_growth_rate = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_time_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
@@ -598,7 +609,7 @@ growth_rates_vs_circuit_function = {
             SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
-            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
