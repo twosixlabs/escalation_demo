@@ -21,6 +21,10 @@ LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 
 
+# Plotly constants
+LAYOUT = "layout"
+HEIGHT = "height"
+
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"

@@ -26,7 +26,7 @@ circuit_function_line = {
     DATA: {"points_0": {"y": "flow_stat_wide:BL1-H", "x": "flow_stat_wide:log10_bin"}},
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "marker"}],
-        "layout": {"hovermode": "closest"},
+        LAYOUT: {"hovermode": "closest", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -45,14 +45,14 @@ circuit_function_line = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:strain_name",
             SELECT_OPTION: {"multiple": True},
         },
@@ -86,7 +86,7 @@ flow_boxplot_inducer = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box"}],
-        "layout": {"hovermode": "closest", "boxmode": "group"},
+        LAYOUT: {"hovermode": "closest", "boxmode": "group", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -97,19 +97,19 @@ flow_boxplot_inducer = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:timepoint",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
@@ -144,7 +144,7 @@ flow_boxplot_time = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box"}],
-        "layout": {"hovermode": "closest", "boxmode": "group"},
+        LAYOUT: {"hovermode": "closest", "boxmode": "group", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -155,19 +155,19 @@ flow_boxplot_time = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:inducer_concentration",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
@@ -189,13 +189,14 @@ plate_reader_circuit_function = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box", "mode": "group"}],
-        "layout": {"boxmode": "group"},
+        LAYOUT: {"boxmode": "group", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
             "type": "hover_data",
             COLUMN_NAME: [
                 "plate_reader:replicate_group_string",
+                "plate_reader:strain",
                 "plate_reader:experiment_reference",
             ],
         },
@@ -203,19 +204,26 @@ plate_reader_circuit_function = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
+            OPTION_COL: "plate_reader:experiment_reference",
+            SELECT_OPTION: {"multiple": True},
+            DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
+            UNFILTERED_SELECTOR: True,
+        },
+        {
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -242,7 +250,7 @@ plate_reader_od = {
     "data": {"points_0": {"y": "plate_reader:od", "x": "plate_reader:timepoint",}},
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "box", "mode": "group"}],
-        "layout": {"boxmode": "group"},
+        LAYOUT: {"boxmode": "group", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -257,19 +265,19 @@ plate_reader_od = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -284,7 +292,7 @@ flow_cell_density = {
     "data": {"points_0": {"x": "flow_meta:timepoint", "y": "flow_meta:cells/mL",}},
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "lines+markers"}],
-        "layout": {"hovermode": "closest"},
+        LAYOUT: {"hovermode": "closest", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -302,24 +310,24 @@ flow_cell_density = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:strain",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "flow_meta:date_of_experiment",
             SELECT_OPTION: {"multiple": True},
         },
@@ -345,7 +353,7 @@ growth_rate_plate_data = {
     "data": {"points_0": {"y": "plate_reader:od", "x": "plate_reader:timepoint",}},
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "lines+markers"}],
-        "layout": {"hovermode": "closest", "height": 700},
+        LAYOUT: {"hovermode": "closest", "height": 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -370,24 +378,24 @@ growth_rate_plate_data = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:well",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -422,7 +430,7 @@ inducer_diff_growth_rate = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        "layout": {"hovermode": "closest"},
+        LAYOUT: {"hovermode": "closest", HEIGHT: 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -437,14 +445,14 @@ inducer_diff_growth_rate = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -491,7 +499,7 @@ time_diff_growth_rate = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        "layout": {"hovermode": "closest"},
+        LAYOUT: {"hovermode": "closest", "height": 700},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -505,14 +513,14 @@ time_diff_growth_rate = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_time_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_time_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -567,7 +575,7 @@ growth_rates_vs_circuit_function = {
     },
     PLOT_SPECIFIC_INFO: {
         "data": [{"type": "scatter", "mode": "markers"}],
-        "layout": {"hovermode": "closest"},
+        LAYOUT: {"hovermode": "closest"},
     },
     VISUALIZATION_OPTIONS: [
         {
@@ -587,19 +595,30 @@ growth_rates_vs_circuit_function = {
     ],
     SELECTABLE_DATA_LIST: [
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: "select",
+            SELECTOR_TYPE: SELECTOR,
             OPTION_COL: "fc_inducer_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },
         {"type": "numerical_filter", OPTION_COL: "growth_rate:doubling_time",},
         {"type": "numerical_filter", OPTION_COL: "fc_inducer_diff:wasserstein_median",},
+        {
+            SELECTOR_TYPE: "axis",
+            OPTION_COL: "y",
+            SELECT_OPTION: {
+                "entries": [
+                    "fc_inducer_diff:wasserstein_min",
+                    "fc_inducer_diff:wasserstein_median",
+                    "fc_inducer_diff:wasserstein_max",
+                ]
+            },
+        },
     ],
 }
 
@@ -622,14 +641,14 @@ config_dict = {
             GRAPHICS: {"plate_reader_circuit_function": plate_reader_circuit_function},
         },
         "growth_summary": {
-            BUTTON_LABEL: "Basic Growth Summary",
+            BUTTON_LABEL: "Raw Growth Observations",
             GRAPHICS: {
                 "plate_reader_od": plate_reader_od,
                 "flow_cell_density": flow_cell_density,
             },
         },
         "growth_curves": {
-            BUTTON_LABEL: "Growth Rate Info",
+            BUTTON_LABEL: "Growth Rate",
             GRAPHICS: {"growth_rate_plate_data": growth_rate_plate_data},
         },
         "on_the_loop": {
