@@ -13,7 +13,8 @@ from app import create_app
 
 
 from database.local_handler import LocalCSVHandler
-from utility.constants import DATA_SOURCE_TYPE, APP_CONFIG_JSON
+from graphics.plotly_plot import LAYOUT, HOVER_DATA, AGGREGATE, AGGREGATIONS, TITLE
+from utility.constants import *
 
 
 @pytest.fixture()
@@ -49,7 +50,95 @@ def local_handler_fixture(test_app_client):
 
 @pytest.fixture()
 def json_config_fixture():
-    with open("tests/test_data/test_app_local_handler_config.json", "r") as config_file:
-        config_dict = json.load(config_file)
+    return make_config_for_testing()
 
+
+def make_config_for_testing():
+    config_dict = {
+        SITE_TITLE: "Escalation OS Test",
+        SITE_DESC: "This is used for the tests for the Escalation OS",
+        DATA_BACKEND: "local_csv",
+        DATA_FILE_DIRECTORY: "tests/test_data/",
+        DATA_SOURCES: ["penguin_size", "mean_penguin_stat", "penguin_size_small"],
+        AVAILABLE_PAGES: {
+            "penguins": {
+                BUTTON_LABEL: "Penguins",
+                GRAPHICS: {
+                    "graphic_0": {
+                        PLOT_MANAGER: "plotly",
+                        DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
+                        GRAPHIC_TITLE: "Do massive penguins have long flippers?",
+                        GRAPHIC_DESC: "This plot looks at the relationship between...",
+                        DATA: {
+                            POINTS_NUM.format(0): {
+                                "x": "penguin_size:body_mass_g",
+                                "y": "penguin_size:flipper_length_mm",
+                            }
+                        },
+                        PLOT_SPECIFIC_INFO: {DATA: [{"type": "scatter"}]},
+                        VISUALIZATION_OPTIONS: [
+                            {
+                                OPTION_TYPE: HOVER_DATA,
+                                COLUMN_NAME: [
+                                    "penguin_size:sex",
+                                    "penguin_size:culmen_length_mm",
+                                ],
+                            },
+                            {
+                                OPTION_TYPE: GROUPBY,
+                                COLUMN_NAME: [
+                                    "penguin_size:island",
+                                    "penguin_size:sex",
+                                ],
+                            },
+                        ],
+                        SELECTABLE_DATA_LIST: [
+                            {
+                                OPTION_TYPE: "select",
+                                COLUMN_NAME: "penguin_size:sex",
+                                SELECT_OPTION: {"multiple": False},
+                            },
+                            {
+                                OPTION_TYPE: "select",
+                                COLUMN_NAME: "penguin_size:island",
+                                SELECT_OPTION: {"multiple": True},
+                            },
+                            {
+                                OPTION_TYPE: NUMERICAL_FILTER,
+                                COLUMN_NAME: "penguin_size:culmen_length_mm",
+                            },
+                        ],
+                    },
+                    "graphic_1": {
+                        PLOT_MANAGER: "plotly",
+                        DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
+                        GRAPHIC_TITLE: "How big are penguins?",
+                        GRAPHIC_DESC: ".",
+                        DATA: {POINTS_NUM.format(0): {"x": "penguin_size:body_mass_g"}},
+                        PLOT_SPECIFIC_INFO: {
+                            DATA: [{"type": "histogram"}],
+                            LAYOUT: {
+                                AXIS.format("x"): {TITLE, "body mass"},
+                                AXIS.format("y"): {TITLE, "count"},
+                            },
+                        },
+                        SELECTABLE_DATA_LIST: [
+                            {
+                                OPTION_TYPE: "axis",
+                                COLUMN_NAME: "x",
+                                SELECT_OPTION: {
+                                    ENTRIES: [
+                                        "penguin_size:culmen_length_mm",
+                                        "penguin_size:flipper_length_mm",
+                                        "penguin_size:body_mass_g",
+                                        "penguin_size:culmen_depth_mm",
+                                    ]
+                                },
+                            },
+                        ],
+                    },
+                },
+            }
+        },
+    }
     return config_dict

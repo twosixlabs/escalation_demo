@@ -3,4 +3,5 @@
 
 
 def test_sql_handler_get_column_names():
+    # todo: write this test and many others
     assert False

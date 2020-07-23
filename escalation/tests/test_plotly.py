@@ -58,6 +58,8 @@ def test_plotly_draw_scatter(make_data, test_app_client):
     assert (graph_dict[DATA][0]["y"] == make_data[TITLE2]).all()
     assert graph_dict[LAYOUT][PLOT_AXIS.format("x")][TITLE] == TITLE1
     assert graph_dict[LAYOUT][PLOT_AXIS.format("y")][TITLE] == TITLE2
+    # assert graph_dict[LAYOUT][PLOT_AXIS.format("x")][AUTOMARGIN]
+    # assert graph_dict[LAYOUT][PLOT_AXIS.format("y")][AUTOMARGIN]
     assert len(graph_dict[DATA][0][TRANSFORMS]) == 0
     graph_json = ploty_test.make_dict_for_html_plot(
         make_data, axis_to_data_dict, plot_options, visualization_options
