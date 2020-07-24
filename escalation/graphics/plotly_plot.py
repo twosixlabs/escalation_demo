@@ -34,6 +34,7 @@ VALUES = "values"
 MODE = "mode"
 LINES = "lines"
 AXIS_TO_SORT_ALONG = "x"
+AUTOMARGIN = "automargin"
 
 
 def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
@@ -127,6 +128,21 @@ def does_data_need_to_be_sorted(plot_info_data_dict: dict):
     return False
 
 
+def add_layout_axis_defaults(layout_dict: dict, axis, column_name):
+    """
+    Adds defaults to the layout to the plotly graph for a better viewing experience
+    :param layout_dict:
+    :param axis:
+    :param column_name:
+    :return:
+    """
+    if PLOT_AXIS.format(axis) not in layout_dict:
+        layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
+    if AUTOMARGIN not in layout_dict[PLOT_AXIS.format(axis)]:
+        layout_dict[PLOT_AXIS.format(axis)][AUTOMARGIN] = True
+    return layout_dict
+
+
 class PlotlyPlot(Graphic):
     def make_dict_for_html_plot(
         self, data, axis_to_data_columns, plot_options, visualization_options=None
@@ -139,6 +155,7 @@ class PlotlyPlot(Graphic):
         :param visualization_options:
         :return:
         """
+        # todo: cut off all text data to used in group by or titles to 47 charaters
         data_sorted = False
         for point_index, axis_to_data_dict in axis_to_data_columns.items():
             # pull out the interger from the string point_index, point_index will always be points_<int>
@@ -169,10 +186,9 @@ class PlotlyPlot(Graphic):
                     plot_options[DATA][index][axis] = data[column_name]
                     # if there is no label, label the columns with the first lines/scatters column names
                     if index == 0:
-                        layout_dict = plot_options.get(LAYOUT, {})
-                        if PLOT_AXIS.format(axis) not in layout_dict:
-                            layout_dict[PLOT_AXIS.format(axis)] = {TITLE: column_name}
-                        plot_options[LAYOUT] = layout_dict
+                        plot_options[LAYOUT] = add_layout_axis_defaults(
+                            plot_options.get(LAYOUT, {}), axis, column_name
+                        )
 
             plot_options[DATA][index][TRANSFORMS] = []
 
