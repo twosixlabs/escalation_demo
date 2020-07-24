@@ -4,6 +4,8 @@
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
+- Fix bug in filter if the filter value has a space in the string, can't select?
+- change all examples to data in /escos/escalation/app_deploy_data
 - Simplifications to make to to the config
     - make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
     - main config, folder for each page, folder for each graphic, graphic config
