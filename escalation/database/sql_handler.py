@@ -127,6 +127,7 @@ class SqlHandler(DataHandler):
         :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
+        # import ipdb; ipdb.set_trace()
         if filters is None:
             filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
@@ -239,14 +240,18 @@ class SqlDataInventory(SqlHandler):
         """
         sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name()
         table = self.table_lookup_by_name[self.data_source_name]
-        uploaded_data_df[UPLOAD_ID] = uuid.uuid1()
+        existing_upload_ids = self.get_identifiers_for_data_source()
+        # todo: getting the id this way is sloppy- it's a race condition
+        new_upload_id = int(max(existing_upload_ids) + 1)
+        uploaded_data_df[UPLOAD_ID] = new_upload_id
         # todo: write upload time and other upload information from the form to an uploads metadata table
-        upload_time = datetime.utcnow()
+        # upload_time = datetime.utcnow()
 
         # if we are adding an index pk column, get it from the pandas df
         if INDEX_COLUMN in [c.name for c in table.primary_key]:
             if INDEX_COLUMN not in uploaded_data_df.columns:
-                uploaded_data_df = uploaded_data_df.reset_index()
+                uploaded_data_df.index.rename(INDEX_COLUMN, inplace=True)
+                uploaded_data_df.reset_index(inplace=True)
             else:
                 # verify that all indices in the existing index column are unique
                 num_uploaded_rows = uploaded_data_df.shape[0]
@@ -254,12 +259,23 @@ class SqlDataInventory(SqlHandler):
                 assert (
                     num_unique_indexes == num_uploaded_rows
                 ), f"{INDEX_COLUMN} has non-unique values"
+
+        # subset the columns to write to equal those in the db
+        existing_columns = {c.name for c in table.columns}
+        ignored_columns = set(uploaded_data_df.columns) - existing_columns
+        uploaded_data_df = uploaded_data_df[existing_columns]
+        # todo: columns in the sqlalchemy_model_class are attributes auto-names by sqlalchemy codegen, and have some character replacement
+        # how do we build the right inserts here?
+        rename_dict = {
+            k: k.replace("-", "_").replace("/", "_") for k in uploaded_data_df.columns
+        }
+        uploaded_data_df.rename(columns=rename_dict, inplace=True)
         row_dicts_to_write = uploaded_data_df.to_dict("records")
         # todo: writing all of this to memory- could get gross for large uploads
         row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
         db_session.bulk_save_objects(row_to_write)
         db_session.commit()
-        return upload_time
+        return ignored_columns
 
     def write_new_data_file_type(self):
         """

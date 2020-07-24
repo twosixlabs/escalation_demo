@@ -61,11 +61,13 @@ def validate_submission_content(csvfile, data_source_schema):
         for app_added_column in [INDEX_COLUMN, UPLOAD_ID]:
             existing_column_names.remove(app_added_column)
         # all of the columns in the existing data source are specified in upload
-        assert set(df.columns).issuperset(existing_column_names)
+        assert set(df.columns).issuperset(
+            existing_column_names
+        ), f"Upload missing expected columns {existing_column_names - set(df.columns)}"
         # todo: match data types
         # todo- additional file type specific content validation
-    except (AssertionError, ValueError):
-        raise ValidationError
+    except (AssertionError, ValueError) as e:
+        raise ValidationError(str(e))
     return df
 
 
@@ -91,22 +93,14 @@ def submission():
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
         # write upload history table record at the same time
-        data_inventory.write_data_upload_to_backend(df)
+        ignored_columns = data_inventory.write_data_upload_to_backend(df)
     except ValidationError as e:
-        current_app.logger.info(e)
+        current_app.logger.info(e, exc_info=True)
         # check if POST comes from script instead of web UI
-        if request.headers.get("User-Agent") == "escalation-api":
-            return jsonify({"error": e}), 400
-        else:
-            flash(e)
+        return jsonify({"error": e}), 400
 
     # todo: log information about what the submission is
     current_app.logger.info("Added submission")
-
-    if request.headers.get("User-Agent") == "escalation-api":
-        # if the request came from a script and API
-        return jsonify({"success": "Added submission"})
-    else:
-
-        # if the request came from the web browser, provide an HTML repsonse
-        return render_template("success.html", username="Captain Kirk")
+    return render_template(
+        "success.html", username="username", ignored_columns=ignored_columns
+    )
