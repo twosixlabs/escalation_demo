@@ -1,12 +1,4 @@
--r requirements.txt
-flask
-sqlalchemy
-flask_sqlalchemy
-Flask-APScheduler
-Flask-Migrate
-pytest
+-r escalation/requirements-app.txt
 black
-numpy
-# mysqlclient # todo- rebuild and make sure this is unnecessary
-sqlacodegen
 pre-commit
+pytest

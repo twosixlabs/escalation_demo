@@ -17,12 +17,6 @@ from tableschema import Table
 
 from utility.constants import INDEX_COLUMN, UPLOAD_ID
 
-DB_BACKEND = "psql"
-if DB_BACKEND == "psql":
-    from app_settings import PSQL_DATABASE_CONFIG as database_config
-elif DB_BACKEND == "mysql":
-    from app_settings import MYSQL_DATABASE_CONFIG as database_config
-
 DATA_TYPE_MAP = {
     "integer": Integer,
     "number": Float,
@@ -70,8 +64,11 @@ def extract_values(obj, key):
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
-    connection_url = URL(**database_config)
-    __engine = create_engine(connection_url)
+    def __init__(self, sql_backend, database_config):
+        self.sql_backend = sql_backend
+        self.database_config = database_config
+        connection_url = URL(**database_config)
+        self.engine = create_engine(connection_url)
 
     @staticmethod
     def get_data_from_csv(csv_data_file_path):
@@ -118,101 +115,103 @@ class CreateTablesFromCSVs:
                 )
         return sqlalchemy_data_types
 
-    @classmethod
     def create_new_table(
-        cls, table_name, data, schema, key_columns=None, if_exists="replace"
+        self,
+        table_name,
+        data,
+        schema,
+        key_columns=None,
+        if_exists="replace",
+        upload_id=None,
     ):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
         # todo: don't hide warnings!
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             # if there is no key specified, include the index
-            index = key_columns is None
+            index = key_columns is not None
             if not index:
                 # assign row numerical index to its own column
                 data = data.reset_index()
+                data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
             # add a data upload id and time column to all tables and
-            data[UPLOAD_ID] = uuid.uuid1()
-            if DB_BACKEND == "mysql":
+            # todo: if we're not replacing, get a fresh id
+            if upload_id is None:
+                upload_id = 1
+            data[UPLOAD_ID] = upload_id
+            if self.sql_backend == "mysql":
                 data.to_sql(
                     table_name,
-                    con=cls.__engine,
-                    schema=database_config["database"],
+                    con=self.engine,
+                    schema=self.database_config["database"],
                     if_exists=if_exists,
-                    chunksize=300,
+                    chunksize=10000,
                     dtype=schema,
+                    index=False,
                 )
-                # if we're creating this table new, build the pk
                 if if_exists == "replace":
                     if key_columns:
-                        cls.__engine.execute(
-                            "ALTER TABLE {} ADD UNIQUE({}({}));".format(
+                        self.engine.execute(
+                            "ALTER TABLE {} ADD PRIMARY KEY({}({}));".format(
                                 table_name, *key_columns
                             )
                         )
                     else:
                         # use the numerical index from pandas as a pk
-                        cls.__engine.execute(
-                            f"ALTER TABLE {table_name} ADD UNIQUE({UPLOAD_ID}, {INDEX_COLUMN});"
+                        self.engine.execute(
+                            f"ALTER TABLE {table_name} ADD PRIMARY KEY({UPLOAD_ID}, {INDEX_COLUMN});"
                         )
-            elif DB_BACKEND == "psql":
+            elif self.sql_backend == "psql":
                 if table_name.lower() != table_name:
                     raise ValueError(
                         "Postgres does not play well with upper cases in table names, please rename your table"
                     )
                 data.to_sql(
                     table_name,
-                    con=cls.__engine,
+                    con=self.engine,
                     if_exists=if_exists,
-                    chunksize=300,
+                    chunksize=1000,
                     dtype=schema,
+                    index=False,
                 )
-                # if we're creating this table new, build the pk
+
                 if if_exists == "replace":
                     if key_columns:
-                        cls.__engine.execute(
+                        self.engine.execute(
                             f"ALTER TABLE {table_name} add primary key (index_col[0]);"
                         )
                     else:
                         # use the numerical index from pandas as a pk
-                        cls.__engine.execute(
+                        self.engine.execute(
                             f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
                         )
 
 
 if __name__ == "__main__":
-    # filepath = os.path.join("scratch", "YeastSTATES-1-0-Growth-Curves__platereader.csv")
-    # data = CreateTablesFromCSVs.get_data_from_csv(filepath)
-    # schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
-    # table_name = "platereader"
-    # # index_cols = [col_name for col_name in schema if 'id' in col_name.lower()]
-    # index_col = (
-    #     "_id",
-    #     24,
-    # )  # we need a way of determining for text columns used as ids the max length
-    # CreateTablesFromCSVs.create_new_table(table_name, data, schema, index_col=index_col)
-    # sqlacodegen mysql+pymysql://escalation_os_user:escalation_os_pwd@localhost:3306/escalation_os --outfile datastorer/models.py
-
+    sql_backend = "psql"
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     if_exists = sys.argv[3]
     assert if_exists in EXISTS_OPTIONS
 
-    data = CreateTablesFromCSVs.get_data_from_csv(filepath)
-    schema = CreateTablesFromCSVs.get_schema_from_csv(filepath)
-    key_column = None
+    from app_deploy_data.app_settings import DATABASE_CONFIG
 
-    CreateTablesFromCSVs.create_new_table(
+    sql_creator = CreateTablesFromCSVs(sql_backend, DATABASE_CONFIG)
+    data = sql_creator.get_data_from_csv(filepath)
+    schema = sql_creator.get_schema_from_csv(filepath)
+    key_column = None
+    print(f"Creating table name {table_name} from file path {filepath}")
+    sql_creator.create_new_table(
         table_name, data, schema, key_columns=key_column, if_exists=if_exists
     )
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python database/csv_to_sql.py penguin_size /Users/nick.leiby/repos/escos/tests/test_data/penguin_size/penguin_size.csv
-    # python database/csv_to_sql.py mean_penguin_stat /Users/nick.leiby/repos/escos/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
+    # python database/csv_to_sql.py penguin_size escalation/tests/test_data/penguin_size/penguin_size.csv
+    # python database/csv_to_sql.py mean_penguin_stat escalation/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
 
     # create a models.py file with the sqlalchemy model of the table
-    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile database/models.py
+    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
 
 # todo: add columns about upload time
 # todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission

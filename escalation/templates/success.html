@@ -8,5 +8,23 @@
 {% endblock %}
 
 {% block content %}
-  Success! Thank you {{ username }}
+<p>Success! Thank you {{ username }}</p>
+
+
+<div id="missing_columns">
+
+        <ul>
+            <li><b>The following columns were not included in the database for the uploaded file because they are not defined in the schema.</b>
+            </li>
+
+          {% for column in ignored_columns %}
+          <li> {{ column }}</li>
+          {% endfor %}
+
+        </ul>
+
+    </div>
+
+
+
 {% endblock %}
