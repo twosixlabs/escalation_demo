@@ -24,6 +24,10 @@ PLOT_ID = "plot_id"
 # Plotly constants
 LAYOUT = "layout"
 HEIGHT = "height"
+GROUPBY = "groupby"
+AGGREGATE = "aggregate"
+HOVER_DATA = "hover_data"
+AGGREGATIONS = "aggregations"
 
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"

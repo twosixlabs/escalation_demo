@@ -8,10 +8,7 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from escalation.app import create_app, configure_app
-from escalation.utility.build_schema import (
-    build_higher_level_schema,
-    build_first_level_schema,
-)
+from escalation.utility.build_schema import build_first_level_schema
 from escalation.utility.constants import *
 
 

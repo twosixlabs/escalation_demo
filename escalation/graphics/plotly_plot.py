@@ -5,7 +5,7 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
-from utility.constants import OPTION_COL
+from utility.constants import OPTION_COL, GROUPBY, AGGREGATE, HOVER_DATA, AGGREGATIONS
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -18,13 +18,9 @@ HOVER_TEMPLATE = "hovertemplate"
 VISUALIZATION_TYPE = "type"
 PLOTLY_TYPE = "type"
 TRANSFORMS = "transforms"
-GROUPBY = "groupby"
-AGGREGATE = "aggregate"
-HOVER_DATA = "hover_data"
 GROUPS = "groups"
 OPTIONS = "options"
 STYLES = "styles"
-AGGREGATIONS = "aggregations"
 PLOT_OPTIONS = "plot_options"
 NA_FILL_IN = "NA"
 TABLE = "table"
