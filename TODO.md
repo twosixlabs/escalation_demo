@@ -5,9 +5,14 @@
 - Document building the Docker container version of the app, running from container, and link to external Docker deployment instructions (Heroku? AWS free tier?)
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
-- make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
-- rewrite tests that rely on a specific config file
 - Fix bug in filter if the filter value has a space in the string, can't select?
+- change all examples to data in /escos/escalation/app_deploy_data
+- Simplifications to make to to the config
+    - make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
+    - main config, folder for each page, folder for each graphic, graphic config
+    - get rid of button labels
+    - make data a list instead of points_0, points_1 etc.
+
 
 # Nice to have Features
 
