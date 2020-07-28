@@ -109,7 +109,6 @@ def test_get_unique_set_of_columns_needed():
 def test_get_data_selection_info_for_page_render(
     local_handler_fixture, json_config_fixture
 ):
-    # todo rewrite test
     plot_specification = json_config_fixture[AVAILABLE_PAGES]["penguins"][GRAPHICS][
         "graphic_0"
     ]
@@ -119,14 +118,12 @@ def test_get_data_selection_info_for_page_render(
     select_info = get_data_selection_info_for_page_render(
         plot_specification, local_handler_fixture
     )
-
-    print(select_info)
     expected_select_info = [
         {
             "select_html_file": "selector.html",
             "type": "filter",
             "column": "penguin_size:sex",
-            "active_selector": ["SHOW_ALL_ROW"],
+            "active_selector": [SHOW_ALL_ROW],
             "entries": [SHOW_ALL_ROW, ".", "FEMALE", "MALE"],
             "options": {"multiple": False},
             TEXT: "Filter by {}",
@@ -135,7 +132,7 @@ def test_get_data_selection_info_for_page_render(
             "select_html_file": "selector.html",
             "type": "filter",
             "column": "penguin_size:island",
-            "active_selector": ["SHOW_ALL_ROW"],
+            "active_selector": [SHOW_ALL_ROW],
             "entries": [SHOW_ALL_ROW, "Biscoe", "Dream", "Torgersen"],
             "options": {"multiple": True},
             TEXT: "Filter by {}",
@@ -144,10 +141,12 @@ def test_get_data_selection_info_for_page_render(
             "select_html_file": "numerical_filter.html",
             "type": "numerical_filter",
             "column": "penguin_size:culmen_length_mm",
-            "active_selector": ["SHOW_ALL_ROW"],
+            "active_selector": [SHOW_ALL_ROW],
             "entries": OPERATIONS_FOR_NUMERICAL_FILTERS.keys(),
             "options": {"multiple": False},
             TEXT: "Filter by {}",
         },
     ]
-    assert False
+    assert select_info[0] == expected_select_info[0]
+    assert select_info[1] == expected_select_info[1]
+    assert select_info[2] == expected_select_info[2]
