@@ -69,52 +69,46 @@ def make_config_for_testing():
                         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
                         GRAPHIC_TITLE: "Do massive penguins have long flippers?",
                         GRAPHIC_DESC: "This plot looks at the relationship between...",
-                        DATA: {
-                            POINTS_NUM.format(0): {
+                        DATA: [
+                            {
                                 "x": "penguin_size:body_mass_g",
                                 "y": "penguin_size:flipper_length_mm",
                             }
-                        },
+                        ],
                         PLOT_SPECIFIC_INFO: {DATA: [{"type": "scatter"}]},
-                        VISUALIZATION_OPTIONS: [
-                            {
-                                OPTION_TYPE: HOVER_DATA,
+                        VISUALIZATION_OPTIONS: {
+                            HOVER_DATA: {
                                 COLUMN_NAME: [
                                     "penguin_size:sex",
                                     "penguin_size:culmen_length_mm",
                                 ],
                             },
-                            {
-                                OPTION_TYPE: GROUPBY,
+                            GROUPBY: {
                                 COLUMN_NAME: [
                                     "penguin_size:island",
                                     "penguin_size:sex",
                                 ],
                             },
-                        ],
-                        SELECTABLE_DATA_LIST: [
-                            {
-                                OPTION_TYPE: "select",
-                                COLUMN_NAME: "penguin_size:sex",
-                                SELECT_OPTION: {"multiple": False},
-                            },
-                            {
-                                OPTION_TYPE: "select",
-                                COLUMN_NAME: "penguin_size:island",
-                                SELECT_OPTION: {"multiple": True},
-                            },
-                            {
-                                OPTION_TYPE: NUMERICAL_FILTER,
-                                COLUMN_NAME: "penguin_size:culmen_length_mm",
-                            },
-                        ],
+                        },
+                        SELECTABLE_DATA_DICT: {
+                            FILTER: [
+                                {COLUMN_NAME: "penguin_size:sex", MULTIPLE: False,},
+                                {COLUMN_NAME: "penguin_size:island", MULTIPLE: True,},
+                            ],
+                            NUMERICAL_FILTER: [
+                                {
+                                    OPTION_TYPE: NUMERICAL_FILTER,
+                                    COLUMN_NAME: "penguin_size:culmen_length_mm",
+                                }
+                            ],
+                        },
                     },
                     "graphic_1": {
                         PLOT_MANAGER: "plotly",
                         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
                         GRAPHIC_TITLE: "How big are penguins?",
                         GRAPHIC_DESC: ".",
-                        DATA: {POINTS_NUM.format(0): {"x": "penguin_size:body_mass_g"}},
+                        DATA: [{"x": "penguin_size:body_mass_g"}],
                         PLOT_SPECIFIC_INFO: {
                             DATA: [{"type": "histogram"}],
                             LAYOUT: {
@@ -122,20 +116,20 @@ def make_config_for_testing():
                                 AXIS.format("y"): {TITLE, "count"},
                             },
                         },
-                        SELECTABLE_DATA_LIST: [
-                            {
-                                OPTION_TYPE: "axis",
-                                COLUMN_NAME: "x",
-                                SELECT_OPTION: {
+                        SELECTABLE_DATA_DICT: {
+                            AXIS: [
+                                {
+                                    OPTION_TYPE: "axis",
+                                    COLUMN_NAME: "x",
                                     ENTRIES: [
                                         "penguin_size:culmen_length_mm",
                                         "penguin_size:flipper_length_mm",
                                         "penguin_size:body_mass_g",
                                         "penguin_size:culmen_depth_mm",
-                                    ]
-                                },
-                            },
-                        ],
+                                    ],
+                                }
+                            ],
+                        },
                     },
                 },
             }

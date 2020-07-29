@@ -10,6 +10,10 @@ ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]*$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 
+ADDITIONAL_PROPERTIES = "additionalProperties"
+PROPERTIES = "properties"
+DESCRIPTION = "description"
+
 
 def build_settings_schema():
     """
@@ -213,36 +217,85 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                 },
             },
-            SELECTABLE_DATA_LIST: {
-                "type": "array",
+            SELECTABLE_DATA_DICT: {
+                "type": "object",
                 "title": "Selector List",
-                "description": "list of data selectors for a graphic",
-                "maxItems": 6,
-                "items": {
-                    "type": "object",
-                    "title": "Selector Dict",
-                    "required": [SELECTOR_TYPE],
-                    "additionalProperties": True,  # cannot have false and if statements
-                    "properties": {
-                        SELECTOR_TYPE: {
-                            "type": "string",
-                            "description": "select is a filter operation based on label,"
-                            "numerical_filter is a filter operation"
-                            " on numerical data,"
-                            "axis you can use to change what column data "
-                            "is shown on a axis",
-                            "enum": ["select", "numerical_filter", "axis", GROUPBY],
+                "description": "dictionary of data selectors for a graphic",
+                ADDITIONAL_PROPERTIES: False,
+                PROPERTIES: {
+                    FILTER: {
+                        "type": "array",
+                        "title": "Filter",
+                        DESCRIPTION: "a filter operation based on label",
+                        "items": {
+                            "type": "object",
+                            "required": [COLUMN_NAME],
+                            "additionalProperties": False,
+                            PROPERTIES: {
+                                COLUMN_NAME: {
+                                    "type": "string",
+                                    "description": "name in table",
+                                    "enum": column_names,
+                                },
+                                "multiple": {"type": "boolean"},
+                                DEFAULT_SELECTED: {
+                                    "type": "array",
+                                    "description": "default filter, list of column values",
+                                    "items": {"type": "string"},
+                                },
+                            },
                         },
                     },
-                    "if": {"properties": {SELECTOR_TYPE: {"const": "axis"}}},
-                    "then": {
+                    NUMERICAL_FILTER: {
+                        "type": "array",
+                        "title": "Numerical Filter",
+                        DESCRIPTION: "a filter operation on numerical data",
+                        "items": {
+                            "type": "object",
+                            "required": [COLUMN_NAME],
+                            "additionalProperties": False,
+                            PROPERTIES: {
+                                COLUMN_NAME: {
+                                    "type": "string",
+                                    "description": "name in table",
+                                    "enum": column_names,
+                                }
+                            },
+                        },
+                    },
+                    AXIS: {
+                        "type": "array",
+                        "title": "Axis Selector",
+                        DESCRIPTION: "change what column data is shown on a axis",
+                        "items": {
+                            "type": "object",
+                            "required": [COLUMN_NAME, ENTRIES],
+                            "additionalProperties": False,
+                            PROPERTIES: {
+                                COLUMN_NAME: {
+                                    "type": "string",
+                                    "description": "axis name",
+                                    "pattern": ONE_LETTER,
+                                },
+                                ENTRIES: {
+                                    "type": "array",
+                                    "items": {"type": "string", "enum": column_names,},
+                                },
+                            },
+                        },
+                    },
+                    GROUPBY: {
+                        "type": "object",
+                        "title": "Group By Selector",
                         "required": [COLUMN_NAME],
-                        "properties": {
+                        "additionalProperties": False,
+                        PROPERTIES: {
                             COLUMN_NAME: {
                                 "type": "string",
-                                "description": "name in table (select, numerical_filter) or axis name (axis)",
-                                "pattern": ONE_LETTER,
+                                "description": "name in table",
+                                "enum": column_names,
                             },
+                            "multiple": {"type": "boolean"},
                             DEFAULT_SELECTED: {
                                 "type": "array",
                                 "description": "default filter, list of column values",
@@ -250,51 +303,6 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             },
                         },
                     },
-                    "else": {
-                        "properties": {
-                            COLUMN_NAME: {
-                                "type": "string",
-                                "description": "name in table (select, numerical_filter) or axis name (axis)",
-                                "enum": column_names,
-                            },
-                        },
-                    },
-                    "allOf": [
-                        {
-                            "if": {"properties": {SELECTOR_TYPE: {"const": "select"}}},
-                            "then": {
-                                "required": [SELECT_OPTION],
-                                "properties": {
-                                    SELECT_OPTION: {
-                                        "type": "object",
-                                        "additionalProperties": False,
-                                        "properties": {"multiple": {"type": "boolean"}},
-                                    }
-                                },
-                            },
-                        },
-                        {
-                            "if": {"properties": {SELECTOR_TYPE: {"const": "axis"}}},
-                            "then": {
-                                "required": [SELECT_OPTION],
-                                "properties": {
-                                    SELECT_OPTION: {
-                                        "type": "object",
-                                        "additionalProperties": False,
-                                        "properties": {
-                                            "entries": {
-                                                "type": "array",
-                                                "items": {
-                                                    "type": "string",
-                                                    "enum": column_names,
-                                                },
-                                            }
-                                        },
-                                    }
-                                },
-                            },
-                        },
-                    ],
                 },
             },
         },

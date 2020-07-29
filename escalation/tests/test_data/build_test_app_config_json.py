@@ -42,7 +42,7 @@ def build_config_json(data_backend, data_file_directory):
                                 "column": ["penguin_size:island", "penguin_size:sex"],
                             },
                         ],
-                        SELECTABLE_DATA_LIST: [
+                        SELECTABLE_DATA_DICT: [
                             {
                                 "type": "select",
                                 "column": "penguin_size:sex",

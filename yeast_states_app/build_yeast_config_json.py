@@ -44,16 +44,16 @@ circuit_function_line = {
             COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:strain_name",
             SELECT_OPTION: {"multiple": True},
         },
@@ -101,21 +101,21 @@ flow_boxplot_inducer = {
         },
         {"type": "groupby", COLUMN_NAME: ["flow_meta:inducer_concentration"]},
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:timepoint",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
@@ -164,21 +164,21 @@ flow_boxplot_time = {
         },
         {"type": "groupby", COLUMN_NAME: ["flow_meta:timepoint"]},
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:inducer_concentration",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
@@ -213,28 +213,28 @@ plate_reader_circuit_function = {
         },
         {"type": "groupby", COLUMN_NAME: ["plate_reader:experiment_reference"]},
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -274,21 +274,21 @@ plate_reader_od = {
         },
         {"type": "groupby", COLUMN_NAME: ["plate_reader:sample_contents"],},
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -319,26 +319,26 @@ flow_cell_density = {
             COLUMN_NAME: ["flow_meta:well", "flow_meta:experiment_id"],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:strain",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "flow_meta:date_of_experiment",
             SELECT_OPTION: {"multiple": True},
         },
@@ -387,26 +387,26 @@ growth_rate_plate_data = {
             ],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:control_type",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:well",
             SELECT_OPTION: {"multiple": True},
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "plate_reader:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -454,16 +454,16 @@ inducer_diff_growth_rate = {
             ],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_inducer_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -522,16 +522,16 @@ time_diff_growth_rate = {
             ],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_time_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_time_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },
@@ -604,16 +604,16 @@ growth_rates_vs_circuit_function = {
             COLUMN_NAME: ["growth_rate:strain", "growth_rate:experiment_id",],
         },
     ],
-    SELECTABLE_DATA_LIST: [
+    SELECTABLE_DATA_DICT: [
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_inducer_diff:experiment_reference",
             SELECT_OPTION: {"multiple": True},
             DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
             UNFILTERED_SELECTOR: True,
         },
         {
-            SELECTOR_TYPE: SELECTOR,
+            SELECTOR_TYPE: FILTER,
             OPTION_COL: "fc_inducer_diff:strain",
             SELECT_OPTION: {"multiple": True},
         },

@@ -19,8 +19,10 @@ from utility.constants import (
     SHOW_ALL_ROW,
     AVAILABLE_PAGES,
     GRAPHICS,
-    SELECTABLE_DATA_LIST,
+    SELECTABLE_DATA_DICT,
     TEXT,
+    FILTER,
+    NUMERICAL_FILTER, AXIS, MULTIPLE,
 )
 
 
@@ -33,53 +35,48 @@ def test_extract_buttons(json_config_fixture):
 
 
 def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
-    select_dict = [
-        {
-            "type": "select",
+    select_dict = {
+        FILTER:[{
             "column": "penguin_size:sex",
-            "options": {"multiple": False},
+            "multiple": False,
             ACTIVE_SELECTORS: ["MALE"],
         },
         {
-            "type": "select",
             "column": "penguin_size:island",
-            "options": {"multiple": True},
+            "multiple": True,
             ACTIVE_SELECTORS: [SHOW_ALL_ROW],
         },
-        {
-            "type": "axis",
+        ],
+        AXIS:[{
             "column": "x",
-            "options": {
-                "entries": [
-                    "penguin_size:culmen_length_mm",
-                    "penguin_size:flipper_length_mm",
-                    "penguin_size:body_mass_g",
-                ]
-            },
+            "entries": [
+                "penguin_size:culmen_length_mm",
+                "penguin_size:flipper_length_mm",
+                "penguin_size:body_mass_g",
+            ],
             ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
-        },
-    ]
-    json_config_fixture[SELECTABLE_DATA_LIST] = select_dict
+        }],
+    }
+    json_config_fixture[SELECTABLE_DATA_DICT] = select_dict
     select_info = create_data_subselect_info_for_plot(
         json_config_fixture, local_handler_fixture
     )
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "selector.html"
-    assert select_info[1][COLUMN_NAME] == "penguin_size:island"
     assert select_info[2][JINJA_SELECT_HTML_FILE] == "selector.html"
 
-    assert "MALE" in select_info[0][ACTIVE_SELECTORS]
-    assert "MALE" in select_info[0][ENTRIES]
-    assert "FEMALE" in select_info[0][ENTRIES]
-    assert "." in select_info[0][ENTRIES]  # yes this is a unique entry in the data set
-    assert SHOW_ALL_ROW in select_info[1][ACTIVE_SELECTORS]
-    assert "Biscoe" in select_info[1][ENTRIES]
-    assert select_info[1][SELECT_OPTION]["multiple"]
-    assert not select_info[0][SELECT_OPTION]["multiple"]
-    assert "penguin_size:culmen_length_mm" in select_info[2][ENTRIES]
-    assert "penguin_size:flipper_length_mm" in select_info[2][ENTRIES]
-    assert "penguin_size:body_mass_g" in select_info[2][ENTRIES]
-    assert "penguin_size:culmen_length_mm" in select_info[2][ACTIVE_SELECTORS]
+    assert "MALE" in select_info[1][ACTIVE_SELECTORS]
+    assert "MALE" in select_info[1][ENTRIES]
+    assert "FEMALE" in select_info[1][ENTRIES]
+    assert "." in select_info[1][ENTRIES]  # yes this is a unique entry in the data set
+    assert SHOW_ALL_ROW in select_info[2][ACTIVE_SELECTORS]
+    assert "Biscoe" in select_info[2][ENTRIES]
+    assert select_info[2][MULTIPLE]
+    assert not select_info[1][MULTIPLE]
+    assert "penguin_size:culmen_length_mm" in select_info[0][ENTRIES]
+    assert "penguin_size:flipper_length_mm" in select_info[0][ENTRIES]
+    assert "penguin_size:body_mass_g" in select_info[0][ENTRIES]
+    assert "penguin_size:culmen_length_mm" in select_info[0][ACTIVE_SELECTORS]
 
 
 def test_get_unique_set_of_columns_needed():
@@ -89,14 +86,8 @@ def test_get_unique_set_of_columns_needed():
     island = "penguin_size:island"
     sex = "penguin_size:sex"
     test_cols_list = get_unique_set_of_columns_needed(
-        {
-            "points_0": {"x": culmen, "y": flipper},
-            "points_1": {"x": culmen, "y": flipper2},
-        },
-        [
-            {"type": "hover_data", "column": [sex, culmen]},
-            {"type": "groupby", "column": [island]},
-        ],
+        [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2},],
+        {"hover_data": {"column": [sex, culmen]}, "groupby": {"column": [island]},},
     )
     assert culmen in test_cols_list
     assert flipper in test_cols_list
@@ -113,8 +104,12 @@ def test_get_data_selection_info_for_page_render(
         "graphic_0"
     ]
     # add_active_selectors_to_selectable_data_list adds default  SHOW_ALL_ROWS to selectors
-    for selector in plot_specification[SELECTABLE_DATA_LIST]:
+    for selector in plot_specification[SELECTABLE_DATA_DICT][FILTER]:
         selector[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
+
+    plot_specification[SELECTABLE_DATA_DICT][NUMERICAL_FILTER][0][ACTIVE_SELECTORS] = [
+        SHOW_ALL_ROW
+    ]
     select_info = get_data_selection_info_for_page_render(
         plot_specification, local_handler_fixture
     )
@@ -122,29 +117,29 @@ def test_get_data_selection_info_for_page_render(
         {
             "select_html_file": "selector.html",
             "type": "filter",
-            "column": "penguin_size:sex",
+            "name": "filter_0",
             "active_selector": [SHOW_ALL_ROW],
             "entries": [SHOW_ALL_ROW, ".", "FEMALE", "MALE"],
-            "options": {"multiple": False},
-            TEXT: "Filter by {}",
+            "multiple": False,
+            TEXT: "Filter by penguin_size:sex",
         },
         {
             "select_html_file": "selector.html",
             "type": "filter",
-            "column": "penguin_size:island",
+            "name": "filter_1",
             "active_selector": [SHOW_ALL_ROW],
             "entries": [SHOW_ALL_ROW, "Biscoe", "Dream", "Torgersen"],
-            "options": {"multiple": True},
-            TEXT: "Filter by {}",
+            "multiple": True,
+            TEXT: "Filter by penguin_size:island",
         },
         {
             "select_html_file": "numerical_filter.html",
             "type": "numerical_filter",
-            "column": "penguin_size:culmen_length_mm",
+            "name": "numerical_filter_0",
             "active_selector": [SHOW_ALL_ROW],
             "entries": OPERATIONS_FOR_NUMERICAL_FILTERS.keys(),
-            "options": {"multiple": False},
-            TEXT: "Filter by {}",
+            "multiple": False,
+            TEXT: "Filter by penguin_size:culmen_length_mm",
         },
     ]
     assert select_info[0] == expected_select_info[0]

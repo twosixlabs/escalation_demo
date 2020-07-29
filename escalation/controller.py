@@ -7,8 +7,8 @@ from flask import current_app
 
 from database.data_handler import DataHandler
 from graphics.utils.available_graphics import AVAILABLE_GRAPHICS
-from graphics.utils.available_selectors import AVAILABLE_SELECTORS
-from graphics.utils.reformatting_functions import add_instructions_to_config_dict
+from utility.available_selectors import AVAILABLE_SELECTORS
+from utility.reformatting_functions import add_instructions_to_config_dict
 from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import *
 
@@ -45,7 +45,7 @@ def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> di
 def get_data_selection_info_for_page_render(plot_specification, plot_data_handler):
     select_info = []
     # checks to see if this plot has selectors
-    if SELECTABLE_DATA_LIST in plot_specification:
+    if SELECTABLE_DATA_DICT in plot_specification:
         select_info = create_data_subselect_info_for_plot(
             plot_specification, plot_data_handler
         )
@@ -73,7 +73,7 @@ def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) ->
 
         select_info = []
         # checks to see if this plot has selectors
-        if SELECTABLE_DATA_LIST in plot_specification:
+        if SELECTABLE_DATA_DICT in plot_specification:
             select_info = get_data_selection_info_for_page_render(
                 plot_specification, plot_data_handler
             )
@@ -100,7 +100,7 @@ def assemble_plot_from_instructions(plot_specification, plot_data_handler):
     :return:
     """
 
-    visualization_options = plot_specification.get(VISUALIZATION_OPTIONS, [])
+    visualization_options = plot_specification.get(VISUALIZATION_OPTIONS, {})
     data_filters = []
     if DATA_FILTERS in plot_specification:
         data_filters = plot_specification[DATA_FILTERS]
@@ -127,7 +127,7 @@ def assemble_plot_from_instructions(plot_specification, plot_data_handler):
 
 
 def get_unique_set_of_columns_needed(
-    data_dict_to_be_plotted: dict, list_of_plot_metadata: list = None
+    data_list_to_be_plotted: list, dict_of_plot_metadata: dict = None
 ) -> list:
     """
     Returns the unique columns of the data we need to get
@@ -138,13 +138,13 @@ def get_unique_set_of_columns_needed(
     :return:
     """
     set_of_column_names = set()
-    for dict_of_data_on_each_axis in data_dict_to_be_plotted.values():
+    for dict_of_data_on_each_axis in data_list_to_be_plotted:
         set_of_column_names.update(dict_of_data_on_each_axis.values())
-    if list_of_plot_metadata is not None:
+    if dict_of_plot_metadata is not None:
         set_of_column_names.update(
             {
                 col_name
-                for visualization in list_of_plot_metadata
+                for visualization in dict_of_plot_metadata.values()
                 for col_name in visualization[OPTION_COL]
             }
         )
@@ -180,56 +180,59 @@ def create_data_subselect_info_for_plot(
     """
 
     select_info = []
-    for selection_index, selection_option_dict_for_plot in enumerate(
-        plot_specification[SELECTABLE_DATA_LIST]
-    ):
+    selectable_data_dict = plot_specification[SELECTABLE_DATA_DICT]
 
-        selector_attributes = AVAILABLE_SELECTORS[
-            selection_option_dict_for_plot[OPTION_TYPE]
-        ]
-        select_html_file = selector_attributes[SELECT_HTML_TEMPLATE]
-        # In the config file Group_by selectors do not have to have a column entry
-        # because they do not act on a specific column however in the html the column entry is
-        # used as an identifier so we need a non empty column in our select_info items
-        column = selection_option_dict_for_plot.get(
-            OPTION_COL, "selector_{}".format(selection_index)
-        )
-        selector_entries = []
-        option_dict = selection_option_dict_for_plot.get(SELECT_OPTION, {})
-        if MULTIPLE not in option_dict:
-            option_dict[MULTIPLE] = False
-        active_selection_options = selection_option_dict_for_plot[ACTIVE_SELECTORS]
+    axis_list = selectable_data_dict.get(AXIS, [])
+    for index, axis_dict in enumerate(axis_list):
+        selector_entries = axis_dict[ENTRIES]
+        selector_entries.sort()
+        select_info.append(make_filter_dict(AXIS, axis_dict, index, selector_entries))
 
-        if selection_option_dict_for_plot[SELECTOR_TYPE] == SELECTOR:
-            selector_entries = data_handler.get_column_unique_entries(
-                [column], filters=plot_specification.get(DATA_FILTERS)
-            )
-            selector_entries = selector_entries[column]
-            selector_entries.sort()
-            # append show_all_rows to the front of the list
-            selector_entries.insert(0, SHOW_ALL_ROW)
-
-        elif selection_option_dict_for_plot[SELECTOR_TYPE] == AXIS:
-            selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-            selector_entries.sort()
-        elif selection_option_dict_for_plot[SELECTOR_TYPE] == GROUPBY:
-            selector_entries = selection_option_dict_for_plot[SELECT_OPTION][ENTRIES]
-            selector_entries.sort()
-            # append no_group_by to the front of the list
-            selector_entries.insert(0, NO_GROUP_BY)
-        elif selection_option_dict_for_plot[SELECTOR_TYPE] == NUMERICAL_FILTER:
-            selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
-
+    if GROUPBY in selectable_data_dict:
+        group_by_dict = selectable_data_dict[GROUPBY]
+        selector_entries = group_by_dict[ENTRIES]
+        selector_entries.sort()
+        # append no_group_by to the front of the list
+        selector_entries.insert(0, NO_GROUP_BY)
         select_info.append(
-            {
-                JINJA_SELECT_HTML_FILE: select_html_file,
-                SELECTOR_TYPE: selector_attributes[SELECTOR_TYPE],
-                COLUMN_NAME: column,
-                ACTIVE_SELECTORS: active_selection_options,
-                ENTRIES: selector_entries,
-                SELECT_OPTION: option_dict,
-                TEXT: selector_attributes[TEXT],
-            }
+            make_filter_dict(GROUPBY, group_by_dict, "", selector_entries)
+        )
+
+    filter_list = selectable_data_dict.get(FILTER, [])
+    for index, filter_dict in enumerate(filter_list):
+        column = filter_dict[OPTION_COL]
+        selector_entries = data_handler.get_column_unique_entries(
+            [column], filters=plot_specification.get(DATA_FILTERS)
+        )
+        selector_entries = selector_entries[column]
+        selector_entries.sort()
+        # append show_all_rows to the front of the list
+        selector_entries.insert(0, SHOW_ALL_ROW)
+        select_info.append(
+            make_filter_dict(FILTER, filter_dict, index, selector_entries)
+        )
+
+    numerical_filter_list = selectable_data_dict.get(NUMERICAL_FILTER, [])
+    for index, numerical_filter_dict in enumerate(numerical_filter_list):
+        selector_entries = OPERATIONS_FOR_NUMERICAL_FILTERS.keys()
+        select_info.append(
+            make_filter_dict(
+                NUMERICAL_FILTER, numerical_filter_dict, index, selector_entries
+            )
         )
 
     return select_info
+
+
+def make_filter_dict(selector_type, select_dict, index, selector_entries):
+    html_filter_dict = {SELECTOR_TYPE: selector_type}
+    selector_attributes = AVAILABLE_SELECTORS[selector_type]
+    column = select_dict.get(OPTION_COL, "")
+    html_filter_dict[JINJA_SELECT_HTML_FILE] = selector_attributes[SELECT_HTML_TEMPLATE]
+    html_filter_dict[SELECTOR_NAME] = selector_attributes[SELECTOR_NAME].format(index)
+    html_filter_dict[TEXT] = selector_attributes[TEXT].format(column)
+    html_filter_dict[ACTIVE_SELECTORS] = select_dict[ACTIVE_SELECTORS]
+    html_filter_dict[MULTIPLE] = select_dict.get(MULTIPLE, False)
+    html_filter_dict[ENTRIES] = selector_entries
+    return html_filter_dict
+    select_info.append(html_filter_dict)

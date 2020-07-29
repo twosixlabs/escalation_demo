@@ -34,19 +34,15 @@ def make_data():
 
 def test_plotly_draw_scatter(make_data, test_app_client):
     plot_options = {DATA: [{"type": "scatter", "mode": "markers"}]}
-    axis_to_data_dict = {POINTS_NUM.format(0): {"x": TITLE1, "y": TITLE2}}
+    axis_to_data_dict = [{"x": TITLE1, "y": TITLE2}]
 
-    visualization_options = [
-        {
-            VISUALIZATION_TYPE: "hover_data",
-            OPTION_COL: [TITLE1],
-        },  # need a flask app to run
-        {
-            VISUALIZATION_TYPE: AGGREGATE,
+    visualization_options = {
+        "hover_data": {OPTION_COL: [TITLE1],},  # need a flask app to run
+        AGGREGATE: {
             OPTION_COL: [TITLE2],
             OPTIONS: {AGGREGATIONS: {"x": "avg", "y": "avg"}},
         },
-    ]
+    }
 
     ploty_test = PlotlyPlot()
     graph_json = ploty_test.make_dict_for_html_plot(

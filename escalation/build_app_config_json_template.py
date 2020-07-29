@@ -51,7 +51,7 @@ def build_config_json_template():
                                 },
                             },
                         ],
-                        SELECTABLE_DATA_LIST: [
+                        SELECTABLE_DATA_DICT: [
                             {
                                 OPTION_TYPE: "select",
                                 COLUMN_NAME: "",

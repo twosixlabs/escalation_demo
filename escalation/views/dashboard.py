@@ -5,7 +5,7 @@ from flask import current_app, render_template, Blueprint, request
 from utility.constants import APP_CONFIG_JSON, PROCESS
 from controller import get_data_for_page
 
-DATALAYOUT = "datalayout.html"
+DATALAYOUT = "data_layout.html"
 
 dashboard_blueprint = Blueprint("dashboard", __name__)
 

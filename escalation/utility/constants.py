@@ -47,7 +47,7 @@ DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_SPECIFIC_INFO = "plot_specific_info"
 FILTERS = "filters"
 
-SELECTABLE_DATA_LIST = "selectable_data_list"
+SELECTABLE_DATA_DICT = "selectable_data_dict"
 OPTION_TYPE = "type"
 OPTION_COL = "column"
 
@@ -65,7 +65,6 @@ TEXT = "text"
 SELECT_OPTION = "options"
 AXIS = "axis"
 GROUPBY = "groupby"
-SELECTOR = "select"
 SELECTOR_TYPE = "type"
 FILTER = "filter"
 UNFILTERED_SELECTOR = "unfiltered_selector"
@@ -80,6 +79,8 @@ LOWER_INEQUALITY = "lower"
 LIST_OF_VALUES = "list_of_values"
 MULTIPLE = "multiple"
 NO_GROUP_BY = "NO_GROUP_BY"
+SELECTOR_NAME = "name"
+
 # ALL of row
 SHOW_ALL_ROW = "SHOW_ALL_ROWS"
 
@@ -101,8 +102,7 @@ UPLOAD_TIME = "upload_time"
 # addendum constants
 
 GRAPHIC_NAME = "graphic_name"
-SELECTION_NUM = "selection_{:d}"
-SELECTION_NUM_LOC_TYPE = "selection_{:d}_{}_{}"
+NUMERICAL_FILTER_NUM_LOC_TYPE = "numerical_filter_{:d}_{}_{}"
 
 
 PROCESS = "process"
