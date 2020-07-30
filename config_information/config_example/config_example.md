@@ -1,5 +1,5 @@
 # Config example
-This file walks through some of the lines in the [penguin_config](../../escalation/tests/test_data/test_app_local_handler_config.json)
+This file walks through some of the lines in the [penguin_config](../../escalation/test_app_deploy_data/data/test_app_local_handler_config.json)
   example.
 
 ##

@@ -11,7 +11,7 @@
     <p class="lead">
         {% for dashboard_page in dashboard_pages %}
         <a class="btn btn-primary" href={{ url_for('.graphic_page', page_name=dashboard_page['link']) }} role="button">{{
-        dashboard_page['button_label'] }}</a>
+        dashboard_page['webpage_label'] }}</a>
         {% endfor %}
     </p>
 </div>

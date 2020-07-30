@@ -4,62 +4,62 @@
 from collections import OrderedDict
 
 from controller import (
-    create_link_buttons_for_available_pages,
+    create_labels_for_available_pages,
     create_data_subselect_info_for_plot,
     get_unique_set_of_columns_needed,
-    get_data_selection_info_for_page_render,
 )
 from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import (
-    COLUMN_NAME,
     JINJA_SELECT_HTML_FILE,
     ENTRIES,
-    SELECT_OPTION,
     ACTIVE_SELECTORS,
     SHOW_ALL_ROW,
-    AVAILABLE_PAGES,
-    GRAPHICS,
     SELECTABLE_DATA_DICT,
     TEXT,
     FILTER,
-    NUMERICAL_FILTER, AXIS, MULTIPLE,
+    NUMERICAL_FILTER,
+    AXIS,
+    MULTIPLE,
 )
 
 
-def test_extract_buttons(json_config_fixture):
-    aval_pg = json_config_fixture["available_pages"]
-    buttons = create_link_buttons_for_available_pages(aval_pg)
+def test_extract_buttons(main_json_fixture):
+    aval_pg = main_json_fixture["available_pages"]
+    buttons = create_labels_for_available_pages(aval_pg)
 
-    button1 = {"button_label": "Penguins", "link": "penguins"}
+    button1 = {"webpage_label": "PENGUINS!", "link": "penguin"}
     assert button1 in buttons
 
 
-def test_create_data_subselect_info(local_handler_fixture, json_config_fixture):
+def test_create_data_subselect_info(local_handler_fixture, graphic_json_fixture):
     select_dict = {
-        FILTER:[{
-            "column": "penguin_size:sex",
-            "multiple": False,
-            ACTIVE_SELECTORS: ["MALE"],
-        },
-        {
-            "column": "penguin_size:island",
-            "multiple": True,
-            ACTIVE_SELECTORS: [SHOW_ALL_ROW],
-        },
+        FILTER: [
+            {
+                "column": "penguin_size:sex",
+                "multiple": False,
+                ACTIVE_SELECTORS: ["MALE"],
+            },
+            {
+                "column": "penguin_size:island",
+                "multiple": True,
+                ACTIVE_SELECTORS: [SHOW_ALL_ROW],
+            },
         ],
-        AXIS:[{
-            "column": "x",
-            "entries": [
-                "penguin_size:culmen_length_mm",
-                "penguin_size:flipper_length_mm",
-                "penguin_size:body_mass_g",
-            ],
-            ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
-        }],
+        AXIS: [
+            {
+                "column": "x",
+                "entries": [
+                    "penguin_size:culmen_length_mm",
+                    "penguin_size:flipper_length_mm",
+                    "penguin_size:body_mass_g",
+                ],
+                ACTIVE_SELECTORS: ["penguin_size:culmen_length_mm"],
+            }
+        ],
     }
-    json_config_fixture[SELECTABLE_DATA_DICT] = select_dict
+    graphic_json_fixture[SELECTABLE_DATA_DICT] = select_dict
     select_info = create_data_subselect_info_for_plot(
-        json_config_fixture, local_handler_fixture
+        graphic_json_fixture, local_handler_fixture
     )
 
     assert select_info[0][JINJA_SELECT_HTML_FILE] == "selector.html"
@@ -97,12 +97,10 @@ def test_get_unique_set_of_columns_needed():
     assert len(test_cols_list) == 5
 
 
-def test_get_data_selection_info_for_page_render(
-    local_handler_fixture, json_config_fixture
+def test_create_data_subselect_info_for_plot_with_defaults(
+    local_handler_fixture, graphic_json_fixture
 ):
-    plot_specification = json_config_fixture[AVAILABLE_PAGES]["penguins"][GRAPHICS][
-        "graphic_0"
-    ]
+    plot_specification = graphic_json_fixture["graphic_0"]
     # add_active_selectors_to_selectable_data_list adds default  SHOW_ALL_ROWS to selectors
     for selector in plot_specification[SELECTABLE_DATA_DICT][FILTER]:
         selector[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
@@ -110,7 +108,7 @@ def test_get_data_selection_info_for_page_render(
     plot_specification[SELECTABLE_DATA_DICT][NUMERICAL_FILTER][0][ACTIVE_SELECTORS] = [
         SHOW_ALL_ROW
     ]
-    select_info = get_data_selection_info_for_page_render(
+    select_info = create_data_subselect_info_for_plot(
         plot_specification, local_handler_fixture
     )
     expected_select_info = [

@@ -22,7 +22,7 @@ def build_config_json_template():
         DATA_SOURCES: [],
         AVAILABLE_PAGES: {
             "<page_identifier_goes_here_no_spaces>": {
-                BUTTON_LABEL: "<page name>",
+                WEBPAGE_LABEL: "<page name>",
                 GRAPHICS: {
                     "<graphic_identifier_goes_here_no_spaces>": {
                         PLOT_MANAGER: "plotly",

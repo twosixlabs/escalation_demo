@@ -207,8 +207,8 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python database/csv_to_sql.py penguin_size escalation/tests/test_data/penguin_size/penguin_size.csv
-    # python database/csv_to_sql.py mean_penguin_stat escalation/tests/test_data/mean_penguin_stat/mean_penguin_stat.csv
+    # python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv
+    # python database/csv_to_sql.py mean_penguin_stat escalation/test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv
 
     # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py

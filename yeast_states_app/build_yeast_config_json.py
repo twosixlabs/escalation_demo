@@ -648,22 +648,22 @@ config_dict = {
     ],
     AVAILABLE_PAGES: {
         "replicate_summary": {
-            BUTTON_LABEL: "Data Converge Replicate Summary",
+            WEBPAGE_LABEL: "Data Converge Replicate Summary",
             GRAPHICS: {"plate_reader_circuit_function": plate_reader_circuit_function},
         },
         "growth_summary": {
-            BUTTON_LABEL: "Raw Growth Observations",
+            WEBPAGE_LABEL: "Raw Growth Observations",
             GRAPHICS: {
                 "plate_reader_od": plate_reader_od,
                 "flow_cell_density": flow_cell_density,
             },
         },
         "growth_curves": {
-            BUTTON_LABEL: "Growth Rate",
+            WEBPAGE_LABEL: "Growth Rate",
             GRAPHICS: {"growth_rate_plate_data": growth_rate_plate_data},
         },
         "on_the_loop": {
-            BUTTON_LABEL: "On the Loop Assistant",
+            WEBPAGE_LABEL: "On the Loop Assistant",
             GRAPHICS: {
                 "growth_rate_circuit_function_inducer_diff": inducer_diff_growth_rate,
                 "growth_rate_circuit_function_time_diff": time_diff_growth_rate,
@@ -671,7 +671,7 @@ config_dict = {
             },
         },
         "circuit_function": {
-            BUTTON_LABEL: "Circuit Function Histogram",
+            WEBPAGE_LABEL: "Circuit Function Histogram",
             GRAPHICS: {
                 "circuit_function_line": circuit_function_line,
                 "flow_boxplot_inducer": flow_boxplot_inducer,
