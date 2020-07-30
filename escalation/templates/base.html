@@ -59,7 +59,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             {% for dashboard_page in dashboard_pages %}
         <a class="dropdown-item" href={{ url_for('dashboard.graphic_page', page_name=dashboard_page['link']) }}>{{
-        dashboard_page['button_label'] }}</a>
+        dashboard_page['webpage_label'] }}</a>
         {% endfor %}
         </div>
       </li>

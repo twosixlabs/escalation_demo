@@ -33,18 +33,23 @@ def add_instructions_to_config_dict(
         if SELECTABLE_DATA_DICT in graphic_dict:
             selector_dict = graphic_dict[SELECTABLE_DATA_DICT]
             data_info_dict = graphic_dict[DATA]
-            visualization_info_dict = graphic_dict.get(VISUALIZATION_OPTIONS, {})
             if addendum_dict.get(GRAPHIC_NAME) == graphic_name:
                 add_active_selectors_to_selectable_data_list(
                     selector_dict, data_info_dict, addendum_dict
                 )
-                graphic_dict[DATA_FILTERS] = add_operations_to_the_data_from_addendum(
-                    selector_dict,
-                    data_info_dict,
-                    visualization_info_dict,
-                    addendum_dict,
+                (
+                    graphic_dict[DATA_FILTERS],
+                    groupby_dict,
+                ) = add_operations_to_the_data_from_addendum(
+                    selector_dict, data_info_dict, addendum_dict,
                 )
-
+                # Visualization options does not have to be in the dictionary
+                if groupby_dict:
+                    visualization_info_dict = graphic_dict.get(
+                        VISUALIZATION_OPTIONS, {}
+                    )
+                    visualization_info_dict[GROUPBY] = groupby_dict
+                    graphic_dict[VISUALIZATION_OPTIONS] = visualization_info_dict
             else:
                 add_active_selectors_to_selectable_data_list(
                     selector_dict, data_info_dict
@@ -115,10 +120,7 @@ def add_active_selectors_to_selectable_data_list(
 
 
 def add_operations_to_the_data_from_addendum(
-    selectable_data_dict: dict,
-    data_info_list: list,
-    visualization_info_dict: dict,
-    addendum_dict: ImmutableMultiDict,
+    selectable_data_dict: dict, data_info_list: list, addendum_dict: ImmutableMultiDict,
 ) -> list:
     """
     Adds operations to be passed to the data handlers for the data
@@ -130,7 +132,7 @@ def add_operations_to_the_data_from_addendum(
     :param addendum_dict: User selections form the webpage
     :return:
     """
-
+    groupby_dict = {}
     operation_list = []
 
     # modifies the axis shown in the config
@@ -145,7 +147,7 @@ def add_operations_to_the_data_from_addendum(
     if GROUPBY in selectable_data_dict:
         selection = addendum_dict.getlist(get_key_for_form(GROUPBY, ""))
         if len(selection) > 0 and NO_GROUP_BY not in selection:
-            visualization_info_dict[GROUPBY] = {COLUMN_NAME: selection}
+            groupby_dict = {COLUMN_NAME: selection}
 
     # creates an operations where only the values selected along a column will be shown in the plot
     filter_list = selectable_data_dict.get(FILTER, [])
@@ -183,7 +185,7 @@ def add_operations_to_the_data_from_addendum(
                 {**base_info_dict_for_selector, **numerical_filter_info}
             )
 
-    return operation_list
+    return operation_list, groupby_dict
 
 
 def add_operations_to_the_data_from_defaults(selectable_data_dict: dict) -> list:
@@ -227,5 +229,7 @@ def get_base_info_for_selector(selection_dict, selector_type):
 
 
 def get_key_for_form(selector_type, index):
-    selection_index_str = AVAILABLE_SELECTORS[selector_type][SELECTOR_NAME].format(index)
+    selection_index_str = AVAILABLE_SELECTORS[selector_type][SELECTOR_NAME].format(
+        index
+    )
     return selection_index_str

@@ -3,6 +3,7 @@
 
 import json
 
+from graphics.plotly_plot import STYLES
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
@@ -10,9 +11,16 @@ ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]*$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 
+# json schema specific constants see https://json-schema.org/
 ADDITIONAL_PROPERTIES = "additionalProperties"
 PROPERTIES = "properties"
+PATTERN_PROPERTIES = "patternProperties"
 DESCRIPTION = "description"
+TITLE = "title"
+TYPE = "type"
+ITEMS = "items"
+PATTERN = "pattern"
+REQUIRED = "required"
 
 
 def build_settings_schema():
@@ -32,33 +40,66 @@ def build_settings_schema():
             DATA_BACKEND,
             DATA_FILE_DIRECTORY,
             DATA_SOURCES,
-            AVAILABLE_PAGES,
         ],
         "additionalProperties": False,
         "properties": {
             SITE_TITLE: {
                 "type": "string",
+                TITLE: "Site Title",
                 "description": "title shown at the top of the website",
             },
             SITE_DESC: {
                 "type": "string",
+                "title": "Site Description",
                 "description": "description shown at the top of the website",
             },
             DATA_BACKEND: {
                 "type": "string",
+                TITLE: "Data Backend",
                 "description": "How the data is being managed on the server",
                 "enum": [POSTGRES, MYSQL, LOCAL_CSV],
             },
             DATA_FILE_DIRECTORY: {
                 "type": "string",
+                TITLE: "Data File Directory",
                 "description": "Where the data is on the server",
             },
             DATA_SOURCES: {
                 "type": "array",
+                TITLE: "Data Sources",
                 "description": "list of tables or folders that server will use for the plots",
                 "items": {"type": "string"},
             },
-            AVAILABLE_PAGES: {"type": "object"},
+            AVAILABLE_PAGES: {
+                "type": "array",
+                TITLE: "Pages",
+                DESCRIPTION: "array of webpages",
+                ITEMS: {
+                    "type": "object",
+                    REQUIRED: [WEBPAGE_LABEL, URL_ENDPOINT],
+                    PROPERTIES: {
+                        WEBPAGE_LABEL: {
+                            "type": "string",
+                            TITLE: "Label",
+                            DESCRIPTION: "UI label of the webpage",
+                        },
+                        URL_ENDPOINT: {
+                            "type": "string",
+                            TITLE: "URL",
+                            DESCRIPTION: "Endpoint of a url",
+                            PATTERN: ALPHA_NUMERIC_NO_SPACES,
+                        },
+                        GRAPHIC_CONFIG_FILES: {
+                            TYPE: "array",
+                            TITLE: "Graphic Config Files",
+                            ITEMS: {
+                                TYPE: "string",
+                                DESCRIPTION: "Path to config file of the graphic for the webpage",
+                            },
+                        },
+                    },
+                },
+            },
         },
     }
     return schema
@@ -84,7 +125,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             PLOT_SPECIFIC_INFO,
         ],
         "additionalProperties": False,
-        "properties": {
+        PROPERTIES: {
             PLOT_MANAGER: {
                 "type": "string",
                 "description": "plot library you would like to use,"
@@ -124,21 +165,18 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 },
             },
             DATA: {
-                "type": "object",
+                "type": "array",
                 "title": "Data Dictionary",
                 "description": "which data column goes on each axis",
-                "additionalProperties": False,
-                "patternProperties": {
-                    "^points_[0-9]*$": {
-                        "type": "object",
-                        "title": "points",
-                        "description": "a dictionary for each plot on a single graph:"
-                        " Key: axis (e.g. x), Value: Data Column,"
-                        " use points_0 then points_1 etc.",
-                        "patternProperties": {
-                            ONE_LETTER: {"type": "string", "enum": column_names,}
-                        },
-                    }
+                "items": {
+                    "type": "object",
+                    "title": "points",
+                    "description": "a dictionary for each plot on a single graph:"
+                    " Key: axis (e.g. x), Value: Data Column,"
+                    " use points_0 then points_1 etc.",
+                    "patternProperties": {
+                        ONE_LETTER: {"type": "string", "enum": column_names,}
+                    },
                 },
             },
             PLOT_SPECIFIC_INFO: {
@@ -151,7 +189,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Visualization List",
                 "description": "modifications to the existing graph",
                 "additionalProperties": False,
-                "properties": {
+                PROPERTIES: {
                     HOVER_DATA: {
                         "type": "object",
                         "title": "Hover data",
@@ -173,6 +211,9 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             COLUMN_NAME: {
                                 "type": "array",
                                 "items": {"type": "string", "enum": column_names},
+                            },
+                            STYLES: {
+                                TYPE: "object"
                             }
                         },
                     },
@@ -186,33 +227,28 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "type": "array",
                                 "items": {"type": "string", "enum": column_names,},
                             },
-                            "options": {
+                            AGGREGATIONS: {
                                 "type": "object",
-                                "properties": {
-                                    AGGREGATIONS: {
-                                        "type": "object",
-                                        "description": "axis to function on the data e.g. x:avg",
-                                        "patternProperties": {
-                                            ONE_LETTER: {
-                                                "type": "string",
-                                                "description": "function on the data",
-                                                "enum": [
-                                                    "avg",
-                                                    "sum",
-                                                    "min",
-                                                    "max",
-                                                    "mode",
-                                                    "median",
-                                                    "count",
-                                                    "stddev",
-                                                    "first",
-                                                    "last",
-                                                ],
-                                            }
-                                        },
+                                "description": "axis to function on the data e.g. x:avg",
+                                "patternProperties": {
+                                    ONE_LETTER: {
+                                        "type": "string",
+                                        "description": "function on the data",
+                                        "enum": [
+                                            "avg",
+                                            "sum",
+                                            "min",
+                                            "max",
+                                            "mode",
+                                            "median",
+                                            "count",
+                                            "stddev",
+                                            "first",
+                                            "last",
+                                        ],
                                     }
                                 },
-                            },
+                            }
                         },
                     },
                 },
@@ -287,13 +323,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     GROUPBY: {
                         "type": "object",
                         "title": "Group By Selector",
-                        "required": [COLUMN_NAME],
+                        "required": [ENTRIES],
                         "additionalProperties": False,
                         PROPERTIES: {
-                            COLUMN_NAME: {
-                                "type": "string",
-                                "description": "name in table",
-                                "enum": column_names,
+                            ENTRIES: {
+                                "type": "array",
+                                "items": {"type": "string", "enum": column_names},
                             },
                             "multiple": {"type": "boolean"},
                             DEFAULT_SELECTED: {

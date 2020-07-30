@@ -8,13 +8,14 @@ from types import MappingProxyType
 from flask import Flask
 from sqlalchemy.engine.url import URL
 
-from controller import create_link_buttons_for_available_pages
+from controller import create_labels_for_available_pages, make_pages_dict
 from utility.constants import (
     APP_CONFIG_JSON,
     DATA_BACKEND,
     POSTGRES,
     MYSQL,
     AVAILABLE_PAGES,
+    AVAILABLE_PAGES_DICT,
 )
 from app_deploy_data.app_settings import DATABASE_CONFIG
 
@@ -43,7 +44,7 @@ def create_app():
     def get_dashboard_pages():
         # used for the navigation bar
         available_pages = app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
-        dashboard_pages = create_link_buttons_for_available_pages(available_pages)
+        dashboard_pages = create_labels_for_available_pages(available_pages)
         return dict(dashboard_pages=dashboard_pages)
 
     return app
@@ -52,6 +53,7 @@ def create_app():
 def configure_app(app, config_dict):
     # write the config dict to app config as a read-only proxy of a mutable dict
     app.config[APP_CONFIG_JSON] = MappingProxyType(config_dict)
+    app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(config_dict[AVAILABLE_PAGES])
 
     # setup steps unique to SQL-backended apps
     # todo: make sure we don't need postgres install reqs if running mysql
@@ -80,8 +82,8 @@ def configure_app(app, config_dict):
 
 
 # config_file_path = os.path.join("app_deploy_data", "app_config.json")
-# config_file_path = "tests/test_data/test_sql_app_config.json"
-config_file_path = "tests/test_data/test_app_local_handler_config.json"
+# config_file_path = "test_app_deploy_data/data/test_sql_app_config.json"
+config_file_path = "test_app_deploy_data/test_app_local_config.json"
 # config_file_path = "../yeast_states_app/yeast_states_config.json"
 
 with open(config_file_path, "r") as config_file:

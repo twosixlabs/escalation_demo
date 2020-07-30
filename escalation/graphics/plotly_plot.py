@@ -85,8 +85,8 @@ def get_groupby_or_aggregate_in_plotly_form(
         GROUPS: group_labels,
     }
 
-    if visualization_type == GROUPBY and OPTIONS in visualization_property:
-        style_dict = visualization_property[OPTIONS][STYLES]
+    if visualization_type == GROUPBY and STYLES in visualization_property:
+        style_dict = visualization_property[STYLES]
         plotly_style_list = [
             {"target": col_name, "value": style}
             for col_name, style in style_dict.items()
@@ -95,7 +95,7 @@ def get_groupby_or_aggregate_in_plotly_form(
     elif visualization_type == AGGREGATE:
         # attribute_name can be x, y or something like marker.size
         # func can be avg, min, sum, count, stddev etc.
-        attribute_dict = visualization_property[OPTIONS][AGGREGATIONS]
+        attribute_dict = visualization_property[AGGREGATIONS]
         plotly_aggregations_list = [
             {"target": attribute_name, "func": func}
             for attribute_name, func in attribute_dict.items()

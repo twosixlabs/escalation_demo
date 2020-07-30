@@ -2,6 +2,8 @@
 # Licensed under the Apache License, Version 2.0
 
 import copy
+import json
+import os
 
 from flask import current_app
 
@@ -13,43 +15,21 @@ from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
 from utility.constants import *
 
 
-def get_data_for_page(config_dict: dict, display_page, addendum_dict=None) -> dict:
+def get_data_for_page(single_page_config_dict: dict, addendum_dict=None) -> list:
     """
 
-    :param config_dict: A dictionary containing all the information from the config json file
-    :param display_page: Which page is the viewer requesting
+    :param single_page_config_dict: A dictionary containing all the information from the config json file
     :param addendum_dict: json received from post. # todo: describe how this form is structured, and how we restructure it in reformat_html_form_dict
     :return: dictionary to be read by jinja to build the page
     """
 
-    available_pages = config_dict[AVAILABLE_PAGES]
-    plot_specs = []
-    if display_page is not None:
-        single_page_config_dict = copy.deepcopy(
-            available_pages.get(display_page, {}).get(GRAPHICS, {})
-        )
-        single_page_config_dict = add_instructions_to_config_dict(
-            single_page_config_dict, addendum_dict
-        )
-        plot_specs = assemble_html_with_graphs_from_page_config(single_page_config_dict)
+    single_page_config_dict = copy.deepcopy(single_page_config_dict)
+    single_page_config_dict = add_instructions_to_config_dict(
+        single_page_config_dict, addendum_dict
+    )
+    plot_specs = assemble_html_with_graphs_from_page_config(single_page_config_dict)
 
-    page_info = {
-        JINJA_PLOT: plot_specs,
-        SITE_TITLE: config_dict[SITE_TITLE],
-        SITE_DESC: config_dict[SITE_DESC],
-        CURRENT_PAGE: display_page,
-    }
-    return page_info
-
-
-def get_data_selection_info_for_page_render(plot_specification, plot_data_handler):
-    select_info = []
-    # checks to see if this plot has selectors
-    if SELECTABLE_DATA_DICT in plot_specification:
-        select_info = create_data_subselect_info_for_plot(
-            plot_specification, plot_data_handler
-        )
-    return select_info
+    return plot_specs
 
 
 def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) -> list:
@@ -74,7 +54,7 @@ def assemble_html_with_graphs_from_page_config(single_page_config_dict: dict) ->
         select_info = []
         # checks to see if this plot has selectors
         if SELECTABLE_DATA_DICT in plot_specification:
-            select_info = get_data_selection_info_for_page_render(
+            select_info = create_data_subselect_info_for_plot(
                 plot_specification, plot_data_handler
             )
 
@@ -151,20 +131,20 @@ def get_unique_set_of_columns_needed(
     return list(set_of_column_names)
 
 
-def create_link_buttons_for_available_pages(available_pages_dict: dict) -> list:
+def create_labels_for_available_pages(available_pages_list: list) -> list:
     """
     :param available_pages_dict:
     :return:
     """
-    buttons = []
-    for available_page in available_pages_dict.keys():
-        buttons.append(
+    labels = []
+    for available_page in available_pages_list:
+        labels.append(
             {
-                BUTTON_LABEL: available_pages_dict[available_page][BUTTON_LABEL],
-                LINK: available_page,
+                WEBPAGE_LABEL: available_page[WEBPAGE_LABEL],
+                LINK: available_page[URL_ENDPOINT],
             }
         )
-    return buttons
+    return labels
 
 
 def create_data_subselect_info_for_plot(
@@ -235,4 +215,23 @@ def make_filter_dict(selector_type, select_dict, index, selector_entries):
     html_filter_dict[MULTIPLE] = select_dict.get(MULTIPLE, False)
     html_filter_dict[ENTRIES] = selector_entries
     return html_filter_dict
-    select_info.append(html_filter_dict)
+
+
+def make_pages_dict(available_pages_list) -> dict:
+    """
+    Pulls in all the config files refrenced in the main config to make a large dictionary.
+    :param available_pages_list:
+    :return:
+    """
+    available_pages_dict = {}
+    for page in available_pages_list:
+        page_dict = {}
+        for graphic_config_file_path in page[GRAPHIC_CONFIG_FILES]:
+            with open(graphic_config_file_path, "r") as config_file:
+                config_dict = json.load(config_file)
+            graphic_key = os.path.splitext(os.path.basename(graphic_config_file_path))[
+                0
+            ]
+            page_dict[graphic_key] = config_dict
+        available_pages_dict[page[URL_ENDPOINT]] = page_dict
+    return available_pages_dict

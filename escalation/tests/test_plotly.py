@@ -40,7 +40,7 @@ def test_plotly_draw_scatter(make_data, test_app_client):
         "hover_data": {OPTION_COL: [TITLE1],},  # need a flask app to run
         AGGREGATE: {
             OPTION_COL: [TITLE2],
-            OPTIONS: {AGGREGATIONS: {"x": "avg", "y": "avg"}},
+            AGGREGATIONS: {"x": "avg", "y": "avg"},
         },
     }
 

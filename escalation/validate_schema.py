@@ -8,11 +8,16 @@ from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
 from escalation.app import create_app, configure_app
-from escalation.utility.build_schema import build_first_level_schema
+from escalation.utility.build_schema import build_settings_schema, build_graphic_schema
 from escalation.utility.constants import *
 
 
-def validate_config_data_references(config_dict):
+def load_config_file(config_file_path):
+    with open(config_file_path, "r") as config_file:
+        return json.load(config_file)
+
+
+def validate_config_data_references(config_dict_path):
     """
     Validates that
     1. config_dict is of form needed for Escalate OS
@@ -21,7 +26,9 @@ def validate_config_data_references(config_dict):
     :return:
     """
     try:
-        schema = build_first_level_schema()
+        schema = build_settings_schema()
+        current_config_path = config_dict_path
+        config_dict = load_config_file(current_config_path)
         validate(instance=config_dict, schema=schema)
         app = create_app()
         app = configure_app(app, config_dict)
@@ -71,19 +78,22 @@ def validate_config_data_references(config_dict):
                     for column_name in column_names
                 ]
             )
+        schema = build_graphic_schema(data_source_names, possible_column_names)
 
-        schema = build_higher_level_schema(data_source_names, possible_column_names)
-        validate(instance=config_dict, schema=schema)
+        pages = config_dict.get(AVAILABLE_PAGES, [])
+        for page in pages:
+            graphic_config_file_paths = page.get(GRAPHIC_CONFIG_FILES, [])
+            for graphic_config_file_path in graphic_config_file_paths:
+                current_config_path = graphic_config_file_path
+                validate(instance=load_config_file(current_config_path), schema=schema)
         print("Your config file is valid")
     except ValidationError as valid_error:
-        print("The Config file is not valid:")
+        print("{} is not valid:".format(current_config_path))
         print(valid_error.message)
         print("The error can be found in the config at:", list(valid_error.path))
 
 
 if __name__ == "__main__":
     # todo: take this in as a command line argument
-    config_file_path = "tests/test_data/test_app_local_handler_config.json"
-    with open(config_file_path, "r") as config_file:
-        config_dict = json.load(config_file)
-    validate_config_data_references(config_dict)
+    main_config_file_path = "test_app_deploy_data/test_app_local_config.json"
+    validate_config_data_references(main_config_file_path)
