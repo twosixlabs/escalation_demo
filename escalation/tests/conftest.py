@@ -26,11 +26,11 @@ def test_app_client(main_json_fixture):
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
     testing_client = flask_app.test_client()
-    # Establish an application context before running the test_app_deploy_data.
+    # Establish an application context before running the tests.
     ctx = flask_app.app_context()
     # application context needs to be pushed to be able to handle GETs and POSTs
     ctx.push()
-    # provide the testing client to the test_app_deploy_data
+    # provide the testing client to the tests
     yield testing_client  # this is where the testing happens!
     # remove the context to clean up the test environment
     ctx.pop()

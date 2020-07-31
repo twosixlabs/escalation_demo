@@ -31,7 +31,7 @@ def build_config_json(data_backend, data_file_directory, path_to_graphic_config_
     return config_dict
 
 
-def build_config_json_graphic_the_first():
+def build_config_json_graphic_big_penguins():
     config_file = {
         PLOT_MANAGER: "plotly",
         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
@@ -62,7 +62,7 @@ def build_config_json_graphic_the_first():
     return config_file
 
 
-def build_config_json_graphic_the_second():
+def build_config_json_graphic_hist_penguins():
     config_file = {
         PLOT_MANAGER: "plotly",
         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
@@ -94,7 +94,7 @@ def build_config_json_graphic_the_second():
     return config_file
 
 
-def build_config_json_graphic_the_third():
+def build_config_json_graphic_radio_penguins():
     config_file = {
         PLOT_MANAGER: "plotly",
         DATA_SOURCES: [
@@ -170,10 +170,10 @@ if __name__ == "__main__":
             json.dump(config_dict, fout, indent=4)
 
     with open(os.path.join(path_to_test_files, "big_penguins.json"), "w") as fout:
-        json.dump(build_config_json_graphic_the_first(), fout, indent=4)
+        json.dump(build_config_json_graphic_big_penguins(), fout, indent=4)
 
     with open(os.path.join(path_to_test_files, "hist_penguins.json"), "w") as fout:
-        json.dump(build_config_json_graphic_the_second(), fout, indent=4)
+        json.dump(build_config_json_graphic_hist_penguins(), fout, indent=4)
 
     with open(os.path.join(path_to_test_files, "radio_penguins.json"), "w") as fout:
-        json.dump(build_config_json_graphic_the_third(), fout, indent=4)
+        json.dump(build_config_json_graphic_radio_penguins(), fout, indent=4)
