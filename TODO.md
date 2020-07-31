@@ -7,11 +7,8 @@
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
 - Fix bug in filter if the filter value has a space in the string, can't select?
 - change all examples to data in /escos/escalation/app_deploy_data
-- Simplifications to make to to the config
-    - make visualization options (VO) a dictionary, fix how groupby selector reacts to VO
-    - main config, folder for each page, folder for each graphic, graphic config
-    - get rid of button labels
-    - make data a list instead of points_0, points_1 etc.
+- yeast states pages all long
+- admin and upload have the left hand gap
 
 
 # Nice to have Features

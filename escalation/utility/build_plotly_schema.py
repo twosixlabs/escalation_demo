@@ -11,7 +11,7 @@ def build_plotly_schema():
         "title": "plotly dict",
         "description": "what PLOT_SPECIFIC_INFO should look like if plot manager is plotly",
         "type": "object",
-        "reqiured": [DATA],
+        "required": [DATA],
         "properties": {
             DATA: {
                 "type": "array",
@@ -21,6 +21,7 @@ def build_plotly_schema():
                 "items": {
                     "type": "object",
                     "title": "data dictionary",
+                    "required": ["type"],
                     "properties": {
                         "type": {
                             "type": "string",
@@ -44,7 +45,22 @@ def build_plotly_schema():
                                 "surface",
                                 "mesh3d",
                             ],
-                        }
+                        },
+                        "mode": {
+                            "type": "string",
+                            "description": "used for scatter or scattergl",
+                            "enum": [
+                                "lines",
+                                "markers",
+                                "text",
+                                "lines+markers",
+                                "markers+text",
+                                "lines+text",
+                                "lines+markers+text",
+                                "none",
+                                "group",
+                            ],
+                        },
                     },
                 },
             },
@@ -53,6 +69,28 @@ def build_plotly_schema():
                 "description": "Determines how the graph looks",
                 "type": "object",
                 "properties": {
+                    "height": {"type": "number", "minimum": 10},
+                    "width": {"type": "number", "minimum": 10},
+                    "xaxis": {
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "object",
+                                "properties": {"text": {"type": "string"}},
+                            },
+                            "automargin": {"type": "boolean"},
+                        },
+                    },
+                    "yaxis": {
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "object",
+                                "properties": {"text": {"type": "string"}},
+                            },
+                            "automargin": {"type": "boolean"},
+                        },
+                    },
                     "hovermode": {
                         "type": "string",
                         "enum": [
@@ -63,7 +101,7 @@ def build_plotly_schema():
                             "x unified",
                             "y unified",
                         ],
-                    }
+                    },
                 },
             },
         },

@@ -5,7 +5,7 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
-from utility.constants import OPTION_COL
+from utility.constants import OPTION_COL, GROUPBY, AGGREGATE, HOVER_DATA, AGGREGATIONS
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -18,13 +18,9 @@ HOVER_TEMPLATE = "hovertemplate"
 VISUALIZATION_TYPE = "type"
 PLOTLY_TYPE = "type"
 TRANSFORMS = "transforms"
-GROUPBY = "groupby"
-AGGREGATE = "aggregate"
-HOVER_DATA = "hover_data"
 GROUPS = "groups"
 OPTIONS = "options"
 STYLES = "styles"
-AGGREGATIONS = "aggregations"
 PLOT_OPTIONS = "plot_options"
 NA_FILL_IN = "NA"
 TABLE = "table"
@@ -35,9 +31,13 @@ MODE = "mode"
 LINES = "lines"
 AXIS_TO_SORT_ALONG = "x"
 AUTOMARGIN = "automargin"
+HOVERMODE = "hovermode"
+CLOSEST = "closest"
 
 
-def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
+def get_hover_data_in_plotly_form(
+    data, hover_options, visualization_type, plot_options_data_dict
+):
     """
 
     :param data:
@@ -61,7 +61,7 @@ def get_hover_data_in_plotly_form(data, hover_options, plot_options_data_dict):
 
 
 def get_groupby_or_aggregate_in_plotly_form(
-    data, visualization_property, plot_options_data_dict
+    data, visualization_property, visualization_type, plot_options_data_dict
 ):
     """
     aggregate allows you to do a function on an aggregation of the data
@@ -80,14 +80,13 @@ def get_groupby_or_aggregate_in_plotly_form(
         .astype(str)
         .values.tolist()
     ]
-    visualization_type = visualization_property[VISUALIZATION_TYPE]
     property_dict = {
         VISUALIZATION_TYPE: visualization_type,
         GROUPS: group_labels,
     }
 
-    if visualization_type == GROUPBY and OPTIONS in visualization_property:
-        style_dict = visualization_property[OPTIONS][STYLES]
+    if visualization_type == GROUPBY and STYLES in visualization_property:
+        style_dict = visualization_property[STYLES]
         plotly_style_list = [
             {"target": col_name, "value": style}
             for col_name, style in style_dict.items()
@@ -96,7 +95,7 @@ def get_groupby_or_aggregate_in_plotly_form(
     elif visualization_type == AGGREGATE:
         # attribute_name can be x, y or something like marker.size
         # func can be avg, min, sum, count, stddev etc.
-        attribute_dict = visualization_property[OPTIONS][AGGREGATIONS]
+        attribute_dict = visualization_property[AGGREGATIONS]
         plotly_aggregations_list = [
             {"target": attribute_name, "func": func}
             for attribute_name, func in attribute_dict.items()
@@ -157,9 +156,7 @@ class PlotlyPlot(Graphic):
         """
         # todo: cut off all text data to used in group by or titles to 47 charaters
         data_sorted = False
-        for point_index, axis_to_data_dict in axis_to_data_columns.items():
-            # pull out the interger from the string point_index, point_index will always be points_<int>
-            index = int(point_index.split("_")[-1])
+        for index, axis_to_data_dict in enumerate(axis_to_data_columns):
             if plot_options[DATA][index][PLOTLY_TYPE] == TABLE:
                 values = []
                 header = []
@@ -186,17 +183,28 @@ class PlotlyPlot(Graphic):
                     plot_options[DATA][index][axis] = data[column_name]
                     # if there is no label, label the columns with the first lines/scatters column names
                     if index == 0:
+                        layout_dict = plot_options.get(LAYOUT, {})
+                        if HOVERMODE not in layout_dict:
+                            layout_dict[HOVERMODE] = CLOSEST
                         plot_options[LAYOUT] = add_layout_axis_defaults(
-                            plot_options.get(LAYOUT, {}), axis, column_name
+                            layout_dict, axis, column_name
                         )
 
             plot_options[DATA][index][TRANSFORMS] = []
 
             if visualization_options is not None:
-                for extra_visualization_feature in visualization_options:
+                for (
+                    visualization_type,
+                    visualization_parameters,
+                ) in visualization_options.items():
                     plot_options[DATA][index] = VISUALIZATION_OPTIONS[
-                        extra_visualization_feature[VISUALIZATION_TYPE]
-                    ](data, extra_visualization_feature, plot_options[DATA][index])
+                        visualization_type
+                    ](
+                        data,
+                        visualization_parameters,
+                        visualization_type,
+                        plot_options[DATA][index],
+                    )
 
         graph_json = json.dumps(plot_options, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json

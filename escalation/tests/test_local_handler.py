@@ -13,7 +13,7 @@ def test_local_handler_init(local_handler_fixture_small):
     assert len(data_sources) == 1
     first_data_source = data_sources[0]
     assert first_data_source[DATA_LOCATION] == [
-        "tests/test_data/penguin_size_small/penguin_size_small.csv"
+        "test_app_deploy_data/data/penguin_size_small/penguin_size_small.csv"
     ]
     # todo: more complicated init with key joining
 
@@ -77,11 +77,11 @@ def test_init(test_app_client):
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # test that init gets the correct file for each data source folder
     assert handler.data_sources[0][DATA_LOCATION] == [
-        "tests/test_data/penguin_size/penguin_size.csv",
-        "tests/test_data/penguin_size/penguin_size_2.csv",
+        "test_app_deploy_data/data/penguin_size/penguin_size.csv",
+        "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
     ]
     assert handler.data_sources[1][DATA_LOCATION] == [
-        "tests/test_data/mean_penguin_stat/mean_penguin_stat.csv"
+        "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
     ]
 
 
@@ -89,8 +89,8 @@ def test_build_combined_data_table(test_app_client):
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     penguin_size = pd.concat(
         [
-            pd.read_csv("tests/test_data/penguin_size/penguin_size.csv"),
-            pd.read_csv("tests/test_data/penguin_size/penguin_size_2.csv"),
+            pd.read_csv("test_app_deploy_data/data/penguin_size/penguin_size.csv"),
+            pd.read_csv("test_app_deploy_data/data/penguin_size/penguin_size_2.csv"),
         ]
     )
     num_rows_in_leftmost_table = penguin_size.shape[0]
@@ -103,11 +103,13 @@ def test_build_combined_data_table(test_app_client):
 
 def test_build_combined_data_table_with_filtered_data_source(test_app_client):
     current_app.config.active_data_source_filters = {
-        "penguin_size": ["tests/test_data/penguin_size/penguin_size.csv"]
+        "penguin_size": ["test_app_deploy_data/data/penguin_size/penguin_size.csv"]
     }
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # only the one included penguin size is loaded, not the second
-    penguin_size = pd.read_csv("tests/test_data/penguin_size/penguin_size.csv")
+    penguin_size = pd.read_csv(
+        "test_app_deploy_data/data/penguin_size/penguin_size.csv"
+    )
     num_rows_in_leftmost_table = penguin_size.shape[0]
     num_rows_in_combined_table = handler.combined_data_table.shape[0]
     # this is a left join, so assuming only one matching key in right table per key in left,
@@ -148,5 +150,5 @@ def test_get_identifiers_for_data_source(test_app_client):
         [{DATA_SOURCE_TYPE: "penguin_size"}]
     ).get_identifiers_for_data_source()
 
-    assert "tests/test_data/penguin_size/penguin_size.csv" in file_names
-    assert "tests/test_data/penguin_size/penguin_size_2.csv" in file_names
+    assert "test_app_deploy_data/data/penguin_size/penguin_size.csv" in file_names
+    assert "test_app_deploy_data/data/penguin_size/penguin_size_2.csv" in file_names
