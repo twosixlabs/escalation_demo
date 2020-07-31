@@ -26,14 +26,14 @@
 
 
 {% block content %}
-
+{% include 'navbar.html' %}
 <div class="jumbotron">
     <h1 class="display-4">Administration Options</h1>
     <hr class="my-4">
     <p class="lead">Change what files are shown,...</p>
 </div>
 
-<div class="container">
+<div class="container-fluid pl-5 pr-5">
     {% for data_source, identifiers in data_source_dict.items() %}
         <form method="post" id={{
     "form_" ~ data_source }}>

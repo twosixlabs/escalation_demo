@@ -2,18 +2,29 @@
 # Licensed under the Apache License, Version 2.0
 
 import copy
+import json
 
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 
+from utility.build_schema import build_settings_schema, build_graphic_schema
 from utility.constants import (
     DATA_SOURCES,
     DATA_SOURCE_TYPE,
+    DATA_BACKEND,
+    LOCAL_CSV,
+    APP_CONFIG_JSON, AVAILABLE_PAGES,
 )
+from validate_schema import get_data_inventory_class, get_possible_column_names
 
+CONFIG_EDITOR_HTML = "config_editor.html"
+CONFIG_FILES_HTML = "config_files.html"
 ADMIN_HTML = "admin.html"
 INACTIVE = "inactive"
 ACTIVE = "active"
 admin_blueprint = Blueprint("admin", __name__)
+
+MAIN_MESSAGE = "Create/Edit the main config file"
+GRAPHIC_MESSAGE = "Create/Edit a graphic config file"
 
 
 @admin_blueprint.route("/admin", methods=("GET",))
@@ -53,3 +64,38 @@ def submission():
     else:
         current_app.config.active_data_source_filters.pop(data_source_name, [])
     return admin_page()
+
+
+@admin_blueprint.route("/admin/setup", methods=("GET",))
+def file_tree():
+    config_dict = current_app.config[APP_CONFIG_JSON]
+    return render_template(CONFIG_FILES_HTML, availabe_pages=config_dict[AVAILABLE_PAGES])
+
+
+@admin_blueprint.route("/admin/setup/main", methods=("GET",))
+def main_config_setup():
+    config_dict = current_app.config.get(APP_CONFIG_JSON, {}).copy()
+    return render_template(
+        CONFIG_EDITOR_HTML,
+        schema=json.dumps(build_settings_schema()),
+        message=MAIN_MESSAGE,
+        current_config=json.dumps(config_dict)
+    )
+
+
+@admin_blueprint.route("/admin/setup/graphic", methods=("GET",))
+def graphic_config_setup():
+    config_dict = current_app.config[APP_CONFIG_JSON]
+    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
+    data_source_names = config_dict[DATA_SOURCES]
+    data_inventory_class = get_data_inventory_class(csv_flag)
+    possible_column_names = get_possible_column_names(
+        data_source_names, data_inventory_class, csv_flag
+    )
+    return render_template(
+        CONFIG_EDITOR_HTML,
+        schema=json.dumps(
+            build_graphic_schema(data_source_names, possible_column_names), indent=4
+        ),
+        message=GRAPHIC_MESSAGE,
+    )

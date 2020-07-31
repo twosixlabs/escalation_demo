@@ -1,0 +1,42 @@
+<!--# Copyright [2020] [Two Six Labs, LLC]-->
+<!--# Licensed under the Apache License, Version 2.0-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Configuration Editor</h1>
+    <hr class="my-4">
+    <p class="lead">Click on a file to edit the config file</p>
+</div>
+    <div class="container-fluid pl-5 pr-5">
+    <div class="row">
+        <a class="btn btn-secondary mb-2" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
+        </a>
+
+    </div>
+    <div class="row">
+        <div class="btn-group-vertical">
+            {% for page in availabe_pages %}
+                <div class="btn-group dropright">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ page["webpage_label"] }}
+                    </button>
+                    <div class="dropdown-menu">
+                        {% for graphic in page["graphic_config_files"] %}
+                            <a class="dropdown-item" href="#">{{ graphic }}</a>
+                        {% endfor %}
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Add a Graphic</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+     </div>
+    <div class="row">
+    <a class="btn btn-primary mt-2" href="#" role="button">Add a Page
+    </a>
+    </div>
+    </div>
+
+{% endblock %}

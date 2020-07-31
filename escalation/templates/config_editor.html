@@ -1,0 +1,41 @@
+<!--# Copyright [2020] [Two Six Labs, LLC]-->
+<!--# Licensed under the Apache License, Version 2.0-->
+
+{% extends 'base.html' %}
+
+{% block header %}
+<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Configuration Editor</h1>
+    <hr class="my-4">
+    <p class="lead">{{ message }}</p>
+</div>
+    <div class="container-fluid pl-5 pr-5">
+    <div class="row">
+        <div class="col-8" id="editor_holder">
+        </div>
+        <div class="col-2 text-center">
+            <h2>Buttons:</h2>
+            <button type="button" class="btn btn-primary btn-lg m-2" onclick=submit_editor()>Submit
+            </button>
+            <a class="btn btn-secondary btn-lg m-2" href={{ url_for(request.endpoint) }} role="button">Reset Form
+            </a>
+            <a class="btn btn-secondary btn-lg m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
+            </a>
+        </div>
+    </div>
+    </div>
+<script>
+    const editor = new JSONEditor(document.getElementById('editor_holder'),
+        options={theme: 'bootstrap4',display_required_only:true, schema: {{ schema | safe }} });
+    function submit_editor(){
+        console.log(editor.getValue());
+    }
+    {% if current_config %}
+        editor.setValue({{ current_config | safe }})
+    {% endif %}
+</script>
+{% endblock %}

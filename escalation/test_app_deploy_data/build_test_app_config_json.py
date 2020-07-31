@@ -3,6 +3,7 @@ import os
 
 from utility.constants import *
 
+
 def build_config_json(data_backend, data_file_directory, path_to_graphic_config_files):
     config_dict = {
         SITE_TITLE: "Escalation Test",
@@ -119,8 +120,10 @@ def build_config_json_graphic_radio_penguins():
                 COLUMN_NAME: ["penguin_size:sex", "penguin_size:culmen_length_mm",],
             },
             GROUPBY: {COLUMN_NAME: ["penguin_size:sex"],},
-            AGGREGATE:{COLUMN_NAME:["mean_penguin_stat:delta_15_n"],
-                       AGGREGATIONS: {"y": "avg"}}
+            AGGREGATE: {
+                COLUMN_NAME: ["mean_penguin_stat:delta_15_n"],
+                AGGREGATIONS: {"y": "avg"},
+            },
         },
         SELECTABLE_DATA_DICT: {
             AXIS: [

@@ -1,6 +1,6 @@
 # MVP Features
 
-- Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
+
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
 - Document building the Docker container version of the app, running from container, and link to external Docker deployment instructions (Heroku? AWS free tier?)
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
@@ -9,7 +9,15 @@
 - change all examples to data in /escos/escalation/app_deploy_data
 - yeast states pages all long
 - admin and upload have the left hand gap
-
+- Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples  
+    - File tree page needs to do something
+        - Edit Config buttons
+        - add a graphic
+        - add a page
+    - editor page
+        - submit button needs to write a json file
+        - take in previous config file
+    
 
 # Nice to have Features
 
