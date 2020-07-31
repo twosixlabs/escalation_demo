@@ -182,11 +182,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     PROPERTIES: {
                         X: {"type": "string", "enum": column_names},
                         Y: {"type": "string", "enum": column_names},
-                        Z: {"type": "string", "enum": column_names}
+                        Z: {"type": "string", "enum": column_names},
                     },
-                    PATTERN_PROPERTIES:{
+                    PATTERN_PROPERTIES: {
                         ALMOST_ANYTHING: {"type": "string", "enum": column_names},
-                    }
+                    },
                 },
             },
             PLOT_SPECIFIC_INFO: {

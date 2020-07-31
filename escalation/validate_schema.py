@@ -7,7 +7,7 @@ from collections import deque
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-#from escalation.app import create_app, configure_app
+# from escalation.app import create_app, configure_app
 from escalation.utility.build_schema import build_settings_schema, build_graphic_schema
 from escalation.utility.constants import *
 

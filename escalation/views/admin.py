@@ -12,7 +12,8 @@ from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_BACKEND,
     LOCAL_CSV,
-    APP_CONFIG_JSON, AVAILABLE_PAGES,
+    APP_CONFIG_JSON,
+    AVAILABLE_PAGES,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 
@@ -69,7 +70,9 @@ def submission():
 @admin_blueprint.route("/admin/setup", methods=("GET",))
 def file_tree():
     config_dict = current_app.config[APP_CONFIG_JSON]
-    return render_template(CONFIG_FILES_HTML, availabe_pages=config_dict[AVAILABLE_PAGES])
+    return render_template(
+        CONFIG_FILES_HTML, availabe_pages=config_dict[AVAILABLE_PAGES]
+    )
 
 
 @admin_blueprint.route("/admin/setup/main", methods=("GET",))
@@ -79,7 +82,7 @@ def main_config_setup():
         CONFIG_EDITOR_HTML,
         schema=json.dumps(build_settings_schema()),
         message=MAIN_MESSAGE,
-        current_config=json.dumps(config_dict)
+        current_config=json.dumps(config_dict),
     )
 
 
