@@ -2,7 +2,9 @@
 # Licensed under the Apache License, Version 2.0
 
 APP_CONFIG_JSON = "app_config_json"
-
+AVAILABLE_PAGES_DICT = "available_pages_dict"
+CONFIG_FILE_FOLDER = "config_file_folder"
+MAIN_CONFIG = "main_config.json"
 # app config keys
 AVAILABLE_PAGES = "available_pages"
 GRAPHICS = "graphics"
@@ -21,7 +23,7 @@ LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 GRAPHIC_CONFIG_FILES = "graphic_config_files"
 URL_ENDPOINT = "url_endpoint"
-AVAILABLE_PAGES_DICT = "available_pages_dict"
+TEST_APP_DEPLOY_DATA = "test_app_deploy_data"
 
 # Plotly constants
 LAYOUT = "layout"
@@ -109,3 +111,10 @@ NUMERICAL_FILTER_NUM_LOC_TYPE = "numerical_filter_{:d}_{}_{}"
 
 
 PROCESS = "process"
+
+# setup constants
+PAGE_ID = "page_id"
+GRAPHIC = "graphic"
+CONFIG_DICT = "config_dict"
+IS_GRAPHIC_NEW = "is_graphic_new"
+JSON = "json"

@@ -217,9 +217,10 @@ def make_filter_dict(selector_type, select_dict, index, selector_entries):
     return html_filter_dict
 
 
-def make_pages_dict(available_pages_list) -> dict:
+def make_pages_dict(available_pages_list, config_file_folder) -> dict:
     """
-    Pulls in all the config files refrenced in the main config to make a large dictionary.
+    Pulls in all the config files referenced in the main config to make a large dictionary.
+    :param config_file_folder:
     :param available_pages_list:
     :return:
     """
@@ -227,7 +228,9 @@ def make_pages_dict(available_pages_list) -> dict:
     for page in available_pages_list:
         page_dict = {}
         for graphic_config_file_path in page[GRAPHIC_CONFIG_FILES]:
-            with open(graphic_config_file_path, "r") as config_file:
+            with open(
+                os.path.join(config_file_folder, graphic_config_file_path), "r"
+            ) as config_file:
                 config_dict = json.load(config_file)
             graphic_key = os.path.splitext(os.path.basename(graphic_config_file_path))[
                 0

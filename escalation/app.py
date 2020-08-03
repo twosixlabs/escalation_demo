@@ -16,6 +16,8 @@ from utility.constants import (
     MYSQL,
     AVAILABLE_PAGES,
     AVAILABLE_PAGES_DICT,
+    CONFIG_FILE_FOLDER,
+    TEST_APP_DEPLOY_DATA,
 )
 from app_deploy_data.app_settings import DATABASE_CONFIG
 
@@ -51,9 +53,12 @@ def create_app():
 
 
 def configure_app(app, config_dict):
-    # write the config dict to app config as a read-only proxy of a mutable dict
-    app.config[APP_CONFIG_JSON] = MappingProxyType(config_dict)
-    app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(config_dict[AVAILABLE_PAGES])
+    # write the config dict to app config as a read-only proxy of a mutable dict (not anymore)
+    app.config[APP_CONFIG_JSON] = config_dict
+    app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
+    app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(
+        config_dict[AVAILABLE_PAGES], app.config[CONFIG_FILE_FOLDER]
+    )
 
     # setup steps unique to SQL-backended apps
     # todo: make sure we don't need postgres install reqs if running mysql

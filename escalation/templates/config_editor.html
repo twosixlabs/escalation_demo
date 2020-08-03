@@ -8,6 +8,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="jumbotron">
     <h1 class="display-4">Configuration Editor</h1>
     <hr class="my-4">
@@ -19,9 +20,15 @@
         </div>
         <div class="col-2 text-center">
             <h2>Buttons:</h2>
-            <button type="button" class="btn btn-primary btn-lg m-2" onclick=submit_editor()>Submit
+            <button type="button" class="btn btn-primary btn-lg m-2" onclick=save_and_go_to_file_tree()>Submit
             </button>
-            <a class="btn btn-secondary btn-lg m-2" href={{ url_for(request.endpoint) }} role="button">Reset Form
+            <button type="button" class="btn btn-primary btn-lg m-2" onclick=save_json_editor_to_file()>Save
+            </button>
+            <div id="feedback_message">
+            </div>
+            <button type="button" class="btn btn-secondary btn-lg m-2" onclick=reset_json_editor()>Reset Form
+            </button>
+            <a class="btn btn-secondary btn-lg m-2" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
             </a>
             <a class="btn btn-secondary btn-lg m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
             </a>
@@ -31,11 +38,38 @@
 <script>
     const editor = new JSONEditor(document.getElementById('editor_holder'),
         options={theme: 'bootstrap4',display_required_only:true, schema: {{ schema | safe }} });
-    function submit_editor(){
-        console.log(editor.getValue());
-    }
     {% if current_config %}
         editor.setValue({{ current_config | safe }})
     {% endif %}
+    function save_json_editor_to_file(){
+        let data = JSON.stringify({"config_dict" : editor.getValue(),
+            "page_id":{{ page_id if page_id else -1 }},
+            "graphic": '{{ graphic }}',
+            "is_graphic_new":{{ is_graphic_new }}});
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('.process_incoming_data') }}", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            let success_text = document.querySelector('#feedback_message');
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                success_text.innerHTML = "Saved"
+            } else {
+                success_text.innerHTML = "Failed"
+            }
+            setTimeout(function() {
+                  success_text.innerHTML="";
+                }, 5000);
+            };
+        xhr.send(data);
+    }
+    function reset_json_editor(){
+        editor.setValue()
+    }
+    function save_and_go_to_file_tree(){
+        save_json_editor_to_file()
+        window.location.href = '{{ url_for('.file_tree') }}'
+    }
+
+
 </script>
 {% endblock %}

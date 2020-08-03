@@ -7,7 +7,7 @@ from graphics.plotly_plot import STYLES
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
-ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]*$"
+ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]+$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
 ALMOST_ANYTHING = "[\s\S]+"

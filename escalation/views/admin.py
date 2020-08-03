@@ -3,6 +3,7 @@
 
 import copy
 import json
+import os
 
 from flask import current_app, render_template, Blueprint, request, jsonify, flash
 
@@ -14,6 +15,16 @@ from utility.constants import (
     LOCAL_CSV,
     APP_CONFIG_JSON,
     AVAILABLE_PAGES,
+    PAGE_ID,
+    GRAPHIC,
+    MAIN_CONFIG,
+    CONFIG_FILE_FOLDER,
+    CONFIG_DICT,
+    IS_GRAPHIC_NEW,
+    JSON,
+    GRAPHIC_CONFIG_FILES,
+    WEBPAGE_LABEL,
+    URL_ENDPOINT,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 
@@ -75,6 +86,21 @@ def file_tree():
     )
 
 
+@admin_blueprint.route("/admin/setup", methods=("POST",))
+def add_page():
+    webpage_label = request.form[WEBPAGE_LABEL]
+    import re
+    pattern = re.compile('\W+',re.UNICODE)
+    page_dict = {
+        WEBPAGE_LABEL: webpage_label,
+        URL_ENDPOINT: (pattern.sub('', webpage_label.replace(" ", "_"))).lower(),
+        GRAPHIC_CONFIG_FILES: [],
+    }
+    current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES].append(page_dict)
+    save_config_dict()
+    return file_tree()
+
+
 @admin_blueprint.route("/admin/setup/main", methods=("GET",))
 def main_config_setup():
     config_dict = current_app.config.get(APP_CONFIG_JSON, {}).copy()
@@ -83,10 +109,37 @@ def main_config_setup():
         schema=json.dumps(build_settings_schema()),
         message=MAIN_MESSAGE,
         current_config=json.dumps(config_dict),
+        is_graphic_new="false",
     )
 
 
-@admin_blueprint.route("/admin/setup/graphic", methods=("GET",))
+@admin_blueprint.route("/admin/setup/save", methods=("POST",))
+def process_incoming_data():
+    config_information_dict = request.get_json()
+    page_id = config_information_dict[PAGE_ID]
+    config_dict = config_information_dict[CONFIG_DICT]
+    if page_id < 0:
+        current_app.config[APP_CONFIG_JSON] = config_dict
+        save_config_dict()
+    else:
+        graphic_name = config_information_dict[GRAPHIC]
+        root, ext = os.path.splitext(graphic_name)
+        graphic_name = ".".join([root, JSON])
+        if config_information_dict[IS_GRAPHIC_NEW]:
+            page_dict=current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES][page_id]
+            graphic_list=page_dict.get(GRAPHIC_CONFIG_FILES,[])
+            graphic_list.append(graphic_name)
+            page_dict[GRAPHIC_CONFIG_FILES]=graphic_list
+            save_config_dict()
+        with open(
+            os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_name), "w"
+        ) as fout:
+            json.dump(config_dict, fout, indent=4)
+
+    return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
+
+
+@admin_blueprint.route("/admin/setup/graphic", methods=("POST",))
 def graphic_config_setup():
     config_dict = current_app.config[APP_CONFIG_JSON]
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
@@ -101,4 +154,14 @@ def graphic_config_setup():
             build_graphic_schema(data_source_names, possible_column_names), indent=4
         ),
         message=GRAPHIC_MESSAGE,
+        page_id=request.form[PAGE_ID],
+        graphic=request.form[GRAPHIC],
+        is_graphic_new=request.form[IS_GRAPHIC_NEW],
     )
+
+def save_config_dict():
+    config_dict = current_app.config[APP_CONFIG_JSON]
+    with open(
+            os.path.join(current_app.config[CONFIG_FILE_FOLDER], MAIN_CONFIG), "w"
+    ) as fout:
+        json.dump(config_dict, fout, indent=4)

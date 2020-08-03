@@ -15,27 +15,36 @@
         </a>
 
     </div>
+    <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
+        <input type="hidden" name="page_id" value=''>
+        <input type="hidden" name="graphic" value=''>
+        <input type="hidden" name="is_graphic_new" value=''>
+    </form>
     <div class="row">
         <div class="btn-group-vertical">
             {% for page in availabe_pages %}
+                {% set page_id=loop.index0 %}
                 <div class="btn-group dropright">
                     <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {{ page["webpage_label"] }}
                     </button>
                     <div class="dropdown-menu">
                         {% for graphic in page["graphic_config_files"] %}
-                            <a class="dropdown-item" href="#">{{ graphic }}</a>
+                            <button class="dropdown-item" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}',false)>{{ graphic }}</button>
                         {% endfor %}
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Add a Graphic</a>
+                        <button class="dropdown-item" type="button" onclick=new_graphic({{ page_id }})>Add a Graphic</button>
                     </div>
                 </div>
             {% endfor %}
         </div>
      </div>
     <div class="row">
-    <a class="btn btn-primary mt-2" href="#" role="button">Add a Page
-    </a>
+        <form method="post" action={{ url_for('.add_page') }} id="form_add_page">
+            <input type="hidden" name="webpage_label" value=''>
+        </form>
+        <button type="button" class="btn btn-primary mt-2" onclick=add_page()>Add a Page
+        </button>
     </div>
     </div>
 
