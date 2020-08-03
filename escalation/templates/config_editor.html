@@ -37,7 +37,7 @@
     </div>
 <script>
     const editor = new JSONEditor(document.getElementById('editor_holder'),
-        options={theme: 'bootstrap4',display_required_only:true, schema: {{ schema | safe }} });
+        options={theme: 'bootstrap4', iconlib: 'fontawesome4', display_required_only:true, schema: {{ schema | safe }} });
     {% if current_config %}
         editor.setValue({{ current_config | safe }})
     {% endif %}
