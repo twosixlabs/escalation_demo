@@ -20,17 +20,17 @@
         </div>
         <div class="col-2 text-center">
             <h2>Buttons:</h2>
-            <button type="button" class="btn btn-primary btn-lg m-2" onclick=save_and_go_to_file_tree()>Submit
+            <button type="button" class="btn btn-primary btn-lg btn-block m-2" onclick=save_and_go_to_file_tree()>Submit
             </button>
-            <button type="button" class="btn btn-primary btn-lg m-2" onclick=save_json_editor_to_file()>Save
+            <button type="button" class="btn btn-primary btn-lg btn-block m-2" onclick=save_json_editor_to_file()>Save
             </button>
             <div id="feedback_message">
             </div>
-            <button type="button" class="btn btn-secondary btn-lg m-2" onclick=reset_json_editor()>Reset Form
+            <button type="button" class="btn btn-secondary btn-lg btn-block m-2" onclick=reset_json_editor()>Reset Form
             </button>
-            <a class="btn btn-secondary btn-lg m-2" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
+            <a class="btn btn-secondary btn-lg btn-block m-2" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
             </a>
-            <a class="btn btn-secondary btn-lg m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
+            <a class="btn btn-success btn-lg btn-block m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
             </a>
         </div>
     </div>
