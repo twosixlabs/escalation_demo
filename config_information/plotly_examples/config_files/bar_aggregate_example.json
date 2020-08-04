@@ -1,53 +1,32 @@
 {
-    "title": "Bar Plot",
-    "brief_desc": "",
-    "data_backend": "local_csv",
-    "data_file_directory": "tests/test_data/",
+    "plot_manager": "plotly",
     "data_sources": [
-        "penguin_size",
-        "mean_penguin_stat",
-        "penguin_size_small"
+        {
+            "data_source_type": "penguin_size"
+        }
     ],
-    "available_pages": {
-        "bar": {
-            "button_label": "bar_label",
-            "graphics": {
-                "graphic_0": {
-                    "plot_manager": "plotly",
-                    "data_sources": [
-                        {
-                            "data_source_type": "penguin_size"
-                        }
-                    ],
-                    "title": "Example Bar",
-                    "brief_desc": "A bar plot using the aggregate functionality",
-                    "data": {
-                        "points_0": {
-                            "y": "penguin_size:body_mass_g",
-                            "x": "penguin_size:island"
-                        }
-                    },
-                    "plot_specific_info": {
-                        "data": [
-                            {
-                                "type": "bar"
-                            }
-                        ]
-                    },
-                    "visualization_options": [
-                        {
-                            "type": "aggregate",
-                            "column": [
-                                "penguin_size:island"
-                            ],
-                            "options": {
-                                "aggregations": {
-                                    "y": "avg"
-                                }
-                            }
-                        }
-                    ]
-                }
+    "title": "Example Bar",
+    "brief_desc": "A bar plot using the aggregate functionality",
+    "data": [
+        {
+            "y": "penguin_size:body_mass_g",
+            "x": "penguin_size:island"
+        }
+    ],
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "bar"
+            }
+        ]
+    },
+    "visualization_options": {
+        "aggregate": {
+            "column": [
+                "penguin_size:island"
+            ],
+            "aggregations": {
+                "y": "avg"
             }
         }
     }

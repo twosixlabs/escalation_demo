@@ -1,50 +1,33 @@
 {
-    "title": "Scatter Plot",
-    "brief_desc": "",
-    "data_backend": "local_csv",
-    "data_file_directory": "tests/test_data/",
+    "plot_manager": "plotly",
     "data_sources": [
-        "penguin_size",
-        "mean_penguin_stat",
-        "penguin_size_small"
+        {
+            "data_source_type": "penguin_size_small"
+        }
     ],
-    "available_pages": {
-        "line": {
-            "button_label": "line_label",
-            "graphics": {
-                "graphic_0": {
-                    "plot_manager": "plotly",
-                    "data_sources": [
-                        {
-                            "data_source_type": "penguin_size_small"
-                        }
-                    ],
-                    "title": "Example Line",
-                    "brief_desc": "A line plot",
-                    "data": {
-                        "points_0": {
-                            "x": "penguin_size_small:culmen_length_mm",
-                            "y": "penguin_size_small:flipper_length_mm"
-                        }
-                    },
-                    "plot_specific_info": {
-                        "data": [
-                            {
-                                "type": "scatter",
-                                "mode": "line"
-                            }
-                        ],
-                        "layout": {
-                            "xaxis": {
-                                "title": "Filler Length"
-                            },
-                            "yaxis": {
-                                "title": "Beak Length"
-                            }
-                        }
-                    }
-                }
+    "title": "Example Line",
+    "brief_desc": "A line plot",
+    "data": [
+        {
+            "x": "penguin_size_small:culmen_length_mm",
+            "y": "penguin_size_small:flipper_length_mm"
+        }
+    ],
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "mode": "line"
+            }
+        ],
+        "layout": {
+            "yaxis": {
+                "title": "Beak Length"
+            },
+            "xaxis": {
+                "title": "Filler Length"
             }
         }
     }
 }
+

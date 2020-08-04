@@ -1,5 +1,5 @@
 # How to set up a local file system for EscOS
-In the config file, you need 
+In the main config file, you need 
 1. "data_backend": "local_csv".
 2. "data_file_directory": <path (relative or absolute) ending with folder_with_data>.
 The application assumes that your data structure is laid out something like: 
@@ -17,7 +17,9 @@ The application assumes that your data structure is laid out something like:
  the application will use. All csv files in the same folder should have the same schema.
   By default, it will use all the csv files in the folder.
 This can be changed on the Admin tab on the webpage.
-4. available_pages.<page_name>.graphics.<graphic_name>.data_sources -- list of which data sources the graphic uses and 
+##
+In the graphic config file you need
+- data_sources -- list of which data sources the graphic uses and 
 instructions on how to combine the files
     - the first element of the list will look like {
     "data_source_type": <data_source>
@@ -35,10 +37,11 @@ instructions on how to combine the files
 
 **All columns in the config file should be referenced as** <data_source_folder>:<column_name>
 ## Example
-Consider the [local_data_example.json](local_data_example.json)
-with the following file structure at relative path
-tests/test_data/:
-- test_data/
+Consider the [local_main_config_example.json](local_main_config_example.json) as the main config file
+ with [local_graphic_config_example.json](local_graphic_config_example.json) as a graphic config file.
+They use the following file structure at relative path
+test_app_deploy_data/data/:
+- data/
    - penguin_size/
        - main_data.csv
        - gentoo_data.csv

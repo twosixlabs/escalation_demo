@@ -2,18 +2,18 @@
 
 We have a lot of the Plotly graphing library built in to this application. This document explains how to edit the
 config file in accordance with the Plotly schema. 
-For a individual graphic (dictionaries in the "graphics" dictionary):
+For a individual graphic each an individual json:
  - In the config json, plot_manager: plotly 
- - In "data", "data": {points_\<num>:{\<axis>:\<column_name>}}  
- \<num> corresponds which line on the plot the data corresponds to. This starts at 0.   
+ - In "data", "data": \[{\<axis>:\<column_name>}\] 
+ each element of the list corresponds which line on the plot the data corresponds to. 
  \<axis>. e.g. "x","y"
  - "plot_specific_info" : this config matches the config as defined by the plotly 
  documentation at https://plotly.com/javascript/reference/ with exception axes like "x" and "y"
  do not need to be defined again.
  
-## Examples
-  First see [simple config](config_information/config_example/config_example.md) for a full example.  
-  The rest of these examples will only show the "available_pages" dictionary
+## Examples 
+These examples will show the graphic config files on the left and the graphic produced on the write
+ with commentary in red. All of the config files need to be used with the appropriate main config file
 
 - A simple scatter plot
 ![](images/scatter.png)
