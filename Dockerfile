@@ -17,7 +17,7 @@ FROM python:3.7.8-buster
 
 #Set flask_app as working directory
 WORKDIR /escalation
-
+ENV PYTHONPATH /escalation
 
 #install dependencies
 #copy data from current dir into flask_app
@@ -26,10 +26,10 @@ RUN pip install --trusted-host pypi.python.org -r requirements-app.txt
 
 #copy data from current dir into flask_app
 COPY escalation /escalation
-RUN chmod +x  /escalation/boot.sh
+RUN chmod +x /escalation/boot.sh
+#
+##Use this port
+EXPOSE 8000
 
-#Use this port
-EXPOSE 5000
-
-#run app.py with python
+##run app.py with python
 ENTRYPOINT ["/escalation/boot.sh"]
