@@ -87,6 +87,7 @@ def file_tree():
 @admin_blueprint.route("/admin/setup", methods=("POST",))
 def add_page():
     webpage_label = request.form[WEBPAGE_LABEL]
+    # sanitizing the string so it is valid url
     pattern = re.compile("\W+", re.UNICODE)
     page_dict = {
         WEBPAGE_LABEL: webpage_label,
@@ -121,6 +122,7 @@ def graphic_config_setup():
     possible_column_names = get_possible_column_names(
         data_source_names, data_inventory_class, csv_flag
     )
+    graphic_dict_json = '{}'
     if request.form[IS_GRAPHIC_NEW] == JSON_FALSE:
         graphic_dict_json = load_graphic_config_dict(request.form[GRAPHIC])
     return render_template(
@@ -171,12 +173,11 @@ def save_main_config_dict():
 
 
 def load_graphic_config_dict(graphic):
-    print(graphic)
     try:
         with open(
             os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic), "r"
         ) as fout:
             graphic_dict_json = fout.read()
     except:
-        graphic_dict_json = {}
+        graphic_dict_json = '{}'
     return graphic_dict_json

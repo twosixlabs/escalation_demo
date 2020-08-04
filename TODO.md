@@ -39,7 +39,8 @@
 
 - improve the pop up boxes.
 - add pages in any order
-- 
+- toll tips buttons
+- format form
 
 ## Config format
 
