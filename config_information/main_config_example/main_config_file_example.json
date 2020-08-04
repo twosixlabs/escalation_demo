@@ -10,7 +10,7 @@
     ],
     "available_pages": [
         {
-            "webpage_label": "PENGUINS!",
+            "webpage_label": "Penguins",
             "url_endpoint": "penguin",
             "graphic_config_files": [
                 "big_penguins.json",
@@ -18,7 +18,14 @@
             ]
         },
         {
-            "webpage_label": "Radio Penguins",
+            "webpage_label": "More Penguins!",
+            "url_endpoint": "more_penguin",
+            "graphic_config_files": [
+                "extra_penguins.json"
+            ]
+        },
+        {
+            "webpage_label": "Radioactive Penguins",
             "url_endpoint": "radio_penguins",
             "graphic_config_files": [
                 "radio_penguins.json"

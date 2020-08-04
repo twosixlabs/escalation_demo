@@ -4,7 +4,7 @@
 {% set selector_name=selector['name'] %}
 
 <h6>{{ selector['text'] }}</h6>
-    <select class="selectpicker" data-dropdown-align-right='auto' id={{ selector_name }} name={{ selector_name }} form={{ "form_" ~ plot_id }}
+    <select class="selectpicker form-control m-2" data-dropdown-align-right='auto' id={{ selector_name }} name={{ selector_name }} form={{ "form_" ~ plot_id }}
             {% if selector['multiple'] %}  multiple> {% else %} > {% endif %}
     {% for col_name in selector['entries'] %}
   <option value={{ col_name }}

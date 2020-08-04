@@ -12,7 +12,7 @@ For a individual graphic each an individual json:
  do not need to be defined again.
  
 ## Examples 
-These examples will show the graphic config files on the left and the graphic produced on the write
+These examples will show the graphic config files on the left and the graphic produced on the right
  with commentary in red. All of the config files need to be used with the appropriate main config file
 
 - A simple scatter plot

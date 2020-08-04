@@ -1,6 +1,6 @@
 # Config example
-This file walks through the [penguin_config](../../escalation/test_app_deploy_data/test_app_local_config.json)
-  example.
+This readme walks through the [main_config_file_example.json](main_config_file_example.json)
+  file.
 
 ##
 "title": "Escalation Test"  
@@ -18,10 +18,10 @@ This file walks through the [penguin_config](../../escalation/test_app_deploy_da
     "penguin_size_small"
 \],  
 
-data_backend - should the website search for data in files (local_csv)
-or in a data base
-data_file_directory - path to files
-data_sources - folders that the website uses in data_file_directory
+data_backend -- should the website search for data in files (local_csv)
+or in a database  
+data_file_directory -- path to files  
+data_sources -- folders that the website uses in data_file_directory (local_csv) (TODO: add for database)
 ##
 
 "available_pages": \[
@@ -34,18 +34,23 @@ data_sources - folders that the website uses in data_file_directory
             \]
         },
         {
-            "webpage_label": "Radio Penguins",
+            "webpage_label": "More Penguins!",
+            "url_endpoint": "more_penguin",
+            "graphic_config_files": \[
+                "extra_penguins.json"
+            \]
+        },
+        {
+            "webpage_label": "Radioactive Penguins",
             "url_endpoint": "radio_penguins",
             "graphic_config_files": \[
                 "radio_penguins.json"
             \]
         }
-    \]
-}
-\]
+    \]  
+    
 available_pages - list of dictionaries that contains the information about each page
-url_endpoint - 
-This can be anything alpha numeric and underscores (without spaces). Determines the url
+url_endpoint - nThis can be anything alpha numeric and underscores (without spaces). Determines the url
 ![url](images/url.png)
 ##
 webpage_label - How the page is labeled on the site
