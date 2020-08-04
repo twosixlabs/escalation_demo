@@ -5,8 +5,8 @@
             "data_source_type": "penguin_size"
         }
     ],
-    "title": "Hover options",
-    "brief_desc": "",
+    "title": "Do massive penguins have long flippers?",
+    "brief_desc": "This plot looks at the relationship between...",
     "data": [
         {
             "x": "penguin_size:body_mass_g",
@@ -19,15 +19,13 @@
                 "type": "scatter",
                 "mode": "markers"
             }
-        ],
-        "layout": {"hovermode":  "closest"}
+        ]
     },
-    "visualization_options": {
-        "hover_data":{
-            "column": [
-                "penguin_size:sex",
-                "penguin_size:culmen_length_mm"
-            ]
-        }
+    "selectable_data_dict": {
+        "filter": [
+            {
+                "column": "penguin_size:sex"
+            }
+        ]
     }
 }

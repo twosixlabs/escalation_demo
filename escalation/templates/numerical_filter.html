@@ -3,9 +3,9 @@
 
 {% set name=selector['name'] %}
 
-<h6>{{ selector['text'] }}</h6>
+<h6 class="text-break">{{ selector['text'] }}</h6>
     {% for position in ['upper', 'lower'] %}
-        <div class="input-group">
+        <div class="input-group m-2">
         <div class="input-group-prepend">
     <select class="custom-select custom-select-sm" name={{ name ~ "_" ~ position ~ "_operation" }}  form={{ "form_" ~ plot_id }}>
       {% for col_name in selector['entries'] %}

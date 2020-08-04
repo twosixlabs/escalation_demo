@@ -44,9 +44,9 @@
             {% set selector_index = loop.index0 %}
             {% include selector['select_html_file'] ignore missing %}
             {% endfor %}
-            <button type="button" class="btn btn-primary btn-lg" onclick=post_to_server('{{ plot_id }}')>Update
+            <button type="button" class="btn btn-primary btn-block m-2" onclick=post_to_server('{{ plot_id }}')>Update
             </button>
-            <button type="button" class="btn btn-secondary btn-lg" onclick=reset_form('{{ plot_id }}')>Reset
+            <button type="button" class="btn btn-secondary btn-block m-2" onclick=reset_form('{{ plot_id }}')>Reset
             </button>
         </div>
     </div>

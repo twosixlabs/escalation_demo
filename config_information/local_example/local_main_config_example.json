@@ -2,20 +2,18 @@
     "title": "Escalation Test",
     "brief_desc": "This is a test/demo for the Escalation OS",
     "data_backend": "local_csv",
-    "data_file_directory": "test_app_deploy_data/data/",
+    "data_file_directory": "tests/test_data/",
     "data_sources": [
         "penguin_size",
-        "mean_penguin_stat",
-        "penguin_size_small"
+        "mean_penguin_stat"
     ],
     "available_pages": [
         {
             "webpage_label": "PENGUINS!",
             "url_endpoint": "penguin",
             "graphic_config_files": [
-                "../../config_information/selector_examples/config_files/filter.json",
-                "../../config_information/selector_examples/config_files/advanced_filters.json",
-                "../../config_information/selector_examples/config_files/groupby_and_axis.json"
+                "big_penguins.json",
+                "hist_penguins.json"
             ]
         },
         {

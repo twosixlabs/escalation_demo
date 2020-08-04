@@ -10,16 +10,22 @@
     ],
     "available_pages": [
         {
-            "webpage_label": "PENGUINS!",
+            "webpage_label": "Penguins",
             "url_endpoint": "penguin",
             "graphic_config_files": [
-                "../../config_information/selector_examples/config_files/filter.json",
-                "../../config_information/selector_examples/config_files/advanced_filters.json",
-                "../../config_information/selector_examples/config_files/groupby_and_axis.json"
+                "big_penguins.json",
+                "hist_penguins.json"
             ]
         },
         {
-            "webpage_label": "Radio Penguins",
+            "webpage_label": "More Penguins!",
+            "url_endpoint": "more_penguin",
+            "graphic_config_files": [
+                "extra_penguins.json"
+            ]
+        },
+        {
+            "webpage_label": "Radioactive Penguins",
             "url_endpoint": "radio_penguins",
             "graphic_config_files": [
                 "radio_penguins.json"

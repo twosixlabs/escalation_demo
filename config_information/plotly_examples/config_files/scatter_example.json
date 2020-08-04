@@ -1,42 +1,24 @@
 {
-    "title": "Scatter Plot",
-    "brief_desc": "",
-    "data_backend": "local_csv",
-    "data_file_directory": "tests/test_data/",
+    "plot_manager": "plotly",
     "data_sources": [
-        "penguin_size",
-        "mean_penguin_stat",
-        "penguin_size_small"
-    ],
-    "available_pages": {
-        "scatter": {
-            "button_label": "scatter",
-            "graphics": {
-                "graphic_0": {
-                    "plot_manager": "plotly",
-                    "data_sources": [
-                        {
-                            "data_source_type": "penguin_size"
-                        }
-                    ],
-                    "title": "Example Scatter",
-                    "brief_desc": "A scatter plot",
-                    "data": {
-                        "points_0": {
-                            "x": "penguin_size:body_mass_g",
-                            "y": "penguin_size:flipper_length_mm"
-                        }
-                    },
-                    "plot_specific_info": {
-                        "data": [
-                            {
-                                "type": "scatter",
-                                "mode": "markers"
-                            }
-                        ]
-                    }
-                }
-            }
+        {
+            "data_source_type": "penguin_size"
         }
+    ],
+    "title": "Example Scatter",
+    "brief_desc": "A scatter plot",
+    "data": [
+        {
+            "y": "penguin_size:flipper_length_mm",
+            "x": "penguin_size:body_mass_g"
+        }
+    ],
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "mode": "markers"
+            }
+        ]
     }
 }
