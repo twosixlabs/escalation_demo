@@ -47,7 +47,7 @@
             "graphic": '{{ graphic }}',
             "is_graphic_new":{{ is_graphic_new }}});
         let xhr = new XMLHttpRequest();
-        xhr.open("POST", "{{ url_for('.process_incoming_data') }}", true);
+        xhr.open("POST", "{{ url_for('.update_json_config_with_ui_changes') }}", true);
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.onreadystatechange = function () {
             let success_text = document.querySelector('#feedback_message');

@@ -10,7 +10,7 @@ NO_DOTS = "^[^\\.]*$"
 ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]+$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
-ALMOST_ANYTHING = "[\s\S]+"
+NON_EMPTY_STRING = "[\s\S]+"
 X = "x"
 Y = "y"
 Z = "z"
@@ -185,7 +185,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         Z: {"type": "string", "enum": column_names},
                     },
                     PATTERN_PROPERTIES: {
-                        ALMOST_ANYTHING: {"type": "string", "enum": column_names},
+                        NON_EMPTY_STRING: {"type": "string", "enum": column_names},
                     },
                 },
             },

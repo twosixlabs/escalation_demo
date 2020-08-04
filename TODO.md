@@ -35,6 +35,11 @@
 - Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
 - Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
 
+## Wizard
+
+- improve the pop up boxes.
+- add pages in any order
+- 
 
 ## Config format
 
