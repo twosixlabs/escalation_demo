@@ -58,7 +58,6 @@ def graphic_json_fixture():
     return make_graphic_config_for_testing()
 
 
-
 def make_main_config_for_testing():
     config_dict = {
         SITE_TITLE: "Escalation Test",
@@ -70,21 +69,17 @@ def make_main_config_for_testing():
             {
                 WEBPAGE_LABEL: "PENGUINS!",
                 URL_ENDPOINT: "penguin",
-                GRAPHIC_CONFIG_FILES: [
-                    "big_penguins.json",
-                    "hist_penguins.json"
-                ],
+                GRAPHIC_CONFIG_FILES: ["big_penguins.json", "hist_penguins.json"],
             },
             {
                 WEBPAGE_LABEL: "Radio Penguins",
                 URL_ENDPOINT: "radio_penguins",
-                GRAPHIC_CONFIG_FILES: [
-                     "radio_penguins.json"
-                ],
+                GRAPHIC_CONFIG_FILES: ["radio_penguins.json"],
             },
         ],
     }
     return config_dict
+
 
 def make_graphic_config_for_testing():
     pages = {

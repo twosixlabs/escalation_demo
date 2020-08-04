@@ -7,9 +7,13 @@ from graphics.plotly_plot import STYLES
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
-ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]*$"
+ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]+$"
 ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = "^[a-zA-Z]$"
+NON_EMPTY_STRING = "[\s\S]+"
+X = "x"
+Y = "y"
+Z = "z"
 
 # json schema specific constants see https://json-schema.org/
 ADDITIONAL_PROPERTIES = "additionalProperties"
@@ -31,8 +35,8 @@ def build_settings_schema():
     """
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "escalation_config",
-        "description": "config file needed to use escalation OS",
+        "title": "Escalation Main Config Generator",
+        "description": "Main config file needed to use escalation OS",
         "type": "object",
         "required": [
             SITE_TITLE,
@@ -72,10 +76,11 @@ def build_settings_schema():
             },
             AVAILABLE_PAGES: {
                 "type": "array",
-                TITLE: "Pages",
+                TITLE: "Webpages",
                 DESCRIPTION: "array of webpages",
                 ITEMS: {
                     "type": "object",
+                    TITLE: "Page",
                     REQUIRED: [WEBPAGE_LABEL, URL_ENDPOINT],
                     PROPERTIES: {
                         WEBPAGE_LABEL: {
@@ -114,7 +119,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "type": "object",
-        "title": "A single graphic",
+        "title": "Escalation Graphic Config Generator",
         "description": "Have a unique one of these for each graphic on the page",
         "required": [
             PLOT_MANAGER,
@@ -145,6 +150,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "description": "What tables are use to define this graphic",
                 "items": {
                     "type": "object",
+                    REQUIRED: [DATA_SOURCE_TYPE],
                     "properties": {
                         DATA_SOURCE_TYPE: {
                             "type": "string",
@@ -172,10 +178,14 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     "type": "object",
                     "title": "points",
                     "description": "a dictionary for each plot on a single graph:"
-                    " Key: axis (e.g. x), Value: Data Column,"
-                    " use points_0 then points_1 etc.",
-                    "patternProperties": {
-                        ONE_LETTER: {"type": "string", "enum": column_names,}
+                    " Key: axis (e.g. x), Value: Data Column,",
+                    PROPERTIES: {
+                        X: {"type": "string", "enum": column_names},
+                        Y: {"type": "string", "enum": column_names},
+                        Z: {"type": "string", "enum": column_names},
+                    },
+                    PATTERN_PROPERTIES: {
+                        NON_EMPTY_STRING: {"type": "string", "enum": column_names},
                     },
                 },
             },
@@ -212,9 +222,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "type": "array",
                                 "items": {"type": "string", "enum": column_names},
                             },
-                            STYLES: {
-                                TYPE: "object"
-                            }
+                            STYLES: {TYPE: "object"},
                         },
                     },
                     AGGREGATE: {
@@ -248,7 +256,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                         ],
                                     }
                                 },
-                            }
+                            },
                         },
                     },
                 },

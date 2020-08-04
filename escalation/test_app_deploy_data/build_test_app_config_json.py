@@ -3,7 +3,8 @@ import os
 
 from utility.constants import *
 
-def build_config_json(data_backend, data_file_directory, path_to_graphic_config_files):
+
+def build_config_json(data_backend, data_file_directory):
     config_dict = {
         SITE_TITLE: "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
@@ -14,17 +15,12 @@ def build_config_json(data_backend, data_file_directory, path_to_graphic_config_
             {
                 WEBPAGE_LABEL: "PENGUINS!",
                 URL_ENDPOINT: "penguin",
-                GRAPHIC_CONFIG_FILES: [
-                    os.path.join(path_to_graphic_config_files, "big_penguins.json"),
-                    os.path.join(path_to_graphic_config_files, "hist_penguins.json"),
-                ],
+                GRAPHIC_CONFIG_FILES: ["big_penguins.json", "hist_penguins.json",],
             },
             {
                 WEBPAGE_LABEL: "Radio Penguins",
                 URL_ENDPOINT: "radio_penguins",
-                GRAPHIC_CONFIG_FILES: [
-                    os.path.join(path_to_graphic_config_files, "radio_penguins.json")
-                ],
+                GRAPHIC_CONFIG_FILES: ["radio_penguins.json"],
             },
         ],
     }
@@ -119,8 +115,10 @@ def build_config_json_graphic_radio_penguins():
                 COLUMN_NAME: ["penguin_size:sex", "penguin_size:culmen_length_mm",],
             },
             GROUPBY: {COLUMN_NAME: ["penguin_size:sex"],},
-            AGGREGATE:{COLUMN_NAME:["mean_penguin_stat:delta_15_n"],
-                       AGGREGATIONS: {"y": "avg"}}
+            AGGREGATE: {
+                COLUMN_NAME: ["mean_penguin_stat:delta_15_n"],
+                AGGREGATIONS: {"y": "avg"},
+            },
         },
         SELECTABLE_DATA_DICT: {
             AXIS: [
@@ -154,13 +152,8 @@ if __name__ == "__main__":
         "test_app_local_config.json": {
             DATA_BACKEND: LOCAL_CSV,
             DATA_FILE_DIRECTORY: "test_app_deploy_data/data/",
-            PATH_TO_GRAPHIC_CONFIG_FILES: path_to_test_files,
         },
-        "test_app_sql_config.json": {
-            DATA_BACKEND: POSTGRES,
-            DATA_FILE_DIRECTORY: "",
-            PATH_TO_GRAPHIC_CONFIG_FILES: path_to_test_files,
-        },
+        "test_app_sql_config.json": {DATA_BACKEND: POSTGRES, DATA_FILE_DIRECTORY: ""},
     }
 
     for config_file_name, config in config_file_definitions.items():

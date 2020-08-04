@@ -1,0 +1,75 @@
+<!--# Copyright [2020] [Two Six Labs, LLC]-->
+<!--# Licensed under the Apache License, Version 2.0-->
+
+{% extends 'base.html' %}
+
+{% block header %}
+<script src="https://cdn.jsdelivr.net/npm/@json-editor/json-editor@latest/dist/jsoneditor.min.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1 class="display-4">Configuration Editor</h1>
+    <hr class="my-4">
+    <p class="lead">{{ message }}</p>
+</div>
+    <div class="container-fluid pl-5 pr-5">
+    <div class="row">
+        <div class="col-8" id="editor_holder">
+        </div>
+        <div class="col-2 text-center">
+            <h2>Buttons:</h2>
+            <button type="button" class="btn btn-primary btn-lg btn-block m-2" onclick=save_and_go_to_file_tree()>Submit
+            </button>
+            <button type="button" class="btn btn-primary btn-lg btn-block m-2" onclick=save_json_editor_to_file()>Save
+            </button>
+            <div id="feedback_message">
+            </div>
+            <button type="button" class="btn btn-secondary btn-lg btn-block m-2" onclick=reset_json_editor()>Reset Form
+            </button>
+            <a class="btn btn-secondary btn-lg btn-block m-2" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
+            </a>
+            <a class="btn btn-success btn-lg btn-block m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
+            </a>
+        </div>
+    </div>
+    </div>
+<script>
+    const editor = new JSONEditor(document.getElementById('editor_holder'),
+        options={theme: 'bootstrap4', iconlib: 'fontawesome4', display_required_only:true, schema: {{ schema | safe }} });
+    {% if current_config %}
+        editor.setValue({{ current_config | safe }})
+    {% endif %}
+    function save_json_editor_to_file(){
+        let data = JSON.stringify({"config_dict" : editor.getValue(),
+            "page_id":{{ page_id if page_id else -1 }},
+            "graphic": '{{ graphic }}',
+            "is_graphic_new":{{ is_graphic_new }}});
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "{{ url_for('.update_json_config_with_ui_changes') }}", true);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            let success_text = document.querySelector('#feedback_message');
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                success_text.innerHTML = "Saved"
+            } else {
+                success_text.innerHTML = "Failed"
+            }
+            setTimeout(function() {
+                  success_text.innerHTML="";
+                }, 5000);
+            };
+        xhr.send(data);
+    }
+    function reset_json_editor(){
+        editor.setValue()
+    }
+    function save_and_go_to_file_tree(){
+        save_json_editor_to_file()
+        window.location.href = '{{ url_for('.file_tree') }}'
+    }
+
+
+</script>
+{% endblock %}

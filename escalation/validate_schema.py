@@ -7,7 +7,7 @@ from collections import deque
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from escalation.app import create_app, configure_app
+# from escalation.app import create_app, configure_app
 from escalation.utility.build_schema import build_settings_schema, build_graphic_schema
 from escalation.utility.constants import *
 
@@ -15,6 +15,36 @@ from escalation.utility.constants import *
 def load_config_file(config_file_path):
     with open(config_file_path, "r") as config_file:
         return json.load(config_file)
+
+
+def get_data_inventory_class(csv_flag):
+    if csv_flag:
+        from escalation.database.local_handler import LocalCSVDataInventory
+
+        data_inventory_class = LocalCSVDataInventory
+    else:
+        from escalation.database.sql_handler import SqlDataInventory
+
+        data_inventory_class = SqlDataInventory
+    return data_inventory_class
+
+
+def get_possible_column_names(data_source_names, data_inventory_class, csv_flag):
+    possible_column_names = []
+    for data_source_name in data_source_names:
+        data_inventory = data_inventory_class(
+            data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
+        )
+        column_names = data_inventory.get_schema_for_data_source()
+        possible_column_names.extend(
+            [
+                TABLE_COLUMN_SEPARATOR.join(
+                    [data_source_name, column_name if csv_flag else column_name.name,]
+                )
+                for column_name in column_names
+            ]
+        )
+    return possible_column_names
 
 
 def validate_config_data_references(config_dict_path):
@@ -38,15 +68,7 @@ def validate_config_data_references(config_dict_path):
         csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
         data_source_names = config_dict[DATA_SOURCES]
         # data_backend_writer may be useful
-        if csv_flag:
-            from escalation.database.local_handler import LocalCSVDataInventory
-
-            data_inventory_class = LocalCSVDataInventory
-        else:
-            from escalation.database.sql_handler import SqlDataInventory
-
-            data_inventory_class = SqlDataInventory
-
+        data_inventory_class = get_data_inventory_class(csv_flag)
         data_source_names_found = data_inventory_class.get_available_data_sources()
 
         # Checking if data source names are valid
@@ -60,24 +82,11 @@ def validate_config_data_references(config_dict_path):
                         [DATA_SOURCES, index]
                     ),  # jsonschema looking for a deque with the path to the error
                 )
+
+        possible_column_names = get_possible_column_names(
+            data_source_names, data_inventory_class, csv_flag
+        )
         # put column names in format "data_source_name.column_name"
-        possible_column_names = []
-        for data_source_name in data_source_names:
-            data_inventory = data_inventory_class(
-                data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
-            )
-            column_names = data_inventory.get_schema_for_data_source()
-            possible_column_names.extend(
-                [
-                    TABLE_COLUMN_SEPARATOR.join(
-                        [
-                            data_source_name,
-                            column_name if csv_flag else column_name.name,
-                        ]
-                    )
-                    for column_name in column_names
-                ]
-            )
         schema = build_graphic_schema(data_source_names, possible_column_names)
 
         pages = config_dict.get(AVAILABLE_PAGES, [])

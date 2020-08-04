@@ -13,15 +13,15 @@
             "webpage_label": "PENGUINS!",
             "url_endpoint": "penguin",
             "graphic_config_files": [
-                "test_app_deploy_data/big_penguins.json",
-                "test_app_deploy_data/hist_penguins.json"
+                "big_penguins.json",
+                "hist_penguins.json"
             ]
         },
         {
             "webpage_label": "Radio Penguins",
             "url_endpoint": "radio_penguins",
             "graphic_config_files": [
-                "test_app_deploy_data/radio_penguins.json"
+                "radio_penguins.json"
             ]
         }
     ]

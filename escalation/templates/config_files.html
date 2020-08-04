@@ -1,0 +1,51 @@
+<!--# Copyright [2020] [Two Six Labs, LLC]-->
+<!--# Licensed under the Apache License, Version 2.0-->
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Configuration Editor</h1>
+    <hr class="my-4">
+    <p class="lead">Click on a file to edit the config file</p>
+</div>
+    <div class="container-fluid pl-5 pr-5">
+    <div class="row">
+        <a class="btn btn-secondary mb-2" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
+        </a>
+
+    </div>
+    <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
+        <input type="hidden" name="page_id" value=''>
+        <input type="hidden" name="graphic" value=''>
+        <input type="hidden" name="is_graphic_new" value=''>
+    </form>
+    <div class="row">
+        <div class="btn-group-vertical">
+            {% for page in available_pages %}
+                {% set page_id=loop.index0 %}
+                <div class="btn-group dropright">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ page["webpage_label"] }}
+                    </button>
+                    <div class="dropdown-menu">
+                        {% for graphic in page["graphic_config_files"] %}
+                            <button class="dropdown-item" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}',false)>{{ graphic }}</button>
+                        {% endfor %}
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item" type="button" onclick=new_graphic({{ page_id }})>Add a Graphic</button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+     </div>
+    <div class="row">
+        <form method="post" action={{ url_for('.add_page') }} id="form_add_page">
+            <input type="hidden" name="webpage_label" value=''>
+        </form>
+        <button type="button" class="btn btn-primary mt-2" onclick=add_page()>Add a Page
+        </button>
+    </div>
+    </div>
+
+{% endblock %}

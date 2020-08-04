@@ -23,22 +23,12 @@ def main_page():
     return render_template(DATA_LAYOUT)
 
 
-@dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET"])
+@dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET", "POST"])
 def graphic_page(page_name):
-    html_data_list = get_data_for_page(
-        current_app.config.get(AVAILABLE_PAGES_DICT).get(page_name)
-    )
-    return render_template(
-        DATA_LAYOUT, **{CURRENT_PAGE: page_name, JINJA_PLOT: html_data_list}
-    )
-
-
-@dashboard_blueprint.route("/dashboard/<page_name>", methods=["POST"])
-def new_graphic_page(page_name):
     html_data_list = get_data_for_page(
         current_app.config.get(AVAILABLE_PAGES_DICT).get(page_name),
         # request.form[PROCESS]=='' means the reset button sent the request
-        request.form if request.form[PROCESS] else None,
+        request.form if request.form and request.form[PROCESS] else None,
     )
     return render_template(
         DATA_LAYOUT, **{CURRENT_PAGE: page_name, JINJA_PLOT: html_data_list}
