@@ -44,9 +44,16 @@ def build_settings_schema():
             SITE_TITLE,
             SITE_DESC,
             DATA_BACKEND,
-            DATA_FILE_DIRECTORY,
             DATA_SOURCES,
         ],
+        "if": {
+            PROPERTIES: {DATA_BACKEND: {"const": LOCAL_CSV}}
+        },
+        "then":{
+            "required": [
+                DATA_FILE_DIRECTORY
+            ],
+        },
         "additionalProperties": False,
         "properties": {
             SITE_TITLE: {
@@ -290,6 +297,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                     "description": "default filter, list of column values",
                                     "items": {"type": "string"},
                                 },
+                                UNFILTERED_SELECTOR: {"type": "boolean"},
                             },
                         },
                     },

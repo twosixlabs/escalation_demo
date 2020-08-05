@@ -23,7 +23,7 @@ LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 GRAPHIC_CONFIG_FILES = "graphic_config_files"
 URL_ENDPOINT = "url_endpoint"
-TEST_APP_DEPLOY_DATA = "test_app_deploy_data"
+TEST_APP_DEPLOY_DATA = "app_deploy_data"
 
 # Plotly constants
 LAYOUT = "layout"
