@@ -23,7 +23,7 @@ LOCAL_CSV = "local_csv"
 PLOT_ID = "plot_id"
 GRAPHIC_CONFIG_FILES = "graphic_config_files"
 URL_ENDPOINT = "url_endpoint"
-TEST_APP_DEPLOY_DATA = "app_deploy_data"
+TEST_APP_DEPLOY_DATA = "test_app_deploy_data"
 
 # Plotly constants
 LAYOUT = "layout"
@@ -83,11 +83,11 @@ UPPER_INEQUALITY = "upper"
 LOWER_INEQUALITY = "lower"
 LIST_OF_VALUES = "list_of_values"
 MULTIPLE = "multiple"
-NO_GROUP_BY = "NO_GROUP_BY"
+NO_GROUP_BY = "No Group By"
 SELECTOR_NAME = "name"
 
 # ALL of row
-SHOW_ALL_ROW = "SHOW_ALL_ROWS"
+SHOW_ALL_ROW = "Show All Rows"
 
 # JINJA CONSTANTS
 JINJA_PLOT = "plots"

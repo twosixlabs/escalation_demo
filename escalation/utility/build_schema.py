@@ -40,20 +40,9 @@ def build_settings_schema():
         "title": "Escalation Main Config Generator",
         "description": "Main config file needed to use escalation OS",
         "type": "object",
-        "required": [
-            SITE_TITLE,
-            SITE_DESC,
-            DATA_BACKEND,
-            DATA_SOURCES,
-        ],
-        "if": {
-            PROPERTIES: {DATA_BACKEND: {"const": LOCAL_CSV}}
-        },
-        "then":{
-            "required": [
-                DATA_FILE_DIRECTORY
-            ],
-        },
+        "required": [SITE_TITLE, SITE_DESC, DATA_BACKEND, DATA_SOURCES,],
+        "if": {PROPERTIES: {DATA_BACKEND: {"const": LOCAL_CSV}}},
+        "then": {"required": [DATA_FILE_DIRECTORY],},
         "additionalProperties": False,
         "properties": {
             SITE_TITLE: {

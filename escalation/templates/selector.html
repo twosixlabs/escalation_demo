@@ -7,7 +7,7 @@
     <select class="selectpicker form-control m-2" data-dropdown-align-right='auto' id={{ selector_name }} name={{ selector_name }} form={{ "form_" ~ plot_id }}
             {% if selector['multiple'] %}  multiple> {% else %} > {% endif %}
     {% for col_name in selector['entries'] %}
-  <option value={{ col_name }}
+  <option value="{{ col_name }}"
                   {% if col_name in selector['active_selector'] %}selected> {% else %}> {% endif %} {{ col_name }}</option>
     {% endfor %}
 </select>
