@@ -117,6 +117,7 @@ dmypy.json
 
 # local/temp files
 scratch/*
+yeast_states_app/*
 
 # mac junk
 **/.DS_Store
