@@ -45,13 +45,13 @@ circuit_function_line = {
         FILTER: [
             {
                 OPTION_COL: "flow_meta:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
-            {OPTION_COL: "flow_meta:strain_name", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "flow_meta:strain_name", "multiple": True},
         ],
-        NUMERICAL_FILTER: {OPTION_COL: "growth_rate:doubling_time"},
+        NUMERICAL_FILTER: [{OPTION_COL: "growth_rate:doubling_time"}],
     },
 }
 
@@ -91,16 +91,16 @@ flow_boxplot_inducer = {
     },
     SELECTABLE_DATA_DICT: {
         FILTER: [
-            {OPTION_COL: "flow_meta:control_type", SELECT_OPTION: {"multiple": True},},
-            {OPTION_COL: "flow_meta:timepoint", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "flow_meta:control_type", "multiple": True,},
+            {OPTION_COL: "flow_meta:timepoint", "multiple": True,},
             {
                 OPTION_COL: "flow_meta:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
         ],
-        NUMERICAL_FILTER: {OPTION_COL: "growth_rate:doubling_time"},
+        NUMERICAL_FILTER: [{OPTION_COL: "growth_rate:doubling_time"}],
     },
 }
 
@@ -143,17 +143,17 @@ flow_boxplot_time = {
         FILTER: [
             {
                 OPTION_COL: "flow_meta:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
             {
                 OPTION_COL: "flow_meta:inducer_concentration",
-                SELECT_OPTION: {"multiple": True},
+                "multiple": True,
             },
-            {OPTION_COL: "flow_meta:control_type", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "flow_meta:control_type", "multiple": True,},
         ],
-        NUMERICAL_FILTER: {OPTION_COL: "growth_rate:doubling_time"},
+        NUMERICAL_FILTER: [{OPTION_COL: "growth_rate:doubling_time"}],
     },
 }
 
@@ -182,32 +182,32 @@ plate_reader_circuit_function = {
         FILTER: [
             {
                 OPTION_COL: "plate_reader:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
             {
                 OPTION_COL: "plate_reader:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
             {
                 OPTION_COL: "plate_reader:control_type",
-                SELECT_OPTION: {"multiple": True},
+                "multiple": True,
             },
-            {OPTION_COL: "plate_reader:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "plate_reader:strain", "multiple": True,},
         ],
-        AXIS: {
-            OPTION_COL: "y",
-            SELECT_OPTION: {
+        AXIS:[
+                {
+                OPTION_COL: "y",
                 "entries": [
                     "plate_reader:fluor_gain_0.10/od",
                     "plate_reader:fluor_gain_0.16/od",
                     "plate_reader:fluor_gain_0.20/od",
                 ]
             },
-        },
+        ]
     },
 }
 
@@ -236,15 +236,15 @@ plate_reader_od = {
         FILTER: [
             {
                 OPTION_COL: "plate_reader:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
             {
                 OPTION_COL: "plate_reader:control_type",
-                SELECT_OPTION: {"multiple": True},
+                "multiple": True,
             },
-            {OPTION_COL: "plate_reader:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "plate_reader:strain", "multiple": True,},
         ],
     },
 }
@@ -273,15 +273,15 @@ flow_cell_density = {
         FILTER: [
             {
                 OPTION_COL: "flow_meta:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
-            {OPTION_COL: "flow_meta:control_type", SELECT_OPTION: {"multiple": True},},
-            {OPTION_COL: "flow_meta:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "flow_meta:control_type", "multiple": True,},
+            {OPTION_COL: "flow_meta:strain", "multiple": True,},
             {
                 OPTION_COL: "flow_meta:date_of_experiment",
-                SELECT_OPTION: {"multiple": True},
+                "multiple": True,
             },
         ]
     },
@@ -331,18 +331,18 @@ growth_rate_plate_data = {
         FILTER: [
             {
                 OPTION_COL: "plate_reader:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_LONG,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_LONG],
                 UNFILTERED_SELECTOR: True,
             },
             {
                 OPTION_COL: "plate_reader:control_type",
-                SELECT_OPTION: {"multiple": True},
+                "multiple": True,
             },
-            {OPTION_COL: "plate_reader:well", SELECT_OPTION: {"multiple": True},},
-            {OPTION_COL: "plate_reader:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "plate_reader:well", "multiple": True,},
+            {OPTION_COL: "plate_reader:strain", "multiple": True,},
         ],
-        NUMERICAL_FILTER: {OPTION_COL: "growth_rate:doubling_time",},
+        NUMERICAL_FILTER: [{OPTION_COL: "growth_rate:doubling_time", }],
     },
 }
 
@@ -384,26 +384,26 @@ growth_rate_circuit_function_inducer_diff = {
         FILTER: [
             {
                 OPTION_COL: "fc_inducer_diff:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_SHORT],
                 UNFILTERED_SELECTOR: True,
             },
-            {OPTION_COL: "fc_inducer_diff:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "fc_inducer_diff:strain", "multiple": True,},
         ],
         NUMERICAL_FILTER: [
             {OPTION_COL: "growth_rate:doubling_time",},
             {OPTION_COL: "fc_inducer_diff:wasserstein_median"},
         ],
-        AXIS: {
-            OPTION_COL: "y",
-            SELECT_OPTION: {
+        AXIS:[
+            {
+                OPTION_COL: "y",
                 "entries": [
                     "fc_inducer_diff:wasserstein_min",
                     "fc_inducer_diff:wasserstein_median",
                     "fc_inducer_diff:wasserstein_max",
                 ]
             },
-        },
+        ]
     },
 }
 
@@ -444,26 +444,26 @@ growth_rate_circuit_function_time_diff = {
         FILTER: [
             {
                 OPTION_COL: "fc_time_diff:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_SHORT],
                 UNFILTERED_SELECTOR: True,
             },
-            {OPTION_COL: "fc_time_diff:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "fc_time_diff:strain", "multiple": True,},
         ],
         NUMERICAL_FILTER: [
             {OPTION_COL: "growth_rate:doubling_time",},
             {OPTION_COL: "fc_time_diff:wasserstein_median"},
         ],
-        AXIS: {
-            OPTION_COL: "y",
-            SELECT_OPTION: {
+        AXIS: [
+            {
+                OPTION_COL: "y",
                 "entries": [
                     "fc_time_diff:wasserstein_min",
                     "fc_time_diff:wasserstein_median",
                     "fc_time_diff:wasserstein_max",
                 ]
             },
-        },
+        ]
     },
 }
 
@@ -517,26 +517,27 @@ growth_rates_circuit_function = {
         FILTER: [
             {
                 OPTION_COL: "fc_inducer_diff:experiment_reference",
-                SELECT_OPTION: {"multiple": True},
-                DEFAULT_SELECTED: DEFAULT_EXPERIMENT_SHORT,
+                "multiple": True,
+                DEFAULT_SELECTED: [DEFAULT_EXPERIMENT_SHORT],
                 UNFILTERED_SELECTOR: True,
             },
-            {OPTION_COL: "fc_inducer_diff:strain", SELECT_OPTION: {"multiple": True},},
+            {OPTION_COL: "fc_inducer_diff:strain", "multiple": True,},
         ],
         NUMERICAL_FILTER: [
             {OPTION_COL: "growth_rate:doubling_time",},
             {OPTION_COL: "fc_inducer_diff:wasserstein_median",},
         ],
-        AXIS: {
-            OPTION_COL: "y",
-            SELECT_OPTION: {
+        AXIS:[
+            {
+                OPTION_COL: "y",
+
                 "entries": [
                     "fc_inducer_diff:wasserstein_min",
                     "fc_inducer_diff:wasserstein_median",
                     "fc_inducer_diff:wasserstein_max",
                 ]
             },
-        },
+        ]
     },
 }
 

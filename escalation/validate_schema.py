@@ -107,5 +107,5 @@ def validate_config_data_references(config_dict_path):
 
 if __name__ == "__main__":
     # todo: take this in as a command line argument
-    main_config_file_path = "test_app_deploy_data/test_app_local_config.json"
+    main_config_file_path = "app_deploy_data/app_config.json"
     validate_config_data_references(main_config_file_path)
