@@ -31,7 +31,7 @@ def create_app():
         VERSION="0.0.1",
     )
 
-    # register url bleuprints with the app object
+    # register url blueprints with the app object
     from views.dashboard import dashboard_blueprint
 
     app.register_blueprint(dashboard_blueprint)
@@ -52,15 +52,7 @@ def create_app():
     return app
 
 
-def configure_app(app, config_dict):
-    # write the config dict to app config as a read-only proxy of a mutable dict
-    # todo: these lines will change as we adding the wizard and the separate app
-    app.config[APP_CONFIG_JSON] = config_dict
-    app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
-    app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(
-        config_dict[AVAILABLE_PAGES], app.config[CONFIG_FILE_FOLDER]
-    )
-
+def configure_backend(app):
     # setup steps unique to SQL-backended apps
     # todo: make sure we don't need postgres install reqs if running mysql
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [MYSQL, POSTGRES]:
@@ -83,6 +75,17 @@ def configure_app(app, config_dict):
 
     app.config.data_handler = data_backend_class
     app.config.data_backend_writer = data_backend_writer
+
+
+def configure_app(app, config_dict):
+    # write the config dict to app config as a read-only proxy of a mutable dict
+    # todo: these lines will change as we adding the wizard and the separate app
+    app.config[APP_CONFIG_JSON] = MappingProxyType(config_dict)
+    app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
+    app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(
+        config_dict[AVAILABLE_PAGES], app.config[CONFIG_FILE_FOLDER]
+    )
+    configure_backend(app)
     app.config.active_data_source_filters = {}
     return app
 

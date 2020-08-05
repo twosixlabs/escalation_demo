@@ -9,15 +9,14 @@ def build_plotly_schema():
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "plotly dict",
-        "description": "what PLOT_SPECIFIC_INFO should look like if plot manager is plotly",
+        "description": "dictionary that follows https://plotly.com/javascript/reference/, the dictionaries from "
+        "data key in get imported in with values from the databaase/csvs",
         "type": "object",
         "required": [DATA],
         "properties": {
             DATA: {
                 "type": "array",
-                "description": "list of graphs to be plotted on a single plot, "
-                "see https://plotly.com/javascript/reference/"
-                " for options, axis information is found from data property",
+                "description": "list of graphs to be plotted on a single plot",
                 "items": {
                     "type": "object",
                     "title": "data dictionary",

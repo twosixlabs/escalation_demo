@@ -4,6 +4,7 @@
 import json
 
 from graphics.plotly_plot import STYLES
+from utility.build_plotly_schema import build_plotly_schema
 from utility.constants import *
 
 NO_DOTS = "^[^\\.]*$"
@@ -25,6 +26,7 @@ TYPE = "type"
 ITEMS = "items"
 PATTERN = "pattern"
 REQUIRED = "required"
+MIN_ITEMS = "minItems"
 
 
 def build_settings_schema():
@@ -72,6 +74,7 @@ def build_settings_schema():
                 "type": "array",
                 TITLE: "Data Sources",
                 "description": "list of tables or folders that server will use for the plots",
+                MIN_ITEMS: 1,
                 "items": {"type": "string"},
             },
             AVAILABLE_PAGES: {
@@ -353,8 +356,15 @@ def build_graphic_schema(data_source_names=None, column_names=None):
     return schema
 
 
+def build_graphic_schema_with_plotly(data_source_names=None, column_names=None):
+    schema = build_graphic_schema(data_source_names, column_names)
+    plotly_schema = build_plotly_schema()
+    schema[PROPERTIES][PLOT_SPECIFIC_INFO] = plotly_schema
+    return schema
+
+
 def convert_dict_to_json_file():
-    schema_dict = build_graphic_schema([], [])
+    schema_dict = build_graphic_schema_with_plotly()
     # schema_dict["properties"].update(build_higher_level_schema()["properties"])
     json_object = json.dumps(schema_dict, indent=4)
     with open("test.schema.json", "w") as outfile:
