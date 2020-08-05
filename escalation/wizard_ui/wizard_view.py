@@ -8,7 +8,11 @@ import re
 from flask import current_app, render_template, Blueprint, request
 
 from app import configure_backend
-from utility.build_schema import build_settings_schema, build_graphic_schema, build_graphic_schema_with_plotly
+from utility.build_schema import (
+    build_settings_schema,
+    build_graphic_schema,
+    build_graphic_schema_with_plotly,
+)
 from utility.constants import (
     DATA_SOURCES,
     DATA_BACKEND,
@@ -93,7 +97,8 @@ def graphic_config_setup():
     return render_template(
         CONFIG_EDITOR_HTML,
         schema=json.dumps(
-            build_graphic_schema_with_plotly(data_source_names, possible_column_names), indent=4
+            build_graphic_schema_with_plotly(data_source_names, possible_column_names),
+            indent=4,
         ),
         message=GRAPHIC_MESSAGE,
         page_id=request.form[PAGE_ID],

@@ -94,7 +94,9 @@ def validate_config_data_references(config_dict_path):
         for page in pages:
             graphic_config_file_paths = page.get(GRAPHIC_CONFIG_FILES, [])
             for graphic_config_file_path in graphic_config_file_paths:
-                current_config_path = os.path.join(app.config[CONFIG_FILE_FOLDER], graphic_config_file_path)
+                current_config_path = os.path.join(
+                    app.config[CONFIG_FILE_FOLDER], graphic_config_file_path
+                )
                 validate(instance=load_config_file(current_config_path), schema=schema)
         print("Your config file is valid")
     except ValidationError as valid_error:
