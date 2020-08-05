@@ -10,9 +10,9 @@
 
 DATABASE_CONFIG = {
     "drivername": "postgresql+pg8000",
-    "host": "localhost",
-    "port": "54320",
-    "username": "escalation_os",
-    "password": "escalation_os_pwd",
-    "database": "escalation_os",
+    "host": "postgres_db",
+    "port": "5432",
+    "username": "escalation",
+    "password": "escalation_pwd",
+    "database": "escalation",
 }
