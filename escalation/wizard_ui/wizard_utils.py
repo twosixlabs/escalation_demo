@@ -3,7 +3,7 @@ import os
 
 from flask import current_app, render_template, Blueprint, request
 
-from app import configure_backend
+from utility.app_utilities import configure_backend
 from utility.constants import APP_CONFIG_JSON, CONFIG_FILE_FOLDER, MAIN_CONFIG
 
 

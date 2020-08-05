@@ -5,13 +5,26 @@ import json
 import os
 from collections import deque
 
+from flask import Flask
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-from app import create_app, configure_app
+from sqlalchemy.engine.url import URL
+from app_deploy_data.app_settings import DATABASE_CONFIG
+from utility.app_utilities import configure_backend
 from utility.build_schema import build_settings_schema, build_graphic_schema
 from utility.constants import *
 
+
+def create_validate_app():
+    app = Flask(__name__)
+    app.config.from_mapping(
+        SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL")
+        or URL(**DATABASE_CONFIG),
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        VERSION="0.0.1",
+    )
+    return app
 
 def load_config_file(config_file_path):
     with open(config_file_path, "r") as config_file:
@@ -61,8 +74,10 @@ def validate_config_data_references(config_dict_path):
         current_config_path = config_dict_path
         config_dict = load_config_file(current_config_path)
         validate(instance=config_dict, schema=schema)
-        app = create_app()
-        app = configure_app(app, config_dict)
+        app = create_validate_app()
+        app.config[APP_CONFIG_JSON] = config_dict
+        app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
+        configure_backend(app)
         ctx = app.app_context()
         ctx.push()
         # handle code differently at two spots depending on whether we are dealing with file system or database
@@ -107,5 +122,5 @@ def validate_config_data_references(config_dict_path):
 
 if __name__ == "__main__":
     # todo: take this in as a command line argument
-    main_config_file_path = "app_deploy_data/app_config.json"
+    main_config_file_path = "test_app_deploy_data/test_app_local_config.json"
     validate_config_data_references(main_config_file_path)
