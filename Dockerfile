@@ -17,7 +17,6 @@ FROM python:3.7.8-buster
 
 #Set flask_app as working directory
 WORKDIR /escalation
-ENV PYTHONPATH /escalation
 
 #install dependencies
 #copy data from current dir into flask_app
