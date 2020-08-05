@@ -4,24 +4,25 @@ services:
   web:
     restart: always
     build: .
+    container_name: escos_web
     expose:
       - "8000"
     links:
-      - postgres:postgres
-#    volumes:
-#      - web-data:/usr/src/app/static
+      - postgres_db:postgres_db
 #    env_file:
 #      - .env
+    ports:
+      - "8000:8000"
     command: /escalation/boot.sh
 
   nginx:
     restart: always
     image: "nginx:1.13.5"
+    container_name: escos_nginx
     ports:
       - "80:80"
     volumes:
       - .:/www/static
-#      - web-data:/usr/src/app/static
     links:
       - web:web
 
@@ -31,9 +32,10 @@ services:
       - db-data:/var/lib/postgresql/data
     command: "true"
 
-  postgres:
+  postgres_db:
     restart: always
     image: postgres:latest
+    container_name: escos_db
     volumes:
       - db-data:/var/lib/postgresql/data
     ports:
@@ -44,51 +46,3 @@ services:
 
 volumes:
   db-data:
-#  web-data:
-
-#
-#
-#version: '3'
-#services:
-#  db:
-#    image: "postgres:latest"
-#    volumes:
-#      - psql_db_volume_escalate_os:/var/lib/postgresql/data
-#    env_file:
-#      - ./escalation/app_deploy_data/database_env_file
-#    networks:
-#      - db_nw
-#  flaskapp:
-#    build: ./escalation/Dockerfile
-##    env_file:
-##      - escalation/app_deploy_data/env_file
-##    volumes:
-##      - .:/opt/services/flaskapp/src
-#    networks:
-#      - db_nw
-#      - web_nw
-#    depends_on:
-#      - db
-#  nginx:
-#    image: "nginx:1.13.5"
-#    ports:
-#      - "8080:80"
-#    volumes:
-#      - ./escalation/app_deploy_data/conf.d:/etc/nginx/conf.d
-#    networks:
-#      - web_nw
-#    depends_on:
-#      - flaskapp
-#  data:
-#    image: postgres:latest
-#    volumes:
-#    - psql_db_volume_escalate_os:/var/lib/postgresql/data
-#    command: "true"
-#
-#networks:
-#  db_nw:
-#    driver: bridge
-#  web_nw:
-#    driver: bridge
-#volumes:
-#  psql_db_volume_escalate_os:
