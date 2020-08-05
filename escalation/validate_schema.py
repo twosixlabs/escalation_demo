@@ -20,11 +20,11 @@ def load_config_file(config_file_path):
 
 def get_data_inventory_class(csv_flag):
     if csv_flag:
-        from escalation.database.local_handler import LocalCSVDataInventory
+        from database.local_handler import LocalCSVDataInventory
 
         data_inventory_class = LocalCSVDataInventory
     else:
-        from escalation.database.sql_handler import SqlDataInventory
+        from database.sql_handler import SqlDataInventory
 
         data_inventory_class = SqlDataInventory
     return data_inventory_class
