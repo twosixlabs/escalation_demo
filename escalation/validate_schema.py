@@ -2,14 +2,15 @@
 # Licensed under the Apache License, Version 2.0
 
 import json
+import os
 from collections import deque
 
 from jsonschema import validate
 from jsonschema.exceptions import ValidationError
 
-# from escalation.app import create_app, configure_app
-from escalation.utility.build_schema import build_settings_schema, build_graphic_schema
-from escalation.utility.constants import *
+from app import create_app, configure_app
+from utility.build_schema import build_settings_schema, build_graphic_schema
+from utility.constants import *
 
 
 def load_config_file(config_file_path):
@@ -19,11 +20,11 @@ def load_config_file(config_file_path):
 
 def get_data_inventory_class(csv_flag):
     if csv_flag:
-        from escalation.database.local_handler import LocalCSVDataInventory
+        from database.local_handler import LocalCSVDataInventory
 
         data_inventory_class = LocalCSVDataInventory
     else:
-        from escalation.database.sql_handler import SqlDataInventory
+        from database.sql_handler import SqlDataInventory
 
         data_inventory_class = SqlDataInventory
     return data_inventory_class
@@ -93,7 +94,9 @@ def validate_config_data_references(config_dict_path):
         for page in pages:
             graphic_config_file_paths = page.get(GRAPHIC_CONFIG_FILES, [])
             for graphic_config_file_path in graphic_config_file_paths:
-                current_config_path = graphic_config_file_path
+                current_config_path = os.path.join(
+                    app.config[CONFIG_FILE_FOLDER], graphic_config_file_path
+                )
                 validate(instance=load_config_file(current_config_path), schema=schema)
         print("Your config file is valid")
     except ValidationError as valid_error:
