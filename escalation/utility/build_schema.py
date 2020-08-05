@@ -357,20 +357,32 @@ def build_graphic_schema(data_source_names=None, column_names=None):
 
 
 def build_graphic_schema_with_plotly(data_source_names=None, column_names=None):
+    """
+    If you are using the app with plotly this puts the plotly schema into the graphic schema
+    :param data_source_names:
+    :param column_names:
+    :return:
+    """
     schema = build_graphic_schema(data_source_names, column_names)
     plotly_schema = build_plotly_schema()
     schema[PROPERTIES][PLOT_SPECIFIC_INFO] = plotly_schema
     return schema
 
 
-def convert_dict_to_json_file():
-    schema_dict = build_graphic_schema_with_plotly()
-    # schema_dict["properties"].update(build_higher_level_schema()["properties"])
-    json_object = json.dumps(schema_dict, indent=4)
-    with open("test.schema.json", "w") as outfile:
-        outfile.write(json_object)
+def convert_python_dict_to_schema_json_file():
+    """
+    Makes the schema dictionaries into files (currently only used for generating documentation)
+    :return:
+    """
+    for file_name, schema_dict in zip(
+        ["main.schema.json", "graphic.schema.json"],
+        [build_settings_schema(), build_graphic_schema_with_plotly()],
+    ):
+        json_object = json.dumps(schema_dict, indent=4)
+        with open(file_name, "w") as outfile:
+            outfile.write(json_object)
 
 
 if __name__ == "__main__":
     # if the schema is needed as a json file
-    convert_dict_to_json_file()
+    convert_python_dict_to_schema_json_file()
