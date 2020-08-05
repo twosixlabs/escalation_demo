@@ -7,7 +7,7 @@ import re
 
 from flask import current_app, render_template, Blueprint, request
 
-from app import configure_backend
+from utility.app_utilities import configure_backend
 from utility.build_schema import (
     build_settings_schema,
     build_graphic_schema,
