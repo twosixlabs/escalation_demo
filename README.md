@@ -48,17 +48,12 @@ Each of these components are discussed further below.
     - You need a Python environment set up to run the web app. See instructions for setting up an environment, using Docker to handle the environment for you.
 
 
-## Building Configuration files:
-Run `python build_app_config_json_template.py` to build a base config file. 
-Everything blank or in `<>` should be changed.
+## 1. Stand up empty instances of the web app and database using Docker:
 
-How to set up [local file system and config](config_information/local_example/local_data_storage_config_info.md) for the app.  
-[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
-An example of a [main config file](config_information/main_config_example/main_config_example.md).  
-Examples of [different plots and graphic config files](config_information/plotly_examples/plotly_config_info.md).  
-Examples of [different selectors](config_information/selector_examples/selector_config_info.md). 
+`docker-compose up --build -d`
 
-## Loading your data
+
+## 2. Loading your data
 
 ### SQL data
     
@@ -68,7 +63,34 @@ Todo: Instructions for SQL data ingestion
 
 How to set up a [local file system backed](config_information/local_example/local_data_storage_config_info.md) Escalation app.  
     
+## 3. Building Configuration files:
+
+### Use the Configuration Wizard
+
+Run the wizard app:
+    
+    docker-compose run --entrypoint /escalation/boot_wizard_app.sh -p "8000:8000" web
+ 
+[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
+
+
+### Build a config from scratch (advanced)
+Run `python build_app_config_json_template.py` to build a base config file. 
+Everything blank or in `<>` should be changed.
+
+### Debugging config files manually (advanced)
+
+How to set up [local file system and config](config_information/local_example/local_data_storage_config_info.md) for the app.  
+An example of a [main config file](config_information/main_config_example/main_config_example.md).  
+Examples of [different plots and graphic config files](config_information/plotly_examples/plotly_config_info.md).  
+Examples of [different selectors](config_information/selector_examples/selector_config_info.md). 
+
 ## Running the app
+
+Re-run the docker compose build command to re-launch the containers with the app including all of the configuration you just did:
+
+    docker-compose up --build -d
+
 
 ### Running Locally (testing, development of your custom Escalation dashboard)
 

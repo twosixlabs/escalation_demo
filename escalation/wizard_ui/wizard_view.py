@@ -57,13 +57,15 @@ def file_tree():
 def add_page():
     webpage_label = request.form[WEBPAGE_LABEL]
     # sanitizing the string so it is valid url
-    pattern = re.compile("\W+", re.UNICODE)
+    pattern = re.compile(r"\W+", re.UNICODE)
     page_dict = {
         WEBPAGE_LABEL: webpage_label,
         URL_ENDPOINT: (pattern.sub("", webpage_label.replace(" ", "_"))).lower(),
         GRAPHIC_CONFIG_FILES: [],
     }
-    current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES].append(page_dict)
+    available_pages = current_app.config[APP_CONFIG_JSON].get(AVAILABLE_PAGES, [])
+    available_pages.append(page_dict)
+    current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES] = available_pages
     save_main_config_dict()
     return file_tree()
 
