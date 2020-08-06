@@ -29,7 +29,6 @@ As of the current version:
 * Use a SQL database or local csv files (assuming csv in local handler)
 * Local handler currently gets most recent data set
 
-
 # Setup
 
 ## What do you need for the app to work?
@@ -54,6 +53,7 @@ Run `python build_app_config_json_template.py` to build a base config file.
 Everything blank or in `<>` should be changed.
 
 How to set up [local file system and config](config_information/local_example/local_data_storage_config_info.md) for the app.  
+[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 An example of a [main config file](config_information/main_config_example/main_config_example.md).  
 Examples of [different plots and graphic config files](config_information/plotly_examples/plotly_config_info.md).  
 Examples of [different selectors](config_information/selector_examples/selector_config_info.md). 
@@ -93,7 +93,7 @@ With Docker set up, you
 
 
 ### How to add a new type of plot
-Development for Escalation has focused on Plotly, but the code base should be compatible with other libraries or custom graphics. If you want to use something other than Plotly, your code should:
+Development for Escalation has focused on Plotly, but the codebase should be compatible with other libraries or custom graphics. If you want to use something other than Plotly, your code should:
 * Needs to inherit from graphic_class.py
 * Be added to available_graphics.py
 * Include an html file with javascript code required to plot
