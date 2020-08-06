@@ -11,7 +11,7 @@
 </div>
     <div class="container-fluid pl-5 pr-5">
     <div class="row">
-        <a class="btn btn-secondary mb-2" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
+        <a class="btn btn-secondary mb-4 mt-1 pr-5 pl-5" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
         </a>
 
     </div>
@@ -20,31 +20,51 @@
         <input type="hidden" name="graphic" value=''>
         <input type="hidden" name="is_graphic_new" value=''>
     </form>
-    <div class="row">
-        <div class="btn-group-vertical">
+
             {% for page in available_pages %}
+                <div class="row">
                 {% set page_id=loop.index0 %}
-                <div class="btn-group dropright">
-                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn btn-secondary dropdown-toggle mb-1 mt-1 pr-5 pl-5" data-toggle="collapse" data-target={{ "#page_" ~ page_id ~ "_graphics" }}>
                         {{ page["webpage_label"] }}
                     </button>
-                    <div class="dropdown-menu">
-                        {% for graphic in page["graphic_config_files"] %}
-                            <button class="dropdown-item" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}',false)>{{ graphic }}</button>
-                        {% endfor %}
-                        <div class="dropdown-divider"></div>
-                        <button class="dropdown-item" type="button" onclick=new_graphic({{ page_id }})>Add a Graphic</button>
+                </div>
+                <div class="collapse" id={{ "page_" ~ page_id ~ "_graphics" }}>
+                    {% for graphic in page["graphic_config_files"] %}
+                        <div class="row">
+                            <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}',false)>{{ graphic }}</button>
+                        </div>
+                    {% endfor %}
+                    <div class="row">
+
+                        <div class="form-group mb-1 mt-1 ml-5">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id={{ "new_graphic_name_" ~ page_id }} placeholder="Graphic Name">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-primary" onclick=new_graphic({{ page_id }})>Add a Graphic
+                                </button>
+                            </div>
+                        </div>
+                        </div>
                     </div>
                 </div>
+
+
             {% endfor %}
-        </div>
-     </div>
+
     <div class="row">
         <form method="post" action={{ url_for('.add_page') }} id="form_add_page">
-            <input type="hidden" name="webpage_label" value=''>
+            <div class="form-group mb-1 mt-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="webpage_label" placeholder="Webpage Name">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary" onclick=add_page()>Add a Page
+                        </button>
+                    </div>
+                </div>
+            </div>
+
         </form>
-        <button type="button" class="btn btn-primary mt-2" onclick=add_page()>Add a Page
-        </button>
+
     </div>
     </div>
 

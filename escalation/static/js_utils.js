@@ -26,18 +26,16 @@ function edit_graphic(page_id,graphic,is_graphic_new) {
 }
 
 function new_graphic(page_id){
-    let graphic_name = prompt("Please enter the graphic name", "graphic_name");
-    if (graphic_name != null) {
+    let graphic_name=document.getElementById("new_graphic_name_".concat(page_id)).value
+    if (graphic_name) {
         graphic_name=graphic_name.replace(/\ /g,"_");
         edit_graphic(page_id,graphic_name,true)
     }
 }
 
-function add_page(page_id){
-    let page_name = prompt("Please enter the page name", "Page Name");
-    if (page_name != null) {
-        let web_form = $('#form_add_page');
-        web_form[0].webpage_label.value = page_name;
+function add_page(){
+    let web_form = $('#form_add_page');
+    if (web_form[0].webpage_label.value) {
         web_form.submit();
     }
 }
