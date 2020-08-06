@@ -20,28 +20,37 @@
         </div>
         <div class="col-2 text-center">
             <h2>Buttons:</h2>
-            <button type="button" class="btn btn-primary btn-block m-2" onclick=save_and_go_to_file_tree()>Submit
+            <button type="button" class="btn btn-primary btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Saves the changes and goes to the file tree" onclick=save_and_go_to_file_tree()>Submit
             </button>
-            <button type="button" class="btn btn-primary btn-block m-2" onclick=save_json_editor_to_file()>Save
+            <button type="button" class="btn btn-primary btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Saves the changes" onclick=save_json_editor_to_file()>Apply
             </button>
             <div id="feedback_message">
             </div>
-            <button type="button" class="btn btn-secondary btn-block m-2" onclick=reset_json_editor()>Reset Form
+            <button type="button" class="btn btn-secondary btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Erases all the values in the form" onclick=reset_json_editor()>Reset Form
             </button>
-            <a class="btn btn-secondary btn-block m-2" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
+            <a class="btn btn-secondary btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Resets the values in the form to the last time it was saved" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
             </a>
-            <a class="btn btn-success btn-block m-2" href={{ url_for('.file_tree') }} role="button">Back to File Tree
+            <a class="btn btn-success btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Goes to the file tree" href={{ url_for('.file_tree') }} role="button">Back to File Tree
             </a>
         </div>
     </div>
     </div>
 <script>
+    // Enables all the tooltips
+    $(function () {$('[data-toggle="tooltip"]').tooltip()})
+
     const editor = new JSONEditor(document.getElementById('editor_holder'),
         options={theme: 'bootstrap4', iconlib: 'fontawesome4', display_required_only:true, schema: {{ schema | safe }} });
     {% if current_config %}
         editor.setValue({{ current_config | safe }})
     {% endif %}
     function save_json_editor_to_file(){
+        // The form contains nested dictionaries so it is easier to send a json than a form
         let data = JSON.stringify({"config_dict" : editor.getValue(),
             "page_id":{{ page_id if page_id else -1 }},
             "graphic": '{{ graphic }}',
@@ -52,7 +61,7 @@
         xhr.onreadystatechange = function () {
             let success_text = document.querySelector('#feedback_message');
             if (xhr.readyState === 4 && xhr.status === 200) {
-                success_text.innerHTML = "Saved"
+                success_text.innerHTML = "Applied"
             } else {
                 success_text.innerHTML = "Failed"
             }

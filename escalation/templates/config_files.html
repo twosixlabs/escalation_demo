@@ -11,10 +11,14 @@
 </div>
     <div class="container-fluid pl-5 pr-5">
     <div class="row">
-        <a class="btn btn-secondary mb-4 mt-1 pr-5 pl-5" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
+        <a class="btn btn-secondary mb-1 mt-1 pr-5 pl-5" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
         </a>
 
     </div>
+    <div class="row mb-3">
+        <p>The order of pages and graphics can be changed in the main config form</p>
+    </div>
+
     <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
         <input type="hidden" name="page_id" value=''>
         <input type="hidden" name="graphic" value=''>

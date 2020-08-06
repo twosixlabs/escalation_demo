@@ -25,10 +25,8 @@
 
 ## Wizard
 
-- improve the pop up boxes.
 - add pages in any order
-- toll tips buttons
-- format form
+- format/ validate form form
 
 ## Config format
 
