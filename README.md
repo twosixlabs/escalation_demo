@@ -64,7 +64,7 @@ Once we set up a configuration and your data, we'll also use these containers to
 We provide a script to parse csv data files, determine the relevant sql schema, and create tables in the database from your file. 
 The script uses the infrastructure of the Docker containers you built, so there is no need to install anything else.
 
-Run the script 
+Run the script from the top level directory of the repo
 
     . csv_to_sql.sh {name_of_sql_table} {path_to_csv_file} {replace/append/fail}
     
@@ -89,13 +89,13 @@ How to set up a [local file system backed](config_information/local_example/loca
 
 ### Use the Configuration Wizard
 
-Run the wizard app:
+Run the wizard app from the root directory of this repo:
     
-    docker-compose run --entrypoint /escalation/boot_wizard_app.sh -p "8000:8000" web
+    docker-compose run --entrypoint /escalation/boot_wizard_app.sh -p "8001:8001"  -v "$(pwd)/escalation/app_deploy_data":/escalation/app_deploy_data web
  
 [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
-To use the app, navigate in your browser to: localhost:8000 or 127.0.0.1:8000
+To use the Configurer UI Wizard, navigate in your browser to: localhost:8000 or 127.0.0.1:8001
 
 ### Build a config from scratch (advanced)
 Run `python build_app_config_json_template.py` to build a base config file. 
