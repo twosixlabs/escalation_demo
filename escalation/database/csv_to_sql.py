@@ -35,7 +35,7 @@ DATA_TYPE_MAP = {
 #  list: sqlalchemy.types.ARRAY,
 #  dict: sqlalchemy.types.JSON
 
-EXISTS_OPTIONS = ["replace", "append"]
+EXISTS_OPTIONS = ["replace", "append", "fail"]
 
 
 def extract_values(obj, key):
@@ -198,9 +198,9 @@ if __name__ == "__main__":
 
     # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
     db_config = DATABASE_CONFIG
-    db_config.update(
-        {"host": "localhost",}
-    )
+    # db_config.update(
+    #     {"host": "localhost",}
+    # )
     sql_creator = CreateTablesFromCSVs(sql_backend, db_config)
 
     data = sql_creator.get_data_from_csv(filepath)

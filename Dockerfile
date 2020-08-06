@@ -17,6 +17,7 @@ FROM python:3.7.8-buster
 
 #Set escalation as working directory
 WORKDIR /escalation
+ENV PYTHONPATH "${PYTHONPATH}:/escalation"
 
 #install dependencies
 COPY escalation/requirements-app.txt /escalation
