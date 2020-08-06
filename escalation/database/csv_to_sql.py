@@ -196,7 +196,10 @@ if __name__ == "__main__":
 
     from app_deploy_data.app_settings import DATABASE_CONFIG
 
-    sql_creator = CreateTablesFromCSVs(sql_backend, DATABASE_CONFIG)
+    # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
+    db_config = DATABASE_CONFIG.update({"host": "localhost",})
+    sql_creator = CreateTablesFromCSVs(sql_backend, db_config)
+
     data = sql_creator.get_data_from_csv(filepath)
     schema = sql_creator.get_schema_from_csv(filepath)
     key_column = None

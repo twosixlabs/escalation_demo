@@ -17,8 +17,7 @@ The application assumes that your data structure is laid out something like:
  the application will use. All csv files in the same folder should have the same schema.
   By default, it will use all the csv files in the folder.
 This can be changed on the Admin tab on the webpage.
-##
-In the graphic config file you need
+## How to configure a graphic
 - data_sources -- list of which data sources the graphic uses and 
 instructions on how to combine the files
     - the first element of the list will look like {

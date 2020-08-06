@@ -17,7 +17,7 @@ You can see an example of Escalation running on data for DARPA's Synergistic Dis
 ## Wait, aren't there already lots of different visualization tools out there?
 Yes. Escalation has a few advantages:
 - Straightforward and low-cost deployment
-- Improved data privacy: everything can be local
+- Improved data privacy: everything can be hosted and run locally or on a server you control
 - Open-source code
 - Integration with data versioning and analysis pipelines (In development)
 
@@ -35,16 +35,16 @@ As of the current version:
 
 Each of these components are discussed further below.
 
-- Configuration files
+- [Configuration files](#Building-Configuration-files)
     - Escalation uses configuration files (json) to build the dashboard organizational structure, link the data in visualizations, and construct the visualizations themselves.
     - These configuration files can be built by hand, using the Configuration Wizard, or any combination of the two
-- Data 
+- [Data](#Loading-your-data) 
     - When setting up Escalation, you choose to use either a CSV or SQL backend.
     - Depending on the backend, you'll either link the app to a database (new or existing) or a file system path containing your data files. 
      A file backend may be easier for those unfamiliar with SQL, but SQL is more performant, and storing data in a database offers advantages beyond the database's use in Escalation
     - Escalation includes tooling to ingest CSV files into SQL, automatically building the necessary SQL data tables and the code necessary to integrate them with Escalation.
     - ToDo: Data Migration helpers- what happens when the format of your data changes over time?
-- Python environment to run the app
+- [Python environment to run the app](#Running-the-app)
     - You need a Python environment set up to run the web app. See instructions for setting up an environment, using Docker to handle the environment for you.
 
 
@@ -58,7 +58,6 @@ An example of a [main config file](config_information/main_config_example/main_c
 Examples of [different plots and graphic config files](config_information/plotly_examples/plotly_config_info.md).  
 Examples of [different selectors](config_information/selector_examples/selector_config_info.md). 
 
-
 ## Loading your data
 
 ### SQL data
@@ -67,7 +66,7 @@ Todo: Instructions for SQL data ingestion
 
 ### CSV data
 
-Todo: Instructions for CSV data
+How to set up a [local file system backed](config_information/local_example/local_data_storage_config_info.md) Escalation app.  
     
 ## Running the app
 
