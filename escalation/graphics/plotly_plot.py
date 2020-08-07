@@ -170,7 +170,8 @@ class PlotlyPlot(Graphic):
                         plot_options[LAYOUT] = add_layout_axis_defaults(
                             layout_dict, axis, plotly_data_dict[axis]
                         )
-
+                    # moving the contents of the data to where plotly expects it
+                    # from the output of the database
                     plotly_data_dict[axis] = data[plotly_data_dict[axis]]
 
             plotly_data_dict[TRANSFORMS] = []
