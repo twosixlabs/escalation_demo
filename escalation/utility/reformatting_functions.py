@@ -32,7 +32,7 @@ def add_instructions_to_config_dict(
     for graphic_name, graphic_dict in single_page_graphic_config_dict.items():
         if SELECTABLE_DATA_DICT in graphic_dict:
             selector_dict = graphic_dict[SELECTABLE_DATA_DICT]
-            data_info_dict = graphic_dict[DATA]
+            data_info_dict = graphic_dict[PLOT_SPECIFIC_INFO][DATA]
             if addendum_dict.get(GRAPHIC_NAME) == graphic_name:
                 add_active_selectors_to_selectable_data_list(
                     selector_dict, data_info_dict, addendum_dict

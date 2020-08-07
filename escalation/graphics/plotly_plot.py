@@ -33,6 +33,7 @@ AXIS_TO_SORT_ALONG = "x"
 AUTOMARGIN = "automargin"
 HOVERMODE = "hovermode"
 CLOSEST = "closest"
+POSSIBLE_AXIS = ["x", "y", "z"]
 
 
 def get_hover_data_in_plotly_form(
@@ -143,9 +144,7 @@ def add_layout_axis_defaults(layout_dict: dict, axis, column_name):
 
 
 class PlotlyPlot(Graphic):
-    def make_dict_for_html_plot(
-        self, data, axis_to_data_columns, plot_options, visualization_options=None
-    ):
+    def make_dict_for_html_plot(self, data, plot_options, visualization_options=None):
         """
         Makes the json file that plotly takes in
         :param data: a pandas dataframe
@@ -156,55 +155,51 @@ class PlotlyPlot(Graphic):
         """
         # todo: cut off all text data to used in group by or titles to 47 charaters
         data_sorted = False
-        for index, axis_to_data_dict in enumerate(axis_to_data_columns):
-            if plot_options[DATA][index][PLOTLY_TYPE] == TABLE:
-                values = []
-                header = []
-                # adding the data and headers into the table
-                for axis, column_name in axis_to_data_dict.items():
-                    values.append(data[column_name])
-                    header.append(axis)
-                for table_key, values_for_dict in zip(
-                    [CELLS, HEADER], [values, header]
-                ):
-                    temp_dict = plot_options[DATA][index].get(table_key, {})
-                    temp_dict[VALUES] = values_for_dict
-                    plot_options[DATA][index][table_key] = temp_dict
-            else:
-                if not data_sorted and does_data_need_to_be_sorted(
-                    plot_options[DATA][index]
-                ):
-                    data.sort_values(
-                        axis_to_data_dict[AXIS_TO_SORT_ALONG], inplace=True
-                    )
-                    data_sorted = True
-                for axis, column_name in axis_to_data_dict.items():
-                    # three things in path, data, which index and value (x,y)
-                    plot_options[DATA][index][axis] = data[column_name]
-                    # if there is no label, label the columns with the first lines/scatters column names
+        for index, plotly_data_dict in enumerate(plot_options[DATA]):
+            if not data_sorted and does_data_need_to_be_sorted(plotly_data_dict):
+                data.sort_values(plotly_data_dict[AXIS_TO_SORT_ALONG], inplace=True)
+                data_sorted = True
+            for axis in POSSIBLE_AXIS:
+                if axis in plotly_data_dict:
+
                     if index == 0:
+                        # if there is no label, label the columns with the first lines/scatters column names
                         layout_dict = plot_options.get(LAYOUT, {})
                         if HOVERMODE not in layout_dict:
                             layout_dict[HOVERMODE] = CLOSEST
                         plot_options[LAYOUT] = add_layout_axis_defaults(
-                            layout_dict, axis, column_name
+                            layout_dict, axis, plotly_data_dict[axis]
                         )
+                    # moving the contents of the data to where plotly expects it
+                    # from the output of the database
+                    plotly_data_dict[axis] = data[plotly_data_dict[axis]]
 
-            plot_options[DATA][index][TRANSFORMS] = []
+            plotly_data_dict[TRANSFORMS] = []
 
             if visualization_options is not None:
                 for (
                     visualization_type,
                     visualization_parameters,
                 ) in visualization_options.items():
-                    plot_options[DATA][index] = VISUALIZATION_OPTIONS[
-                        visualization_type
-                    ](
+                    plotly_data_dict = VISUALIZATION_OPTIONS[visualization_type](
                         data,
                         visualization_parameters,
                         visualization_type,
-                        plot_options[DATA][index],
+                        plotly_data_dict,
                     )
 
         graph_json = json.dumps(plot_options, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
+
+    def get_data_columns(self, plot_options) -> set:
+        """
+        extracts what columns of data are needed from the plot_options
+        :param plot_options:
+        :return:
+        """
+        set_of_column_names = set()
+        for dict_of_data_for_each_plot in plot_options[DATA]:
+            for axis in POSSIBLE_AXIS:
+                if axis in dict_of_data_for_each_plot:
+                    set_of_column_names.add(dict_of_data_for_each_plot[axis])
+        return set_of_column_names

@@ -21,3 +21,12 @@ class Graphic(ABC):
         :return: instructions that will be passed to the html that will plot the object.
         """
         raise NotImplementedError
+
+    @abstractmethod
+    def get_data_columns(self, plot_options) -> set:
+        """
+        extracts what columns of data are needed from the plot_options
+        :param plot_options:
+        :return:
+        """
+        raise NotImplementedError

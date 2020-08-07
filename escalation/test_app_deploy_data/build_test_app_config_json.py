@@ -33,10 +33,16 @@ def build_config_json_graphic_big_penguins():
         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
         GRAPHIC_TITLE: "Do massive penguins have long flippers?",
         GRAPHIC_DESC: "This plot looks at the relationship between...",
-        DATA: [
-            {"x": "penguin_size:body_mass_g", "y": "penguin_size:flipper_length_mm",}
-        ],
-        PLOT_SPECIFIC_INFO: {DATA: [{"type": "scatter", "mode": "markers"}]},
+        PLOT_SPECIFIC_INFO: {
+            DATA: [
+                {
+                    "type": "scatter",
+                    "x": "penguin_size:body_mass_g",
+                    "y": "penguin_size:flipper_length_mm",
+                    "mode": "markers",
+                }
+            ]
+        },
         VISUALIZATION_OPTIONS: {
             HOVER_DATA: {
                 COLUMN_NAME: ["penguin_size:species", "penguin_size:culmen_length_mm",],
@@ -64,9 +70,10 @@ def build_config_json_graphic_hist_penguins():
         DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
         GRAPHIC_TITLE: "How big are penguins?",
         GRAPHIC_DESC: "Try the group by selector",
-        DATA: [{"x": "penguin_size:body_mass_g"}],
         PLOT_SPECIFIC_INFO: {
-            DATA: [{"type": "histogram", "opacity": 0.5}],
+            DATA: [
+                {"type": "histogram", "x": "penguin_size:body_mass_g", "opacity": 0.5}
+            ],
             LAYOUT: {"barmode": "overlay", "yaxis": {"title": {"text": "count"}},},
         },
         SELECTABLE_DATA_DICT: {
@@ -106,10 +113,16 @@ def build_config_json_graphic_radio_penguins():
         ],
         GRAPHIC_TITLE: "Can we join tables to find whether radio isotopes are connected to penguin size?",
         GRAPHIC_DESC: "",
-        DATA: [
-            {"x": "penguin_size:culmen_length_mm", "y": "mean_penguin_stat:delta_15_n"}
-        ],
-        PLOT_SPECIFIC_INFO: {DATA: [{"type": "scatter", "mode": "markers"}]},
+        PLOT_SPECIFIC_INFO: {
+            DATA: [
+                {
+                    "type": "scatter",
+                    "x": "penguin_size:culmen_length_mm",
+                    "y": "mean_penguin_stat:delta_15_n",
+                    "mode": "markers",
+                }
+            ]
+        },
         VISUALIZATION_OPTIONS: {
             HOVER_DATA: {
                 COLUMN_NAME: ["penguin_size:sex", "penguin_size:culmen_length_mm",],

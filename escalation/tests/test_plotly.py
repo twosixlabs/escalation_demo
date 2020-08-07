@@ -1,5 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
+import copy
 
 from graphics.plotly_plot import (
     PlotlyPlot,
@@ -32,19 +33,13 @@ def make_data():
     return pd.DataFrame(data)
 
 
-def test_plotly_draw_scatter(make_data, test_app_client):
-    plot_options = {DATA: [{"type": "scatter", "mode": "markers"}]}
-    axis_to_data_dict = [{"x": TITLE1, "y": TITLE2}]
-
-    visualization_options = {
-        "hover_data": {OPTION_COL: [TITLE1],},  # need a flask app to run
-        AGGREGATE: {OPTION_COL: [TITLE2], AGGREGATIONS: {"x": "avg", "y": "avg"},},
+def test_plotly_draw_scatter(make_data):
+    plot_options = {
+        DATA: [{"type": "scatter", "x": TITLE1, "y": TITLE2, "mode": "markers"}]
     }
 
     ploty_test = PlotlyPlot()
-    graph_json = ploty_test.make_dict_for_html_plot(
-        make_data, axis_to_data_dict, plot_options
-    )
+    graph_json = ploty_test.make_dict_for_html_plot(make_data, plot_options)
     graph_dict = json.loads(graph_json)
 
     assert (graph_dict[DATA][0]["x"] == make_data[TITLE1]).all()
@@ -54,8 +49,20 @@ def test_plotly_draw_scatter(make_data, test_app_client):
     # assert graph_dict[LAYOUT][PLOT_AXIS.format("x")][AUTOMARGIN]
     # assert graph_dict[LAYOUT][PLOT_AXIS.format("y")][AUTOMARGIN]
     assert len(graph_dict[DATA][0][TRANSFORMS]) == 0
+
+
+def test_plotly_visualization_options(make_data, test_app_client):
+    plot_options = {
+        DATA: [{"type": "scatter", "x": TITLE1, "y": TITLE2, "mode": "markers"}]
+    }
+    ploty_test = PlotlyPlot()
+    visualization_options = {
+        "hover_data": {OPTION_COL: [TITLE1],},  # need a flask app to run
+        AGGREGATE: {OPTION_COL: [TITLE2], AGGREGATIONS: {"x": "avg", "y": "avg"},},
+    }
+
     graph_json = ploty_test.make_dict_for_html_plot(
-        make_data, axis_to_data_dict, plot_options, visualization_options
+        make_data, plot_options, visualization_options
     )
     graph_dict = json.loads(graph_json)
     transform_dict = graph_dict[DATA][0][TRANSFORMS]

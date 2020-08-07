@@ -24,16 +24,12 @@
     ],
     "title": "Can we join tables to find whether radio isotopes are connected to penguin size?",
     "brief_desc": "",
-    "data": [
-        {
-            "x": "penguin_size:culmen_length_mm",
-            "y": "mean_penguin_stat:delta_15_n"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
                 "type": "scatter",
+                "x": "penguin_size:culmen_length_mm",
+                "y": "mean_penguin_stat:delta_15_n",
                 "mode": "markers"
             }
         ]
