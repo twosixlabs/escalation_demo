@@ -26,5 +26,5 @@ RUN pip install --trusted-host pypi.python.org -r requirements-app.txt
 #copy data from current dir into container
 COPY escalation /escalation
 RUN chmod +x /escalation/boot.sh
-RUN chmod +x /escalation/boot_wizard_app.sh
+RUN chmod +x /escalation/wizard_ui/boot_wizard_app.sh
 
