@@ -15,7 +15,9 @@ from sqlalchemy.engine.url import URL
 from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
 
-from utility.constants import INDEX_COLUMN, UPLOAD_ID
+from app_deploy_data.app_settings import DATABASE_CONFIG
+from utility.constants import INDEX_COLUMN, UPLOAD_ID, DATA_SOURCE_TYPE
+from database.sql_handler import SqlDataInventory
 
 DATA_TYPE_MAP = {
     "integer": Integer,
@@ -64,8 +66,7 @@ def extract_values(obj, key):
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
-    def __init__(self, sql_backend, database_config):
-        self.sql_backend = sql_backend
+    def __init__(self, database_config):
         self.database_config = database_config
         connection_url = URL(**database_config)
         self.engine = create_engine(connection_url)
@@ -139,77 +140,62 @@ class CreateTablesFromCSVs:
             if upload_id is None:
                 upload_id = 1
             data[UPLOAD_ID] = upload_id
-            if self.sql_backend == "mysql":
-                data.to_sql(
-                    table_name,
-                    con=self.engine,
-                    schema=self.database_config["database"],
-                    if_exists=if_exists,
-                    chunksize=10000,
-                    dtype=schema,
-                    index=False,
-                )
-                if if_exists == "replace":
-                    if key_columns:
-                        self.engine.execute(
-                            "ALTER TABLE {} ADD PRIMARY KEY({}({}));".format(
-                                table_name, *key_columns
-                            )
-                        )
-                    else:
-                        # use the numerical index from pandas as a pk
-                        self.engine.execute(
-                            f"ALTER TABLE {table_name} ADD PRIMARY KEY({UPLOAD_ID}, {INDEX_COLUMN});"
-                        )
-            elif self.sql_backend == "psql":
-                if table_name.lower() != table_name:
-                    raise ValueError(
-                        "Postgres does not play well with upper cases in table names, please rename your table"
-                    )
-                data.to_sql(
-                    table_name,
-                    con=self.engine,
-                    if_exists=if_exists,
-                    chunksize=1000,
-                    dtype=schema,
-                    index=False,
-                )
 
-                if if_exists == "replace":
-                    if key_columns:
-                        self.engine.execute(
-                            f"ALTER TABLE {table_name} add primary key (index_col[0]);"
-                        )
-                    else:
-                        # use the numerical index from pandas as a pk
-                        self.engine.execute(
-                            f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
-                        )
+            if table_name.lower() != table_name:
+                raise ValueError(
+                    "Postgres does not play well with upper cases in table names, please rename your table"
+                )
+            data.head(0).to_sql(
+                table_name,
+                con=self.engine,
+                if_exists=if_exists,
+                dtype=schema,
+                index=False,
+            )
+
+            if if_exists == "replace":
+                if key_columns:
+                    self.engine.execute(
+                        f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                    )
+                else:
+                    # use the numerical index from pandas as a pk
+                    self.engine.execute(
+                        f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
+                    )
+
+
+def write_table(table_name, data):
+    # todo: use automap
+    # https: // docs.sqlalchemy.org / en / 13 / orm / extensions / automap.html
+    # if the form of the submission is right, let's validate the content of the submitted file
+    # data_inventory = SqlDataInventory(data_sources=[{DATA_SOURCE_TYPE: table_name}])
+    # # write upload history table record at the same time
+    # ignored_columns = data_inventory.write_data_upload_to_backend(data)
+    return
 
 
 if __name__ == "__main__":
-    sql_backend = "psql"
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     if_exists = sys.argv[3]
     assert if_exists in EXISTS_OPTIONS
-
-    from app_deploy_data.app_settings import DATABASE_CONFIG
 
     # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
     db_config = DATABASE_CONFIG
     # db_config.update(
     #     {"host": "localhost",}
     # )
-    sql_creator = CreateTablesFromCSVs(sql_backend, db_config)
+    sql_creator = CreateTablesFromCSVs(db_config)
 
     data = sql_creator.get_data_from_csv(filepath)
     schema = sql_creator.get_schema_from_csv(filepath)
     key_column = None
-    print(f"Creating table name {table_name} from file path {filepath}")
-    sql_creator.create_new_table(
-        table_name, data, schema, key_columns=key_column, if_exists=if_exists
-    )
+    # print(f"Creating table name {table_name} from file path {filepath}")
+    # sql_creator.create_new_table(
+    #     table_name, data, schema, key_columns=key_column, if_exists=if_exists
+    # )
+    write_table(table_name, data)
 
     # example usage:
     # create a table in your db defined by a csv file
