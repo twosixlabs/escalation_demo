@@ -35,6 +35,7 @@ from wizard_ui.wizard_utils import (
     load_graphic_config_dict,
     save_main_config_dict,
     main_config_to_app_config,
+    load_main_config_dict_if_exists,
 )
 
 CONFIG_EDITOR_HTML = "config_editor.html"
@@ -45,7 +46,7 @@ wizard_blueprint = Blueprint("wizard", __name__)
 @wizard_blueprint.route("/", methods=("GET",))
 def file_tree():
     if APP_CONFIG_JSON in current_app.config:
-        config_dict = current_app.config[APP_CONFIG_JSON]
+        config_dict = load_main_config_dict_if_exists(current_app)
         return render_template(
             CONFIG_FILES_HTML, available_pages=config_dict.get(AVAILABLE_PAGES, {})
         )
