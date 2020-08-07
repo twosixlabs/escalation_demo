@@ -7,16 +7,12 @@
     ],
     "title": "Do massive penguins have long flippers?",
     "brief_desc": "This plot looks at the relationship between...",
-    "data": [
-        {
-            "x": "penguin_size:body_mass_g",
-            "y": "penguin_size:flipper_length_mm"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
                 "type": "scatter",
+                "x": "penguin_size:body_mass_g",
+                "y": "penguin_size:flipper_length_mm",
                 "mode": "markers"
             }
         ]

@@ -84,30 +84,29 @@ def assemble_plot_from_instructions(plot_specification, plot_data_handler):
     data_filters = []
     if DATA_FILTERS in plot_specification:
         data_filters = plot_specification[DATA_FILTERS]
-    plot_data = plot_data_handler.get_column_data(
-        get_unique_set_of_columns_needed(
-            plot_specification[DATA], visualization_options
-        ),
-        data_filters,
-    )
 
     # Checks to see if it is a valid graphic
     # TO DO what if it is not a valid graphic
     graphic_data = AVAILABLE_GRAPHICS[plot_specification[PLOT_MANAGER]]
     graphic_to_plot = graphic_data[OBJECT]
+    plot_data = plot_data_handler.get_column_data(
+        get_unique_set_of_columns_needed(
+            graphic_to_plot.get_data_columns(plot_specification[PLOT_SPECIFIC_INFO]),
+            visualization_options,
+        ),
+        data_filters,
+    )
+
     # makes a json file as required by js plotting documentation
     plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
-        plot_data,
-        plot_specification[DATA],
-        plot_specification[PLOT_SPECIFIC_INFO],
-        visualization_options,
+        plot_data, plot_specification[PLOT_SPECIFIC_INFO], visualization_options,
     )
 
     return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE]
 
 
 def get_unique_set_of_columns_needed(
-    data_list_to_be_plotted: list, dict_of_plot_metadata: dict = None
+    set_of_column_names: set, dict_of_plot_metadata: dict = None
 ) -> list:
     """
     Returns the unique columns of the data we need to get
@@ -117,9 +116,6 @@ def get_unique_set_of_columns_needed(
     :param list_of_plot_metadata:
     :return:
     """
-    set_of_column_names = set()
-    for dict_of_data_on_each_axis in data_list_to_be_plotted:
-        set_of_column_names.update(dict_of_data_on_each_axis.values())
     if dict_of_plot_metadata is not None:
         set_of_column_names.update(
             {

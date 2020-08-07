@@ -9,8 +9,6 @@ import json
 import pytest
 from types import MappingProxyType
 
-from app import create_app
-
 
 from database.local_handler import LocalCSVHandler
 from graphics.plotly_plot import LAYOUT, HOVER_DATA, AGGREGATE, AGGREGATIONS, TITLE
@@ -19,6 +17,8 @@ from utility.constants import *
 
 @pytest.fixture()
 def test_app_client(main_json_fixture):
+    from app import create_app
+
     flask_app = create_app()
     flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_fixture)
     flask_app.config.active_data_source_filters = []
