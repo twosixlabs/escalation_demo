@@ -7,17 +7,13 @@
     ],
     "title": "Example Line",
     "brief_desc": "A line plot",
-    "data": [
-        {
-            "x": "penguin_size_small:culmen_length_mm",
-            "y": "penguin_size_small:flipper_length_mm"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
                 "type": "scatter",
-                "mode": "line"
+                "mode": "line",
+                "x": "penguin_size_small:culmen_length_mm",
+                "y": "penguin_size_small:flipper_length_mm"
             }
         ],
         "layout": {

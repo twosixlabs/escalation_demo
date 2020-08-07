@@ -7,15 +7,11 @@
     ],
     "title": "Example Box plot",
     "brief_desc": "A box plot grouped other columns",
-    "data": [
-        {
-            "y": "penguin_size:body_mass_g"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
-                "type": "box"
+                "type": "box",
+                "y": "penguin_size:body_mass_g"
             }
         ]
     },

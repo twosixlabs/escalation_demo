@@ -29,5 +29,3 @@ These examples will show the graphic config files on the left and the graphic pr
  ![](images/bar.png)
  - A 3d scatter plot
  ![](images/scatter_3d.png)
-  - A table
- ![](images/table.png)
