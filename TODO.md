@@ -6,7 +6,7 @@
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
 - change all examples to data in /escos/escalation/app_deploy_data
-    
+- better table
 
 # Nice to have Features
 
@@ -26,7 +26,8 @@
 ## Wizard
 
 - add pages in any order
-- format/ validate form form
+- format/ validate form - use the dependencies
+- add dependencies
 
 ## Config format
 
