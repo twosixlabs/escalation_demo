@@ -7,6 +7,7 @@
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
 - change all examples to data in /escos/escalation/app_deploy_data
 - better table
+- faster sql ingestion of tables: switch to psycopg2 may be safe since we're using the docker container?
 
 # Nice to have Features
 
@@ -22,6 +23,7 @@
 - Data privacy- do we want to add some kind of key checking or password functionality?
 - Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
 - Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
+- remove mysql stuff- commit to postgres
 
 ## Wizard
 

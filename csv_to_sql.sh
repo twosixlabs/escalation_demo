@@ -7,6 +7,8 @@
 
 echo "Aliasing $2 on host to /escalation/data.csv on Docker container"
 
+# Todo: Assert we have all the required args
+
 docker-compose run \
 --entrypoint "python database/csv_to_sql.py $1 /escalation/data.csv $3" \
 -v $2:/escalation/data.csv \

@@ -8,7 +8,7 @@ from utility.constants import *
 def build_plotly_schema():
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "plotly dict",
+        "title": "plotly graph definition",
         "description": "dictionary that follows https://plotly.com/javascript/reference/, the dictionaries from "
         "data key in get imported in with values from the database/csvs",
         "type": "object",
@@ -64,7 +64,7 @@ def build_plotly_schema():
                 },
             },
             LAYOUT: {
-                "title": "layout dict",
+                "title": "Graph layout",
                 "description": "Determines how the graph looks",
                 "type": "object",
                 "properties": {

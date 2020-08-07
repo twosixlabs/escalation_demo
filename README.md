@@ -33,8 +33,6 @@ As of the current version:
 
 ## What do you need for the app to work?
 
-Each of these components are discussed further below.
-
 - [Configuration files](#Building-Configuration-files)
     - Escalation uses configuration files (json) to build the dashboard organizational structure, link the data in visualizations, and construct the visualizations themselves.
     - These configuration files can be built by hand, using the Configuration Wizard, or any combination of the two
@@ -47,8 +45,11 @@ Each of these components are discussed further below.
 - [Python environment to run the app](#Running-the-app)
     - You need a Python environment set up to run the web app. See instructions for setting up an environment, using Docker to handle the environment for you.
 
+Each of these components are discussed further below.
 
-## 1. Stand up empty instances of the web app and database using Docker:
+## 1. Stand up empty instances of the web app and database using Docker
+
+From the root level of the code repository, run: 
 
 `docker-compose up --build -d`
 
@@ -57,7 +58,7 @@ Here are [Docker's instructions](https://docs.docker.com/get-started/) on gettin
 We use the Docker containers to run our configuration wizard, as well as the scripts to ingest csv data into a SQL database.
 Once we set up a configuration and your data, we'll also use these containers to run the web app.
 
-## 2. Loading your data
+## 2. Load your data
 
 ### SQL database backend
     
@@ -66,11 +67,11 @@ The script uses the infrastructure of the Docker containers you built, so there 
 
 Run the script from the top level directory of the repo
 
-    . csv_to_sql.sh {name_of_sql_table} {path_to_csv_file} {replace/append/fail}
+    ./csv_to_sql.sh {name_of_sql_table} {absolute_path_to_csv_file} {replace/append/fail}
     
 example usage: 
 
-    . csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
+    ./csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
 
 The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
  as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
@@ -80,22 +81,25 @@ Run this script for each file you'd like to use for your visualizations and incl
 
 Todo: If you have an existing SQL database, how do you copy it into Escalation?
 
-
 ### CSV data file system backend
 
 How to set up a [local file system backed](config_information/local_example/local_data_storage_config_info.md) Escalation app.  
     
-## 3. Building Configuration files:
+## 3. Building Configuration files
 
 ### Use the Configuration Wizard
 
 Run the wizard app from the root directory of this repo:
     
-    docker-compose run --entrypoint /escalation/boot_wizard_app.sh -p "8001:8001"  -v "$(pwd)/escalation/app_deploy_data":/escalation/app_deploy_data web
- 
+    ./escalation/wizard_ui/wizard_container_launcher.sh
+    
+This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: localhost:8000 or 127.0.0.1:8001
+    
 [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
-To use the Configurer UI Wizard, navigate in your browser to: localhost:8000 or 127.0.0.1:8001
+
+ToDo: Hide this compose command in a script?
+
 
 ### Build a config from scratch (advanced)
 Run `python build_app_config_json_template.py` to build a base config file. 
@@ -110,7 +114,7 @@ Examples of [different selectors](config_information/selector_examples/selector_
 
 ## Running the app
 
-We recommend running the app using the docker container:
+We recommend running the Escalation web app using the docker container:
 
 Re-run the docker compose build command to re-launch the containers with the app including all of the configuration you just did:
 

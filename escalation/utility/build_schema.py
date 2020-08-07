@@ -7,11 +7,11 @@ from graphics.plotly_plot import STYLES
 from utility.build_plotly_schema import build_plotly_schema
 from utility.constants import *
 
-NO_DOTS = "^[^\\.]*$"
-ALPHA_NUMERIC_NO_SPACES = "^[a-zA-Z0-9_]+$"
-ONE_DOT = "^[^\\.]*\\.[^\\.]*$"
-ONE_LETTER = "^[a-zA-Z]$"
-NON_EMPTY_STRING = "[\s\S]+"
+NO_DOTS = r"^[^\\.]*$"
+ALPHA_NUMERIC_NO_SPACES = r"^[a-zA-Z0-9_]+$"
+ONE_DOT = r"^[^\\.]*\\.[^\\.]*$"
+ONE_LETTER = r"^[a-zA-Z]$"
+NON_EMPTY_STRING = r"[\s\S]+"
 X = "x"
 Y = "y"
 Z = "z"
@@ -145,21 +145,19 @@ def build_graphic_schema(data_source_names=None, column_names=None):
         PROPERTIES: {
             PLOT_MANAGER: {
                 "type": "string",
-                "description": "plot library you would like to use,"
-                " only plotly is currently available",
+                "description": "plot library you would like to use"
+                " (only plotly is currently available)",
                 "enum": ["plotly"],
             },
-            GRAPHIC_TITLE: {
-                "type": "string",
-                "description": "title shown above the graph",
-            },
+            GRAPHIC_TITLE: {"type": "string", "description": "Graph title (optional)",},
             GRAPHIC_DESC: {
                 "type": "string",
-                "description": "description shown above the graph",
+                "description": "Text caption shown above the graph (optional)",
             },
             DATA_SOURCES: {
                 "type": "array",
-                "description": "What tables are use to define this graphic",
+                "description": "Define which data tables are used in this graphic,"
+                " and on which columns the data tables are joined",
                 "items": {
                     "type": "object",
                     REQUIRED: [DATA_SOURCE_TYPE],
@@ -170,7 +168,8 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         },
                         JOIN_KEYS: {
                             "type": "array",
-                            "description": "Column names along which to join the tables",
+                            "description": "Column names along which to join the tables"
+                            " (in the case of 2 or more tables)",
                             "items": {
                                 "type": "array",
                                 "uniqueItems": True,
@@ -185,7 +184,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             DATA: {
                 "type": "array",
                 "title": "Data Dictionary",
-                "description": "which data column goes on each axis",
+                "description": "Which data column is used on each axis",
                 "items": {
                     "type": "object",
                     "title": "points",
