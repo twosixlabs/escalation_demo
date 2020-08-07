@@ -7,16 +7,12 @@
     ],
     "title": "Example Bar",
     "brief_desc": "A bar plot using the aggregate functionality",
-    "data": [
-        {
-            "y": "penguin_size:body_mass_g",
-            "x": "penguin_size:island"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
-                "type": "bar"
+                "type": "bar",
+                "y": "penguin_size:body_mass_g",
+                "x": "penguin_size:island"
             }
         ]
     },

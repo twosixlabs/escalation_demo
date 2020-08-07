@@ -7,15 +7,11 @@
     ],
     "title": "Example Histogram",
     "brief_desc": "A histogram",
-    "data": [
-        {
-            "x": "penguin_size:body_mass_g"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
-                "type": "histogram"
+                "type": "histogram",
+                "x": "penguin_size:body_mass_g"
             }
         ]
     }

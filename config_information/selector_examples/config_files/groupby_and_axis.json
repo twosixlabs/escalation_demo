@@ -7,16 +7,12 @@
     ],
     "title": "How big are penguins?",
     "brief_desc": "Try the group by selector",
-    "data": [
-        {
-            "x": "penguin_size:body_mass_g"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
                 "type": "histogram",
-                "opacity": 0.5
+                "opacity": 0.5,
+                "x": "penguin_size:body_mass_g"
             }
         ],
         "layout": {
