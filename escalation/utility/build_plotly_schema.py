@@ -4,8 +4,11 @@
 from graphics.plotly_plot import LAYOUT
 from utility.constants import *
 
+X = "x"
+Y = "y"
+Z = "z"
 
-def build_plotly_schema():
+def build_plotly_schema(column_names):
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "plotly graph definition",
@@ -45,6 +48,9 @@ def build_plotly_schema():
                                 "mesh3d",
                             ],
                         },
+                        X: {"type": "string", "enum": column_names},
+                        Y: {"type": "string", "enum": column_names},
+                        Z: {"type": "string", "enum": column_names},
                         "mode": {
                             "type": "string",
                             "description": "used for scatter or scattergl",

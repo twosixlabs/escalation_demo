@@ -12,9 +12,6 @@ ALPHA_NUMERIC_NO_SPACES = r"^[a-zA-Z0-9_]+$"
 ONE_DOT = r"^[^\\.]*\\.[^\\.]*$"
 ONE_LETTER = r"^[a-zA-Z]$"
 NON_EMPTY_STRING = r"[\s\S]+"
-X = "x"
-Y = "y"
-Z = "z"
 
 # json schema specific constants see https://json-schema.org/
 ADDITIONAL_PROPERTIES = "additionalProperties"
@@ -138,7 +135,6 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             GRAPHIC_TITLE,
             GRAPHIC_DESC,
             DATA_SOURCES,
-            DATA,
             PLOT_SPECIFIC_INFO,
         ],
         "additionalProperties": False,
@@ -178,25 +174,6 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "items": {"type": "string", "enum": column_names},
                             },
                         },
-                    },
-                },
-            },
-            DATA: {
-                "type": "array",
-                "title": "Data Dictionary",
-                "description": "Which data column is used on each axis",
-                "items": {
-                    "type": "object",
-                    "title": "points",
-                    "description": "a dictionary for each plot on a single graph:"
-                    " Key: axis (e.g. x), Value: Data Column,",
-                    PROPERTIES: {
-                        X: {"type": "string", "enum": column_names},
-                        Y: {"type": "string", "enum": column_names},
-                        Z: {"type": "string", "enum": column_names},
-                    },
-                    PATTERN_PROPERTIES: {
-                        NON_EMPTY_STRING: {"type": "string", "enum": column_names},
                     },
                 },
             },
@@ -373,7 +350,7 @@ def build_graphic_schema_with_plotly(data_source_names=None, column_names=None):
     :return:
     """
     schema = build_graphic_schema(data_source_names, column_names)
-    plotly_schema = build_plotly_schema()
+    plotly_schema = build_plotly_schema(column_names)
     schema[PROPERTIES][PLOT_SPECIFIC_INFO] = plotly_schema
     return schema
 
