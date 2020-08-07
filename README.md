@@ -48,40 +48,85 @@ Each of these components are discussed further below.
     - You need a Python environment set up to run the web app. See instructions for setting up an environment, using Docker to handle the environment for you.
 
 
-## Building Configuration files:
+## 1. Stand up empty instances of the web app and database using Docker:
+
+`docker-compose up --build -d`
+
+We recognize that Docker is less common in academic settings, but highly recommend using it. 
+Here are [Docker's instructions](https://docs.docker.com/get-started/) on getting started using Docker.
+We use the Docker containers to run our configuration wizard, as well as the scripts to ingest csv data into a SQL database.
+Once we set up a configuration and your data, we'll also use these containers to run the web app.
+
+## 2. Loading your data
+
+### SQL database backend
+    
+We provide a script to parse csv data files, determine the relevant sql schema, and create tables in the database from your file. 
+The script uses the infrastructure of the Docker containers you built, so there is no need to install anything else.
+
+Run the script from the top level directory of the repo
+
+    . csv_to_sql.sh {name_of_sql_table} {path_to_csv_file} {replace/append/fail}
+    
+example usage: 
+
+    . csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
+
+The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
+ as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
+
+
+Run this script for each file you'd like to use for your visualizations and include in the database. Note, it may take a little while to run.
+
+Todo: If you have an existing SQL database, how do you copy it into Escalation?
+
+
+### CSV data file system backend
+
+How to set up a [local file system backed](config_information/local_example/local_data_storage_config_info.md) Escalation app.  
+    
+## 3. Building Configuration files:
+
+### Use the Configuration Wizard
+
+Run the wizard app from the root directory of this repo:
+    
+    docker-compose run --entrypoint /escalation/boot_wizard_app.sh -p "8001:8001"  -v "$(pwd)/escalation/app_deploy_data":/escalation/app_deploy_data web
+ 
+[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
+
+To use the Configurer UI Wizard, navigate in your browser to: localhost:8000 or 127.0.0.1:8001
+
+### Build a config from scratch (advanced)
 Run `python build_app_config_json_template.py` to build a base config file. 
 Everything blank or in `<>` should be changed.
 
+### Debugging config files manually (advanced)
+
 How to set up [local file system and config](config_information/local_example/local_data_storage_config_info.md) for the app.  
-[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 An example of a [main config file](config_information/main_config_example/main_config_example.md).  
 Examples of [different plots and graphic config files](config_information/plotly_examples/plotly_config_info.md).  
 Examples of [different selectors](config_information/selector_examples/selector_config_info.md). 
 
-## Loading your data
-
-### SQL data
-    
-Todo: Instructions for SQL data ingestion
-
-### CSV data
-
-How to set up a [local file system backed](config_information/local_example/local_data_storage_config_info.md) Escalation app.  
-    
 ## Running the app
+
+We recommend running the app using the docker container:
+
+Re-run the docker compose build command to re-launch the containers with the app including all of the configuration you just did:
+
+    docker-compose up --build -d
+    
+To use the app, navigate in your browser to: localhost:8000 or 127.0.0.1:8000
+
 
 ### Running Locally (testing, development of your custom Escalation dashboard)
 
-You can run the app in a Docker container locally. You can also set up a custom Python virtual environment and run the server locally as you would any other Flask web app. 
-ToDo: More detailed instructions on virtual env setup, requirements install,  and running the app 
+You can also set up a custom Python virtual environment and run the server locally as you would any other Flask web app. 
+ToDo: More detailed instructions on virtual env setup, requirements install,  and running the app. Include info about db connection from host to Docker db
 
 ### Running Escalation as a web-accessible server
-We have Dockerized Escalation for ease of maintaining code compatibility and dependencies. Running via Docker containers is recommended. 
-We recognize that Docker is less common in academic settings, but highly recommend using it. 
-Here are [Docker's instructions](https://docs.docker.com/get-started/) on getting started using Docker.
 
-With Docker set up, you 
-
+Todo: Links to DigitalOcean, Heroku, AWS tutorials for web hosting
 
 
 # How can I contribute? (advanced)

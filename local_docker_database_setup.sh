@@ -5,4 +5,4 @@
 docker-compose up --build -d
 
 # to connect to db from host
-#docker exec -it postgres_db psql -h localhost -p 5432 -U escalation -d escalation
+#docker exec -it escos_db psql -h localhost -p 5432 -U escalation -d escalation

@@ -15,20 +15,16 @@
 
 FROM python:3.7.8-buster
 
-#Set flask_app as working directory
+#Set escalation as working directory
 WORKDIR /escalation
+ENV PYTHONPATH "${PYTHONPATH}:/escalation"
 
 #install dependencies
-#copy data from current dir into flask_app
 COPY escalation/requirements-app.txt /escalation
 RUN pip install --trusted-host pypi.python.org -r requirements-app.txt
 
-#copy data from current dir into flask_app
+#copy data from current dir into container
 COPY escalation /escalation
 RUN chmod +x /escalation/boot.sh
-#
-##Use this port
-EXPOSE 8000
+RUN chmod +x /escalation/boot_wizard_app.sh
 
-##run app.py with python
-ENTRYPOINT ["/escalation/boot.sh"]

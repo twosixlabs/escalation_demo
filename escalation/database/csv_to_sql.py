@@ -35,7 +35,7 @@ DATA_TYPE_MAP = {
 #  list: sqlalchemy.types.ARRAY,
 #  dict: sqlalchemy.types.JSON
 
-EXISTS_OPTIONS = ["replace", "append"]
+EXISTS_OPTIONS = ["replace", "append", "fail"]
 
 
 def extract_values(obj, key):
@@ -76,7 +76,7 @@ class CreateTablesFromCSVs:
         :param csv_data_file_path:
         :return: pandas dataframe
         """
-        return pd.read_csv(csv_data_file_path, encoding="utf-8")
+        return pd.read_csv(csv_data_file_path, encoding="utf-8", comment="#")
 
     @classmethod
     def get_schema_from_csv(cls, csv_data_file_path, confidence=0.05):
@@ -197,7 +197,10 @@ if __name__ == "__main__":
     from app_deploy_data.app_settings import DATABASE_CONFIG
 
     # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
-    db_config = DATABASE_CONFIG.update({"host": "localhost",})
+    db_config = DATABASE_CONFIG
+    # db_config.update(
+    #     {"host": "localhost",}
+    # )
     sql_creator = CreateTablesFromCSVs(sql_backend, db_config)
 
     data = sql_creator.get_data_from_csv(filepath)
@@ -210,8 +213,8 @@ if __name__ == "__main__":
 
     # example usage:
     # create a table in your db defined by a csv file
-    # python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv
-    # python database/csv_to_sql.py mean_penguin_stat escalation/test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv
+    # python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv replace
+    # python database/csv_to_sql.py mean_penguin_stat escalation/test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv replace
 
     # create a models.py file with the sqlalchemy model of the table
     # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py

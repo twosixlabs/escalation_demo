@@ -10,7 +10,7 @@ def build_plotly_schema():
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "plotly dict",
         "description": "dictionary that follows https://plotly.com/javascript/reference/, the dictionaries from "
-        "data key in get imported in with values from the databaase/csvs",
+        "data key in get imported in with values from the database/csvs",
         "type": "object",
         "required": [DATA],
         "properties": {
