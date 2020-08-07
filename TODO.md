@@ -1,3 +1,49 @@
+# Notes from Jed Session
+
+
+Don’t show join keys if there is only one table option
+
+Default to the correct axes options for graph types selected in UI
+
+Smarter default layout dict heigh/width that isn’t 0. 
+
+Float “buttons” div so it’s always visible on graph config page
+
+x data dictionary button should probably have the name of the data dictionary in it. No need for “remove last data dictionary” button?
+
+item 1, points 1 are not the best names
+
+search for feature and where in the config it goes?
+
+Groupby has - last item, but not the x. How can we be consistent across config wizard for interaction with these elements?
+
+change yeast app to meet new data config schema
+
+Adding graphic names with spaces in them cause server errors? This may actually be a race condition
+
+todo: live edit dashboard- relaunch app with mounted app deploy data, don't rebuild whole container
+
+Sanitize graph and page names- no / in names
+
+If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
+
+Closing properties button is hard
+
+redirect dashboard/ to home for dashboard
+
+Add edit button next to the json file names in the main config that let you edit the individual plots. Jed had to leave main config, and go to the individual page
+
+Plotly icons greyed out makes them look unusable
+
+Copy config files to make similar, but different plots- e.g, chymotrypsin instead of trypsin
+
+Nice to have: "decimation" feature- only plot a random sample of a big data set.
+
+Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work? 
+
+Explicitly pass the args for each plotly graph- no defaults. List them all with defaults in the config wizard- provides visibility into what the options are for the user
+
+
 # MVP Features
 
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples

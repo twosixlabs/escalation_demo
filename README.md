@@ -62,7 +62,7 @@ Once we set up a configuration and your data, we'll also use these containers to
 
 ### SQL database backend
     
-We provide a script to parse csv data files, determine the relevant sql schema, and create tables in the database from your file. 
+We provide a script to parse csv data files, determine the relevant sql schema, and create tables in the SQL database from your file. 
 The script uses the infrastructure of the Docker containers you built, so there is no need to install anything else.
 
 Run the script from the top level directory of the repo
@@ -76,6 +76,7 @@ example usage:
 The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
  as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
 
+This creates sql tables that can be used by the graphics and tables on your Escalation dashboard.
 
 Run this script for each file you'd like to use for your visualizations and include in the database. Note, it may take a little while to run.
 
@@ -93,12 +94,10 @@ Run the wizard app from the root directory of this repo:
     
     ./escalation/wizard_ui/wizard_container_launcher.sh
     
-This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: localhost:8000 or 127.0.0.1:8001
+This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
     
 [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
-
-ToDo: Hide this compose command in a script?
 
 
 ### Build a config from scratch (advanced)
@@ -120,7 +119,7 @@ Re-run the docker compose build command to re-launch the containers with the app
 
     docker-compose up --build -d
     
-To use the app, navigate in your browser to: localhost:8000 or 127.0.0.1:8000
+To use the app, navigate in your browser to: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 
 ### Running Locally (testing, development of your custom Escalation dashboard)
