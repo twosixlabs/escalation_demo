@@ -26,6 +26,7 @@ def create_validate_app():
     )
     return app
 
+
 def load_config_file(config_file_path):
     with open(config_file_path, "r") as config_file:
         return json.load(config_file)

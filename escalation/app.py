@@ -63,6 +63,7 @@ def configure_app(app, config_dict):
     app.config.active_data_source_filters = {}
     return app
 
+
 # config_file_path = os.path.join("app_deploy_data", "app_config.json")
 # config_file_path = "test_app_deploy_data/data/test_sql_app_config.json"
 config_file_path = "test_app_deploy_data/test_app_local_config.json"

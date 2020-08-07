@@ -27,6 +27,10 @@ ITEMS = "items"
 PATTERN = "pattern"
 REQUIRED = "required"
 MIN_ITEMS = "minItems"
+OPTIONS = "options"
+DEPENDENCIES = "dependencies"
+ENUM = "enum"
+ONEOF = "oneOf"
 
 
 def build_settings_schema():
@@ -41,8 +45,17 @@ def build_settings_schema():
         "description": "Main config file needed to use escalation OS",
         "type": "object",
         "required": [SITE_TITLE, SITE_DESC, DATA_BACKEND, DATA_SOURCES,],
-        "if": {PROPERTIES: {DATA_BACKEND: {"const": LOCAL_CSV}}},
-        "then": {"required": [DATA_FILE_DIRECTORY],},
+        DEPENDENCIES: {
+            DATA_BACKEND: {
+                ONEOF: [
+                    {
+                        PROPERTIES: {DATA_BACKEND: {ENUM: [LOCAL_CSV]}},
+                        REQUIRED: [DATA_FILE_DIRECTORY],
+                    },
+                    {PROPERTIES: {DATA_BACKEND: {ENUM: [POSTGRES, MYSQL]}}},
+                ]
+            }
+        },
         "additionalProperties": False,
         "properties": {
             SITE_TITLE: {
