@@ -10,7 +10,7 @@ from utility.constants import CONFIG_FILE_FOLDER, TEST_APP_DEPLOY_DATA, APP_DEPL
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from wizard_ui.wizard_utils import (
     load_main_config_dict_if_exists,
-    main_config_to_app_config,
+    set_up_backend_for_wizard,
 )
 
 
@@ -35,7 +35,7 @@ def configure_app(app):
     app.config[CONFIG_FILE_FOLDER] = APP_DEPLOY_DATA
     config_dict = load_main_config_dict_if_exists(app)
     if config_dict:
-        main_config_to_app_config(config_dict, app)
+        set_up_backend_for_wizard(config_dict, app)
     return app
 
 

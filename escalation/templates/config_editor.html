@@ -31,9 +31,9 @@
             <button type="button" class="btn btn-secondary btn-block m-2" data-toggle="tooltip"
                     data-placement="right" title="Erases all the values in the form" onclick=reset_json_editor()>Reset Form
             </button>
-            <a class="btn btn-secondary btn-block m-2" data-toggle="tooltip"
-                    data-placement="right" title="Resets the values in the form to the last time it was saved" href={{ url_for(request.endpoint) }} role="button">Reload Last Save
-            </a>
+            <button type="button" class="btn btn-secondary btn-block m-2" data-toggle="tooltip"
+                    data-placement="right" title="Resets the values in the form to the last time it was saved" onclick=reload_last_save()>Reload Last Save
+            </button>
             <a class="btn btn-success btn-block m-2" data-toggle="tooltip"
                     data-placement="right" title="Goes to the file tree" href={{ url_for('.file_tree') }} role="button">Back to File Tree
             </a>
@@ -43,14 +43,16 @@
 <script>
     // Enables all the tooltips
     $(function () {$('[data-toggle="tooltip"]').tooltip()})
-
+    let current_state = {};
     const editor = new JSONEditor(document.getElementById('editor_holder'),
         options={theme: 'bootstrap4', iconlib: 'fontawesome4', schema: {{ schema | safe }} });
     {% if current_config %}
+        current_state = {{ current_config | safe }};
         editor.setValue({{ current_config | safe }})
     {% endif %}
     function save_json_editor_to_file(redirect){
         // The form contains nested dictionaries so it is easier to send a json than a form
+        current_state = editor.getValue()
         let data = JSON.stringify({"config_dict" : editor.getValue(),
             "page_id":{{ page_id if page_id else -1 }},
             "graphic": '{{ graphic }}',
@@ -74,6 +76,9 @@
     }
     function reset_json_editor(){
         editor.setValue()
+    }
+    function reload_last_save(){
+        editor.setValue(current_state)
     }
 </script>
 {% endblock %}
