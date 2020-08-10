@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from flask import current_app, render_template, Blueprint, request
 
@@ -7,15 +8,14 @@ from utility.app_utilities import configure_backend
 from utility.constants import APP_CONFIG_JSON, CONFIG_FILE_FOLDER, MAIN_CONFIG
 
 
-def main_config_to_app_config(config_dict, app):
+def set_up_backend_for_wizard(config_dict, app):
     # current app needs to have the config dict before calling configure backend
     app.config[APP_CONFIG_JSON] = config_dict
     # the first time the config_dict is made configured we need to get the data backend
     configure_backend(app)
 
 
-def save_main_config_dict():
-    config_dict = current_app.config[APP_CONFIG_JSON]
+def save_main_config_dict(config_dict):
     with open(
         os.path.join(current_app.config[CONFIG_FILE_FOLDER], MAIN_CONFIG), "w"
     ) as fout:
@@ -30,7 +30,7 @@ def load_main_config_dict_if_exists(app):
             config_dict = json.load(config_file)
         return config_dict
     except (OSError, IOError) as e:
-        return False
+        return {}
 
 
 def load_graphic_config_dict(graphic):
@@ -42,3 +42,8 @@ def load_graphic_config_dict(graphic):
     except (OSError, IOError) as e:
         graphic_dict_json = "{}"
     return graphic_dict_json
+
+
+def sanitize_string(the_string):
+    pattern = re.compile(r"\W+", re.UNICODE)
+    return (pattern.sub("", the_string.replace(" ", "_"))).lower()

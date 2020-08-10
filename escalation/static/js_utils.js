@@ -28,7 +28,7 @@ function edit_graphic(page_id,graphic,is_graphic_new) {
 function new_graphic(page_id){
     let graphic_name=document.getElementById("new_graphic_name_".concat(page_id)).value
     if (graphic_name) {
-        graphic_name=graphic_name.replace(/\ /g,"_");
+        graphic_name=graphic_name.split(' ').join('_');
         edit_graphic(page_id,graphic_name,true)
     }
 }

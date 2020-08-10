@@ -3,7 +3,6 @@
 
 import json
 import os
-import re
 
 from flask import current_app, render_template, Blueprint, request
 
@@ -34,8 +33,9 @@ from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.wizard_utils import (
     load_graphic_config_dict,
     save_main_config_dict,
-    main_config_to_app_config,
+    set_up_backend_for_wizard,
     load_main_config_dict_if_exists,
+    sanitize_string,
 )
 
 CONFIG_EDITOR_HTML = "config_editor.html"
@@ -57,24 +57,25 @@ def file_tree():
 @wizard_blueprint.route("/", methods=("POST",))
 def add_page():
     webpage_label = request.form[WEBPAGE_LABEL]
-    # sanitizing the string so it is valid url
-    pattern = re.compile(r"\W+", re.UNICODE)
     page_dict = {
         WEBPAGE_LABEL: webpage_label,
-        URL_ENDPOINT: (pattern.sub("", webpage_label.replace(" ", "_"))).lower(),
+        URL_ENDPOINT: sanitize_string(
+            webpage_label
+        ),  # sanitizing the string so it is valid url
         GRAPHIC_CONFIG_FILES: [],
     }
-    available_pages = current_app.config[APP_CONFIG_JSON].get(AVAILABLE_PAGES, [])
+    config_dict = load_main_config_dict_if_exists(current_app)
+    available_pages = config_dict.get(AVAILABLE_PAGES, [])
     available_pages.append(page_dict)
-    current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES] = available_pages
-    save_main_config_dict()
+    config_dict[AVAILABLE_PAGES] = available_pages
+    save_main_config_dict(config_dict)
     return file_tree()
 
 
 @wizard_blueprint.route("/main", methods=("GET",))
 def main_config_setup():
     MAIN_MESSAGE = "Create/Edit the main config file"
-    config_dict = current_app.config.get(APP_CONFIG_JSON, {}).copy()
+    config_dict = load_main_config_dict_if_exists(current_app)
     return render_template(
         CONFIG_EDITOR_HTML,
         schema=json.dumps(build_settings_schema()),
@@ -87,7 +88,7 @@ def main_config_setup():
 @wizard_blueprint.route("/graphic", methods=("POST",))
 def graphic_config_setup():
     GRAPHIC_MESSAGE = "Create/Edit a graphic config file"
-    config_dict = current_app.config[APP_CONFIG_JSON]
+    config_dict = load_main_config_dict_if_exists(current_app)
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
     data_source_names = config_dict[DATA_SOURCES]
     data_inventory_class = get_data_inventory_class(csv_flag)
@@ -118,20 +119,21 @@ def update_json_config_with_ui_changes():
     config_dict = config_information_dict[CONFIG_DICT]
     if page_id < 0:
         if APP_CONFIG_JSON not in current_app.config:
-            main_config_to_app_config(config_dict, current_app)
-        else:
-            current_app.config[APP_CONFIG_JSON] = config_dict
-        save_main_config_dict()
+            set_up_backend_for_wizard(config_dict, current_app)
+        save_main_config_dict(config_dict)
     else:
         graphic_name = config_information_dict[GRAPHIC]
         filename, ext = os.path.splitext(graphic_name)
+        # sanitizing the string so it is valid filename
+        filename = sanitize_string(filename)
         graphic_name = f"{filename}.json"
         if config_information_dict[IS_GRAPHIC_NEW]:
-            page_dict = current_app.config[APP_CONFIG_JSON][AVAILABLE_PAGES][page_id]
+            main_config_dict = load_main_config_dict_if_exists(current_app)
+            page_dict = main_config_dict[AVAILABLE_PAGES][page_id]
             graphic_list = page_dict.get(GRAPHIC_CONFIG_FILES, [])
             graphic_list.append(graphic_name)
             page_dict[GRAPHIC_CONFIG_FILES] = graphic_list
-            save_main_config_dict()
+            save_main_config_dict(main_config_dict)
         with open(
             os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_name), "w"
         ) as fout:
