@@ -7,17 +7,17 @@ Inspired by https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
 
 import sys
 import warnings
-import uuid
+from io import StringIO
 
 import pandas as pd
-from sqlalchemy import create_engine
+import psycopg2
+from sqlalchemy import create_engine, MetaData
 from sqlalchemy.engine.url import URL
 from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, DATA_SOURCE_TYPE
-from database.sql_handler import SqlDataInventory
 
 DATA_TYPE_MAP = {
     "integer": Integer,
@@ -66,10 +66,8 @@ def extract_values(obj, key):
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
-    def __init__(self, database_config):
-        self.database_config = database_config
-        connection_url = URL(**database_config)
-        self.engine = create_engine(connection_url)
+    def __init__(self, engine):
+        self.engine = engine
 
     @staticmethod
     def get_data_from_csv(csv_data_file_path):
@@ -116,69 +114,101 @@ class CreateTablesFromCSVs:
                 )
         return sqlalchemy_data_types
 
+    @staticmethod
+    def append_metadata_to_table(
+        data, upload_id=None, key_columns=None,
+    ):
+        # if there is no key specified, include the index
+        index = key_columns is not None
+        if not index:
+            # assign row numerical index to its own column
+            data = data.reset_index()
+            data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
+        # add a data upload id and time column to all tables and
+        # todo: if we're not replacing, get a fresh id
+        if upload_id is None:
+            upload_id = 1
+        data[UPLOAD_ID] = upload_id
+        return data
+
     def create_new_table(
-        self,
-        table_name,
-        data,
-        schema,
-        key_columns=None,
-        if_exists="replace",
-        upload_id=None,
+        self, table_name, data, schema, key_columns, if_exists="replace",
     ):
         """Uses the Pandas sql connection to create a new table from CSV and generated schema."""
-        # todo: don't hide warnings!
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            # if there is no key specified, include the index
-            index = key_columns is not None
-            if not index:
-                # assign row numerical index to its own column
-                data = data.reset_index()
-                data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
-            # add a data upload id and time column to all tables and
-            # todo: if we're not replacing, get a fresh id
-            if upload_id is None:
-                upload_id = 1
-            data[UPLOAD_ID] = upload_id
 
-            if table_name.lower() != table_name:
-                raise ValueError(
-                    "Postgres does not play well with upper cases in table names, please rename your table"
-                )
+        if table_name.lower() != table_name:
+            # todo: make naming checks consistent with flask
+            # https://docs.sqlalchemy.org/en/13/orm/extensions/automap.html
+            raise ValueError(
+                "Postgres does not play well with upper cases in table names, please rename your table"
+            )
+
+        if if_exists == "replace":
             data.head(0).to_sql(
                 table_name,
                 con=self.engine,
-                if_exists=if_exists,
                 dtype=schema,
                 index=False,
+                if_exists=if_exists,
             )
-
-            if if_exists == "replace":
-                if key_columns:
-                    self.engine.execute(
-                        f"ALTER TABLE {table_name} add primary key (index_col[0]);"
-                    )
-                else:
-                    # use the numerical index from pandas as a pk
-                    self.engine.execute(
-                        f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
-                    )
+            if key_columns:
+                self.engine.execute(
+                    f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                )
+            else:
+                # use the numerical index from pandas as a pk
+                self.engine.execute(
+                    f"ALTER TABLE {table_name} add primary key ({UPLOAD_ID}, {INDEX_COLUMN});"
+                )
 
 
-def write_table(table_name, data):
-    # todo: use automap
-    # https: // docs.sqlalchemy.org / en / 13 / orm / extensions / automap.html
-    # if the form of the submission is right, let's validate the content of the submitted file
-    # data_inventory = SqlDataInventory(data_sources=[{DATA_SOURCE_TYPE: table_name}])
-    # # write upload history table record at the same time
-    # ignored_columns = data_inventory.write_data_upload_to_backend(data)
-    return
+def connect(db_config_dict):
+    """ Connect to the PostgreSQL database server """
+    config_dict = {
+        k: v
+        for k, v in db_config_dict.items()
+        if k in ["host", "password", "database", "user"]
+    }
+    print(config_dict)
+    try:
+        # connect to the PostgreSQL server
+        print("Connecting to the PostgreSQL database...")
+        conn = psycopg2.connect(**config_dict)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        sys.exit(1)
+    print("Connection successful")
+    return conn
+
+
+def copy_from_stringio(conn, df, table_name):
+    """
+    Here we are going save the dataframe in memory
+    and use copy_from() to copy it to the table
+    """
+    # save dataframe to an in memory buffer
+    buffer = StringIO()
+    df.to_csv(buffer, index=False, header=False)
+    buffer.seek(0)
+    cursor = conn.cursor()
+    try:
+        print("Copying csv to sql done")
+        cursor.copy_from(buffer, table_name, sep=",", null="")
+        conn.commit()
+        print("Copying csv done")
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error: %s" % error)
+        conn.rollback()
+        return
+    finally:
+        cursor.close()
 
 
 if __name__ == "__main__":
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     if_exists = sys.argv[3]
+    # todo - better arg handling with argparse or something
     assert if_exists in EXISTS_OPTIONS
 
     # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
@@ -186,16 +216,27 @@ if __name__ == "__main__":
     # db_config.update(
     #     {"host": "localhost",}
     # )
-    sql_creator = CreateTablesFromCSVs(db_config)
+    connection_url = URL(**db_config)
+    engine = create_engine(connection_url)
+    sql_creator = CreateTablesFromCSVs(engine)
 
     data = sql_creator.get_data_from_csv(filepath)
     schema = sql_creator.get_schema_from_csv(filepath)
     key_column = None
-    # print(f"Creating table name {table_name} from file path {filepath}")
-    # sql_creator.create_new_table(
-    #     table_name, data, schema, key_columns=key_column, if_exists=if_exists
-    # )
-    write_table(table_name, data)
+    print(f"Creating table name {table_name} from file path {filepath}")
+    data = sql_creator.append_metadata_to_table(data, key_columns=key_column)
+
+    sql_creator.create_new_table(
+        table_name, data, schema, key_columns=key_column, if_exists=if_exists
+    )
+    psycopg2_config_dict = {
+        "host": db_config["host"],
+        "database": db_config["database"],
+        "user": db_config["username"],
+        "password": db_config["password"],
+    }
+    conn = connect(psycopg2_config_dict)
+    copy_from_stringio(conn, data, table_name)
 
     # example usage:
     # create a table in your db defined by a csv file

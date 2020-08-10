@@ -20,11 +20,18 @@ WORKDIR /escalation
 ENV PYTHONPATH "${PYTHONPATH}:/escalation"
 
 #install dependencies
+RUN apt-get update
+RUN apt-get install -y build-essential python3.7-dev libpq-dev
 COPY escalation/requirements-app.txt /escalation
 RUN pip install --trusted-host pypi.python.org -r requirements-app.txt
 
 #copy data from current dir into container
 COPY escalation /escalation
+# imports for this script behave strangely- copy to workdir to prevent issues
+COPY escalation/database/csv_to_sql.py /escalation
+
 RUN chmod +x /escalation/boot.sh
 RUN chmod +x /escalation/wizard_ui/boot_wizard_app.sh
+RUN chmod +x /escalation/csv_to_sql.sh
+
 
