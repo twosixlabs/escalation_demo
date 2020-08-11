@@ -81,6 +81,7 @@ Run this script for each file you'd like to use for your visualizations and incl
 The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
  as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
 
+If you'd like to add more than one csv to the same table, you have two options: combine them before running the script, or wait until the Escalation web app is running, and submit the additional CSVs as new data to the app (explained below, Todo: Here)
 Todo: If you have an existing SQL database, how do you copy it into Escalation?
 Todo: Check for absolute path in the shell script, which is required for the Docker mount
 
