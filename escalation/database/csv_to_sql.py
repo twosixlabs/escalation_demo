@@ -1,17 +1,14 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-"""
-Inspired by https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
-"""
 
 import sys
 import warnings
 from io import StringIO
 
 import pandas as pd
-import psycopg2
-from sqlalchemy import create_engine, MetaData
+import psycopg2  # used here for fast copy_from performance
+from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
@@ -181,12 +178,12 @@ def connect(db_config_dict):
     return conn
 
 
-def copy_from_stringio(conn, df, table_name):
+def psycopg2_copy_from_stringio(conn, df, table_name):
     """
     Here we are going save the dataframe in memory
     and use copy_from() to copy it to the table
     """
-    # save dataframe to an in memory buffer
+    # save dataframe to an in-memory buffer to use with copy_from, which requires fil
     buffer = StringIO()
     df.to_csv(buffer, index=False, header=False)
     buffer.seek(0)
@@ -205,6 +202,18 @@ def copy_from_stringio(conn, df, table_name):
 
 
 if __name__ == "__main__":
+    """
+    Create a table in your SQL db defined by a csv file. This is paired with sqlalchemy
+    codegen to create entries in the model file for the table.
+
+    example usage:
+    python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv replace
+    create a models.py file with the sqlalchemy models of the tables in the db
+    sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
+    Schema extraction inspired by:
+    https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
+
+    """
     table_name = sys.argv[1]
     filepath = sys.argv[2]
     if_exists = sys.argv[3]
@@ -226,9 +235,13 @@ if __name__ == "__main__":
     print(f"Creating table name {table_name} from file path {filepath}")
     data = sql_creator.append_metadata_to_table(data, key_columns=key_column)
 
+    # this creates an empty table of the correct schema using pandas to_sql
     sql_creator.create_new_table(
         table_name, data, schema, key_columns=key_column, if_exists=if_exists
     )
+    # do the bulk copy of the contents using psycopg2 copy_from, which is much faster
+    # see:
+    # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
     psycopg2_config_dict = {
         "host": db_config["host"],
         "database": db_config["database"],
@@ -236,18 +249,9 @@ if __name__ == "__main__":
         "password": db_config["password"],
     }
     conn = connect(psycopg2_config_dict)
-    copy_from_stringio(conn, data, table_name)
+    psycopg2_copy_from_stringio(conn, data, table_name)
 
-    # example usage:
-    # create a table in your db defined by a csv file
-    # python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv replace
-    # python database/csv_to_sql.py mean_penguin_stat escalation/test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv replace
-
-    # create a models.py file with the sqlalchemy model of the table
-    # sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
 
 # todo: add columns about upload time
 # todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission
-# todo: psql at least enforces lowercase table names- sanitize table names
-# todo: write table create from schema and bulk insert the rows rather than using the pandas to_sql, which can be very slow
 # todo: enforce no : in column or table names
