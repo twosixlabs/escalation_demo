@@ -5,7 +5,7 @@ Escalation is a web app that runs a lightweight visualization dashboard for data
 You can set up plots and tables that update along with your data or analysis, and have interactivity options to allow for data browsing.
 
 Some user cases for Escalation:
-- An academic lab that wants to have better visibility into experiments conducted by its members, or an at-a-glance record of experimental progress
+- A research group that wants to have better visibility into experiments conducted by its members, or an at-a-glance record of experimental progress
 - A project team at a small company that wants to share progress or up to date results with management
 
 All that is required for is to set a config file, either by hand or using the included UI Configuration Wizard, 

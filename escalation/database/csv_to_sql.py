@@ -148,6 +148,7 @@ class CreateTablesFromCSVs:
                 index=False,
                 if_exists=if_exists,
             )
+            # set up the primary keys for the table
             if key_columns:
                 self.engine.execute(
                     f"ALTER TABLE {table_name} add primary key (index_col[0]);"
