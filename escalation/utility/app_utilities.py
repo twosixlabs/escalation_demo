@@ -1,10 +1,9 @@
-from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, MYSQL, POSTGRES
+from utility.constants import APP_CONFIG_JSON, DATA_BACKEND, POSTGRES
 
 
 def configure_backend(app):
     # setup steps unique to SQL-backended apps
-    # todo: make sure we don't need postgres install reqs if running mysql
-    if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [MYSQL, POSTGRES]:
+    if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [POSTGRES]:
         from database.sql_handler import SqlHandler, SqlDataInventory
         from database.database import db, db_session
 

@@ -7,14 +7,15 @@
 
 echo "Aliasing $2 on host to /escalation/data.csv on Docker container"
 
-# Todo: Assert we have all the required args
-
 docker-compose run \
---entrypoint "python database/csv_to_sql.py $1 /escalation/data.csv $3" \
+--entrypoint "python csv_to_sql.py $1 /escalation/data.csv $3" \
 -v $2:/escalation/data.csv \
 web
+
+echo "Updating database/models.py with sqlalchemy model"
 
 docker-compose run \
 --entrypoint "sqlacodegen postgresql+pg8000://escalation:escalation_pwd@escos_db:5432/escalation --outfile /escalation/app_deploy_data/models.py" \
 -v "$(pwd)/escalation/app_deploy_data/models.py":/escalation/app_deploy_data/models.py \
 web
+
