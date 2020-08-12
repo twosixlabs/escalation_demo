@@ -151,27 +151,48 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "description": "Text caption shown above the graph (optional)",
             },
             DATA_SOURCES: {
-                "type": "array",
+                "type": "object",
                 "description": "Define which data tables are used in this graphic,"
                 " and on which columns the data tables are joined",
-                "items": {
-                    "type": "object",
-                    REQUIRED: [DATA_SOURCE_TYPE],
-                    "properties": {
-                        DATA_SOURCE_TYPE: {
-                            "type": "string",
-                            "enum": data_source_names,
+                "required": [MAIN_DATA_SOURCE],
+                PROPERTIES: {
+                    MAIN_DATA_SOURCE: {
+                        "type": "object",
+                        "additionalProperties": False,
+                        REQUIRED: [DATA_SOURCE_TYPE],
+                        PROPERTIES: {
+                            DATA_SOURCE_TYPE: {
+                                "type": "string",
+                                "enum": data_source_names,
+                            },
                         },
-                        JOIN_KEYS: {
-                            "type": "array",
-                            "description": "Column names along which to join the tables"
-                            " (in the case of 2 or more tables)",
-                            "items": {
-                                "type": "array",
-                                "uniqueItems": True,
-                                "minItems": 2,
-                                "maxItems": 2,
-                                "items": {"type": "string", "enum": column_names},
+                    },
+                    ADDITIONAL_DATA_SOURCES: {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            REQUIRED: [DATA_SOURCE_TYPE, JOIN_KEYS],
+                            PROPERTIES: {
+                                DATA_SOURCE_TYPE: {
+                                    "type": "string",
+                                    "enum": data_source_names,
+                                },
+                                JOIN_KEYS: {
+                                    "type": "array",
+                                    "description": "Column names along which to join the tables"
+                                    " (in the case of 2 or more tables)",
+                                    "items": {
+                                        "type": "array",
+                                        "uniqueItems": True,
+                                        "minItems": 2,
+                                        "maxItems": 2,
+                                        "items": {
+                                            "type": "string",
+                                            "enum": column_names,
+                                        },
+                                    },
+                                },
                             },
                         },
                     },

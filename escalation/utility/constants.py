@@ -24,11 +24,12 @@ GRAPHIC_CONFIG_FILES = "graphic_config_files"
 URL_ENDPOINT = "url_endpoint"
 APP_DEPLOY_DATA = "app_deploy_data"
 TEST_APP_DEPLOY_DATA = "test_app_deploy_data"
+MAIN_DATA_SOURCE = "main_data_source"
+ADDITIONAL_DATA_SOURCES = "additional_data_sources"
 
 # Plotly constants
 LAYOUT = "layout"
 HEIGHT = "height"
-GROUPBY = "groupby"
 AGGREGATE = "aggregate"
 HOVER_DATA = "hover_data"
 AGGREGATIONS = "aggregations"
