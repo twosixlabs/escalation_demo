@@ -1,9 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-from datetime import datetime
-import uuid
-
 from flask import current_app
 import pandas as pd
 from sqlalchemy import and_
@@ -24,6 +21,8 @@ from utility.constants import (
     SELECTED,
     UNFILTERED_SELECTOR,
     COLUMN_NAME,
+    MAIN_DATA_SOURCE,
+    ADDITIONAL_DATA_SOURCES,
 )
 
 
@@ -31,7 +30,11 @@ class SqlHandler(DataHandler):
     def __init__(self, data_sources):
         self.data_sources = data_sources
         self.table_lookup_by_name = {}
-        for data_source in self.data_sources:
+        # create a flattened list from the data_sources object
+        self.flat_data_sources = [
+            self.data_sources[MAIN_DATA_SOURCE]
+        ] + self.data_sources.get(ADDITIONAL_DATA_SOURCES, [])
+        for data_source in self.flat_data_sources:
             table_name = data_source[DATA_SOURCE_TYPE]
             table_class = self.get_class_name_from_table_name(table_name)
             self.table_lookup_by_name[table_name] = table_class
@@ -68,14 +71,9 @@ class SqlHandler(DataHandler):
         :return: dictionary keyed by column names and valued with SqlAlchemy column objects
         """
         # first build a query that will get all of the columns for all of active data in the requested tables
-        query = db_session.query(
-            *[data_source[DATA_LOCATION] for data_source in self.data_sources]
-        )
+        query = db_session.query(*list(self.table_lookup_by_name.values()))
         # specify how the different data sources are joined
-        for i, data_source in enumerate(self.data_sources):
-            if i == 0:
-                continue
-            # sources after the first must have join information linking them to each other
+        for data_source in self.data_sources.get(ADDITIONAL_DATA_SOURCES, []):
             join_clauses = []
             for left_join_key, right_join_key in data_source[JOIN_KEYS]:
                 left_table_name, left_column_name = left_join_key.split(
@@ -98,9 +96,7 @@ class SqlHandler(DataHandler):
         return column_lookup_by_name
 
     def build_filters_from_active_data_source(self):
-        current_tables = [
-            data_source[DATA_SOURCE_TYPE] for data_source in self.data_sources
-        ]
+        current_tables = list(self.table_lookup_by_name.keys())
         active_data_source_filters = []
         for (
             table_name,
