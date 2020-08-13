@@ -46,6 +46,8 @@ Explicitly pass the args for each plotly graph- no defaults. List them all with 
 
 # MVP Features
 
+- reload from last save flips selector also. (currently a bug)
+- data source affects what can be built
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - Document workflow for onboarding. What are the steps that a new user has to take to get this running on a local server?
 - Document building the Docker container version of the app, running from container, and link to external Docker deployment instructions (Heroku? AWS free tier?)

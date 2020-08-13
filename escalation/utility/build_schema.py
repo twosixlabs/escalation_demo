@@ -14,20 +14,6 @@ ONE_LETTER = r"^[a-zA-Z]$"
 NON_EMPTY_STRING = r"[\s\S]+"
 
 # json schema specific constants see https://json-schema.org/
-ADDITIONAL_PROPERTIES = "additionalProperties"
-PROPERTIES = "properties"
-PATTERN_PROPERTIES = "patternProperties"
-DESCRIPTION = "description"
-TITLE = "title"
-TYPE = "type"
-ITEMS = "items"
-PATTERN = "pattern"
-REQUIRED = "required"
-MIN_ITEMS = "minItems"
-OPTIONS = "options"
-DEPENDENCIES = "dependencies"
-ENUM = "enum"
-ONEOF = "oneOf"
 
 
 def build_settings_schema():
@@ -41,7 +27,7 @@ def build_settings_schema():
         "title": "Escalation Main Config Generator",
         "description": "Main config file needed to use escalation OS",
         "type": "object",
-        "required": [SITE_TITLE, SITE_DESC, DATA_BACKEND, DATA_SOURCES,],
+        REQUIRED: [SITE_TITLE, SITE_DESC, DATA_BACKEND, DATA_SOURCES],
         DEPENDENCIES: {
             DATA_BACKEND: {
                 ONEOF: [
@@ -154,6 +140,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "type": "array",
                 "description": "Define which data tables are used in this graphic,"
                 " and on which columns the data tables are joined",
+                MIN_ITEMS: 1,
                 "items": {
                     "type": "object",
                     REQUIRED: [DATA_SOURCE_TYPE],
@@ -169,7 +156,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             "items": {
                                 "type": "array",
                                 "uniqueItems": True,
-                                "minItems": 2,
+                                MIN_ITEMS: 2,
                                 "maxItems": 2,
                                 "items": {"type": "string", "enum": column_names},
                             },

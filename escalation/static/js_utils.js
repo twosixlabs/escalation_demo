@@ -39,3 +39,22 @@ function add_page(){
         web_form.submit();
     }
 }
+
+function send_json_in_post_request(url, data, webpage){
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.onreadystatechange = function () {
+            let success_text = document.querySelector('#feedback_message');
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                if (webpage) {window.location.href = webpage}
+                success_text.innerHTML = "Applied"
+            } else {
+                success_text.innerHTML = "Failed"
+            }
+            setTimeout(function() {
+                  success_text.innerHTML="";
+                }, 5000);
+            };
+        xhr.send(data);
+    }
