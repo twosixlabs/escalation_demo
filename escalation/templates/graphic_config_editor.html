@@ -51,7 +51,7 @@
     const dict_of_schemas={{ schema | safe }};
     const dict_of_plotly_schemas = dict_of_schemas['plotly_schema'];
     let editors= new Object();
-    editors['graphic'] = new_editor('graphic', true, dict_of_schemas['graphic_schema']);
+    editors['graphic_meta_info'] = new_editor('graphic', false, dict_of_schemas['graphic_schema']);
     editors['plotly'] = new_editor('plotly', true, dict_of_plotly_schemas["{{ current_schema }}"]);
     editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
     editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);

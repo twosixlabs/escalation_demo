@@ -10,7 +10,6 @@ Y = "y"
 Z = "z"
 MODE = "mode"
 
-SCATTERGL = "scattergl"
 BAR = "bar"
 HEATMAP = "heatmap"
 HEATMAPGL = "heatmapgl"
@@ -22,6 +21,19 @@ HISTOGRAM = "histogram"
 SCATTER3D = "scatter3d"
 # SURFACE = "surface"
 MESH3D = "mesh3d"
+
+
+SELECTOR_DICT = {
+    SCATTER: "Scatter or Line Plot",
+    BAR: "Bar Plot",
+    HEATMAP: "Heatmap",
+    CONTOUR: "Contour Plot",
+    BOX: "Box Plot",
+    VIOLIN: "Violin Plot",
+    HISTOGRAM: "Histogram",
+    SCATTER3D: "3D Scatter Plot",
+    MESH3D: "3D Mesh Plot",
+}
 
 
 def build_plotly_schema(column_names):
@@ -137,7 +149,7 @@ def build_plotly_schema_individual_dicts(column_names):
     :return:
     """
     # If the element is not in required we will delete it
-    programed_data_options = [TYPE, X, Y, Z, MODE]
+    programmed_data_options = [TYPE, X, Y, Z, MODE]
 
     directions_for_building_schemas = {
         SCATTER: {
@@ -149,7 +161,11 @@ def build_plotly_schema_individual_dicts(column_names):
             },
         },
         BAR: {ENUM: [BAR], REQUIRED: [TYPE, X, Y],},
-        BOX: {ENUM: [BOX], REQUIRED: [TYPE, Y],},
+        BOX: {
+            ENUM: [BOX],
+            REQUIRED: [TYPE, Y],
+            DESCRIPTION: {TYPE: "Best used with the group by visualization option",},
+        },
         VIOLIN: {ENUM: [VIOLIN], REQUIRED: [TYPE, Y],},
         HISTOGRAM: {ENUM: [HISTOGRAM], REQUIRED: [TYPE, X],},
         CONTOUR: {ENUM: [CONTOUR], REQUIRED: [TYPE, X, Y, Z],},
@@ -183,8 +199,10 @@ def build_plotly_schema_individual_dicts(column_names):
         plot_schema = copy.deepcopy(main_schema)
         plot_schema[PROPERTIES][DATA][ITEMS][PROPERTIES][TYPE][ENUM] = directions[ENUM]
         plot_schema[PROPERTIES][DATA][ITEMS][REQUIRED] = directions[REQUIRED]
+        # removing unnecessary elements from the general Plotly schema
+        # that not needed for this plot type
         elements_to_delete = [
-            x for x in programed_data_options if x not in directions[REQUIRED]
+            x for x in programmed_data_options if x not in directions[REQUIRED]
         ]
         for element in elements_to_delete:
             del plot_schema[PROPERTIES][DATA][ITEMS][PROPERTIES][element]
@@ -196,22 +214,3 @@ def build_plotly_schema_individual_dicts(column_names):
         dict_of_schemas[plot_type] = plot_schema
 
     return dict_of_schemas, schema_to_type
-
-
-def build_plotly_selector_values():
-    """
-    Defines the selector that choices which schema to use
-    :return:
-    """
-    selector_dict = {
-        SCATTER: "Scatter or Line Plot",
-        BAR: "Bar Plot",
-        HEATMAP: "Heatmap",
-        CONTOUR: "Contour Plot",
-        BOX: "Box Plot",
-        VIOLIN: "Violin Plot",
-        HISTOGRAM: "Histogram",
-        SCATTER3D: "3D Scatter Plot",
-        MESH3D: "3D Mesh Plot",
-    }
-    return selector_dict

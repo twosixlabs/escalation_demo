@@ -7,7 +7,7 @@ import os
 from flask import current_app, render_template, Blueprint, request
 
 from utility.app_utilities import configure_backend
-from utility.build_plotly_schema import build_plotly_selector_values
+from utility.build_plotly_schema import SELECTOR_DICT
 from utility.build_schema import (
     build_settings_schema,
     build_graphic_schema,
@@ -130,7 +130,7 @@ def graphic_config_setup():
         graphic=request.form[GRAPHIC],
         current_config=json.dumps(component_graphic_dict),
         is_graphic_new=request.form[IS_GRAPHIC_NEW],
-        schema_selector_dict=build_plotly_selector_values(),
+        schema_selector_dict=SELECTOR_DICT,
         current_schema=current_schema,
     )
 

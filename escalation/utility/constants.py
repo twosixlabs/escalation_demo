@@ -115,7 +115,7 @@ PROCESS = "process"
 
 # setup constants
 PAGE_ID = "page_id"
-GRAPHIC = "graphic"  # used in two different places differently
+GRAPHIC = "graphic"
 CONFIG_DICT = "config_dict"
 IS_GRAPHIC_NEW = "is_graphic_new"
 JSON_FALSE = "false"
@@ -140,6 +140,7 @@ HIDDEN = "hidden"
 # plotly constants
 
 SCATTER = "scatter"
+SCATTERGL = "scattergl"
 
 # schema constants
 GRAPHIC_SCHEMA = "graphic_schema"
@@ -150,3 +151,4 @@ SELECTOR_SCHEMA = "selector_schema"
 VISUALIZATION = "visualization"
 SELECTOR = "selector"
 PLOTLY = "plotly"
+GRAPHIC_META_INFO = "graphic_meta_info"

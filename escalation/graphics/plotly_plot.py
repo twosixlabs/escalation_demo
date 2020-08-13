@@ -5,7 +5,15 @@ import json
 import plotly
 from flask import render_template
 from graphics.graphic_class import Graphic
-from utility.constants import OPTION_COL, GROUPBY, AGGREGATE, HOVER_DATA, AGGREGATIONS
+from utility.constants import (
+    OPTION_COL,
+    GROUPBY,
+    AGGREGATE,
+    HOVER_DATA,
+    AGGREGATIONS,
+    SCATTER,
+    SCATTERGL,
+)
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -121,7 +129,7 @@ def does_data_need_to_be_sorted(plot_info_data_dict: dict):
     :return:
     """
     # conditions when data needs to be sorted
-    if plot_info_data_dict[PLOTLY_TYPE] == "scatter" and (
+    if plot_info_data_dict[PLOTLY_TYPE] in [SCATTER, SCATTERGL] and (
         MODE not in plot_info_data_dict or LINES in plot_info_data_dict[MODE]
     ):
         return True
