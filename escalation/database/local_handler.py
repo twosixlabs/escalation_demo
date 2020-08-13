@@ -22,22 +22,29 @@ from utility.constants import (
     TABLE_COLUMN_SEPARATOR,
     UNFILTERED_SELECTOR,
     COLUMN_NAME,
+    ADDITIONAL_DATA_SOURCES,
+    MAIN_DATA_SOURCE,
 )
 
 
 class LocalCSVHandler(DataHandler):
     def __init__(self, data_sources):
         """
-        :param data_sources: list of objects defining data files and join rules
-        e.g., [{DATA_SOURCE_TYPE: "file_type_a"},
-        {DATA_SOURCE_TYPE: "file_type_b",
-        JOIN_KEYS: [("column_foo_in_file_type_a", "column_bar_in_file_type_b"), (..., ...)]
+        :param data_sources: dict defining data files and join rules
+        e.g., {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "file_type_a"},
+                ADDITIONAL_DATA_SOURCES: [{DATA_SOURCE_TYPE: "file_type_b",
+        JOIN_KEYS: [("column_foo_in_file_type_a", "column_bar_in_file_type_b"),
+        (..., ...)]]
         """
         self.data_sources = data_sources
         self.data_file_directory = current_app.config[APP_CONFIG_JSON][
             DATA_FILE_DIRECTORY
         ]
-        for data_source in self.data_sources:
+        data_sources = [self.data_sources[MAIN_DATA_SOURCE]] + self.data_sources.get(
+            ADDITIONAL_DATA_SOURCES, []
+        )
+
+        for data_source in data_sources:
             filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source)
             data_source.update({DATA_LOCATION: filepaths_list})
         self.combined_data_table = self.build_combined_data_table()
@@ -53,6 +60,18 @@ class LocalCSVHandler(DataHandler):
         assert len(filepaths_list) > 0
         return filepaths_list
 
+    @staticmethod
+    def build_df_for_data_source_type(data_source):
+        # There may be multiple files for a particular data source type
+        data_source_df = pd.concat(
+            [pd.read_csv(filepath) for filepath in data_source[DATA_LOCATION]]
+        )
+        # add the data_source/table name as a prefix to disambiguate columns
+        data_source_df = data_source_df.add_prefix(
+            f"{data_source[DATA_SOURCE_TYPE]}{TABLE_COLUMN_SEPARATOR}"
+        )
+        return data_source_df
+
     def build_combined_data_table(self):
         """
         Uses list of data sources to build a joined dataframe connecting related data
@@ -60,25 +79,16 @@ class LocalCSVHandler(DataHandler):
         Consider caching the data on a persistent LocalCSVHandler object instead of loading csvs and  merging every time we access the data
         :return: combined_data_table dataframe
         """
-        combined_data_table = None
-        # todo: join on multiple keys
-        for data_source in self.data_sources:
-            data_source_df = pd.concat(
-                [pd.read_csv(filepath) for filepath in data_source[DATA_LOCATION]]
+        combined_data_table = self.build_df_for_data_source_type(
+            self.data_sources[MAIN_DATA_SOURCE]
+        )
+        for data_source in self.data_sources.get(ADDITIONAL_DATA_SOURCES, []):
+            data_source_df = self.build_df_for_data_source_type(data_source)
+            left_keys, right_keys = zip(*data_source[JOIN_KEYS])
+            # left join the next data source to our combined data table
+            combined_data_table = combined_data_table.merge(
+                data_source_df, how="left", left_on=left_keys, right_on=right_keys,
             )
-            # add the data_source/table name as a prefix to disambiguate columns
-            data_source_df = data_source_df.add_prefix(
-                f"{data_source[DATA_SOURCE_TYPE]}{TABLE_COLUMN_SEPARATOR}"
-            )
-            # the first data source defines the leftmost of any joins
-            if combined_data_table is None:
-                combined_data_table = data_source_df
-            else:
-                left_keys, right_keys = zip(*data_source[JOIN_KEYS])
-                # left join the next data source to our combined data table
-                combined_data_table = combined_data_table.merge(
-                    data_source_df, how="left", left_on=left_keys, right_on=right_keys,
-                )
         return combined_data_table
 
     def get_column_data(self, cols: list, filters: list = None) -> dict:
@@ -132,7 +142,7 @@ class LocalCSVDataInventory(LocalCSVHandler):
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1
-        self.data_source_name = data_sources[0][DATA_SOURCE_TYPE]
+        self.data_source_name = data_sources[MAIN_DATA_SOURCE][DATA_SOURCE_TYPE]
 
     @staticmethod
     def get_available_data_sources():

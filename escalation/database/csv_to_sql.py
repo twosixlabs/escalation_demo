@@ -3,7 +3,6 @@
 
 
 import sys
-import warnings
 from io import StringIO
 
 import pandas as pd
@@ -14,7 +13,7 @@ from sqlalchemy.types import Integer, Text, DateTime, Float, Boolean
 from tableschema import Table
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
-from utility.constants import INDEX_COLUMN, UPLOAD_ID, DATA_SOURCE_TYPE
+from utility.constants import INDEX_COLUMN, UPLOAD_ID
 
 DATA_TYPE_MAP = {
     "integer": Integer,
@@ -150,8 +149,9 @@ class CreateTablesFromCSVs:
             )
             # set up the primary keys for the table
             if key_columns:
+                assert isinstance(key_columns, tuple)
                 self.engine.execute(
-                    f"ALTER TABLE {table_name} add primary key (index_col[0]);"
+                    f"ALTER TABLE {table_name} add primary key ({','.join([k for k in key_columns])});"
                 )
             else:
                 # use the numerical index from pandas as a pk
@@ -190,16 +190,42 @@ def psycopg2_copy_from_stringio(conn, df, table_name):
     buffer.seek(0)
     cursor = conn.cursor()
     try:
-        print("Copying csv to sql done")
-        cursor.copy_from(buffer, table_name, sep=",", null="")
+        # issues with separators here cause Error:  extra data after last expected column
+        cursor.copy_expert(f"copy {table_name} from stdin (format csv)", buffer)
         conn.commit()
         print("Copying csv done")
     except (Exception, psycopg2.DatabaseError) as error:
-        print("Error: %s" % error)
+        print(f"Error: {error}")
         conn.rollback()
         return
     finally:
         cursor.close()
+
+
+def write_and_fill_new_table_from_df(table_name, filepath_for_schema, data, if_exists):
+    db_config = DATABASE_CONFIG
+    connection_url = URL(**db_config)
+    engine = create_engine(connection_url)
+    sql_creator = CreateTablesFromCSVs(engine)
+
+    schema = sql_creator.get_schema_from_csv(filepath_for_schema)
+    key_column = None
+    print(f"Creating empty table named {table_name}")
+    data = sql_creator.append_metadata_to_table(data, key_columns=key_column)
+    # this creates an empty table of the correct schema using pandas to_sql
+    sql_creator.create_new_table(
+        table_name, data, schema, key_columns=key_column, if_exists=if_exists
+    )
+    # bulk copy of the contents using psycopg2 copy_from, which is much faster, see:
+    # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
+    psycopg2_config_dict = {
+        "host": db_config["host"],
+        "database": db_config["database"],
+        "user": db_config["username"],
+        "password": db_config["password"],
+    }
+    conn = connect(psycopg2_config_dict)
+    psycopg2_copy_from_stringio(conn, data, table_name)
 
 
 if __name__ == "__main__":
@@ -221,36 +247,8 @@ if __name__ == "__main__":
     # todo - better arg handling with argparse or something
     assert if_exists in EXISTS_OPTIONS
 
-    # DATABASE_CONFIG references host by Docker alias, but we're talking to the db from the host in this case
-    db_config = DATABASE_CONFIG
-    # db_config.update(
-    #     {"host": "localhost",}
-    # )
-    connection_url = URL(**db_config)
-    engine = create_engine(connection_url)
-    sql_creator = CreateTablesFromCSVs(engine)
-
-    data = sql_creator.get_data_from_csv(filepath)
-    schema = sql_creator.get_schema_from_csv(filepath)
-    key_column = None
-    print(f"Creating table name {table_name} from file path {filepath}")
-    data = sql_creator.append_metadata_to_table(data, key_columns=key_column)
-
-    # this creates an empty table of the correct schema using pandas to_sql
-    sql_creator.create_new_table(
-        table_name, data, schema, key_columns=key_column, if_exists=if_exists
-    )
-    # do the bulk copy of the contents using psycopg2 copy_from, which is much faster
-    # see:
-    # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
-    psycopg2_config_dict = {
-        "host": db_config["host"],
-        "database": db_config["database"],
-        "user": db_config["username"],
-        "password": db_config["password"],
-    }
-    conn = connect(psycopg2_config_dict)
-    psycopg2_copy_from_stringio(conn, data, table_name)
+    data = CreateTablesFromCSVs.get_data_from_csv(filepath)
+    write_and_fill_new_table_from_df(table_name, filepath, data, if_exists)
 
 
 # todo: add columns about upload time
