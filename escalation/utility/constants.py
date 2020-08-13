@@ -52,7 +52,7 @@ VISUALIZATION_OPTIONS = "visualization_options"
 DATA_TO_PLOT_PATH = "data_to_plot_path"
 PLOT_SPECIFIC_INFO = "plot_specific_info"
 FILTERS = "filters"
-
+DATABASE = "database"
 SELECTABLE_DATA_DICT = "selectable_data_dict"
 OPTION_TYPE = "type"
 OPTION_COL = "column"
@@ -119,3 +119,36 @@ GRAPHIC = "graphic"
 CONFIG_DICT = "config_dict"
 IS_GRAPHIC_NEW = "is_graphic_new"
 JSON_FALSE = "false"
+
+# schema constants
+ADDITIONAL_PROPERTIES = "additionalProperties"
+PROPERTIES = "properties"
+PATTERN_PROPERTIES = "patternProperties"
+DESCRIPTION = "description"
+TITLE = "title"
+TYPE = "type"
+ITEMS = "items"
+PATTERN = "pattern"
+REQUIRED = "required"
+MIN_ITEMS = "minItems"
+OPTIONS = "options"
+DEPENDENCIES = "dependencies"
+ENUM = "enum"
+ONEOF = "oneOf"
+HIDDEN = "hidden"
+
+# plotly constants
+
+SCATTER = "scatter"
+SCATTERGL = "scattergl"
+
+# schema constants
+GRAPHIC_SCHEMA = "graphic_schema"
+PLOTLY_SCHEMA = "plotly_schema"
+VISUALIZATION_SCHEMA = "visualization_schema"
+SELECTOR_SCHEMA = "selector_schema"
+
+VISUALIZATION = "visualization"
+SELECTOR = "selector"
+PLOTLY = "plotly"
+GRAPHIC_META_INFO = "graphic_meta_info"

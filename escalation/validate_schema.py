@@ -48,7 +48,7 @@ def get_possible_column_names(data_source_names, data_inventory_class, csv_flag)
     possible_column_names = []
     for data_source_name in data_source_names:
         data_inventory = data_inventory_class(
-            data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
+            data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
         column_names = data_inventory.get_schema_for_data_source()
         possible_column_names.extend(
