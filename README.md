@@ -51,7 +51,7 @@ Each of these components are discussed further below.
 
 From the root level of the code repository, run: 
 
-`docker-compose up --build -d`
+`docker-compose --build`
 
 (this takes a little while the first time, as components are downloaded and installed)
 
@@ -95,14 +95,21 @@ How to set up a [local file system backed](config_information/local_example/loca
 
 ### Use the Configuration Wizard
 
-Run the wizard app from the root directory of this repo:
+Run the configuration wizard app from the root directory of this repo:
     
-    ./escalation/wizard_ui/wizard_container_launcher.sh
+    ./escalation/wizard_ui/wizard_launcher.sh
     
 This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
-    
-Some notes on [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
+   
+To see how your config looks in Escalation, launch the web app in debug mode: 
 
+    ./escalation/wizard_ui/web_app_debug_launcher.sh
+
+Navigate to the Escalation app in your browser at: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000). 
+This app runs in debug mode, and should detect the changes you make as you edit the configuration. 
+Refresh your browser to update the contents to match your saved configuration.
+     
+Some notes on [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
 
 ### Build a config from scratch (advanced)
