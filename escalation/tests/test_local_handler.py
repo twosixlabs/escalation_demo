@@ -5,14 +5,19 @@ from flask import current_app
 import pandas as pd
 
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
-from utility.constants import DATA_LOCATION, DATA_SOURCE_TYPE
+from utility.constants import (
+    DATA_LOCATION,
+    DATA_SOURCE_TYPE,
+    MAIN_DATA_SOURCE,
+    ADDITIONAL_DATA_SOURCES,
+)
 
 
 def test_local_handler_init(local_handler_fixture_small):
     data_sources = local_handler_fixture_small.data_sources
     assert len(data_sources) == 1
-    first_data_source = data_sources[0]
-    assert first_data_source[DATA_LOCATION] == [
+    main_data_source = data_sources[MAIN_DATA_SOURCE]
+    assert main_data_source[DATA_LOCATION] == [
         "test_app_deploy_data/data/penguin_size_small/penguin_size_small.csv"
     ]
     # todo: more complicated init with key joining
@@ -60,27 +65,29 @@ def test_get_column_unique_entries(local_handler_fixture_small):
 
 
 # define 2 joined data tables as the data_source
-TWO_DATA_SOURCES_CONFIG = [
-    {"data_source_type": "penguin_size"},
-    {
-        "data_source_type": "mean_penguin_stat",
-        "join_keys": [
-            ("penguin_size:study_name", "mean_penguin_stat:study_name"),
-            ("penguin_size:sex", "mean_penguin_stat:sex"),
-            ("penguin_size:species", "mean_penguin_stat:species"),
-        ],
-    },
-]
+TWO_DATA_SOURCES_CONFIG = {
+    MAIN_DATA_SOURCE: {"data_source_type": "penguin_size"},
+    ADDITIONAL_DATA_SOURCES: [
+        {
+            "data_source_type": "mean_penguin_stat",
+            "join_keys": [
+                ("penguin_size:study_name", "mean_penguin_stat:study_name"),
+                ("penguin_size:sex", "mean_penguin_stat:sex"),
+                ("penguin_size:species", "mean_penguin_stat:species"),
+            ],
+        }
+    ],
+}
 
 
 def test_init(test_app_client):
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # test that init gets the correct file for each data source folder
-    assert handler.data_sources[0][DATA_LOCATION] == [
+    assert handler.data_sources[MAIN_DATA_SOURCE][DATA_LOCATION] == [
         "test_app_deploy_data/data/penguin_size/penguin_size.csv",
         "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
     ]
-    assert handler.data_sources[1][DATA_LOCATION] == [
+    assert handler.data_sources[ADDITIONAL_DATA_SOURCES][0][DATA_LOCATION] == [
         "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
     ]
 
@@ -128,7 +135,7 @@ def test_get_available_data_sources(test_app_client):
 
 def test_get_schema_for_data_source(test_app_client):
     column_names = LocalCSVDataInventory(
-        [{DATA_SOURCE_TYPE: "penguin_size"}]
+        {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}}
     ).get_schema_for_data_source()
     expected_column_names = [
         "study_name",
@@ -147,7 +154,7 @@ def test_get_schema_for_data_source(test_app_client):
 
 def test_get_identifiers_for_data_source(test_app_client):
     file_names = LocalCSVDataInventory(
-        [{DATA_SOURCE_TYPE: "penguin_size"}]
+        {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}}
     ).get_identifiers_for_data_source()
 
     assert "test_app_deploy_data/data/penguin_size/penguin_size.csv" in file_names
