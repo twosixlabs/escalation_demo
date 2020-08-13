@@ -123,6 +123,8 @@ def prune_visualization_dict(visualization_dict):
     :return:
     """
     new_visualization_dict = {}
+    # when the form is left blank the entries of visualization_dict have
+    # COLUMN_NAME key that points to an empty list
     for vis_key, vis_dict in visualization_dict.items():
         if vis_dict[COLUMN_NAME]:
             new_visualization_dict[vis_key] = vis_dict
