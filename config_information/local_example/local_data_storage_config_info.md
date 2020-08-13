@@ -1,23 +1,31 @@
-# How to set up a local file system for EscOS
+# How to set up a local file system for Escalation
+First you need to have your data data layout as follows
+- <folder_with_data>  
+   - <data_source_1_folder>
+       - <data_source_1_file_1>.csv
+       - <data_source_1_file_2>.csv
+   - <data_source_2_folder>
+       - <data_source_2_file_1>.csv
+       - <data_source_2_file_2>.csv
+       - <data_source_2_file_3>.csv
+   - <data_source_3_folder>
+       - <data_source_3_file_1>.csv  
+       
+The application will use. All csv files in the same folder should have the same schema.
+By default, it will use all the csv files in the folder.
+This can be changed on the Admin tab on the webpage.  
+
+If you using the wizard now try and use that to write the config files.
+Come back to the rest if you need help.
+
+## How to configure the main config file
 In the main config file, you need 
 1. "data_backend": "local_csv".
 2. "data_file_directory": <path (relative or absolute) ending with folder_with_data>.
 The application assumes that your data structure is laid out something like: 
-    - <folder_with_data>  
-       - <data_source_1_folder>
-           - <data_source_1_file_1>.csv
-           - <data_source_1_file_2>.csv
-       - <data_source_2_folder>
-           - <data_source_2_file_1>.csv
-           - <data_source_2_file_2>.csv
-           - <data_source_2_file_3>.csv
-       - <data_source_3_folder>
-           - <data_source_3_file_1>.csv  
 3. "data_sources":\[<data_source_1_folder>,<data_source_2_folder>, etc.\] -- list of folders that contain the data
- the application will use. All csv files in the same folder should have the same schema.
-  By default, it will use all the csv files in the folder.
-This can be changed on the Admin tab on the webpage.
-## How to configure a graphic
+
+## How to configure a graphic config file
 - data_sources -- list of which data sources the graphic uses and 
 instructions on how to combine the files
     - the first element of the list will look like {
