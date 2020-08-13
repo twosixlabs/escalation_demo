@@ -35,7 +35,7 @@ def build_settings_schema():
                         PROPERTIES: {DATA_BACKEND: {ENUM: [LOCAL_CSV]}},
                         REQUIRED: [DATA_FILE_DIRECTORY],
                     },
-                    {PROPERTIES: {DATA_BACKEND: {ENUM: [POSTGRES, MYSQL]}}},
+                    {PROPERTIES: {DATA_BACKEND: {ENUM: [POSTGRES]}}},
                 ]
             }
         },
@@ -55,7 +55,7 @@ def build_settings_schema():
                 "type": "string",
                 TITLE: "Data Backend",
                 "description": "How the data is being managed on the server",
-                "enum": [POSTGRES, MYSQL, LOCAL_CSV],
+                "enum": [POSTGRES, LOCAL_CSV],
             },
             DATA_FILE_DIRECTORY: {
                 "type": "string",

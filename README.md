@@ -5,7 +5,7 @@ Escalation is a web app that runs a lightweight visualization dashboard for data
 You can set up plots and tables that update along with your data or analysis, and have interactivity options to allow for data browsing.
 
 Some user cases for Escalation:
-- An academic lab that wants to have better visibility into experiments conducted by its members, or an at-a-glance record of experimental progress
+- A research group that wants to have better visibility into experiments conducted by its members, or an at-a-glance record of experimental progress
 - A project team at a small company that wants to share progress or up to date results with management
 
 All that is required for is to set a config file, either by hand or using the included UI Configuration Wizard, 
@@ -53,8 +53,10 @@ From the root level of the code repository, run:
 
 `docker-compose up --build -d`
 
+(this takes a little while the first time, as components are downloaded and installed)
+
 We recognize that Docker is less common in academic settings, but highly recommend using it. 
-Here are [Docker's instructions](https://docs.docker.com/get-started/) on getting started using Docker.
+Here are [instructions](https://docs.docker.com/get-started/) on getting started using Docker.
 We use the Docker containers to run our configuration wizard, as well as the scripts to ingest csv data into a SQL database.
 Once we set up a configuration and your data, we'll also use these containers to run the web app.
 
@@ -67,20 +69,23 @@ The script uses the infrastructure of the Docker containers you built, so there 
 
 Run the script from the top level directory of the repo
 
-    ./csv_to_sql.sh {name_of_sql_table} {absolute_path_to_csv_file} {replace/append/fail}
+    ./escalation/csv_to_sql.sh {name_of_sql_table} {ABSOLUTE path_to_csv_file} {replace/append/fail}
     
 example usage: 
 
-    ./csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
-
-The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
- as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
+    ./escalation/csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
 
 This creates sql tables that can be used by the graphics and tables on your Escalation dashboard.
 
 Run this script for each file you'd like to use for your visualizations and include in the database. Note, it may take a little while to run.
 
+The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
+ as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
+
+If you'd like to add more than one csv to the same table, you have two options: combine them before running the script, or wait until the Escalation web app is running, and submit the additional CSVs as new data to the app (explained below, Todo: Here)
 Todo: If you have an existing SQL database, how do you copy it into Escalation?
+Todo: Check for absolute path in the shell script, which is required for the Docker mount
+
 
 ### CSV data file system backend
 
@@ -96,7 +101,7 @@ Run the wizard app from the root directory of this repo:
     
 This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
     
-[Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
+Some notes on [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
 
 
@@ -120,6 +125,10 @@ Re-run the docker compose build command to re-launch the containers with the app
     docker-compose up --build -d
     
 To use the app, navigate in your browser to: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+## Resetting the SQL database
+
+Todo: deleting the db volume
 
 
 ### Running Locally (testing, development of your custom Escalation dashboard)

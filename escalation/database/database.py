@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from flask_sqlalchemy import SQLAlchemy
 
-# todo: handle mysql config
 from app_deploy_data.app_settings import DATABASE_CONFIG
 
 try:
