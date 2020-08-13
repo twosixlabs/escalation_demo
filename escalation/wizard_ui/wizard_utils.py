@@ -19,13 +19,16 @@ from utility.constants import (
     COLUMN_NAME,
     GROUPBY,
     ENTRIES,
+    GRAPHIC_META_INFO,
+    ADDITIONAL_DATA_SOURCES,
+    DATA_SOURCES,
 )
 
-UI_SCHEMA_PAIRS = [
-    (VISUALIZATION, VISUALIZATION_OPTIONS),
-    (SELECTOR, SELECTABLE_DATA_DICT),
-    (PLOTLY, PLOT_SPECIFIC_INFO),
-]
+UI_SCHEMA_PAIRS = {
+    VISUALIZATION: VISUALIZATION_OPTIONS,
+    SELECTOR: SELECTABLE_DATA_DICT,
+    PLOTLY: PLOT_SPECIFIC_INFO,
+}
 
 
 def set_up_backend_for_wizard(config_dict, app):
@@ -76,23 +79,30 @@ def invert_dict_lists(dict_to_invert):
 def graphic_dict_to_graphic_component_dict(graphic_dict):
     """
     change a graphic dictionary to components to be used by wizard ui
+    which uses four separate forms.
     :param graphic_dict:
     :return:
     """
     component_dict = {}
-    for ui_name, schema_name in UI_SCHEMA_PAIRS:
+    for ui_name, schema_name in UI_SCHEMA_PAIRS.items():
         component_dict[ui_name] = graphic_dict.pop(schema_name, {})
-    component_dict[GRAPHIC] = graphic_dict
+    component_dict[GRAPHIC_META_INFO] = graphic_dict
     return component_dict
 
 
 def graphic_component_dict_to_graphic_dict(graphic_component_dict):
     """
-    change a dictionaries received from wizard ui into graphic dictionary
+    change the four dictionaries received from wizard ui into one graphic dictionary
     :param graphic_component_dict:
     :return:
     """
-    graphic_dict = graphic_component_dict[GRAPHIC]
+    graphic_dict = graphic_component_dict[GRAPHIC_META_INFO]
+    if (
+        ADDITIONAL_DATA_SOURCES in graphic_dict[DATA_SOURCES]
+        and not graphic_dict[DATA_SOURCES][ADDITIONAL_DATA_SOURCES]
+    ):
+        del graphic_dict[DATA_SOURCES][ADDITIONAL_DATA_SOURCES]
+
     graphic_dict[PLOT_SPECIFIC_INFO] = graphic_component_dict[PLOTLY]
 
     visualization_dict = prune_visualization_dict(graphic_component_dict[VISUALIZATION])
@@ -113,6 +123,8 @@ def prune_visualization_dict(visualization_dict):
     :return:
     """
     new_visualization_dict = {}
+    # when the form is left blank the entries of visualization_dict have
+    # COLUMN_NAME key that points to an empty list
     for vis_key, vis_dict in visualization_dict.items():
         if vis_dict[COLUMN_NAME]:
             new_visualization_dict[vis_key] = vis_dict
@@ -140,7 +152,7 @@ def make_empty_component_dict():
     :return:
     """
     component_dict = {}
-    for ui_name, schema_name in UI_SCHEMA_PAIRS:
+    for ui_name, schema_name in UI_SCHEMA_PAIRS.items():
         component_dict[ui_name] = {}
-    component_dict[GRAPHIC] = {}
+    component_dict[GRAPHIC_META_INFO] = {}
     return component_dict

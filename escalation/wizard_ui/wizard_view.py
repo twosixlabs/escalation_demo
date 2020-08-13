@@ -7,7 +7,7 @@ import os
 from flask import current_app, render_template, Blueprint, request
 
 from utility.app_utilities import configure_backend
-from utility.build_plotly_schema import build_plotly_selector_values
+from utility.build_plotly_schema import SELECTOR_DICT
 from utility.build_schema import (
     build_settings_schema,
     build_graphic_schema,
@@ -130,7 +130,7 @@ def graphic_config_setup():
         graphic=request.form[GRAPHIC],
         current_config=json.dumps(component_graphic_dict),
         is_graphic_new=request.form[IS_GRAPHIC_NEW],
-        schema_selector_dict=build_plotly_selector_values(),
+        schema_selector_dict=SELECTOR_DICT,
         current_schema=current_schema,
     )
 
@@ -152,20 +152,18 @@ def update_graphic_json_config_with_ui_changes():
     graphic_dict = graphic_component_dict_to_graphic_dict(
         config_information_dict[CONFIG_DICT]
     )
-    graphic_name = config_information_dict[GRAPHIC]
-    filename, ext = os.path.splitext(graphic_name)
+    graphic_filename = os.path.splitext(config_information_dict[GRAPHIC])[0]
     # sanitizing the string so it is valid filename
-    filename = sanitize_string(filename)
-    graphic_name = f"{filename}.json"
+    graphic_filename = f"{sanitize_string(graphic_filename)}.json"
     if config_information_dict[IS_GRAPHIC_NEW]:
         main_config_dict = load_main_config_dict_if_exists(current_app)
         page_dict = main_config_dict[AVAILABLE_PAGES][page_id]
         graphic_list = page_dict.get(GRAPHIC_CONFIG_FILES, [])
-        graphic_list.append(graphic_name)
+        graphic_list.append(graphic_filename)
         page_dict[GRAPHIC_CONFIG_FILES] = graphic_list
         save_main_config_dict(main_config_dict)
     with open(
-        os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_name), "w"
+        os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_filename), "w"
     ) as fout:
         json.dump(graphic_dict, fout, indent=4)
 
