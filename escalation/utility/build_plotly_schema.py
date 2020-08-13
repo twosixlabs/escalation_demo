@@ -200,7 +200,7 @@ def build_plotly_schema_individual_dicts(column_names):
         plot_schema[PROPERTIES][DATA][ITEMS][PROPERTIES][TYPE][ENUM] = directions[ENUM]
         plot_schema[PROPERTIES][DATA][ITEMS][REQUIRED] = directions[REQUIRED]
         # removing unnecessary elements from the general Plotly schema
-        # that not needed for this plot type
+        # that are not needed for this plot type
         elements_to_delete = [
             x for x in programmed_data_options if x not in directions[REQUIRED]
         ]
