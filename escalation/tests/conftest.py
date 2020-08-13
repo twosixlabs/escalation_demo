@@ -38,13 +38,15 @@ def test_app_client(main_json_fixture):
 
 @pytest.fixture()
 def local_handler_fixture_small(test_app_client):
-    got_data = LocalCSVHandler([{DATA_SOURCE_TYPE: "penguin_size_small"}])
+    got_data = LocalCSVHandler(
+        {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size_small"}}
+    )
     return got_data
 
 
 @pytest.fixture()
 def local_handler_fixture(test_app_client):
-    got_data = LocalCSVHandler([{DATA_SOURCE_TYPE: "penguin_size"}])
+    got_data = LocalCSVHandler({MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}})
     return got_data
 
 
