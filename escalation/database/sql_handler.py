@@ -23,6 +23,8 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
+    APP_CONFIG_JSON,
+    DATA_SOURCES,
 )
 
 
@@ -195,8 +197,11 @@ class SqlDataInventory(SqlHandler):
         Lists all data sources available in the db
         :return:
         """
-        # todo: intersect this with available sources in the config?
-        return list(Base.metadata.tables.keys())
+        return [
+            table_name
+            for table_name in Base.metadata.tables.keys()
+            if table_name in current_app.config[APP_CONFIG_JSON][DATA_SOURCES]
+        ]
 
     def get_identifiers_for_data_source(self):
         """

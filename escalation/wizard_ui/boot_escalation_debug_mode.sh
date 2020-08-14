@@ -5,4 +5,4 @@
 export FLASK_ENV=development
 export DEBUG=true
 export FLASK_RUN_EXTRA_FILES="/escalation/app_deploy_data/"
-flask run --host=0.0.0.0 --port=8000
+flask run --host=0.0.0.0 --port=8000 --extra-files $FLASK_RUN_EXTRA_FILES
