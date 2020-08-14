@@ -24,6 +24,7 @@ from utility.constants import (
     COLUMN_NAME,
     ADDITIONAL_DATA_SOURCES,
     MAIN_DATA_SOURCE,
+    DATA_SOURCES,
 )
 
 
@@ -151,7 +152,7 @@ class LocalCSVDataInventory(LocalCSVHandler):
             for f in os.scandir(
                 current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY]
             )
-            if f.is_dir()
+            if f.is_dir() and f in current_app.config[APP_CONFIG_JSON][DATA_SOURCES]
         ]
 
     def get_identifiers_for_data_source(self):
