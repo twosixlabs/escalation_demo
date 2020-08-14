@@ -5,10 +5,7 @@ import copy
 
 from flask import current_app, render_template, Blueprint, request
 
-from utility.constants import (
-    DATA_SOURCES,
-    DATA_SOURCE_TYPE,
-)
+from utility.constants import DATA_SOURCES, DATA_SOURCE_TYPE, MAIN_DATA_SOURCE
 
 ADMIN_HTML = "admin.html"
 INACTIVE = "inactive"
@@ -23,7 +20,7 @@ def admin_page():
     data_sources = sorted(existing_data_sources)
     data_source_dict = {
         data_source: data_inventory(
-            [{DATA_SOURCE_TYPE: data_source}]
+            {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source}}
         ).get_identifiers_for_data_source()
         for data_source in data_sources
     }
