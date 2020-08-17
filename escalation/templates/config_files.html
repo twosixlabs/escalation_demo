@@ -22,7 +22,7 @@
     <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
         <input type="hidden" name="page_id" value=''>
         <input type="hidden" name="graphic" value=''>
-        <input type="hidden" name="is_graphic_new" value=''>
+        <input type="hidden" name="graphic_status" value=''>
     </form>
 
             {% for page in available_pages %}
@@ -35,7 +35,8 @@
                 <div class="collapse" id={{ "page_" ~ page_id ~ "_graphics" }}>
                     {% for graphic in page["graphic_config_files"] %}
                         <div class="row">
-                            <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}',false)>{{ graphic }}</button>
+                            <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}','old')>{{ graphic }}</button>
+                            <button class="btn btn-outline-success mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}','copy')>Copy</button>
                         </div>
                     {% endfor %}
                     <div class="row">

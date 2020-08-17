@@ -117,8 +117,10 @@ PROCESS = "process"
 PAGE_ID = "page_id"
 GRAPHIC = "graphic"
 CONFIG_DICT = "config_dict"
-IS_GRAPHIC_NEW = "is_graphic_new"
-JSON_FALSE = "false"
+GRAPHIC_STATUS = "graphic_status"
+COPY = "copy"
+OLD = "old"
+NEW = "new"
 
 # schema constants
 ADDITIONAL_PROPERTIES = "additionalProperties"

@@ -24,17 +24,16 @@ from utility.constants import (
     MAIN_CONFIG,
     CONFIG_FILE_FOLDER,
     CONFIG_DICT,
-    IS_GRAPHIC_NEW,
+    GRAPHIC_STATUS,
     GRAPHIC_CONFIG_FILES,
     WEBPAGE_LABEL,
     URL_ENDPOINT,
-    JSON_FALSE,
     DATABASE,
     SCATTER,
     POSTGRES,
     DATA,
     TYPE,
-    PLOT_SPECIFIC_INFO,
+    PLOT_SPECIFIC_INFO, COPY, OLD, NEW,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.schemas_for_ui import (
@@ -115,21 +114,26 @@ def graphic_config_setup():
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
     )
+    graphic_name = os.path.splitext(request.form[GRAPHIC])[0]
     current_schema = SCATTER
-    if request.form[IS_GRAPHIC_NEW] == JSON_FALSE:
+
+    if request.form[GRAPHIC_STATUS] in [COPY, OLD]:
         graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         type_to_schema = invert_dict_lists(schema_to_type)
         current_schema = type_to_schema[
             graphic_dict[PLOT_SPECIFIC_INFO][DATA][0].get(TYPE, SCATTER)
         ]
         component_graphic_dict = graphic_dict_to_graphic_component_dict(graphic_dict)
+    if request.form[GRAPHIC_STATUS] == COPY:
+        graphic_name = graphic_name + '_copy'
+
     return render_template(
         GRAPHIC_CONFIG_EDITOR_HTML,
         schema=json.dumps(graphic_schemas, indent=4,),
         page_id=request.form[PAGE_ID],
-        graphic=request.form[GRAPHIC],
+        graphic=graphic_name,
         current_config=json.dumps(component_graphic_dict),
-        is_graphic_new=request.form[IS_GRAPHIC_NEW],
+        graphic_status=request.form[GRAPHIC_STATUS],
         schema_selector_dict=SELECTOR_DICT,
         current_schema=current_schema,
     )
@@ -155,7 +159,7 @@ def update_graphic_json_config_with_ui_changes():
     graphic_filename = os.path.splitext(config_information_dict[GRAPHIC])[0]
     # sanitizing the string so it is valid filename
     graphic_filename = f"{sanitize_string(graphic_filename)}.json"
-    if config_information_dict[IS_GRAPHIC_NEW]:
+    if config_information_dict[GRAPHIC_STATUS] in [NEW, COPY]:
         main_config_dict = load_main_config_dict_if_exists(current_app)
         page_dict = main_config_dict[AVAILABLE_PAGES][page_id]
         graphic_list = page_dict.get(GRAPHIC_CONFIG_FILES, [])
