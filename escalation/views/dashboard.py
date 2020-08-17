@@ -18,6 +18,7 @@ DATA_LAYOUT = "data_layout.html"
 dashboard_blueprint = Blueprint("dashboard", __name__)
 
 
+@dashboard_blueprint.route("/dashboard/")
 @dashboard_blueprint.route("/")
 def main_page():
     return render_template(DATA_LAYOUT)

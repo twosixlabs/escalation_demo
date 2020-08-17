@@ -22,9 +22,9 @@
             </div>
             <div class="row ml-1 mb-4">
                 <h2>Type of Plot:</h2>
-                <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto'>
+                <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto' id = "plot_type">
                     {% for value, selector_text in schema_selector_dict.items() %}
-                        <option value={{ value }}>{{ selector_text }}</option>
+                        <option value={{ value }} {% if current_schema == value %} selected {% endif %}>{{ selector_text }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -45,14 +45,16 @@
     </div>
 <script>
     // Enables all the tooltips
-    $(function () {$('[data-toggle="tooltip"]').tooltip()})
+    $(function () {$('[data-toggle="tooltip"]').tooltip({trigger : 'hover'})})
 
     let current_state = {{ current_config | safe }};
     const dict_of_schemas={{ schema | safe }};
     const dict_of_plotly_schemas = dict_of_schemas['plotly_schema'];
     let editors= new Object();
+    let current_plot_type = "{{ current_schema }}";
+    let saved_plot_type = current_plot_type;
     editors['graphic_meta_info'] = new_editor('graphic', false, dict_of_schemas['graphic_schema']);
-    editors['plotly'] = new_editor('plotly', true, dict_of_plotly_schemas["{{ current_schema }}"]);
+    editors['plotly'] = new_editor('plotly', true, dict_of_plotly_schemas[current_plot_type]);
     editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
     editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);
 
@@ -64,7 +66,8 @@
 
     function new_editor(type,display_required_only,schema) {
         return new JSONEditor(document.getElementById('editor_holder_'.concat(type)),
-        options={theme: 'bootstrap4',display_required_only: display_required_only, disable_edit_json:true, iconlib: 'fontawesome4', schema: schema });
+        options={theme: 'bootstrap4',display_required_only: display_required_only, disable_edit_json:true,
+            disable_array_delete_last_row:true, iconlib: 'fontawesome4', schema: schema });
     }
     function save_json_editor_to_file(redirect){
         const url = "{{ url_for('.update_graphic_json_config_with_ui_changes') }}";
@@ -74,6 +77,7 @@
         for(let editor_name in editors){
             current_state[editor_name]=editors[editor_name].getValue();
         }
+        saved_plot_type = current_plot_type;
         // The form contains nested dictionaries so it is easier to send a json than a form
         let data = JSON.stringify({"config_dict" : current_state,
             "page_id":{{ page_id }},
@@ -87,16 +91,23 @@
         }
     }
     function reload_last_save(){
+        if (current_plot_type != saved_plot_type){
+            current_plot_type=saved_plot_type;
+            let element=document.getElementById('plot_type');
+            element.value=current_plot_type;
+            element.dispatchEvent(new Event('change'));
+            editors['plotly'].destroy();
+            editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type])
+        }
         for(let editor_name in editors){
             editors[editor_name].setValue(current_state[editor_name]);
         }
     }
     $("select").on("changed.bs.select",
           function(e, clickedIndex, newValue, oldValue) {
-        let plot_type=this.value;
-        let save=editors['plotly'].getValue();
+        current_plot_type=this.value;
         editors['plotly'].destroy();
-        editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[plot_type])
+        editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type])
 
     });
 </script>

@@ -19,9 +19,9 @@
     <div class="container-fluid pl-5 pr-5">
     <div class="row ml-1 mb-4">
         <h2>Data Backend:</h2>
-        <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto'>
-            <option value="database" {% if default_schema == "database" %}  selected {% endif %}>Database</option>
-            <option value="local_csv" {% if default_schema == "local_csv" %}  selected {% endif %}>Local</option>
+        <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto' id="schema_type">
+            <option value="database" {% if current_schema == "database" %}  selected {% endif %}>Database</option>
+            <option value="local_csv" {% if current_schema == "local_csv" %}  selected {% endif %}>Local</option>
         </select>
     </div>
     <div class="row">
@@ -34,11 +34,14 @@
     </div>
 <script>
     // Enables all the tooltips
-    $(function () {$('[data-toggle="tooltip"]').tooltip()})
+    $(function () {$('[data-toggle="tooltip"]').tooltip({trigger : 'hover'})})
+
     let current_state = {{ current_config | safe }};
-    const dict_of_schemas={{ schema | safe }};
-    let editor = new JSONEditor(document.getElementById('editor_holder'),
-        options={theme: 'bootstrap4',display_required_only: true, disable_edit_json:true, iconlib: 'fontawesome4', schema: dict_of_schemas["{{ current_schema }}"] });
+    const dict_of_schemas = {{ schema | safe }};
+    let current_schema = "{{ current_schema }}"
+    let save_schema = current_schema;
+    let editor = {};
+    new_json_editor();
     {% if current_config!="{}" %}
         editor.setValue(current_state);
     {% endif %}
@@ -50,22 +53,36 @@
         if (redirect) {webpage = '{{ url_for('.file_tree') }}'}
         // The form contains nested dictionaries so it is easier to send a json than a form
         current_state = editor.getValue();
+        save_schema = current_schema;
         let data = JSON.stringify(current_state);
         send_json_in_post_request(url, data, webpage);// The form contains nested dictionaries so it is easier to send a json than a form
     }
     function reset_json_editor(){
         editor.setValue()
     }
+    function new_json_editor(){
+        editor = new JSONEditor(document.getElementById('editor_holder'),
+            options={theme: 'bootstrap4',display_required_only: true,disable_edit_json:true,
+                disable_array_delete_last_row:true, iconlib: 'fontawesome4', schema: dict_of_schemas[current_schema] });
+    }
     function reload_last_save(){
+        if (current_schema!=save_schema){
+            current_schema=save_schema;
+            let element=document.getElementById('schema_type');
+            element.value=current_schema;
+            element.dispatchEvent(new Event('change'));
+            editor.destroy();
+            new_json_editor();
+        }
         editor.setValue(current_state)
+
     }
     $("select").on("changed.bs.select",
           function(e, clickedIndex, newValue, oldValue) {
-        let handler_type=this.value;
+        current_schema=this.value;
         let save=editor.getValue();
         editor.destroy();
-        editor = new JSONEditor(document.getElementById('editor_holder'),
-            options={theme: 'bootstrap4',display_required_only: true,disable_edit_json:true, iconlib: 'fontawesome4', schema: dict_of_schemas[handler_type] });
+        new_json_editor();
         editor.setValue(save);
 
     });
