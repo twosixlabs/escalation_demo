@@ -1,7 +1,7 @@
 # MVP Features
 
 - Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work?
-- in schema title this so it does not say item 1, item 2 ... 
+- update in schema title, so it does not say item 1, item 2 ... 
 - data source affects what can be built
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - and link to external Docker deployment instructions (Heroku? AWS free tier?)
