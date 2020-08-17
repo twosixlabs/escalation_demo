@@ -1,9 +1,3 @@
-# Notes from Jed Session
-
-
-Float “buttons” div on right of config page so it’s always visible on graph config page
-Closing properties button is hard. Do we need properties at all? Can we hide?
-
 # MVP Features
 
 - Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work? 
