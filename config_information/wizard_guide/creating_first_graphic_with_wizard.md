@@ -15,8 +15,7 @@ Ready? Let's begin.
 ![](images/click_on_page.png)
 - There currently are not any so let us add one. Type in a name and click add a graphic. You will be brought to the graphic 
 config editor. Follow the directions to fill out the form. See
- [plotly examples](../plotly_examples/plotly_config_info.md)
-  and [selector examples](config_information/selector_examples/selector_config_info.md) for a gallery of what is possible
+ [the gallery](../gallery/index.html) for ideas.
 ![](images/graphic_editor.png)
 - Once you are done click submit. Now you will have a graphic in your page. 
 ![](images/one_graphic.png)
