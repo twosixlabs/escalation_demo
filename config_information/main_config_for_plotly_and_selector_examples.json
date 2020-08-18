@@ -17,10 +17,9 @@
                 "../../config_information/plotly_examples/config_files/box_group_by_example.json",
                 "../../config_information/plotly_examples/config_files/hist_example.json",
                 "../../config_information/plotly_examples/config_files/hover_example.json",
-                "../../config_information/plotly_examples/config_files/line_axis_label.json",
+                "../../config_information/plotly_examples/config_files/line_axis_label_example.json",
                 "../../config_information/plotly_examples/config_files/scatter_3d_example.json",
                 "../../config_information/plotly_examples/config_files/scatter_example.json",
-                "../../config_information/plotly_examples/config_files/table_example.json",
                 "../../config_information/selector_examples/config_files/advanced_filters.json",
                 "../../config_information/selector_examples/config_files/filter.json",
                 "../../config_information/selector_examples/config_files/group_by_and_axis.json"

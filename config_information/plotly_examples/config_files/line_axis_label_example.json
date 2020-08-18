@@ -1,6 +1,6 @@
 {
     "plot_manager": "plotly",
-    "data_sources": {"main_data_source": {"data_source_type":"penguin_size"}},
+    "data_sources": {"main_data_source": {"data_source_type":"penguin_size_small"}},
     "title": "Example Line",
     "brief_desc": "A line plot",
     "plot_specific_info": {
