@@ -6,7 +6,6 @@ from graphics.plotly_plot import LAYOUT
 from utility.constants import *
 
 
-
 TABLE = "table"
 HEADER = "header"
 SELECTOR_DICT = {
@@ -24,7 +23,7 @@ def build_table_schema(column_names):
         "properties": {
             DATA: {
                 "type": "array",
-                "List of Columns"
+                TITLE: "List of Columns",
                 "description": "list of columns in the table",
                 MIN_ITEMS: 1,
                 "items": {
@@ -32,12 +31,12 @@ def build_table_schema(column_names):
                     "title": "Column Information",
                     "required": [HEADER, COLUMN_NAME],
                     "properties": {
-                        HEADER: {
+                        HEADER: {"type": "string", TITLE: "Column Header",},
+                        COLUMN_NAME: {
                             "type": "string",
-                            TITLE: "Column Header",
+                            TITLE: "Column name in database",
+                            "enum": column_names,
                         },
-                        COLUMN_NAME: {"type": "string", TITLE: "Column name in database",   "enum": column_names},
-
                     },
                 },
             },
@@ -45,7 +44,6 @@ def build_table_schema(column_names):
                 "title": "Table options",
                 "description": "currently not implemented",
                 "type": "object",
-
             },
         },
     }
