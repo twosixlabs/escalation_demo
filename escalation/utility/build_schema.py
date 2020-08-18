@@ -314,7 +314,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             PROPERTIES: {
                                 COLUMN_NAME: {
                                     "type": "string",
-                                    "description": "axis name",
+                                    TITLE: "Axis Name",
                                     "pattern": ONE_LETTER,
                                 },
                                 ENTRIES: {
