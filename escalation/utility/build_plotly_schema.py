@@ -50,12 +50,12 @@ def build_plotly_schema(column_names):
                 MIN_ITEMS: 1,
                 "items": {
                     "type": "object",
-                    "title": "data dictionary",
+                    "title": "Data Dictionary",
                     "required": ["type"],
                     "properties": {
                         "type": {
                             "type": "string",
-                            "description": "type of plot",
+                            TITLE: "Plot Type",
                             "enum": [
                                 "scatter",
                                 "scattergl",
@@ -76,11 +76,24 @@ def build_plotly_schema(column_names):
                                 "mesh3d",
                             ],
                         },
-                        X: {"type": "string", "enum": column_names},
-                        Y: {"type": "string", "enum": column_names},
-                        Z: {"type": "string", "enum": column_names},
+                        X: {
+                            "type": "string",
+                            TITLE: "Data on X Axis",
+                            "enum": column_names,
+                        },
+                        Y: {
+                            "type": "string",
+                            TITLE: "Data on Y Axis",
+                            "enum": column_names,
+                        },
+                        Z: {
+                            "type": "string",
+                            TITLE: "Data on Z Axis",
+                            "enum": column_names,
+                        },
                         "mode": {
                             "type": "string",
+                            TITLE: "Graph Style",
                             "description": "used for scatter or scattergl",
                             "enum": [
                                 "lines",

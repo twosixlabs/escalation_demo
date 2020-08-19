@@ -9,6 +9,7 @@ class Graphic(ABC):
     def __init__(self):
         pass
 
+    @staticmethod
     @abstractmethod
     def make_dict_for_html_plot(self, data, data_to_struct, plot_options, hover_data):
         """
@@ -22,6 +23,7 @@ class Graphic(ABC):
         """
         raise NotImplementedError
 
+    @staticmethod
     @abstractmethod
     def get_data_columns(self, plot_options) -> set:
         """

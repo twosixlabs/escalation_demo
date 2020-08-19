@@ -1,23 +1,21 @@
 {
-    "plot_manager": "plotly",
-    "data_sources": {"main_data_source": {"data_source_type":"penguin_size"}},
+    "plot_manager": "bootstrap-table",
+    "data_sources": {
+    "main_data_source": {"data_source_type": "penguin_size"}
+    },
     "title": "Example Table",
     "brief_desc": "A table",
-    "data": [
-        {
-            "<b>Body Mass</b>": "penguin_size:body_mass_g",
-            "<b>Flipper Size</b>": "penguin_size:flipper_length_mm"
-        }
-    ],
     "plot_specific_info": {
         "data": [
             {
-                "type": "table",
-                "header":{
-                    "fill": {"color": "grey"},
-                    "font": {"family": "Arial", "size": 14, "color": "white"}
-                }
+                "header": "Body Mass",
+                "column": "penguin_size:body_mass_g"
+            },
+            {
+                "header": "Flipper Size",
+                "column": "penguin_size:flipper_length_mm"
             }
         ]
     }
 }
+

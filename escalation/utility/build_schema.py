@@ -67,7 +67,7 @@ def build_settings_schema():
                 TITLE: "Data Sources",
                 "description": "list of tables or folders that server will use for the plots",
                 MIN_ITEMS: 1,
-                "items": {"type": "string"},
+                "items": {"type": "string", TITLE: "Data Source"},
             },
             AVAILABLE_PAGES: {
                 "type": "array",
@@ -94,6 +94,7 @@ def build_settings_schema():
                             TITLE: "Graphic Config Files",
                             ITEMS: {
                                 TYPE: "string",
+                                TITLE: "Config File",
                                 DESCRIPTION: "Path to config file of the graphic for the webpage",
                             },
                         },
@@ -155,8 +156,9 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
-                        "items": {
+                        ITEMS: {
                             "type": "object",
+                            TITLE: "Additional Data Source",
                             "additionalProperties": False,
                             REQUIRED: [DATA_SOURCE_TYPE, JOIN_KEYS],
                             PROPERTIES: {
@@ -166,15 +168,18 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 },
                                 JOIN_KEYS: {
                                     "type": "array",
+                                    TITLE: "Join Keys",
                                     "description": "Column names along which to join the tables"
                                     " (in the case of 2 or more tables)",
-                                    "items": {
+                                    ITEMS: {
+                                        TITLE: "Pairs of Keys",
                                         "type": "array",
                                         "uniqueItems": True,
                                         "minItems": 2,
                                         "maxItems": 2,
                                         "items": {
                                             "type": "string",
+                                            TITLE: "Key",
                                             "enum": column_names,
                                         },
                                     },
@@ -203,7 +208,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
-                                "items": {"type": "string", "enum": column_names,},
+                                TITLE: "List of Column Names",
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             }
                         },
                     },
@@ -215,7 +225,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
-                                "items": {"type": "string", "enum": column_names},
+                                TITLE: "List of Column Names",
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             },
                             STYLES: {TYPE: "object"},
                         },
@@ -228,7 +243,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
-                                "items": {"type": "string", "enum": column_names,},
+                                TITLE: "List of Column Names",
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             },
                             AGGREGATIONS: {
                                 "type": "object",
@@ -264,15 +284,17 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 PROPERTIES: {
                     FILTER: {
                         "type": "array",
-                        "title": "Filter",
+                        "title": "List of Filters",
                         DESCRIPTION: "a filter operation based on label",
                         "items": {
                             "type": "object",
+                            TITLE: "Filter",
                             "required": [COLUMN_NAME],
                             "additionalProperties": False,
                             PROPERTIES: {
                                 COLUMN_NAME: {
                                     "type": "string",
+                                    TITLE: "Column Name",
                                     "description": "name in table",
                                     "enum": column_names,
                                 },
@@ -288,15 +310,17 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                     NUMERICAL_FILTER: {
                         "type": "array",
-                        "title": "Numerical Filter",
+                        "title": "List of Numerical Filters",
                         DESCRIPTION: "a filter operation on numerical data",
                         "items": {
+                            TITLE: "Numerical Filters",
                             "type": "object",
                             "required": [COLUMN_NAME],
                             "additionalProperties": False,
                             PROPERTIES: {
                                 COLUMN_NAME: {
                                     "type": "string",
+                                    TITLE: "Column Name",
                                     "description": "name in table",
                                     "enum": column_names,
                                 }
@@ -305,16 +329,17 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                     AXIS: {
                         "type": "array",
-                        "title": "Axis Selector",
+                        "title": "List of Axis Selectors",
                         DESCRIPTION: "change what column data is shown on a axis",
                         "items": {
                             "type": "object",
+                            TITLE: "Axis Selector",
                             "required": [COLUMN_NAME, ENTRIES],
                             "additionalProperties": False,
                             PROPERTIES: {
                                 COLUMN_NAME: {
                                     "type": "string",
-                                    "description": "axis name",
+                                    TITLE: "Axis Name",
                                     "pattern": ONE_LETTER,
                                 },
                                 ENTRIES: {
