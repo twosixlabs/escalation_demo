@@ -9,6 +9,7 @@ from controller import (
     get_unique_set_of_columns_needed,
 )
 from database.utils import OPERATIONS_FOR_NUMERICAL_FILTERS
+from graphics.plotly_plot import PlotlyPlot
 from utility.constants import (
     JINJA_SELECT_HTML_FILE,
     ENTRIES,
@@ -20,6 +21,7 @@ from utility.constants import (
     NUMERICAL_FILTER,
     AXIS,
     MULTIPLE,
+    DATA,
 )
 
 
@@ -85,8 +87,11 @@ def test_get_unique_set_of_columns_needed():
     flipper2 = "penguin_size:flipper_length_mm2"
     island = "penguin_size:island"
     sex = "penguin_size:sex"
+    ploty_test = PlotlyPlot()
     test_cols_list = get_unique_set_of_columns_needed(
-        [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2},],
+        ploty_test.get_data_columns(
+            {DATA: [{"x": culmen, "y": flipper}, {"x": culmen, "y": flipper2},]}
+        ),
         {"hover_data": {"column": [sex, culmen]}, "groupby": {"column": [island]},},
     )
     assert culmen in test_cols_list

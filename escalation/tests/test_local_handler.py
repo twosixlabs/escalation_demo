@@ -130,7 +130,6 @@ def test_get_available_data_sources(test_app_client):
     assert "penguin_size_small" in file_names
     assert "penguin_size" in file_names
     assert "mean_penguin_stat" in file_names
-    assert "penguin_Iter" in file_names
 
 
 def test_get_schema_for_data_source(test_app_client):

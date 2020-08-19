@@ -25,6 +25,7 @@ from utility.constants import (
     GROUPBY,
     AXIS,
     COLUMN_NAME,
+    PLOT_SPECIFIC_INFO,
 )
 from utility.reformatting_functions import (
     add_operations_to_the_data_from_addendum,
@@ -64,7 +65,9 @@ def test_add_active_selectors_to_selectable_data_list_with_addendum(
 ):
     graphic_0_dict = single_page_config_dict["graphic_0"]
     add_active_selectors_to_selectable_data_list(
-        graphic_0_dict[SELECTABLE_DATA_DICT], graphic_0_dict[DATA], addendum_dict
+        graphic_0_dict[SELECTABLE_DATA_DICT],
+        graphic_0_dict[PLOT_SPECIFIC_INFO][DATA],
+        addendum_dict,
     )
     filter_list = graphic_0_dict[SELECTABLE_DATA_DICT][FILTER]
     assert len(filter_list[0][ACTIVE_SELECTORS]) == 1
@@ -98,7 +101,9 @@ def test_add_active_selectors_to_selectable_data_list_with_SHOW_ALL_ROWS_chosen_
     )
     graphic_0_dict = single_page_config_dict["graphic_0"]
     add_active_selectors_to_selectable_data_list(
-        graphic_0_dict[SELECTABLE_DATA_DICT], graphic_0_dict[DATA], addendum_dict
+        graphic_0_dict[SELECTABLE_DATA_DICT],
+        graphic_0_dict[PLOT_SPECIFIC_INFO][DATA],
+        addendum_dict,
     )
     assert len(graphic_0_dict[SELECTABLE_DATA_DICT][FILTER][1][ACTIVE_SELECTORS]) == 1
     assert (
@@ -113,7 +118,9 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
     single_page_config_dict = single_page_config_dict
     graphic_0_dict = single_page_config_dict["graphic_0"]
     add_active_selectors_to_selectable_data_list(
-        graphic_0_dict[SELECTABLE_DATA_DICT], graphic_0_dict[DATA], ImmutableMultiDict()
+        graphic_0_dict[SELECTABLE_DATA_DICT],
+        graphic_0_dict[PLOT_SPECIFIC_INFO][DATA],
+        ImmutableMultiDict(),
     )
 
     filter_list = graphic_0_dict[SELECTABLE_DATA_DICT][FILTER]
@@ -133,7 +140,9 @@ def test_add_operations_to_the_data(single_page_config_dict, addendum_dict):
     single_page_config_dict = single_page_config_dict
     graphic_0_dict = single_page_config_dict["graphic_0"]
     operations_list, groupby_dict = add_operations_to_the_data_from_addendum(
-        graphic_0_dict[SELECTABLE_DATA_DICT], graphic_0_dict[DATA], addendum_dict,
+        graphic_0_dict[SELECTABLE_DATA_DICT],
+        graphic_0_dict[PLOT_SPECIFIC_INFO][DATA],
+        addendum_dict,
     )
     assert not groupby_dict
     assert len(operations_list) == 3
@@ -167,11 +176,13 @@ def test_add_operations_to_the_data(single_page_config_dict, addendum_dict):
     )
 
     operations_list, groupby_dict = add_operations_to_the_data_from_addendum(
-        graphic_1_dict[SELECTABLE_DATA_DICT], graphic_1_dict[DATA], addendum_dict,
+        graphic_1_dict[SELECTABLE_DATA_DICT],
+        graphic_1_dict[PLOT_SPECIFIC_INFO][DATA],
+        addendum_dict,
     )
 
     assert (
-        single_page_config_dict[GRAPHIC_NUM.format(1)][DATA][0]["x"]
+        single_page_config_dict[GRAPHIC_NUM.format(1)][PLOT_SPECIFIC_INFO][DATA][0]["x"]
         == "penguin_size:culmen_depth_mm"
     )
     assert groupby_dict == {

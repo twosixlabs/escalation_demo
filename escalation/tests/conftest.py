@@ -17,6 +17,7 @@ from utility.constants import *
 
 @pytest.fixture()
 def test_app_client(main_json_fixture):
+    # todo: importing create app creates an app.
     from app import create_app
 
     flask_app = create_app()
@@ -87,16 +88,18 @@ def make_graphic_config_for_testing():
     pages = {
         "graphic_0": {
             PLOT_MANAGER: "plotly",
-            DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
+            DATA_SOURCES: {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}},
             GRAPHIC_TITLE: "Do massive penguins have long flippers?",
             GRAPHIC_DESC: "This plot looks at the relationship between...",
-            DATA: [
-                {
-                    "x": "penguin_size:body_mass_g",
-                    "y": "penguin_size:flipper_length_mm",
-                }
-            ],
-            PLOT_SPECIFIC_INFO: {DATA: [{"type": "scatter"}]},
+            PLOT_SPECIFIC_INFO: {
+                DATA: [
+                    {
+                        "type": "scatter",
+                        "x": "penguin_size:body_mass_g",
+                        "y": "penguin_size:flipper_length_mm",
+                    }
+                ]
+            },
             VISUALIZATION_OPTIONS: {
                 HOVER_DATA: {
                     COLUMN_NAME: ["penguin_size:sex", "penguin_size:culmen_length_mm",],
@@ -118,12 +121,11 @@ def make_graphic_config_for_testing():
         },
         "graphic_1": {
             PLOT_MANAGER: "plotly",
-            DATA_SOURCES: [{DATA_SOURCE_TYPE: "penguin_size"}],
+            DATA_SOURCES: {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}},
             GRAPHIC_TITLE: "How big are penguins?",
             GRAPHIC_DESC: ".",
-            DATA: [{"x": "penguin_size:body_mass_g"}],
             PLOT_SPECIFIC_INFO: {
-                DATA: [{"type": "histogram"}],
+                DATA: [{"type": "histogram", "x": "penguin_size:body_mass_g"}],
                 LAYOUT: {
                     AXIS.format("x"): {TITLE, "body mass"},
                     AXIS.format("y"): {TITLE, "count"},
