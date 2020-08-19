@@ -9,9 +9,9 @@ List of the available graphics
 """
 
 AVAILABLE_GRAPHICS = {
-    "plotly": {"object": PlotlyPlot(), "graph_html_template": "plotly.html"},
+    "plotly": {"object": PlotlyPlot, "graph_html_template": "plotly.html"},
     "bootstrap-table": {
-        "object": BootstrapTable(),
+        "object": BootstrapTable,
         "graph_html_template": "bootstrap-table.html",
     },
 }
