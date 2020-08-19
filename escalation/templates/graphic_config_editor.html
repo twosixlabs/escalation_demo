@@ -81,7 +81,7 @@
         // The form contains nested dictionaries so it is easier to send a json than a form
         let data = JSON.stringify({"config_dict" : current_state,
             "page_id":{{ page_id }},
-            "graphic": '{{ graphic }}',
+            "graphic_path": '{{ graphic_path }}',
             "graphic_status":'{{ graphic_status }}'});
         send_json_in_post_request(url, data, webpage);// The form contains nested dictionaries so it is easier to send a json than a form
     }

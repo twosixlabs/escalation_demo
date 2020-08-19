@@ -35,20 +35,14 @@
                 <div class="collapse" id={{ "page_" ~ page_id ~ "_graphics" }}>
                     {% for graphic in page["graphic_config_files"] %}
                         <div class="row">
-                            <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}','old')>{{ graphic }}</button>
-                            <button class="btn btn-outline-success mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic }}','copy')>Copy</button>
+                            <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}</button>
+                            <button class="btn btn-outline-success mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','copy')>Copy</button>
                         </div>
                     {% endfor %}
                     <div class="row">
-
                         <div class="form-group mb-1 mt-1 ml-5">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id={{ "new_graphic_name_" ~ page_id }} placeholder="Graphic Name">
-                            <div class="input-group-append">
-                                <button type="button" class="btn btn-outline-primary" onclick=new_graphic({{ page_id }})>Add a Graphic
-                                </button>
-                            </div>
-                        </div>
+                            <button type="button" class="btn btn-outline-primary" onclick=edit_graphic({{ page_id }},'','new')>Add a Graphic
+                            </button>
                         </div>
                     </div>
                 </div>
