@@ -76,9 +76,21 @@ def build_plotly_schema(column_names):
                                 "mesh3d",
                             ],
                         },
-                        X: {"type": "string", TITLE: "Data on X Axis", "enum": column_names},
-                        Y: {"type": "string", TITLE: "Data on Y Axis", "enum": column_names},
-                        Z: {"type": "string", TITLE: "Data on Z Axis", "enum": column_names},
+                        X: {
+                            "type": "string",
+                            TITLE: "Data on X Axis",
+                            "enum": column_names,
+                        },
+                        Y: {
+                            "type": "string",
+                            TITLE: "Data on Y Axis",
+                            "enum": column_names,
+                        },
+                        Z: {
+                            "type": "string",
+                            TITLE: "Data on Z Axis",
+                            "enum": column_names,
+                        },
                         "mode": {
                             "type": "string",
                             TITLE: "Graph Style",

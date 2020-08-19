@@ -67,8 +67,7 @@ def build_settings_schema():
                 TITLE: "Data Sources",
                 "description": "list of tables or folders that server will use for the plots",
                 MIN_ITEMS: 1,
-                "items": {"type": "string",
-                          TITLE: "Data Source"},
+                "items": {"type": "string", TITLE: "Data Source"},
             },
             AVAILABLE_PAGES: {
                 "type": "array",
@@ -210,7 +209,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
-                                "items": {"type": "string", TITLE: "Column Name", "enum": column_names,},
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             }
                         },
                     },
@@ -223,7 +226,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
-                                "items": {"type": "string", TITLE: "Column Name", "enum": column_names},
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             },
                             STYLES: {TYPE: "object"},
                         },
@@ -237,7 +244,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
-                                "items": {"type": "string",TITLE: "Column Name", "enum": column_names,},
+                                "items": {
+                                    "type": "string",
+                                    TITLE: "Column Name",
+                                    "enum": column_names,
+                                },
                             },
                             AGGREGATIONS: {
                                 "type": "object",
