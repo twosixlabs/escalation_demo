@@ -98,7 +98,7 @@ def main_config_setup():
         schema=json.dumps(build_main_schemas_for_ui()),
         current_config=json.dumps(config_dict),
         # load in the right schema based on the config dict, default to database
-        current_schema=inverted_backend_types[config_dict.get(DATA_BACKEND, POSTGRES)],
+        current_schema=inverted_backend_types.get(config_dict.get(DATA_BACKEND, POSTGRES),DATABASE),
     )
 
 

@@ -6,7 +6,12 @@ import os
 from flask import Flask
 from sqlalchemy.engine.url import URL
 
-from utility.constants import CONFIG_FILE_FOLDER, TEST_APP_DEPLOY_DATA, APP_DEPLOY_DATA
+from utility.constants import (
+    CONFIG_FILE_FOLDER,
+    TEST_APP_DEPLOY_DATA,
+    APP_DEPLOY_DATA,
+    DATA_BACKEND,
+)
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from wizard_ui.wizard_utils import (
     load_main_config_dict_if_exists,
@@ -34,7 +39,7 @@ def create_app():
 def configure_app(app):
     app.config[CONFIG_FILE_FOLDER] = APP_DEPLOY_DATA
     config_dict = load_main_config_dict_if_exists(app)
-    if config_dict:
+    if config_dict and config_dict.get(DATA_BACKEND, ""):
         set_up_backend_for_wizard(config_dict, app)
     return app
 

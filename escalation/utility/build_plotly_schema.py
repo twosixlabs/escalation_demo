@@ -31,7 +31,7 @@ SELECTOR_DICT = {
     BOX: "Box Plot",
     VIOLIN: "Violin Plot",
     HISTOGRAM: "Histogram",
-    SCATTER3D: "3D Scatter Plot",
+    SCATTER3D: "3D Scatter/Line Plot",
     MESH3D: "3D Mesh Plot",
 }
 

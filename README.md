@@ -51,7 +51,7 @@ Each of these components are discussed further below.
 
 From the root level of the code repository, run: 
 
-`docker-compose --build`
+`docker-compose build`
 
 (this takes a little while the first time, as components are downloaded and installed)
 
@@ -99,7 +99,7 @@ Run the configuration wizard app from the root directory of this repo:
     
     ./escalation/wizard_ui/wizard_launcher.sh
     
-This launches the Configurer UI Wizard in a Docker container. Navigate in your the wab app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
+This launches the Configurer UI Wizard in a Docker container. Navigate in your the web app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
    
 To see how your config looks in Escalation, launch the web app in debug mode: 
 

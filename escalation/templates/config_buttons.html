@@ -1,6 +1,6 @@
 <h2>Buttons:</h2>
 <button type="button" class="btn btn-primary btn-block m-2" data-toggle="tooltip"
-        data-placement="right" title="Saves the changes and goes to the file tree" onclick=save_json_editor_to_file(true)>Submit
+        data-placement="right" title="Saves the changes and goes to the dashboard layout" onclick=save_json_editor_to_file(true)>Submit
 </button>
 <button type="button" class="btn btn-primary btn-block m-2" data-toggle="tooltip"
         data-placement="right" title="Saves the changes" onclick=save_json_editor_to_file(false)>Apply
@@ -14,5 +14,5 @@
         data-placement="right" title="Resets the values in the form to the last time it was saved" onclick=reload_last_save()>Reload Last Save
 </button>
 <a class="btn btn-success btn-block m-2" data-toggle="tooltip"
-        data-placement="right" title="Goes to the file tree" href={{ url_for('.file_tree') }} role="button">Back to File Tree
+        data-placement="right" title="Goes to the dashboard layout" href={{ url_for('.file_tree') }} role="button">Back to Dashboard Layout
 </a>
