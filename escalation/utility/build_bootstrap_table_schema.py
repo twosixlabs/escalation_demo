@@ -16,7 +16,7 @@ SELECTOR_DICT = {
 def build_table_schema(column_names):
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "plotly graph definition",
+        "title": "bootstrap table definition",
         "description": "dictionary that uses https://bootstrap-table.com/",
         "type": "object",
         "required": [DATA],
@@ -42,7 +42,7 @@ def build_table_schema(column_names):
             },
             OPTIONS: {
                 "title": "Table options",
-                "description": "currently not implemented",
+                "description": "currently not implemented, see https://bootstrap-table.com/",
                 "type": "object",
             },
         },

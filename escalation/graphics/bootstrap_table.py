@@ -13,11 +13,10 @@ HEADER_INFO = "header_info"
 class BootstrapTable(Graphic):
     def make_dict_for_html_plot(self, data, plot_options, visualization_options=None):
         """
-        Makes the dictionary that bootstrap_table.html takes in
-        options is currenlty not implemented
+        Makes the dictionary that bootstrap_table.html takes in.
+        layout options for bootstrap_table are currently not implemented.
         based on https://bootstrap-table.com/
         :param data: a pandas dataframe
-        :param axis_to_data_columns:
         :param plot_options:
         :param visualization_options: not used
         :return:
@@ -54,8 +53,8 @@ class BootstrapTable(Graphic):
             dict_of_header_info = list_of_dict_of_header_info[i]
             if dict_of_header_info[COLUMN_NAME] in list_of_column_names:
                 del list_of_dict_of_header_info[i]
-                n = n - 1
+                n -= 1
             else:
                 list_of_column_names.append(dict_of_header_info[COLUMN_NAME])
-                i = i + 1
+                i += 1
         return list_of_column_names
