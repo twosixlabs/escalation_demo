@@ -58,7 +58,7 @@
     editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
     editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);
 
-    {% if is_graphic_new=='false' %}
+    {% if graphic_status in ['old', 'copy'] %}
         for(let editor_name in editors){
             editors[editor_name].setValue(current_state[editor_name])
         }
@@ -82,7 +82,7 @@
         let data = JSON.stringify({"config_dict" : current_state,
             "page_id":{{ page_id }},
             "graphic": '{{ graphic }}',
-            "is_graphic_new":{{ is_graphic_new }}});
+            "graphic_status":'{{ graphic_status }}'});
         send_json_in_post_request(url, data, webpage);// The form contains nested dictionaries so it is easier to send a json than a form
     }
     function reset_json_editor(){

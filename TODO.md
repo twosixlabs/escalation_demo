@@ -1,46 +1,14 @@
-# Notes from Jed Session
-
-
-Smarter default layout dict height/width that isn’t 0. 
-
-Float “buttons” div on right of config page so it’s always visible on graph config page
-
-x data dictionary button should probably have the name of the data dictionary in it. No need for “remove last data dictionary” button?
-
-item 1, points 1 are not the best names
-
-search for feature and where in the config it goes?
-
-Groupby has "- last item", but not the "x" to delete an item. How can we be consistent across config wizard for interaction with these elements?
-
-Sanitize graph and page names- no / in names
-
-If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
-
-Closing properties button is hard. Do we need properties at all? Can we hide?
-
-redirect url "dashboard/" to home for dashboard- right now it's a dead link. Maybe also default to the first graphics page instead of any empty page? 
-
-Add edit button next to the json file names in the main config that let you navigate to the editor for the individual plots. Jed had to leave main config, and go to the individual page
-
-Plotly icons greyed out makes them look unusable
-
-Add ability for the user to copy config files to make similar, but different plots- e.g, chymotrypsin instead of trypsin.
-
-Nice to have: "decimation" feature- only plot a random sample of a big data set.
-
-Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work? 
-
-
 # MVP Features
 
-- reload from last save flips selector also. (currently a bug)
+- Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work?
+- update in schema title, so it does not say item 1, item 2 ... 
 - data source affects what can be built
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - and link to external Docker deployment instructions (Heroku? AWS free tier?)
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
 - change all examples to data in /escos/escalation/app_deploy_data
+- If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
 - better table
 
 # Nice to have Features
@@ -52,6 +20,7 @@ Method not allowed; create another graph with same name as existing graph, creat
 - Save state of the website / user's preferences for graph configuration. Store the last form as a cookie and use it as the default? Store the form on the server side with a user-provided name and allow a user to select the form they want from a dropdown? This would work also as a way of sharing a graph config.
 - Shareable graph configs- either a URL-encoded version for a GET that could be shared, or store a config server side that can be selected
 - Break headers along underscores.
+ - Nice to have: "decimation" feature- only plot a random sample of a big data set.
 
 ## Data management
 
@@ -64,8 +33,9 @@ Method not allowed; create another graph with same name as existing graph, creat
 - add pages in any order
 - format/ validate form - use the dependencies
 - add dependencies
+- search for feature and where in the config it goes
 
-## testing
+## Testing
 
 - Mock sql backend for testing
 - Test file upload
