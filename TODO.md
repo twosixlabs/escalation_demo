@@ -1,15 +1,13 @@
 # MVP Features
 
 - Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work?
-- update in schema title, so it does not say item 1, item 2 ... 
+- If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
+
 - data source affects what can be built
 - Documentation for json config. Write from the perspective of a new user- how do you build one of these? What are the required fields? Point to the test configs as examples
 - and link to external Docker deployment instructions (Heroku? AWS free tier?)
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
-- change all examples to data in /escos/escalation/app_deploy_data
-- If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
-- better table
 
 # Nice to have Features
 

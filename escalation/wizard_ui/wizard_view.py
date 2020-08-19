@@ -33,7 +33,10 @@ from utility.constants import (
     POSTGRES,
     DATA,
     TYPE,
-    PLOT_SPECIFIC_INFO, COPY, OLD, NEW,
+    PLOT_SPECIFIC_INFO,
+    COPY,
+    OLD,
+    NEW,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.schemas_for_ui import (
@@ -97,7 +100,9 @@ def main_config_setup():
         schema=json.dumps(build_main_schemas_for_ui()),
         current_config=json.dumps(config_dict),
         # load in the right schema based on the config dict, default to database
-        current_schema=inverted_backend_types.get(config_dict.get(DATA_BACKEND, POSTGRES),DATABASE),
+        current_schema=inverted_backend_types.get(
+            config_dict.get(DATA_BACKEND, POSTGRES), DATABASE
+        ),
     )
 
 
@@ -125,7 +130,7 @@ def graphic_config_setup():
         ]
         component_graphic_dict = graphic_dict_to_graphic_component_dict(graphic_dict)
     if request.form[GRAPHIC_STATUS] == COPY:
-        graphic_name = graphic_name + '_copy'
+        graphic_name = graphic_name + "_copy"
 
     return render_template(
         GRAPHIC_CONFIG_EDITOR_HTML,

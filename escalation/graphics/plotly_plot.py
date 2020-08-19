@@ -152,7 +152,8 @@ def add_layout_axis_defaults(layout_dict: dict, axis, column_name):
 
 
 class PlotlyPlot(Graphic):
-    def make_dict_for_html_plot(self, data, plot_options, visualization_options=None):
+    @staticmethod
+    def make_dict_for_html_plot(data, plot_options, visualization_options=None):
         """
         Makes the json file that plotly takes in
         :param data: a pandas dataframe
@@ -199,7 +200,8 @@ class PlotlyPlot(Graphic):
         graph_json = json.dumps(plot_options, cls=plotly.utils.PlotlyJSONEncoder)
         return graph_json
 
-    def get_data_columns(self, plot_options) -> set:
+    @staticmethod
+    def get_data_columns(plot_options) -> set:
         """
         extracts what columns of data are needed from the plot_options
         :param plot_options:
