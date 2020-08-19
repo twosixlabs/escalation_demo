@@ -109,7 +109,7 @@ Navigate to the Escalation app in your browser at: [http://localhost:8000](http:
 This app runs in debug mode, and should detect the changes you make as you edit the configuration. 
 Refresh your browser to update the contents to match your saved configuration.
      
-Some notes on [Creating your first config files with the UI Wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
+Some notes on [creating your first config files with the UI wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
 
 ### Build a config from scratch (advanced)
