@@ -110,26 +110,36 @@ def main_config_setup():
 
 @wizard_blueprint.route("/graphic", methods=("POST",))
 def graphic_config_setup():
+    graphic_status = request.form[GRAPHIC_STATUS]
+
     config_dict = load_main_config_dict_if_exists(current_app)
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
     data_source_names = config_dict[DATA_SOURCES]
     data_inventory_class = get_data_inventory_class(csv_flag)
+
+    active_data_source_names = data_source_names[:1]
+    if graphic_status in [COPY, OLD]:
+        graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
+
+
     possible_column_names = get_possible_column_names(
-        data_source_names, data_inventory_class, csv_flag
+        active_data_source_names, data_inventory_class, csv_flag
     )
-    component_graphic_dict = make_empty_component_dict()
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
     )
+
+    component_graphic_dict = make_empty_component_dict()
+
     current_schema = SCATTER
-    graphic_status = request.form[GRAPHIC_STATUS]
+
     if graphic_status in [COPY, OLD]:
-        graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         type_to_schema = invert_dict_lists(schema_to_type)
         current_schema = type_to_schema[
             graphic_dict[PLOT_SPECIFIC_INFO][DATA][0].get(TYPE, SCATTER)
         ]
         component_graphic_dict = graphic_dict_to_graphic_component_dict(graphic_dict)
+
 
     return render_template(
         GRAPHIC_CONFIG_EDITOR_HTML,

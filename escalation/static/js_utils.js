@@ -33,20 +33,32 @@ function add_page(){
 }
 
 function send_json_in_post_request(url, data, webpage){
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", url);
-        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xhr.onreadystatechange = function () {
-            let success_text = document.querySelector('#feedback_message');
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                if (webpage) {window.location.href = webpage}
-                success_text.innerHTML = "Applied"
-            } else {
-                success_text.innerHTML = "Failed"
-            }
-            setTimeout(function() {
-                  success_text.innerHTML="";
-                }, 5000);
-            };
-        xhr.send(data);
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.onreadystatechange = function () {
+        let success_text = document.querySelector('#feedback_message');
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            if (webpage) {window.location.href = webpage}
+            success_text.innerHTML = "Applied"
+        } else {
+            success_text.innerHTML = "Failed"
+        }
+        setTimeout(function() {
+              success_text.innerHTML="";
+            }, 5000);
+        };
+    xhr.send(data);
+}
+
+function get_main_data_sources(data_source_dict){
+    let data_sources = new Set();
+    data_sources.add(data_source_dict['main_data_source']['data_source_type']);
+    let additional_data_source;
+    if ('additional_data_sources' in data_source_dict) {
+        for (additional_data_source of data_source_dict['additional_data_sources']) {
+            data_sources.add(additional_data_source['data_source_type'])
+        }
     }
+    return data_sources
+}

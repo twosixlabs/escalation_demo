@@ -20,6 +20,7 @@
 - Time data file uploads via app endpoint. The app is still using pg8000. Should we switch to psycopg2 at the cost of more annoying local development? Or separate settings for local/deployed?
 ## Wizard
 - Allow Tables
+- Pair of keys.
 - add pages in any order
 - format/ validate form - use the dependencies
 - add dependencies
