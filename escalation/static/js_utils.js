@@ -25,14 +25,6 @@ function edit_graphic(page_id,graphic,graphic_status) {
     web_form.submit();
 }
 
-function new_graphic(page_id){
-    let graphic_name=document.getElementById("new_graphic_name_".concat(page_id)).value
-    if (graphic_name) {
-        graphic_name=graphic_name.split(' ').join('_');
-        edit_graphic(page_id,graphic_name,'new')
-    }
-}
-
 function add_page(){
     let web_form = $('#form_add_page');
     if (web_form[0].webpage_label.value) {

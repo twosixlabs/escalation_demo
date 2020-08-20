@@ -8,11 +8,7 @@ from flask import current_app, render_template, Blueprint, request
 
 from utility.app_utilities import configure_backend
 from utility.build_plotly_schema import SELECTOR_DICT
-from utility.build_schema import (
-    build_settings_schema,
-    build_graphic_schema,
-    build_graphic_schema_with_plotly,
-)
+
 from utility.constants import (
     DATA_SOURCES,
     DATA_BACKEND,
@@ -37,6 +33,8 @@ from utility.constants import (
     COPY,
     OLD,
     NEW,
+    GRAPHIC_PATH,
+    GRAPHIC_TITLE,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.schemas_for_ui import (
@@ -54,6 +52,7 @@ from wizard_ui.wizard_utils import (
     make_empty_component_dict,
     graphic_dict_to_graphic_component_dict,
     graphic_component_dict_to_graphic_dict,
+    get_layout_for_dashboard,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
@@ -67,7 +66,10 @@ def file_tree():
     if APP_CONFIG_JSON in current_app.config:
         config_dict = load_main_config_dict_if_exists(current_app)
         return render_template(
-            CONFIG_FILES_HTML, available_pages=config_dict.get(AVAILABLE_PAGES, {})
+            CONFIG_FILES_HTML,
+            available_pages=get_layout_for_dashboard(
+                config_dict.get(AVAILABLE_PAGES, {})
+            ),
         )
     else:
         return main_config_setup()
@@ -119,28 +121,25 @@ def graphic_config_setup():
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
     )
-    graphic_name = os.path.splitext(request.form[GRAPHIC])[0]
     current_schema = SCATTER
-
-    if request.form[GRAPHIC_STATUS] in [COPY, OLD]:
+    graphic_status = request.form[GRAPHIC_STATUS]
+    if graphic_status in [COPY, OLD]:
         graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         type_to_schema = invert_dict_lists(schema_to_type)
         current_schema = type_to_schema[
             graphic_dict[PLOT_SPECIFIC_INFO][DATA][0].get(TYPE, SCATTER)
         ]
         component_graphic_dict = graphic_dict_to_graphic_component_dict(graphic_dict)
-    if request.form[GRAPHIC_STATUS] == COPY:
-        graphic_name = graphic_name + "_copy"
 
     return render_template(
         GRAPHIC_CONFIG_EDITOR_HTML,
         schema=json.dumps(graphic_schemas, indent=4,),
         page_id=request.form[PAGE_ID],
-        graphic=graphic_name,
         current_config=json.dumps(component_graphic_dict),
-        graphic_status=request.form[GRAPHIC_STATUS],
+        graphic_status=graphic_status,
         schema_selector_dict=SELECTOR_DICT,
         current_schema=current_schema,
+        graphic_path=request.form[GRAPHIC],
     )
 
 
@@ -161,16 +160,36 @@ def update_graphic_json_config_with_ui_changes():
     graphic_dict = graphic_component_dict_to_graphic_dict(
         config_information_dict[CONFIG_DICT]
     )
-    graphic_filename = os.path.splitext(config_information_dict[GRAPHIC])[0]
+    graphic_filename = config_information_dict[GRAPHIC_PATH]
     # sanitizing the string so it is valid filename
-    graphic_filename = f"{sanitize_string(graphic_filename)}.json"
     if config_information_dict[GRAPHIC_STATUS] in [NEW, COPY]:
+        # Given a graphic title from the user input, make a valid json filename
+        graphic_filename_no_ext = sanitize_string(graphic_dict[GRAPHIC_TITLE])
+        if os.path.exists(
+            os.path.join(
+                current_app.config[CONFIG_FILE_FOLDER],
+                f"{graphic_filename_no_ext}.json",
+            )
+        ):
+            i = 0
+            while os.path.exists(
+                os.path.join(
+                    current_app.config[CONFIG_FILE_FOLDER],
+                    f"{graphic_filename_no_ext}_{i}.json",
+                )
+            ):
+                i += 1
+            graphic_filename = f"{graphic_filename_no_ext}_{i}.json"
+        else:
+            graphic_filename = f"{graphic_filename_no_ext}.json"
+        # make sure we are not overwriting something
         main_config_dict = load_main_config_dict_if_exists(current_app)
         page_dict = main_config_dict[AVAILABLE_PAGES][page_id]
         graphic_list = page_dict.get(GRAPHIC_CONFIG_FILES, [])
         graphic_list.append(graphic_filename)
         page_dict[GRAPHIC_CONFIG_FILES] = graphic_list
         save_main_config_dict(main_config_dict)
+
     with open(
         os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_filename), "w"
     ) as fout:

@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import re
@@ -22,6 +23,10 @@ from utility.constants import (
     GRAPHIC_META_INFO,
     ADDITIONAL_DATA_SOURCES,
     DATA_SOURCES,
+    TITLE,
+    GRAPHIC_PATH,
+    GRAPHIC_TITLE,
+    GRAPHIC_CONFIG_FILES,
 )
 
 UI_SCHEMA_PAIRS = {
@@ -156,3 +161,22 @@ def make_empty_component_dict():
         component_dict[ui_name] = {}
     component_dict[GRAPHIC_META_INFO] = {}
     return component_dict
+
+
+def get_layout_for_dashboard(available_pages_list):
+    """
+    Makes the dictionary that determines the dashboard layout page.
+    Natably displays the graphic title to represent the graphic.
+    :param available_pages_list:
+    :return:
+    """
+    available_pages_list_copy = copy.deepcopy(available_pages_list)
+    for available_page_dict in available_pages_list_copy:
+        graphic_list = available_page_dict[GRAPHIC_CONFIG_FILES]
+        for graphic_index, graphic_path in enumerate(graphic_list):
+            graphic_json = json.loads(load_graphic_config_dict(graphic_path))
+            graphic_list[graphic_index] = {
+                GRAPHIC_PATH: graphic_path,
+                GRAPHIC_TITLE: graphic_json[GRAPHIC_TITLE],
+            }
+    return available_pages_list_copy
