@@ -17,7 +17,8 @@ CONTOUR = "contour"
 BOX = "box"
 VIOLIN = "violin"
 HISTOGRAM = "histogram"
-# HISTOGRAM2D = "histogram2d"
+HISTOGRAM2D = "histogram2d"
+HISTOGRAM2DCONTOUR = "histogram2dcontour"
 SCATTER3D = "scatter3d"
 # SURFACE = "surface"
 MESH3D = "mesh3d"
@@ -37,6 +38,8 @@ SELECTOR_DICT = {
 
 
 def build_plotly_schema(column_names):
+    if column_names:
+        column_names.sort()
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "plotly graph definition",
@@ -96,8 +99,8 @@ def build_plotly_schema(column_names):
                             TITLE: "Graph Style",
                             "description": "used for scatter or scattergl",
                             "enum": [
-                                "lines",
                                 "markers",
+                                "lines",
                                 "text",
                                 "lines+markers",
                                 "markers+text",
@@ -166,7 +169,7 @@ def build_plotly_schema_individual_dicts(column_names):
 
     directions_for_building_schemas = {
         SCATTER: {
-            ENUM: [SCATTER, SCATTERGL],
+            ENUM: [SCATTERGL, SCATTER],
             REQUIRED: [TYPE, X, Y, MODE],
             DESCRIPTION: {
                 TYPE: "scattergl uses uses WebGL which is faster for lots of points",
@@ -177,14 +180,23 @@ def build_plotly_schema_individual_dicts(column_names):
         BOX: {
             ENUM: [BOX],
             REQUIRED: [TYPE, Y],
-            DESCRIPTION: {TYPE: "Best used with the group by visualization option",},
+            DESCRIPTION: {
+                TYPE: "To show more than one box plot set group by in visualization options below",
+            },
         },
-        VIOLIN: {ENUM: [VIOLIN], REQUIRED: [TYPE, Y],},
+        VIOLIN: {
+            ENUM: [VIOLIN],
+            REQUIRED: [TYPE, Y],
+            DESCRIPTION: {
+                TYPE: "To show more than one violin plot set group by in visualization options below"
+            },
+        },
         HISTOGRAM: {ENUM: [HISTOGRAM], REQUIRED: [TYPE, X],},
         CONTOUR: {ENUM: [CONTOUR], REQUIRED: [TYPE, X, Y, Z],},
+        HISTOGRAM2D: {ENUM: [HISTOGRAM2D, HISTOGRAM2DCONTOUR], REQUIRED: [TYPE, X, Y],},
         MESH3D: {ENUM: [MESH3D], REQUIRED: [TYPE, X, Y, Z],},
         HEATMAP: {
-            ENUM: [HEATMAP, HEATMAPGL],
+            ENUM: [HEATMAPGL, HEATMAP],
             REQUIRED: [TYPE, X, Y, Z],
             DESCRIPTION: {
                 TYPE: "heatmapgl uses WebGL which may be faster for lots of points"

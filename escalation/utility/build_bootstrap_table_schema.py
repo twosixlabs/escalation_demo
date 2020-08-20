@@ -14,6 +14,8 @@ SELECTOR_DICT = {
 
 
 def build_table_schema(column_names):
+    if column_names:
+        column_names.sort()
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "bootstrap table definition",
