@@ -164,6 +164,12 @@ def make_empty_component_dict():
 
 
 def get_layout_for_dashboard(available_pages_list):
+    """
+    Makes the dictionary that determines the dashboard layout page.
+    Natably displays the graphic title to represent the graphic.
+    :param available_pages_list:
+    :return:
+    """
     available_pages_list_copy = copy.deepcopy(available_pages_list)
     for available_page_dict in available_pages_list_copy:
         graphic_list = available_page_dict[GRAPHIC_CONFIG_FILES]

@@ -163,7 +163,7 @@ def update_graphic_json_config_with_ui_changes():
     graphic_filename = config_information_dict[GRAPHIC_PATH]
     # sanitizing the string so it is valid filename
     if config_information_dict[GRAPHIC_STATUS] in [NEW, COPY]:
-        # make the json filename
+        # Given a graphic title from the user input, make a valid json filename
         graphic_filename_no_ext = sanitize_string(graphic_dict[GRAPHIC_TITLE])
         if os.path.exists(
             os.path.join(
