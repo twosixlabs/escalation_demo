@@ -1,8 +1,9 @@
 # MVP Features
+- Validate schema before allowing a submit.
 - data source affects what can be built - client
 - and link to external Docker deployment instructions (Heroku? AWS free tier?)
 - Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
-
+- Update your first Config file with the wizard UI document
 # Nice to have Features
 
 ## graphics functionality

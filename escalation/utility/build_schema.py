@@ -27,18 +27,7 @@ def build_settings_schema():
         "title": "Escalation Main Config Generator",
         "description": "Main config file needed to use escalation OS",
         "type": "object",
-        REQUIRED: [SITE_TITLE, SITE_DESC, DATA_BACKEND, DATA_SOURCES],
-        DEPENDENCIES: {
-            DATA_BACKEND: {
-                ONEOF: [
-                    {
-                        PROPERTIES: {DATA_BACKEND: {ENUM: [LOCAL_CSV]}},
-                        REQUIRED: [DATA_FILE_DIRECTORY],
-                    },
-                    {PROPERTIES: {DATA_BACKEND: {ENUM: [POSTGRES]}}},
-                ]
-            }
-        },
+        REQUIRED: [SITE_TITLE, SITE_DESC, DATA_BACKEND],
         "additionalProperties": False,
         "properties": {
             SITE_TITLE: {
@@ -56,18 +45,6 @@ def build_settings_schema():
                 TITLE: "Data Backend",
                 "description": "How the data is being managed on the server",
                 "enum": [POSTGRES, LOCAL_CSV],
-            },
-            DATA_FILE_DIRECTORY: {
-                "type": "string",
-                TITLE: "Data File Directory",
-                "description": "Where the data is on the server",
-            },
-            DATA_SOURCES: {
-                "type": "array",
-                TITLE: "Data Sources",
-                "description": "list of tables or folders that server will use for the plots",
-                MIN_ITEMS: 1,
-                "items": {"type": "string", TITLE: "Data Source"},
             },
             AVAILABLE_PAGES: {
                 "type": "array",
@@ -112,6 +89,10 @@ def build_graphic_schema(data_source_names=None, column_names=None):
     :param column_names: possible column names from files or database (format data_source_name.column_name)
     :return:
     """
+    if data_source_names:
+        data_source_names.sort()
+    if column_names:
+        column_names.sort()
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "type": "object",
@@ -197,7 +178,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             VISUALIZATION_OPTIONS: {
                 "type": "object",
                 "title": "Visualization List",
-                "description": "modifications to the existing graph",
+                "description": "Transformations made to the graph",
                 "additionalProperties": False,
                 PROPERTIES: {
                     HOVER_DATA: {
@@ -279,7 +260,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             SELECTABLE_DATA_DICT: {
                 "type": "object",
                 "title": "Selector List",
-                "description": "dictionary of data selectors for a graphic",
+                "description": "Data selectors that the user can interact with for a graphic",
                 ADDITIONAL_PROPERTIES: False,
                 PROPERTIES: {
                     FILTER: {
@@ -298,13 +279,21 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                     "description": "name in table",
                                     "enum": column_names,
                                 },
-                                "multiple": {"type": "boolean"},
+                                "multiple": {
+                                    "type": "boolean",
+                                    TITLE: "Allow Multiple Selections",
+                                    DESCRIPTION: "Allow multiple values to be selected in this filter",
+                                },
                                 DEFAULT_SELECTED: {
                                     "type": "array",
-                                    "description": "default filter, list of column values",
+                                    "description": "Default value(s) selected in this filter, a list of values to include",
                                     "items": {"type": "string"},
                                 },
-                                UNFILTERED_SELECTOR: {"type": "boolean"},
+                                UNFILTERED_SELECTOR: {
+                                    "type": "boolean",
+                                    TITLE: "Should Selector Be Filtered",
+                                    DESCRIPTION: "If selector is filtered, the user can only select values in this field that are present in the data subsetted by the currently-applied filters",
+                                },
                             },
                         },
                     },
