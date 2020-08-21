@@ -6,6 +6,12 @@
 # . csv_to_sql.sh structural_metrics /Users/nick.leiby/repos/versioned-datasets/data/protein-design/structural_metrics/topology_mining_and_Longxing_chip_1.v1.structural_metrics.csv replace
 
 
+if [[ ! -d  "$(pwd)/escalation/app_deploy_data" ]]; then
+  echo "Script must be run from the top directory of the Escalation code repository"
+  exit 1
+fi
+
+
 table_name=$1
 data_file_path=$2
 
