@@ -11,7 +11,7 @@ from jsonschema.exceptions import ValidationError
 
 from sqlalchemy.engine.url import URL
 from app_deploy_data.app_settings import DATABASE_CONFIG
-from utility.app_utilities import configure_backend
+from app_setup import configure_backend
 from utility.build_schema import build_settings_schema, build_graphic_schema
 from utility.constants import *
 

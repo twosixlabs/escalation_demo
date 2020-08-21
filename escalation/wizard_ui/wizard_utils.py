@@ -5,7 +5,7 @@ import re
 
 from flask import current_app, render_template, Blueprint, request
 
-from utility.app_utilities import configure_backend
+from app_setup import configure_backend
 from utility.constants import (
     APP_CONFIG_JSON,
     CONFIG_FILE_FOLDER,
@@ -57,7 +57,7 @@ def load_main_config_dict_if_exists(app):
         ) as config_file:
             config_dict = json.load(config_file)
         return config_dict
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         return {}
 
 
@@ -67,7 +67,7 @@ def load_graphic_config_dict(graphic):
             os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic), "r"
         ) as fout:
             graphic_dict_json = fout.read()
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         graphic_dict_json = "{}"
     return graphic_dict_json
 

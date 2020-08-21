@@ -31,10 +31,7 @@ def build_settings_schema():
         DEPENDENCIES: {
             DATA_BACKEND: {
                 ONEOF: [
-                    {
-                        PROPERTIES: {DATA_BACKEND: {ENUM: [LOCAL_CSV]}},
-                        REQUIRED: [DATA_FILE_DIRECTORY],
-                    },
+                    {PROPERTIES: {DATA_BACKEND: {ENUM: [LOCAL_CSV]}},},
                     {PROPERTIES: {DATA_BACKEND: {ENUM: [POSTGRES]}}},
                 ]
             }
@@ -56,11 +53,6 @@ def build_settings_schema():
                 TITLE: "Data Backend",
                 "description": "How the data is being managed on the server",
                 "enum": [POSTGRES, LOCAL_CSV],
-            },
-            DATA_FILE_DIRECTORY: {
-                "type": "string",
-                TITLE: "Data File Directory",
-                "description": "Where the data is on the server",
             },
             DATA_SOURCES: {
                 "type": "array",

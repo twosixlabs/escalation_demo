@@ -6,7 +6,7 @@ import os
 
 from flask import current_app, render_template, Blueprint, request
 
-from utility.app_utilities import configure_backend
+from app_setup import configure_backend
 from utility.build_plotly_schema import SELECTOR_DICT
 
 from utility.constants import (

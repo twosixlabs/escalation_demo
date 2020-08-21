@@ -10,10 +10,8 @@ BACKEND_TYPES = {LOCAL_CSV: [LOCAL_CSV], DATABASE: [POSTGRES]}
 def build_main_schemas_for_ui():
     schema_local = build_settings_schema()
     schema_database = copy.deepcopy(schema_local)
-    schema_local[REQUIRED].append(DATA_FILE_DIRECTORY)
     schema_local[PROPERTIES][DATA_BACKEND][ENUM] = BACKEND_TYPES[LOCAL_CSV]
     schema_database[PROPERTIES][DATA_BACKEND][ENUM] = BACKEND_TYPES[DATABASE]
-    del schema_database[PROPERTIES][DATA_FILE_DIRECTORY]
     return {LOCAL_CSV: schema_local, DATABASE: schema_database}
 
 
