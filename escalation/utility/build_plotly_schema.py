@@ -182,14 +182,16 @@ def build_plotly_schema_individual_dicts(column_names):
             ENUM: [BOX],
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
-                TYPE: "To show more than one box plot set group by in visualization options below",
+                TYPE: "To show more than one box in the plot,"
+                'set "group by" in visualization options below',
             },
         },
         VIOLIN: {
             ENUM: [VIOLIN],
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
-                TYPE: "To show more than one violin plot set group by in visualization options below"
+                TYPE: "To show more than one violin in the plot,"
+                'set "group by" in visualization options below',
             },
         },
         HISTOGRAM: {ENUM: [HISTOGRAM], REQUIRED: [TYPE, X],},

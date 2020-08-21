@@ -282,17 +282,17 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "multiple": {
                                     "type": "boolean",
                                     TITLE: "Allow Multiple Selections",
-                                    DESCRIPTION: "Allow multiple values to be selected",
+                                    DESCRIPTION: "Allow multiple values to be selected in this filter",
                                 },
                                 DEFAULT_SELECTED: {
                                     "type": "array",
-                                    "description": "default filter, list of column values",
+                                    "description": "Default value(s) selected in this filter, a list of values to include",
                                     "items": {"type": "string"},
                                 },
                                 UNFILTERED_SELECTOR: {
                                     "type": "boolean",
                                     TITLE: "Should Selector Be Filtered",
-                                    DESCRIPTION: "User cannot select values no longer in set by others filters",
+                                    DESCRIPTION: "If selector is filtered, the user can only select values in this field that are present in the data subsetted by the currently-applied filters",
                                 },
                             },
                         },
