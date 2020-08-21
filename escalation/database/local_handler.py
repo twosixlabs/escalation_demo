@@ -24,6 +24,7 @@ from utility.constants import (
     MAIN_DATA_SOURCE,
     CONFIG_FILE_FOLDER,
     DATA,
+    SELECTED,
 )
 
 
@@ -114,6 +115,9 @@ class LocalCSVHandler(DataHandler):
             filters = []
         df = self.combined_data_table.copy(deep=False)
         for filter_dict in filters:
+            if not filter_dict[SELECTED]:
+                # No filter has been applied
+                continue
             column = df[filter_dict[OPTION_COL]]
             df = df[local_csv_handler_filter_operation(column, filter_dict)]
 

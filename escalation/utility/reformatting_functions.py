@@ -204,10 +204,13 @@ def add_operations_to_the_data_from_defaults(selectable_data_dict: dict) -> list
                 filter_dict, FILTER
             )
             selection = filter_dict.get(DEFAULT_SELECTED)
-            base_info_dict_for_selector[SELECTED] = (
-                selection if isinstance(selection, list) else [selection]
-            )
-            operation_list.append(base_info_dict_for_selector)
+            # make sure we don't have an empty selection list,
+            #  or a list that only contains an empty string
+            if selection and selection != [""]:
+                base_info_dict_for_selector[SELECTED] = (
+                    selection if isinstance(selection, list) else [selection]
+                )
+                operation_list.append(base_info_dict_for_selector)
 
     return operation_list
 
