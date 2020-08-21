@@ -6,18 +6,15 @@ import os
 
 from flask import current_app, render_template, Blueprint, request
 
-from app_setup import configure_backend
 from utility.build_plotly_schema import SELECTOR_DICT
 
 from utility.constants import (
-    DATA_SOURCES,
     DATA_BACKEND,
     LOCAL_CSV,
     APP_CONFIG_JSON,
     AVAILABLE_PAGES,
     PAGE_ID,
     GRAPHIC,
-    MAIN_CONFIG,
     CONFIG_FILE_FOLDER,
     CONFIG_DICT,
     GRAPHIC_STATUS,
@@ -112,8 +109,8 @@ def main_config_setup():
 def graphic_config_setup():
     config_dict = load_main_config_dict_if_exists(current_app)
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
-    data_source_names = config_dict[DATA_SOURCES]
     data_inventory_class = get_data_inventory_class(csv_flag)
+    data_source_names = data_inventory_class.get_available_data_sources()
     possible_column_names = get_possible_column_names(
         data_source_names, data_inventory_class, csv_flag
     )

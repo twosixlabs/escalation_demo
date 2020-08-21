@@ -23,8 +23,6 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
-    APP_CONFIG_JSON,
-    DATA_SOURCES,
 )
 
 
