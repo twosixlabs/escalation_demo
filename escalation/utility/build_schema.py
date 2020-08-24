@@ -108,7 +108,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 " (only plotly is currently available)",
                 "enum": ["plotly"],
             },
-            GRAPHIC_TITLE: {"type": "string", "description": "Graph title (optional)",},
+            GRAPHIC_TITLE: {
+                "type": "string",
+                "description": "Graph title",
+                PATTERN: NON_EMPTY_STRING,
+            },
             GRAPHIC_DESC: {
                 "type": "string",
                 "description": "Text caption shown above the graph (optional)",

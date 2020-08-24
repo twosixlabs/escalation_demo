@@ -24,6 +24,7 @@
 - Add data uploads table on app creation where we store active data and a history of uploads
 
 ## Wizard
+- Validate Schema before uploading
 - Combine wizard views into escalation app- we're running in debug mode, so it may work to just reboot the whole app on file changes. 
 - Allow Tables
 - Pair of keys.
