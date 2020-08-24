@@ -42,12 +42,14 @@
                     <button type="button" class="btn btn-secondary dropdown-toggle mb-1 mt-1 pr-5 pl-5" data-toggle="collapse" data-target={{ "#page_" ~ page_id ~ "_graphics" }}>
                         {{ page["webpage_label"] }}
                     </button>
+                    <button class="btn btn-danger mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=modify_config('delete_page',{{ page_id }})>Delete</button>
                 </div>
                 <div class="collapse" id={{ "page_" ~ page_id ~ "_graphics" }}>
                     {% for graphic in page["graphic_config_files"] %}
                         <div class="row">
                             <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}</button>
                             <button class="btn btn-outline-success mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','copy')>Copy</button>
+                        <button class="btn btn-outline-danger mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=modify_config('delete_graphic',{{ page_id }},'{{ graphic['graphic_path'] }}')>Delete</button>
                         </div>
                     {% endfor %}
                     <div class="row">
@@ -62,15 +64,18 @@
             {% endfor %}
 
     <div class="row">
-        <form method="post" action={{ url_for('.add_page') }} id="form_add_page">
+        <form method="post" action={{ url_for('.modify_layout') }} id="form_add_page">
             <div class="form-group mb-1 mt-4">
                 <div class="input-group">
+                    <input type="hidden" name="modification" value='add_page'>
                     <input type="hidden" name="title" value=''>
                     <input type="hidden" name="brief_desc" value=''>
                     <input type="hidden" name="data_backend" value=''>
+                    <input type="hidden" name="page_id" value=''>
+                    <input type="hidden" name="graphic" value=''>
                     <input type="text" class="form-control" name="webpage_label" placeholder="Dashboard Panel Name">
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-primary" onclick=add_page()>Add a Dashboard panel
+                        <button type="button" class="btn btn-primary" onclick=modify_config('add_page')>Add a Dashboard panel
                         </button>
                     </div>
                 </div>
