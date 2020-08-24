@@ -193,7 +193,8 @@ def get_data_source_info(csv_flag, active_data_source_names=None):
     data_inventory_class = get_data_inventory_class(csv_flag)
     data_source_names = data_inventory_class.get_available_data_sources()
     if not active_data_source_names:
-        active_data_source_names = data_source_names[:1]
+        # default to the first in alphabetical order
+        active_data_source_names = [min(data_source_names)]
     possible_column_names = get_possible_column_names(
         active_data_source_names, data_inventory_class, csv_flag
     )
