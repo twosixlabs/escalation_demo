@@ -1,4 +1,5 @@
 #!/bin/sh
 export FLASK_ENV=development
-exec gunicorn -b 0.0.0.0:8001 --access-logfile - --error-logfile - --log-level debug --timeout 1200 --workers 1 wizard_app:app
-
+export FLASK_APP=wizard_app.py
+export FLASK_RUN_EXTRA_FILES="/escalation/app_deploy_data/"
+flask run --host=0.0.0.0 --port=8001 --extra-files $FLASK_RUN_EXTRA_FILES
