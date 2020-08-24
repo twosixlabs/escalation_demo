@@ -197,11 +197,7 @@ class SqlDataInventory(SqlHandler):
         Lists all data sources available in the db
         :return:
         """
-        return [
-            table_name
-            for table_name in Base.metadata.tables.keys()
-            if table_name in current_app.config[APP_CONFIG_JSON][DATA_SOURCES]
-        ]
+        return [table_name for table_name in Base.metadata.tables.keys()]
 
     def get_identifiers_for_data_source(self):
         """
