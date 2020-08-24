@@ -18,17 +18,21 @@ function reset_form(id_on_web_page) {
 
 function edit_graphic(page_id,graphic,graphic_status) {
     //This allows the web page to focus where the plot was updated instead of starting at the top of the web page
-    let web_form=$('#form_button_click');
-    web_form[0].page_id.value=page_id;
-    web_form[0].graphic.value=graphic;
-    web_form[0].graphic_status.value=graphic_status;
-    web_form.submit();
+    let graphic_form=$('#form_button_click');
+    graphic_form[0].page_id.value=page_id;
+    graphic_form[0].graphic.value=graphic;
+    graphic_form[0].graphic_status.value=graphic_status;
+    graphic_form.submit();
 }
 
 function add_page(){
-    let web_form = $('#form_add_page');
-    if (web_form[0].webpage_label.value) {
-        web_form.submit();
+    let graphic_form=$('#form_button_click');
+    let add_page_form = $('#form_add_page');
+    if (add_page_form[0].webpage_label.value) {
+        add_page_form[0].title.value = graphic_form[0].title.value
+        add_page_form[0].brief_desc.value = graphic_form[0].brief_desc.value
+        add_page_form[0].data_backend.value = graphic_form[0].data_backend.value
+        add_page_form.submit();
     }
 }
 

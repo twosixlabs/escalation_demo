@@ -26,8 +26,7 @@
 ## Wizard
 - Validate Schema before uploading
 - Combine wizard views into escalation app- we're running in debug mode, so it may work to just reboot the whole app on file changes. 
-- Allow Tables
-- Pair of keys.
+- Allow Tables in the wizard
 - add pages in any order
 - format/ validate form - use the dependencies
 - add dependencies

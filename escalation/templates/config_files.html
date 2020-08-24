@@ -5,26 +5,37 @@
 
 {% block content %}
 <div class="jumbotron">
-    <h1 class="display-4">Configuration Editor</h1>
+    <h1 class="display-4">Dashboard Layout Editor</h1>
     <hr class="my-4">
     <p class="lead">Click on a file to edit the config file</p>
 </div>
     <div class="container-fluid pl-5 pr-5">
-    <div class="row">
-        <a class="btn btn-secondary mb-1 mt-1 pr-5 pl-5" href={{ url_for('.main_config_setup') }} role="button">Edit Main Config File
-        </a>
-
-    </div>
-    <div class="row mb-3">
-        <p>Change the order of dashboard pages and graphics, add new pages can be changed in the main config form</p>
-    </div>
-
-    <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
-        <input type="hidden" name="page_id" value=''>
-        <input type="hidden" name="graphic" value=''>
-        <input type="hidden" name="graphic_status" value=''>
-    </form>
-
+        <div class="row">
+            <form method="post" action={{ url_for('.graphic_config_setup') }} id="form_button_click">
+                <div class="form-group">
+                    <label for="title">Site Title</label>
+                    <input type="text" class="form-control" name="title" id="title" {% if current_config['title'] %} value="{{ current_config['title'] }}" {% endif %}>
+                </div>
+                <div class="form-group">
+                    <label for="brief_desc">Site Description</label>
+                    <textarea type="text" class="form-control" name="brief_desc" id="brief_desc" row="3">{{ current_config['brief_desc'] if current_config['brief_desc'] }}</textarea>
+                    <small class="form-text text-muted">Description shown at the top of the website</small>
+                </div>
+                <div class="form-group">
+                    <label for="data_backend">Data Backend</label>
+                    <select class="selectpicker form-control" data-dropdown-align-right='auto' name="data_backend" id="data_backend">
+                        <option value="database" {% if current_schema == "database" %}  selected {% endif %}>Database</option>
+                        <option value="local_csv" {% if current_schema == "local_csv" %}  selected {% endif %}>Local</option>
+                    </select>
+                </div>
+                    <input type="hidden" name="page_id" value=''>
+                    <input type="hidden" name="graphic" value=''>
+                    <input type="hidden" name="graphic_status" value=''>
+            </form>
+        </div>
+        <div class="row">
+            <p>Dashboard Panels</p>
+        </div>
             {% for page in available_pages %}
                 <div class="row">
                 {% set page_id=loop.index0 %}
@@ -54,6 +65,9 @@
         <form method="post" action={{ url_for('.add_page') }} id="form_add_page">
             <div class="form-group mb-1 mt-4">
                 <div class="input-group">
+                    <input type="hidden" name="title" value=''>
+                    <input type="hidden" name="brief_desc" value=''>
+                    <input type="hidden" name="data_backend" value=''>
                     <input type="text" class="form-control" name="webpage_label" placeholder="Dashboard Panel Name">
                     <div class="input-group-append">
                         <button type="button" class="btn btn-primary" onclick=add_page()>Add a Dashboard panel
@@ -65,6 +79,6 @@
         </form>
 
     </div>
-    </div>
 
+</div>
 {% endblock %}

@@ -33,7 +33,7 @@ from utility.constants import (
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
 )
-from validate_schema import get_data_inventory_class, get_possible_column_names
+
 from wizard_ui.schemas_for_ui import (
     build_main_schemas_for_ui,
     build_graphic_schemas_for_ui,
@@ -52,6 +52,7 @@ from wizard_ui.wizard_utils import (
     get_layout_for_dashboard,
     get_data_source_info,
     extract_data_sources_from_config,
+    copy_data_from_form_to_config,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
@@ -62,16 +63,17 @@ wizard_blueprint = Blueprint("wizard", __name__)
 
 @wizard_blueprint.route("/", methods=("GET",))
 def file_tree():
-    if APP_CONFIG_JSON in current_app.config:
-        config_dict = load_main_config_dict_if_exists(current_app)
-        return render_template(
-            CONFIG_FILES_HTML,
-            available_pages=get_layout_for_dashboard(
-                config_dict.get(AVAILABLE_PAGES, {})
-            ),
-        )
-    else:
-        return main_config_setup()
+    config_dict = load_main_config_dict_if_exists(current_app)
+    inverted_backend_types = invert_dict_lists(BACKEND_TYPES)
+    return render_template(
+        CONFIG_FILES_HTML,
+        available_pages=get_layout_for_dashboard(config_dict.get(AVAILABLE_PAGES, {})),
+        current_config=config_dict,
+        # load in the right schema based on the config dict, default to database
+        current_schema=inverted_backend_types.get(
+            config_dict.get(DATA_BACKEND, POSTGRES), DATABASE
+        ),
+    )
 
 
 @wizard_blueprint.route("/", methods=("POST",))
@@ -84,7 +86,9 @@ def add_page():
         ),  # sanitizing the string so it is valid url
         GRAPHIC_CONFIG_FILES: [],
     }
+    print(request.form)
     config_dict = load_main_config_dict_if_exists(current_app)
+    copy_data_from_form_to_config(config_dict, request.form)
     available_pages = config_dict.get(AVAILABLE_PAGES, [])
     available_pages.append(page_dict)
     config_dict[AVAILABLE_PAGES] = available_pages
@@ -112,6 +116,8 @@ def graphic_config_setup():
     graphic_status = request.form[GRAPHIC_STATUS]
 
     config_dict = load_main_config_dict_if_exists(current_app)
+    copy_data_from_form_to_config(config_dict, request.form)
+    save_main_config_dict(config_dict)
     active_data_source_names = None
     if graphic_status in [COPY, OLD]:
         graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
