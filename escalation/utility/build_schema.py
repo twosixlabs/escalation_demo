@@ -17,11 +17,6 @@ NON_EMPTY_STRING = r"[\s\S]+"
 
 
 def build_settings_schema():
-    """
-    :param data_source_names: names from DATA_SOURCES, already checked against the file system
-    :param column_names: possible column names from files or database (format data_source_name.column_name)
-    :return:
-    """
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "title": "Escalation Main Config Generator",

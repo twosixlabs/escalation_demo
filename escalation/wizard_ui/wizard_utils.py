@@ -3,14 +3,13 @@ import json
 import os
 import re
 
-from flask import current_app, render_template, Blueprint, request
+from flask import current_app
 
 from app_setup import configure_backend
 from utility.constants import (
     APP_CONFIG_JSON,
     CONFIG_FILE_FOLDER,
     MAIN_CONFIG,
-    GRAPHIC,
     PLOTLY,
     SELECTOR,
     VISUALIZATION,
@@ -23,7 +22,6 @@ from utility.constants import (
     GRAPHIC_META_INFO,
     ADDITIONAL_DATA_SOURCES,
     DATA_SOURCES,
-    TITLE,
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
     GRAPHIC_CONFIG_FILES,
@@ -138,10 +136,10 @@ def prune_visualization_dict(visualization_dict):
 
 def prune_selector_dict(selector_dict):
     """
-        Get rid of empty entries in selector dict
-        :param selector_dict:
-        :return:
-        """
+    Get rid of empty entries in selector dict
+    :param selector_dict:
+    :return:
+    """
     new_selector_dict = {}
     for sel_key, sel_info in selector_dict.items():
         if (sel_key == GROUPBY and sel_info[ENTRIES]) or (
@@ -153,7 +151,7 @@ def prune_selector_dict(selector_dict):
 
 def make_empty_component_dict():
     """
-    mkaes an empty version of component dict to be used by wizard ui
+    makes an empty version of component dict to be used by wizard ui
     :return:
     """
     component_dict = {}
@@ -166,7 +164,7 @@ def make_empty_component_dict():
 def get_layout_for_dashboard(available_pages_list):
     """
     Makes the dictionary that determines the dashboard layout page.
-    Natably displays the graphic title to represent the graphic.
+    Displays the graphic title to represent the graphic.
     :param available_pages_list:
     :return:
     """
