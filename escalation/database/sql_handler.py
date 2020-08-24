@@ -23,8 +23,6 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
-    APP_CONFIG_JSON,
-    DATA_SOURCES,
 )
 
 
@@ -56,6 +54,9 @@ class SqlHandler(DataHandler):
         # add filters to the query dynamically
         filter_tuples = []
         for filter_dict in filters:
+            if not filter_dict[SELECTED]:
+                # No filter has been applied
+                continue
             column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
             column_object = self.column_lookup_by_name[column_name]
             filter_tuples.append(
@@ -197,11 +198,7 @@ class SqlDataInventory(SqlHandler):
         Lists all data sources available in the db
         :return:
         """
-        return [
-            table_name
-            for table_name in Base.metadata.tables.keys()
-            if table_name in current_app.config[APP_CONFIG_JSON][DATA_SOURCES]
-        ]
+        return [table_name for table_name in Base.metadata.tables.keys()]
 
     def get_identifiers_for_data_source(self):
         """

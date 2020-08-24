@@ -1,7 +1,9 @@
 # MVP Features
-- data source affects what can be built - client
+- Method not allowed; create another graph with same name as existing graph, create it on a page, get command doesn't work?
+- If you rename the graph/page in the main config, can we rename the file rather than pointing to a new, empty file?
+- data source affects what can be built
 - and link to external Docker deployment instructions (Heroku? AWS free tier?)
-- Enforce no spaces or weird characters in column names. Note that we're lowercasing all columns in the sql upload. Do the same type of column sanitization in pandas for localcsv?
+- Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
 
 # Nice to have Features
 
@@ -14,11 +16,15 @@
 
 ## Data management
 
+- Using database/csv_to_sql.py with append doesn't work- upload_id needs to iterate
 - Data privacy- do we want to add some kind of key checking or password functionality?
 - Add data download option (both most recent data and older versions of the data?), with a url endpoint (on its own blueprint)
 - Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
 - Time data file uploads via app endpoint. The app is still using pg8000. Should we switch to psycopg2 at the cost of more annoying local development? Or separate settings for local/deployed?
+- Add data uploads table on app creation where we store active data and a history of uploads
+
 ## Wizard
+- Combine wizard views into escalation app- we're running in debug mode, so it may work to just reboot the whole app on file changes. 
 - Allow Tables
 - Pair of keys.
 - add pages in any order

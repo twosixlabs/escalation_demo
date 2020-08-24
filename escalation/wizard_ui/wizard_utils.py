@@ -3,14 +3,13 @@ import json
 import os
 import re
 
-from flask import current_app, render_template, Blueprint, request
+from flask import current_app
 
-from utility.app_utilities import configure_backend
+from app_setup import configure_backend
 from utility.constants import (
     APP_CONFIG_JSON,
     CONFIG_FILE_FOLDER,
     MAIN_CONFIG,
-    GRAPHIC,
     PLOTLY,
     SELECTOR,
     VISUALIZATION,
@@ -23,7 +22,6 @@ from utility.constants import (
     GRAPHIC_META_INFO,
     ADDITIONAL_DATA_SOURCES,
     DATA_SOURCES,
-    TITLE,
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
     GRAPHIC_CONFIG_FILES,
@@ -57,7 +55,7 @@ def load_main_config_dict_if_exists(app):
         ) as config_file:
             config_dict = json.load(config_file)
         return config_dict
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         return {}
 
 
@@ -67,7 +65,7 @@ def load_graphic_config_dict(graphic):
             os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic), "r"
         ) as fout:
             graphic_dict_json = fout.read()
-    except (OSError, IOError) as e:
+    except (OSError, IOError):
         graphic_dict_json = "{}"
     return graphic_dict_json
 
@@ -138,10 +136,10 @@ def prune_visualization_dict(visualization_dict):
 
 def prune_selector_dict(selector_dict):
     """
-        Get rid of empty entries in selector dict
-        :param selector_dict:
-        :return:
-        """
+    Get rid of empty entries in selector dict
+    :param selector_dict:
+    :return:
+    """
     new_selector_dict = {}
     for sel_key, sel_info in selector_dict.items():
         if (sel_key == GROUPBY and sel_info[ENTRIES]) or (
@@ -153,7 +151,7 @@ def prune_selector_dict(selector_dict):
 
 def make_empty_component_dict():
     """
-    mkaes an empty version of component dict to be used by wizard ui
+    makes an empty version of component dict to be used by wizard ui
     :return:
     """
     component_dict = {}
@@ -164,6 +162,12 @@ def make_empty_component_dict():
 
 
 def get_layout_for_dashboard(available_pages_list):
+    """
+    Makes the dictionary that determines the dashboard layout page.
+    Displays the graphic title to represent the graphic.
+    :param available_pages_list:
+    :return:
+    """
     available_pages_list_copy = copy.deepcopy(available_pages_list)
     for available_page_dict in available_pages_list_copy:
         graphic_list = available_page_dict[GRAPHIC_CONFIG_FILES]

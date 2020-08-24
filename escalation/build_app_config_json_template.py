@@ -18,8 +18,6 @@ def build_config_json_template():
         SITE_TITLE: "",
         SITE_DESC: "",
         DATA_BACKEND: "",
-        DATA_FILE_DIRECTORY: "",
-        DATA_SOURCES: [],
         AVAILABLE_PAGES: {
             "<page_identifier_goes_here_no_spaces>": {
                 WEBPAGE_LABEL: "<page name>",

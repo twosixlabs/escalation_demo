@@ -17,14 +17,14 @@ from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
     JOIN_KEYS,
-    DATA_FILE_DIRECTORY,
-    APP_CONFIG_JSON,
     TABLE_COLUMN_SEPARATOR,
     UNFILTERED_SELECTOR,
     COLUMN_NAME,
     ADDITIONAL_DATA_SOURCES,
     MAIN_DATA_SOURCE,
-    DATA_SOURCES,
+    CONFIG_FILE_FOLDER,
+    DATA,
+    SELECTED,
 )
 
 
@@ -38,9 +38,9 @@ class LocalCSVHandler(DataHandler):
         (..., ...)]]
         """
         self.data_sources = data_sources
-        self.data_file_directory = current_app.config[APP_CONFIG_JSON][
-            DATA_FILE_DIRECTORY
-        ]
+        self.data_file_directory = os.path.join(
+            current_app.config[CONFIG_FILE_FOLDER], DATA
+        )
         data_sources = [self.data_sources[MAIN_DATA_SOURCE]] + self.data_sources.get(
             ADDITIONAL_DATA_SOURCES, []
         )
@@ -115,6 +115,9 @@ class LocalCSVHandler(DataHandler):
             filters = []
         df = self.combined_data_table.copy(deep=False)
         for filter_dict in filters:
+            if not filter_dict[SELECTED]:
+                # No filter has been applied
+                continue
             column = df[filter_dict[OPTION_COL]]
             df = df[local_csv_handler_filter_operation(column, filter_dict)]
 
@@ -150,16 +153,14 @@ class LocalCSVDataInventory(LocalCSVHandler):
         return [
             f.name
             for f in os.scandir(
-                current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY]
+                os.path.join(current_app.config[CONFIG_FILE_FOLDER], DATA)
             )
             if f.is_dir()
-            and f.name in current_app.config[APP_CONFIG_JSON][DATA_SOURCES]
         ]
 
     def get_identifiers_for_data_source(self):
         full_path = os.path.join(
-            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
-            self.data_source_name,
+            current_app.config[CONFIG_FILE_FOLDER], DATA, self.data_source_name,
         )
         list_of_files = glob.glob(f"{full_path}/*.csv")
         assert len(list_of_files) > 0
@@ -189,7 +190,8 @@ class LocalCSVDataInventory(LocalCSVHandler):
         )
 
         file_path = os.path.join(
-            current_app.config[APP_CONFIG_JSON][DATA_FILE_DIRECTORY],
+            current_app.config[CONFIG_FILE_FOLDER],
+            DATA,
             self.data_source_name,
             file_name,
         )

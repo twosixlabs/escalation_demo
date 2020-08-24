@@ -4,6 +4,7 @@
 
 import sys
 from io import StringIO
+import re
 
 import pandas as pd
 import psycopg2  # used here for fast copy_from performance
@@ -34,6 +35,7 @@ DATA_TYPE_MAP = {
 #  dict: sqlalchemy.types.JSON
 
 EXISTS_OPTIONS = ["replace", "append", "fail"]
+POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
 
 
 def extract_values(obj, key):
@@ -247,10 +249,26 @@ if __name__ == "__main__":
     # todo - better arg handling with argparse or something
     assert if_exists in EXISTS_OPTIONS
 
+    if not re.match(POSTGRES_TABLE_NAME_FORMAT_REGEX, table_name):
+        print(
+            "Table names name must start with a letter or an underscore;"
+            " the rest of the string can contain letters, digits, and underscores."
+        )
+        exit(1)
+    if len(table_name) > 31:
+        print(
+            "Postgres SQL only supports table names with length <= 31-"
+            " additional characters will be ignored"
+        )
+        exit(1)
+    if re.match("[A-Z]", table_name):
+        print(
+            "Postgres SQL table names are case insensitive- "
+            "tablename will be converted to lowercase letters"
+        )
+
     data = CreateTablesFromCSVs.get_data_from_csv(filepath)
     write_and_fill_new_table_from_df(table_name, filepath, data, if_exists)
 
 
 # todo: add columns about upload time
-# todo: add an upload metadata table if not exists that has upload time, user, id, numrows, etc from the submission
-# todo: enforce no : in column or table names

@@ -11,7 +11,7 @@ from jsonschema.exceptions import ValidationError
 
 from sqlalchemy.engine.url import URL
 from app_deploy_data.app_settings import DATABASE_CONFIG
-from utility.app_utilities import configure_backend
+from app_setup import configure_backend
 from utility.build_schema import build_settings_schema, build_graphic_schema
 from utility.constants import *
 
@@ -83,28 +83,15 @@ def validate_config_data_references(config_dict_path):
         ctx.push()
         # handle code differently at two spots depending on whether we are dealing with file system or database
         csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
-        data_source_names = config_dict[DATA_SOURCES]
         # data_backend_writer may be useful
         data_inventory_class = get_data_inventory_class(csv_flag)
         data_source_names_found = data_inventory_class.get_available_data_sources()
 
-        # Checking if data source names are valid
-        for index, data_source_name in enumerate(data_source_names):
-            if data_source_name not in data_source_names_found:
-                raise ValidationError(
-                    f"{data_source_name} is an invalid data source name, needs to be"
-                    f" one of [{', '.join(data_source_names_found)}].\nHave you added the data source as"
-                    f" described in the setup instructions in README.md?",
-                    path=deque(
-                        [DATA_SOURCES, index]
-                    ),  # jsonschema looking for a deque with the path to the error
-                )
-
         possible_column_names = get_possible_column_names(
-            data_source_names, data_inventory_class, csv_flag
+            data_source_names_found, data_inventory_class, csv_flag
         )
         # put column names in format "data_source_name.column_name"
-        schema = build_graphic_schema(data_source_names, possible_column_names)
+        schema = build_graphic_schema(data_source_names_found, possible_column_names)
 
         pages = config_dict.get(AVAILABLE_PAGES, [])
         for page in pages:

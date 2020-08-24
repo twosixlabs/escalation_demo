@@ -137,18 +137,23 @@ To use the app, navigate in your browser to: [http://localhost:8000](http://loca
 
 Todo: deleting the db volume
 
+# Running Escalation as a web-accessible server
 
-### Running Locally (testing, development of your custom Escalation dashboard)
+
+In summary, you'll build a Docker-compose image that includes your dashboard configuration, and deploy it on a web-accessible server. 
+This can be a server on a local network, e.g. in your lab, or on a cloud provider like [DigitalOcean](https://www.digitalocean.com/docs/droplets/quickstart/), Heroku, or AWS.
+
+## Building your Docker image for deployment
+
+1. You'll want to change the default settings for the password and username for the database, defined here: `escos/escalation/app_deploy_data/app_settings.py`
+2. 
+
+# How can I contribute? (advanced)
+
+### Running Locally, without using Docker (useful for Escalation code development, testing)
 
 You can also set up a custom Python virtual environment and run the server locally as you would any other Flask web app. 
 ToDo: More detailed instructions on virtual env setup, requirements install,  and running the app. Include info about db connection from host to Docker db
-
-### Running Escalation as a web-accessible server
-
-Todo: Links to DigitalOcean, Heroku, AWS tutorials for web hosting
-
-
-# How can I contribute? (advanced)
 
 ### Developing for Escalation
 

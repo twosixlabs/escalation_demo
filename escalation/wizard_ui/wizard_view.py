@@ -6,18 +6,15 @@ import os
 
 from flask import current_app, render_template, Blueprint, request
 
-from utility.app_utilities import configure_backend
 from utility.build_plotly_schema import SELECTOR_DICT
 
 from utility.constants import (
-    DATA_SOURCES,
     DATA_BACKEND,
     LOCAL_CSV,
     APP_CONFIG_JSON,
     AVAILABLE_PAGES,
     PAGE_ID,
     GRAPHIC,
-    MAIN_CONFIG,
     CONFIG_FILE_FOLDER,
     CONFIG_DICT,
     GRAPHIC_STATUS,
@@ -114,7 +111,8 @@ def graphic_config_setup():
 
     config_dict = load_main_config_dict_if_exists(current_app)
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
-    data_source_names = config_dict[DATA_SOURCES]
+    data_inventory_class = get_data_inventory_class(csv_flag)
+    data_source_names = data_inventory_class.get_available_data_sources()
     data_inventory_class = get_data_inventory_class(csv_flag)
 
     active_data_source_names = data_source_names[:1]
@@ -134,6 +132,7 @@ def graphic_config_setup():
     current_schema = SCATTER
 
     if graphic_status in [COPY, OLD]:
+        graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         type_to_schema = invert_dict_lists(schema_to_type)
         current_schema = type_to_schema[
             graphic_dict[PLOT_SPECIFIC_INFO][DATA][0].get(TYPE, SCATTER)
@@ -173,7 +172,7 @@ def update_graphic_json_config_with_ui_changes():
     graphic_filename = config_information_dict[GRAPHIC_PATH]
     # sanitizing the string so it is valid filename
     if config_information_dict[GRAPHIC_STATUS] in [NEW, COPY]:
-        # make the json filename
+        # Given a graphic title from the user input, make a valid json filename
         graphic_filename_no_ext = sanitize_string(graphic_dict[GRAPHIC_TITLE])
         if os.path.exists(
             os.path.join(
