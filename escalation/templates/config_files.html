@@ -44,7 +44,7 @@
                     </button>
                     <button class="btn btn-danger mb-1 mt-1 ml-1 pr-3 pl-3" type="button" onclick=modify_config('delete_page',{{ page_id }})>Delete</button>
                 </div>
-                <div class="collapse" id={{ "page_" ~ page_id ~ "_graphics" }}>
+                <div class="collapse show" id={{ "page_" ~ page_id ~ "_graphics" }}>
                     {% for graphic in page["graphic_config_files"] %}
                         <div class="row">
                             <button class="btn btn-outline-secondary mb-1 mt-1 ml-5 pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}</button>
@@ -75,7 +75,7 @@
                     <input type="hidden" name="graphic" value=''>
                     <input type="text" class="form-control" name="webpage_label" placeholder="Dashboard Panel Name">
                     <div class="input-group-append">
-                        <button type="button" class="btn btn-primary" onclick=modify_config('add_page')>Add a Dashboard panel
+                        <button type="button" class="btn btn-primary" onclick=modify_config('add_page')>Add a Dashboard Panel
                         </button>
                     </div>
                 </div>
