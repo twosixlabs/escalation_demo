@@ -38,13 +38,14 @@ services:
     restart: always
     image: postgres:latest
     container_name: escos_db
+    env_file:
+    - ./escalation/app_deploy_data/database_env_file
     volumes:
       - db-data:/var/lib/postgresql/data
+#      This file runs a db setup command that creates the upload metadata table
+      - ./escalation/database/container_db_init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
-    env_file:
-      - ./escalation/app_deploy_data/database_env_file
-
 
 volumes:
   db-data:
