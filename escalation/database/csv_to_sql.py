@@ -35,37 +35,29 @@ from sqlalchemy.types import (
     ARRAY,
     Interval,
 )
-from tableschema import Table as TableSchemaTable
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
 
+# from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
 SQL_DATA_TYPE_MAP = {
     "integer": Integer,
-    "number": Float,
+    "floating": Float,
+    "decimal": Float,
+    "mixed-integer-float": Float,
     "string": Text,
+    "mixed-integer": Text,
+    "category": Text,
+    "bytes": Text,
     "date": DateTime,
-    "datetime": DateTime,
+    "datetime64": DateTime,
     "datetime.date": Date,
-    "datetime.time": Time,
-    "datetime.timedelta": Interval,
+    "time": Time,
+    "timedelta64": Interval,
+    "timedelta": Interval,
     "dict": JSON,
     "list": ARRAY,
     "boolean": Boolean,
-}
-
-PANDAS_DATA_TYPE_MAP = {
-    "integer": "int64",
-    "number": "float",
-    "string": "object",
-    "date": "datetime64",
-    "datetime": "datetime64",
-    "datetime.date": "datetime64",
-    "datetime.time": "datetime64",
-    "datetime.timedelta": "timedelta64",
-    "dict": "object",
-    "list": "object",
-    "boolean": "bool",
 }
 
 
@@ -120,29 +112,6 @@ def psycopg2_copy_from_stringio(conn, df, table_name):
         cursor.close()
 
 
-def extract_values(obj, key):
-    """Recursively pull values of specified key from nested JSON."""
-    arr = []
-
-    def extract(obj, arr, key):
-        """Return all matching values in an object."""
-        if isinstance(obj, dict):
-            for k, v in obj.items():
-                if isinstance(v, (dict, list)):
-                    if k == key:
-                        arr.append(v)
-                    extract(v, arr, key)
-                elif k == key:
-                    arr.append(v)
-        elif isinstance(obj, list):
-            for item in obj:
-                extract(item, arr, key)
-        return arr
-
-    results = extract(obj, arr, key)
-    return results
-
-
 class CreateTablesFromCSVs:
     """Infer a table schema from a CSV."""
 
@@ -170,9 +139,7 @@ class CreateTablesFromCSVs:
         upload_id = max_upload_id + 1
         return upload_id
 
-    def create_and_fill_new_sql_table_from_df(
-        self, table_name, filepath_for_schema, data, if_exists
-    ):
+    def create_and_fill_new_sql_table_from_df(self, table_name, data, if_exists):
 
         key_column = None
         print(f"Creating empty table named {table_name}")
@@ -181,7 +148,7 @@ class CreateTablesFromCSVs:
         data = self.append_metadata_to_data(
             data, upload_id=upload_id, upload_time=upload_time, key_columns=key_column,
         )
-        schema = self.get_schema_from_csv(data)
+        data, schema = self.get_schema_from_df(data)
         # this creates an empty table of the correct schema using pandas to_sql
         self.create_new_table(
             table_name, schema, key_columns=key_column, if_exists=if_exists
@@ -225,57 +192,33 @@ class CreateTablesFromCSVs:
         return pd.read_csv(csv_data_file_path, encoding="utf-8", comment="#")
 
     @classmethod
-    def get_schema_from_csv(cls, data, confidence=0.05):
+    def get_schema_from_df(cls, data):
         """
-        Infers schema from csv file, making predictions about data type and expressing the confidence in the predictions
-        :param csv_data_file_path:
-        :param confidence: ratio of casting errors allowed
+        Infers schema from df file
+
         :return: schema_dict of names:data_types
         """
-        # get the schema given the header column and the list of lists of rows
-        rows = [list(data.columns)] + data.values.tolist()
-        table = TableSchemaTable(rows)
-        table.infer(confidence=confidence)
-        import ipdb
 
-        ipdb.set_trace()
-        schema = table.schema.descriptor
-        # todo: we aren't evaluating the confidence failures here- what happens if we can't infer? UX step where the schema gets validated by a user?
-        names = cls.get_column_names(schema, "name")
-        sql_datatypes = cls.get_mapped_column_datatypes(
-            schema, "type", map=SQL_DATA_TYPE_MAP
-        )
-        # pd_datatypes = cls.get_mapped_column_datatypes(
-        #     schema, "type", map=PANDAS_DATA_TYPE_MAP
-        # )
-        schema_dict = dict(zip(names, sql_datatypes))
-        # pandas_schema_dict = dict(zip(names, pd_datatypes))
+        def convert_to_nullable_int_if_able(x):
+            # Pandas stores numerics with nulls as floats. Int64 (not int64) is nullable
+            # Use this dtype where appropriate
+            try:
+                return x.astype("Int64")
+            except TypeError:
+                return x
 
+        data_cast = data.apply(convert_to_nullable_int_if_able)
+        df_pandas_schema_dict = {}
+        for column in data_cast.columns:
+            df_pandas_schema_dict[column] = pd.api.types.infer_dtype(data_cast[column])
+        df_sql_schema_dict = {
+            k: SQL_DATA_TYPE_MAP[v] for k, v in df_pandas_schema_dict.items()
+        }
         metadata_schema = OrderedDict(
             {UPLOAD_ID: Integer, UPLOAD_TIME: DateTime, INDEX_COLUMN: Integer,}
         )
-        metadata_schema.update(schema_dict)
-        return metadata_schema
-
-    @staticmethod
-    def get_column_names(schema, key):
-        """Get names of columns."""
-        names = extract_values(schema, key)
-        return names
-
-    @staticmethod
-    def get_mapped_column_datatypes(schema, key, map):
-        """Convert python tableschema output to types to recognizable by SQLAlchemy."""
-        tableschema_data_types = extract_values(schema, key)
-        sqlalchemy_data_types = []
-        for tableschema_data_type in tableschema_data_types:
-            try:
-                sqlalchemy_data_types.append(map[tableschema_data_type])
-            except KeyError:
-                raise KeyError(
-                    f"Mapping to sqlalchemy data type not found for {tableschema_data_type}"
-                )
-        return sqlalchemy_data_types
+        metadata_schema.update(df_sql_schema_dict)
+        return data_cast, metadata_schema
 
     @staticmethod
     def append_metadata_to_data(
@@ -374,7 +317,7 @@ if __name__ == "__main__":
         upload_time,
         table_name,
     ) = csv_sql_writer.create_and_fill_new_sql_table_from_df(
-        table_name, filepath, data, if_exists
+        table_name, data, if_exists
     )
     csv_sql_writer.write_upload_metadata_row(
         upload_id, upload_time, table_name, active=True
