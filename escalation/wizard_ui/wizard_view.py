@@ -70,9 +70,7 @@ def file_tree():
         available_pages=get_layout_for_dashboard(config_dict.get(AVAILABLE_PAGES, {})),
         current_config=config_dict,
         # load in the right schema based on the config dict, default to database
-        current_schema=inverted_backend_types.get(
-            config_dict.get(DATA_BACKEND, POSTGRES), DATABASE
-        ),
+        current_schema=config_dict.get(DATA_BACKEND, POSTGRES),
     )
 
 
