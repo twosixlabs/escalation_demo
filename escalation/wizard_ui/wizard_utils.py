@@ -25,7 +25,10 @@ from utility.constants import (
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
     GRAPHIC_CONFIG_FILES,
+    DATA_SOURCE_TYPE,
 )
+from validate_schema import get_data_inventory_class, get_possible_column_names
+from wizard_ui.schemas_for_ui import build_graphic_schemas_for_ui
 
 UI_SCHEMA_PAIRS = {
     VISUALIZATION: VISUALIZATION_OPTIONS,
@@ -178,3 +181,33 @@ def get_layout_for_dashboard(available_pages_list):
                 GRAPHIC_TITLE: graphic_json[GRAPHIC_TITLE],
             }
     return available_pages_list_copy
+
+
+def get_data_source_info(csv_flag, active_data_source_names=None):
+    """
+    gets the available data sources and the possible column names based on the data source in the config
+    :param csv_flag:
+    :param active_data_source_names:
+    :return:
+    """
+    data_inventory_class = get_data_inventory_class(csv_flag)
+    data_source_names = data_inventory_class.get_available_data_sources()
+    if not active_data_source_names:
+        # default to the first in alphabetical order
+        active_data_source_names = [min(data_source_names)]
+    possible_column_names = get_possible_column_names(
+        active_data_source_names, data_inventory_class, csv_flag
+    )
+    return data_source_names, possible_column_names
+
+
+def extract_data_sources_from_config(graphic_config):
+    """
+    parses out the data source names from the graph definition
+    :param graphic_config:
+    :return:
+    """
+    data_sources = set()
+    for data_source_dict in graphic_config[DATA_SOURCES].values():
+        data_sources.add(data_source_dict.get(DATA_SOURCE_TYPE))
+    return list(data_sources)

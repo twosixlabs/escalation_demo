@@ -50,6 +50,8 @@ from wizard_ui.wizard_utils import (
     graphic_dict_to_graphic_component_dict,
     graphic_component_dict_to_graphic_dict,
     get_layout_for_dashboard,
+    get_data_source_info,
+    extract_data_sources_from_config,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
@@ -107,21 +109,25 @@ def main_config_setup():
 
 @wizard_blueprint.route("/graphic", methods=("POST",))
 def graphic_config_setup():
+    graphic_status = request.form[GRAPHIC_STATUS]
+
     config_dict = load_main_config_dict_if_exists(current_app)
+    active_data_source_names = None
+    if graphic_status in [COPY, OLD]:
+        graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
+        active_data_source_names = extract_data_sources_from_config(graphic_dict)
+
     csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
-    data_inventory_class = get_data_inventory_class(csv_flag)
-    data_source_names = data_inventory_class.get_available_data_sources()
-    possible_column_names = get_possible_column_names(
-        data_source_names, data_inventory_class, csv_flag
+    data_source_names, possible_column_names = get_data_source_info(
+        csv_flag, active_data_source_names
     )
-    component_graphic_dict = make_empty_component_dict()
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
     )
+    component_graphic_dict = make_empty_component_dict()
     current_schema = SCATTER
-    graphic_status = request.form[GRAPHIC_STATUS]
+
     if graphic_status in [COPY, OLD]:
-        graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         type_to_schema = invert_dict_lists(schema_to_type)
         current_schema = type_to_schema[
             graphic_dict[PLOT_SPECIFIC_INFO][DATA][0].get(TYPE, SCATTER)
@@ -193,3 +199,22 @@ def update_graphic_json_config_with_ui_changes():
         json.dump(graphic_dict, fout, indent=4)
 
     return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
+
+
+@wizard_blueprint.route("/graphic/update_schemas", methods=("POST",))
+def get_updated_schemas():
+    active_data_source_names = request.get_json()
+    config_dict = load_main_config_dict_if_exists(current_app)
+    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
+    data_source_names, possible_column_names = get_data_source_info(
+        csv_flag, active_data_source_names
+    )
+    graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
+        data_source_names, possible_column_names
+    )
+
+    return (
+        json.dumps(graphic_schemas, indent=4,),
+        200,
+        {"ContentType": "application/json"},
+    )

@@ -47,36 +47,31 @@
     // Enables all the tooltips
     $(function () {$('[data-toggle="tooltip"]').tooltip({trigger : 'hover'})})
 
+
     let current_state = {{ current_config | safe }};
-    const dict_of_schemas={{ schema | safe }};
-    const dict_of_plotly_schemas = dict_of_schemas['plotly_schema'];
+    let dict_of_schemas={{ schema | safe }};
+    let dict_of_plotly_schemas = dict_of_schemas['plotly_schema'];
     let editors= new Object();
     let current_plot_type = "{{ current_schema }}";
     let saved_plot_type = current_plot_type;
-    editors['graphic_meta_info'] = new_editor('graphic', false, dict_of_schemas['graphic_schema']);
-    editors['plotly'] = new_editor('plotly', true, dict_of_plotly_schemas[current_plot_type]);
-    editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
-    editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);
+    make_json_editor();
 
     {% if graphic_status in ['old', 'copy'] %}
-        for(let editor_name in editors){
-            editors[editor_name].setValue(current_state[editor_name])
-        }
+        set_json_editor_value(current_state);
     {% endif %}
-
+    let current_data_sources = get_main_data_sources(editors['graphic_meta_info'].getEditor('root.data_sources').getValue());
+    add_watcher_to_data_sources();
     function new_editor(type,display_required_only,schema) {
         return new JSONEditor(document.getElementById('editor_holder_'.concat(type)),
-        options={theme: 'bootstrap4',display_required_only: display_required_only, disable_edit_json:true,
-            disable_array_delete_last_row:true, iconlib: 'fontawesome4', schema: schema });
+            options={theme: 'bootstrap4',display_required_only: display_required_only, disable_edit_json:true,
+                disable_array_delete_last_row:true, iconlib: 'fontawesome4', schema: schema });
     }
     function save_json_editor_to_file(redirect){
         const url = "{{ url_for('.update_graphic_json_config_with_ui_changes') }}";
 
         let webpage = '';
         if (redirect) {webpage = "{{ url_for('.file_tree') }}"}
-        for(let editor_name in editors){
-            current_state[editor_name]=editors[editor_name].getValue();
-        }
+        current_state=get_json_editor_value();
         saved_plot_type = current_plot_type;
         // The form contains nested dictionaries so it is easier to send a json than a form
         let data = JSON.stringify({"config_dict" : current_state,
@@ -90,6 +85,24 @@
             editors[editor_name].setValue();
         }
     }
+    function destroy_json_editor(){
+        for(let editor_name in editors){
+            editors[editor_name].destroy();
+        }
+    }
+    function make_json_editor(){
+        editors['graphic_meta_info'] = new_editor('graphic', false, dict_of_schemas['graphic_schema']);
+        editors['plotly'] = new_editor('plotly', true, dict_of_plotly_schemas[current_plot_type]);
+        editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
+        editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);
+    }
+    function get_json_editor_value(){
+        let editor_values= new Object();
+        for(let editor_name in editors){
+            editor_values[editor_name]=editors[editor_name].getValue();
+        }
+        return editor_values
+    }
     function reload_last_save(){
         if (current_plot_type != saved_plot_type){
             current_plot_type=saved_plot_type;
@@ -99,16 +112,49 @@
             editors['plotly'].destroy();
             editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type])
         }
-        for(let editor_name in editors){
-            editors[editor_name].setValue(current_state[editor_name]);
+        set_json_editor_value(current_state);
+    }
+    function set_json_editor_value(values_to_set) {
+        for (let editor_name in editors) {
+            editors[editor_name].setValue(values_to_set[editor_name]);
         }
     }
     $("select").on("changed.bs.select",
           function(e, clickedIndex, newValue, oldValue) {
         current_plot_type=this.value;
         editors['plotly'].destroy();
-        editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type])
+        editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type]);
 
     });
+    function add_watcher_to_data_sources() {
+        editors['graphic_meta_info'].watch('root.data_sources', () => {
+            let new_data_sources = get_main_data_sources(editors['graphic_meta_info'].getEditor('root.data_sources').getValue());
+            // check if sets are not equal
+            if (!(new_data_sources.size === current_data_sources.size && [...new_data_sources].every(value => current_data_sources.has(value)))) {
+                current_data_sources = new_data_sources;
+
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "{{ url_for('.get_updated_schemas') }}");
+                xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const jsonResponse = JSON.parse(xhr.response);
+                        dict_of_schemas = jsonResponse;
+                        dict_of_plotly_schemas = dict_of_schemas['plotly_schema'];
+                        current_data_sources = new_data_sources;
+                        let save_state = get_json_editor_value();
+                        destroy_json_editor();
+                        make_json_editor();
+                        set_json_editor_value(save_state);
+                        add_watcher_to_data_sources();
+                    } else if (xhr.readyState === 4) {
+                        console.log("Failed")
+                    }
+                };
+                xhr.send(JSON.stringify(Array.from(new_data_sources)));
+
+            }
+        });
+    }
 </script>
 {% endblock %}
