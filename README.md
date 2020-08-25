@@ -84,8 +84,7 @@ The flag replace, append, or fail is instructions for what to do if a sql table 
 
 If you'd like to add more than one csv to the same table, you have two options: combine them before running the script, or wait until the Escalation web app is running, and submit the additional CSVs as new data to the app (explained below, Todo: Here)
 Todo: If you have an existing SQL database, how do you copy it into Escalation?
-Todo: Check for absolute path in the shell script, which is required for the Docker mount
-
+Todo: On the feature roadmap- add csvs using the web interface rather than a shell script
 
 ### CSV data file system backend
 
@@ -133,9 +132,15 @@ Re-run the docker compose build command to re-launch the containers with the app
     
 To use the app, navigate in your browser to: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+## connecting directly to the SQL database 
+
+    docker exec -it escos_db psql -h localhost -p 5432 -U escalation -d escalation
+
 ## Resetting the SQL database
 
 Todo: deleting the db volume
+
+Todo: running docker cleanup
 
 # Running Escalation as a web-accessible server
 

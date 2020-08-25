@@ -12,7 +12,7 @@ numpy
 pandas
 pathvalidate
 pg8000
-psycopg2
+psycopg2-binary
 plotly
 pyyaml
 requests
