@@ -63,7 +63,6 @@ wizard_blueprint = Blueprint("wizard", __name__)
 @wizard_blueprint.route("/", methods=("GET",))
 def file_tree():
     config_dict = load_main_config_dict_if_exists(current_app)
-    inverted_backend_types = invert_dict_lists(BACKEND_TYPES)
     return render_template(
         CONFIG_FILES_HTML,
         available_pages=get_layout_for_dashboard(config_dict.get(AVAILABLE_PAGES, {})),
