@@ -308,7 +308,6 @@ if __name__ == "__main__":
         )
 
     db_config = DATABASE_CONFIG
-    db_config["host"] = "localhost"
     csv_sql_writer = CreateTablesFromCSVs(db_config)
 
     data = csv_sql_writer.get_data_from_csv(filepath)
