@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-# todo: assert that this is run from the top level of the repo
-
 # this watches for changes in the app_deploy_data directory, relaunching the flask app if there are any
 export FLASK_ENV=development
 export DEBUG=true

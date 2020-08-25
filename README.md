@@ -33,6 +33,9 @@ As of the current version:
 
 ## What do you need for the app to work?
 
+Note, because of Docker issues with Windows, there may be substantial hiccups running on that operating system.
+The instructions below have been tested on Mac and Linux.
+
 - [Configuration files](#Building-Configuration-files)
     - Escalation uses configuration files (json) to build the dashboard organizational structure, link the data in visualizations, and construct the visualizations themselves.
     - These configuration files can be built by hand, using the Configuration Wizard, or any combination of the two

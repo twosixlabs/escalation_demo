@@ -8,6 +8,7 @@ from utility.constants import (
     INDEX_COLUMN,
     UPLOAD_ID,
     DATA_SOURCE_TYPE,
+    MAIN_DATA_SOURCE,
 )
 
 UPLOAD_HTML = "data_upload.html"
@@ -88,12 +89,13 @@ def submission():
         )
         # if the form of the submission is right, let's validate the content of the submitted file
         data_inventory = current_app.config.data_backend_writer(
-            data_sources=[{DATA_SOURCE_TYPE: data_source_name}]
+            data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
-        # write upload history table record at the same time
         ignored_columns = data_inventory.write_data_upload_to_backend(df)
+        # write upload history table record at the same time
+
     except ValidationError as e:
         current_app.logger.info(e, exc_info=True)
         # check if POST comes from script instead of web UI

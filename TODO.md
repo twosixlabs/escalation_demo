@@ -22,6 +22,9 @@
 - Data upload options: 1) direct upload via a web interface 2) API upload which will interact with versioned data, etc. These methods probably use the same controller/model functionality, and the direct upload is just a web interface to the functionality.
 - Time data file uploads via app endpoint. The app is still using pg8000. Should we switch to psycopg2 at the cost of more annoying local development? Or separate settings for local/deployed?
 - Add data uploads table on app creation where we store active data and a history of uploads
+- Add username to uploads table
+- script to update models.py?
+- replace table should reset the rows in the metadata table- upload ids should restart
 
 ## Wizard
 - Validate Schema before uploading
@@ -31,6 +34,7 @@
 - format/ validate form - use the dependencies
 - add dependencies
 - search for feature and where in the config it goes
+- reloading the editor after a post generates the same post effects again= duplicating the new additions
 
 ## Testing
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
