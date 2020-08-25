@@ -25,13 +25,16 @@ function edit_graphic(page_id,graphic,graphic_status) {
     graphic_form.submit();
 }
 
-function add_page(){
+function modify_config(modification, page_id=-1,graphic=''){
     let graphic_form=$('#form_button_click');
     let add_page_form = $('#form_add_page');
-    if (add_page_form[0].webpage_label.value) {
-        add_page_form[0].title.value = graphic_form[0].title.value
-        add_page_form[0].brief_desc.value = graphic_form[0].brief_desc.value
-        add_page_form[0].data_backend.value = graphic_form[0].data_backend.value
+    if (modification!='add_page' || add_page_form[0].webpage_label.value) {
+        add_page_form[0].page_id.value = page_id;
+        add_page_form[0].graphic.value = graphic;
+        add_page_form[0].modification.value = modification;
+        add_page_form[0].title.value = graphic_form[0].title.value;
+        add_page_form[0].brief_desc.value = graphic_form[0].brief_desc.value;
+        add_page_form[0].data_backend.value = graphic_form[0].data_backend.value;
         add_page_form.submit();
     }
 }

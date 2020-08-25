@@ -77,20 +77,38 @@ def file_tree():
 
 
 @wizard_blueprint.route("/", methods=("POST",))
-def add_page():
-    webpage_label = request.form[WEBPAGE_LABEL]
-    page_dict = {
-        WEBPAGE_LABEL: webpage_label,
-        URL_ENDPOINT: sanitize_string(
-            webpage_label
-        ),  # sanitizing the string so it is valid url
-        GRAPHIC_CONFIG_FILES: [],
-    }
-    print(request.form)
+def modify_layout():
+    """
+    Add a page
+    Delete a page
+    Delete a graphic from a page
+    :return:
+    """
+    MODIFICATION = "modification"
+    ADD_PAGE = "add_page"
+    DELETE_PAGE = "delete_page"
+    DELETE_GRAPHIC = "delete_graphic"
     config_dict = load_main_config_dict_if_exists(current_app)
     copy_data_from_form_to_config(config_dict, request.form)
     available_pages = config_dict.get(AVAILABLE_PAGES, [])
-    available_pages.append(page_dict)
+    modification = request.form[MODIFICATION]
+    if modification == ADD_PAGE:
+        webpage_label = request.form[WEBPAGE_LABEL]
+        page_dict = {
+            WEBPAGE_LABEL: webpage_label,
+            URL_ENDPOINT: sanitize_string(
+                webpage_label
+            ),  # sanitizing the string so it is valid url
+            GRAPHIC_CONFIG_FILES: [],
+        }
+        available_pages.append(page_dict)
+    elif modification == DELETE_PAGE:
+        del available_pages[int(request.form[PAGE_ID])]
+    elif modification == DELETE_GRAPHIC:
+        available_pages[int(request.form[PAGE_ID])][GRAPHIC_CONFIG_FILES].remove(
+            request.form[GRAPHIC]
+        )
+
     config_dict[AVAILABLE_PAGES] = available_pages
     save_main_config_dict(config_dict)
     return file_tree()

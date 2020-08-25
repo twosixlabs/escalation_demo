@@ -22,7 +22,7 @@
             </div>
             <div class="row ml-1 mb-4">
                 <h2>Type of Plot:</h2>
-                <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto' id = "plot_type">
+                <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto' id = "plot_type" data-style = "btn-info">
                     {% for value, selector_text in schema_selector_dict.items() %}
                         <option value={{ value }} {% if current_schema == value %} selected {% endif %}>{{ selector_text }}</option>
                     {% endfor %}
