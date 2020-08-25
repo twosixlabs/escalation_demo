@@ -203,7 +203,7 @@ def get_data_source_info(csv_flag, active_data_source_names=None):
 
 def extract_data_sources_from_config(graphic_config):
     """
-    obtains the data sources from the config
+    parses out the data source names from the graph definition
     :param graphic_config:
     :return:
     """
