@@ -26,6 +26,9 @@ from utility.constants import (
     GRAPHIC_TITLE,
     GRAPHIC_CONFIG_FILES,
     DATA_SOURCE_TYPE,
+    SITE_DESC,
+    SITE_TITLE,
+    DATA_BACKEND,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.schemas_for_ui import build_graphic_schemas_for_ui
@@ -211,3 +214,14 @@ def extract_data_sources_from_config(graphic_config):
     for data_source_dict in graphic_config[DATA_SOURCES].values():
         data_sources.add(data_source_dict.get(DATA_SOURCE_TYPE))
     return list(data_sources)
+
+
+def copy_data_from_form_to_config(main_config, form):
+    """
+    copies information from the form into the main config
+    :param main_config:
+    :param form:
+    :return:
+    """
+    for key in [SITE_TITLE, SITE_DESC, DATA_BACKEND]:
+        main_config[key] = form[key]
