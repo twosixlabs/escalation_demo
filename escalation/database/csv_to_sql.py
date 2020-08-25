@@ -5,14 +5,13 @@
 Create a table in your SQL db defined by a csv file. This is paired with sqlalchemy
 codegen to create entries in the model file for the table.
 
-Schema extraction inspired by:
-https://hackersandslackers.com/infer-datatypes-from-csvs-to-create/
 """
 
 from collections import OrderedDict
 from datetime import datetime
+from io import StringIO, open as io_open
+import os
 import sys
-from io import StringIO
 import re
 
 import pandas as pd
@@ -35,6 +34,7 @@ from sqlalchemy.types import (
     ARRAY,
     Interval,
 )
+from sqlacodegen.codegen import CodeGenerator
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
@@ -124,6 +124,7 @@ class CreateTablesFromCSVs:
         self.db_session = scoped_session(
             sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
         )
+        self.meta = MetaData(bind=self.engine)
 
     def get_upload_id_for_table(self, table_name):
         # get the max upload id currently associated with the table and increment it
@@ -146,13 +147,14 @@ class CreateTablesFromCSVs:
         upload_id = self.get_upload_id_for_table(table_name)
         upload_time = datetime.utcnow()
         data = self.append_metadata_to_data(
-            data, upload_id=upload_id, upload_time=upload_time, key_columns=key_column,
+            data, upload_id=upload_id, key_columns=key_column,
         )
         data, schema = self.get_schema_from_df(data)
         # this creates an empty table of the correct schema using pandas to_sql
         self.create_new_table(
             table_name, schema, key_columns=key_column, if_exists=if_exists
         )
+
         # bulk copy of the contents using psycopg2 copy_from, which is much faster, see:
         # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
         psycopg2_config_dict = {
@@ -195,7 +197,6 @@ class CreateTablesFromCSVs:
     def get_schema_from_df(cls, data):
         """
         Infers schema from df file
-
         :return: schema_dict of names:data_types
         """
 
@@ -214,15 +215,13 @@ class CreateTablesFromCSVs:
         df_sql_schema_dict = {
             k: SQL_DATA_TYPE_MAP[v] for k, v in df_pandas_schema_dict.items()
         }
-        metadata_schema = OrderedDict(
-            {UPLOAD_ID: Integer, UPLOAD_TIME: DateTime, INDEX_COLUMN: Integer,}
-        )
+        metadata_schema = OrderedDict({UPLOAD_ID: Integer, INDEX_COLUMN: Integer,})
         metadata_schema.update(df_sql_schema_dict)
         return data_cast, metadata_schema
 
     @staticmethod
     def append_metadata_to_data(
-        data, upload_id, upload_time, key_columns=None,
+        data, upload_id, key_columns=None,
     ):
         # if there is no key specified, include the index
         index = key_columns is not None
@@ -231,7 +230,6 @@ class CreateTablesFromCSVs:
             data = data.reset_index()
             data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
         # add upload_id and time column to the table at the first columns of the df
-        data.insert(0, UPLOAD_TIME, upload_time)
         data.insert(0, UPLOAD_ID, upload_id)
         return data
 
@@ -244,17 +242,16 @@ class CreateTablesFromCSVs:
         data using a lower-level interface to SQL
         """
 
-        meta = MetaData(bind=self.engine)
-        meta.reflect()
-        table_object = meta.tables.get(table_name)
+        self.meta.reflect()
+        table_object = self.meta.tables.get(table_name)
         if table_object is not None:
             if if_exists == REPLACE:
-                meta.drop_all(tables=[table_object])
+                self.meta.drop_all(tables=[table_object])
                 print(
                     f"Table {table_name} already exists- "
                     f"dropping and replacing as per argument"
                 )
-                meta.clear()
+                self.meta.clear()
             elif if_exists == FAIL:
                 raise KeyError(
                     f"Table {table_name} already exists- failing as per argument"
@@ -271,8 +268,8 @@ class CreateTablesFromCSVs:
 
             else:
                 columns.append(Column(name, sqlalchemy_dtype))
-        _ = Table(table_name, meta, *columns)
-        meta.create_all()
+        _ = Table(table_name, self.meta, *columns)
+        self.meta.create_all()
 
 
 if __name__ == "__main__":
@@ -308,6 +305,7 @@ if __name__ == "__main__":
         )
 
     db_config = DATABASE_CONFIG
+    db_config["host"] = "localhost"
     csv_sql_writer = CreateTablesFromCSVs(db_config)
 
     data = csv_sql_writer.get_data_from_csv(filepath)
@@ -321,3 +319,12 @@ if __name__ == "__main__":
     csv_sql_writer.write_upload_metadata_row(
         upload_id, upload_time, table_name, active=True
     )
+
+    # Write the generated model code to the specified file or standard output
+    outfile = io_open(
+        os.path.join("app_deploy_data", "models.py"), "w", encoding="utf-8"
+    )
+    # update the metadata to include all tables in the db
+    csv_sql_writer.meta.reflect()
+    generator = CodeGenerator(csv_sql_writer.meta, noinflect=True)
+    generator.render(outfile)
