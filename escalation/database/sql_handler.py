@@ -1,16 +1,35 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
-
+from collections import OrderedDict
 from datetime import datetime
+import sys
+from io import StringIO
 
 from flask import current_app
 import pandas as pd
-from sqlalchemy import and_, func
+import psycopg2  # used here for fast copy_from performance
+from sqlalchemy import and_, func, create_engine, MetaData, Column, Table
+from sqlalchemy.engine.url import URL
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.types import (
+    Integer,
+    Text,
+    DateTime,
+    Float,
+    Boolean,
+    Date,
+    JSON,
+    Time,
+    ARRAY,
+    Interval,
+)
 
+from app_deploy_data.app_settings import DATABASE_CONFIG
 from app_deploy_data.models import DataUploadMetadata
 from database.data_handler import DataHandler
 from database.database import db_session, Base
 from database.utils import sql_handler_filter_operation
+
 from utility.constants import (
     DATA_SOURCE_TYPE,
     DATA_LOCATION,
@@ -26,8 +45,78 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
-    UPLOAD_TIME,
 )
+
+
+# from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
+SQL_DATA_TYPE_MAP = {
+    "integer": Integer,
+    "floating": Float,
+    "decimal": Float,
+    "mixed-integer-float": Float,
+    "string": Text,
+    "mixed-integer": Text,
+    "category": Text,
+    "bytes": Text,
+    "date": DateTime,
+    "datetime64": DateTime,
+    "datetime.date": Date,
+    "time": Time,
+    "timedelta64": Interval,
+    "timedelta": Interval,
+    "dict": JSON,
+    "list": ARRAY,
+    "boolean": Boolean,
+}
+
+
+REPLACE = "replace"
+APPEND = "append"
+FAIL = "fail"
+
+
+def connect_to_db_using_psycopg2(db_config_dict):
+    # bulk copy of the contents using psycopg2 copy_from, which is much faster, see:
+    # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
+
+    """ Connect to the PostgreSQL database server """
+    psycopg2_config_dict = {
+        "host": db_config_dict["host"],
+        "database": db_config_dict["database"],
+        "user": db_config_dict["username"],
+        "password": db_config_dict["password"],
+    }
+    try:
+        # connect to the PostgreSQL server
+        conn = psycopg2.connect(**psycopg2_config_dict)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+        sys.exit(1)
+    return conn
+
+
+def psycopg2_copy_from_stringio(conn, df, table_name):
+    """
+    Here we are going save the dataframe in memory
+    and use copy_from() to copy it to the table
+    """
+    # save dataframe to an in-memory buffer to use with copy_from, which requires fil
+    buffer = StringIO()
+    df.to_csv(buffer, index=False, header=False)
+    buffer.seek(0)
+    cursor = conn.cursor()
+    # todo: assert that the column order matches expectation
+    try:
+        # issues with separators here cause Error: extra data after last expected column
+        cursor.copy_expert(f"copy {table_name} from stdin (format csv)", buffer)
+        conn.commit()
+        return True
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(f"Error: {error}")
+        conn.rollback()
+        return False
+    finally:
+        cursor.close()
 
 
 class SqlHandler(DataHandler):
@@ -189,7 +278,62 @@ class SqlHandler(DataHandler):
         return unique_dict
 
 
-class SqlDataInventory(SqlHandler):
+class DataFrameConverter:
+    """
+    Shared helper methods that convert schemas between pandas and sql, alter data types,
+    and add metadata to dataframes to match the expectations of the database.
+    """
+
+    @staticmethod
+    def cast_dataframe_datatypes(data):
+        def convert_to_nullable_int_if_able(x):
+            # Pandas stores numerics with nulls as floats. Int64 (not int64) is nullable
+            # Use this dtype where appropriate
+            try:
+                return x.astype("Int64")
+            except TypeError:
+                return x
+
+        return data.apply(convert_to_nullable_int_if_able)
+
+    @classmethod
+    def get_schema_from_df(cls, data):
+        """
+        Infers schema from pandas df
+        :return: schema_dict of names:data_types
+        """
+
+        data_cast = cls.cast_dataframe_datatypes(data)
+        df_pandas_schema_dict = {}
+        for column in data_cast.columns:
+            df_pandas_schema_dict[column] = pd.api.types.infer_dtype(data_cast[column])
+        df_sql_schema_dict = {
+            k: SQL_DATA_TYPE_MAP[v] for k, v in df_pandas_schema_dict.items()
+        }
+        metadata_schema = OrderedDict({UPLOAD_ID: Integer, INDEX_COLUMN: Integer,})
+        metadata_schema.update(df_sql_schema_dict)
+        return data_cast, metadata_schema
+
+    @staticmethod
+    def append_metadata_to_data(data, upload_id, key_columns=None):
+        """
+        :param data: pandas df
+        :param upload_id: integer upload id
+        :param key_columns: user-specified primary key columns, if any
+        :return: modified df with metadata columns
+        """
+        # if there is no key specified, include the index
+        index = key_columns is not None
+        if not index:
+            # assign row numerical index to its own column
+            data = data.reset_index()
+            data.rename(columns={"index": INDEX_COLUMN}, inplace=True)
+        # add upload_id and time column to the table at the first columns of the df
+        data.insert(0, UPLOAD_ID, upload_id)
+        return data
+
+
+class SqlDataInventory(SqlHandler, DataFrameConverter):
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1
@@ -215,15 +359,19 @@ class SqlDataInventory(SqlHandler):
         db_session.add(row)
         db_session.commit()
 
-    def get_upload_ids_for_data_source(self):
-        """
-        :return: List of upload_id identifiers for the table source
-        """
-
-        query = db_session.query(func.max(DataUploadMetadata.upload_id)).filter(
-            DataUploadMetadata.table_name == self.data_source_name
+    @staticmethod
+    def get_new_upload_id_for_table(table_name):
+        # get the max upload id currently associated with the table and increment it
+        result = (
+            db_session.query(func.max(DataUploadMetadata.upload_id))
+            .filter(DataUploadMetadata.table_name == table_name)
+            .first()
         )
-        return query.all()
+        max_upload_id = result[0]  # always defined- tuple with None if no result
+        # if there were no entries in the table for this upload ID, set default
+        max_upload_id = max_upload_id or 0
+        upload_id = max_upload_id + 1
+        return upload_id
 
     def get_schema_for_data_source(self):
         """
@@ -231,16 +379,6 @@ class SqlDataInventory(SqlHandler):
         :return: list of sqlalchemy column objects
         """
         return [c for c in self.table_lookup_by_name[self.data_source_name].columns]
-
-    def get_sqlalchemy_model_class_for_data_source_name(self):
-        """
-        :param data_source_name:
-        :return: sqlalchemy model class
-        """
-        for c in Base._decl_class_registry.values():
-            if hasattr(c, "__tablename__") and c.__tablename__ == self.data_source_name:
-                return c
-        raise KeyError(f"{self.data_source_name} not found in available model classes")
 
     def write_data_upload_to_backend(self, uploaded_data_df):
         """
@@ -250,46 +388,33 @@ class SqlDataInventory(SqlHandler):
 
         :return:
         """
-        sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name()
+        uploaded_data_df = self.cast_dataframe_datatypes(uploaded_data_df)
         table = self.table_lookup_by_name[self.data_source_name]
-        existing_upload_ids = self.get_upload_ids_for_data_source()
-        # todo: getting the id this way is sloppy- it's a race condition
-        new_upload_id = int(max(existing_upload_ids) + 1)
-        uploaded_data_df[UPLOAD_ID] = new_upload_id
-
-        # if we are adding an index pk column, get it from the pandas df
-        if INDEX_COLUMN in [c.name for c in table.primary_key]:
-            if INDEX_COLUMN not in uploaded_data_df.columns:
-                uploaded_data_df.index.rename(INDEX_COLUMN, inplace=True)
-                uploaded_data_df.reset_index(inplace=True)
-            else:
-                # verify that all indices in the existing index column are unique
-                num_uploaded_rows = uploaded_data_df.shape[0]
-                num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
-                assert (
-                    num_unique_indexes == num_uploaded_rows
-                ), f"{INDEX_COLUMN} has non-unique values"
+        new_upload_id = self.get_new_upload_id_for_table(self.data_source_name)
+        uploaded_data_df = self.append_metadata_to_data(
+            data=uploaded_data_df, upload_id=new_upload_id
+        )
+        # todo: handle custom pk columns
+        # # verify that all indices in the existing index column are unique
+        # num_uploaded_rows = uploaded_data_df.shape[0]
+        # num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
+        # assert (
+        #     num_unique_indexes == num_uploaded_rows
+        # ), f"{INDEX_COLUMN} has non-unique values"
 
         # subset the columns to write to equal those in the db
-        existing_columns = {c.name for c in table.columns}
-        ignored_columns = set(uploaded_data_df.columns) - existing_columns
+        existing_columns = [c.name for c in table.columns]
+        ignored_columns = set(uploaded_data_df.columns) - set(existing_columns)
         uploaded_data_df = uploaded_data_df[existing_columns]
-        # todo: columns in the sqlalchemy_model_class are attributes auto-named by sqlalchemy codegen, and have some character replacement
-        # how do we build the right inserts here?
-        rename_dict = {
-            k: k.replace("-", "_").replace("/", "_") for k in uploaded_data_df.columns
-        }
-        uploaded_data_df.rename(columns=rename_dict, inplace=True)
-        row_dicts_to_write = uploaded_data_df.to_dict("records")
-        # todo: writing all of this to memory- could get gross for large uploads
-        row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
-        db_session.bulk_save_objects(row_to_write)
-        db_session.commit()
-
-        # todo: write upload time and other upload information from the form to an uploads metadata table
-
-        # upload_time = datetime.utcnow()
-
+        conn = connect_to_db_using_psycopg2(DATABASE_CONFIG)
+        psycopg2_copy_from_stringio(conn, uploaded_data_df, self.data_source_name)
+        upload_time = datetime.utcnow()
+        self.write_upload_metadata_row(
+            upload_time=upload_time,
+            upload_id=new_upload_id,
+            table_name=self.data_source_name,
+            active=True,
+        )
         return ignored_columns
 
     def write_new_data_file_type(self):
@@ -298,3 +423,87 @@ class SqlDataInventory(SqlHandler):
         :return:
         """
         raise NotImplementedError
+
+
+class CreateTablesFromCSVs(DataFrameConverter):
+    """Infer a table schema from a CSV, and create a sql table from this definition"""
+
+    def __init__(self, db_config):
+        self.db_config = db_config
+        connection_url = URL(**self.db_config)
+        self.engine = create_engine(connection_url)
+        self.reflect_db_tables_to_sqlalchemy_classes()
+        self.Base = Base
+        self.meta = MetaData(bind=self.engine)
+
+    def create_and_fill_new_sql_table_from_df(self, table_name, data, if_exists):
+
+        key_column = None
+        print(f"Creating empty table named {table_name}")
+        upload_id = SqlDataInventory.get_new_upload_id_for_table(table_name)
+        upload_time = datetime.utcnow()
+        data = self.append_metadata_to_data(
+            data, upload_id=upload_id, key_columns=key_column,
+        )
+        data, schema = self.get_schema_from_df(data)
+        # this creates an empty table of the correct schema using pandas to_sql
+        self.create_new_table(
+            table_name, schema, key_columns=key_column, if_exists=if_exists
+        )
+
+        conn = connect_to_db_using_psycopg2(self.db_config)
+        success = psycopg2_copy_from_stringio(conn, data, table_name)
+        if not success:
+            raise Exception
+        return upload_id, upload_time, table_name
+
+    def reflect_db_tables_to_sqlalchemy_classes(self):
+        self.Base = automap_base()
+        # reflect the tables present in the sql database as sqlalchemy models
+        self.Base.prepare(self.engine, reflect=True)
+
+    @staticmethod
+    def get_data_from_csv(csv_data_file_path):
+        """
+        :param csv_data_file_path:
+        :return: pandas dataframe
+        """
+        return pd.read_csv(csv_data_file_path, encoding="utf-8", comment="#")
+
+    def create_new_table(
+        self, table_name, schema, key_columns, if_exists,
+    ):
+        """
+        Create an EMPTY table from CSV and generated schema.
+        Empty table because the ORM copy function is very slow- we'll populate the table
+        data using a lower-level interface to SQL
+        """
+
+        self.meta.reflect()
+        table_object = self.meta.tables.get(table_name)
+        if table_object is not None:
+            if if_exists == REPLACE:
+                self.meta.drop_all(tables=[table_object])
+                print(
+                    f"Table {table_name} already exists- "
+                    f"dropping and replacing as per argument"
+                )
+                self.meta.clear()
+            elif if_exists == FAIL:
+                raise KeyError(
+                    f"Table {table_name} already exists- failing as per argument"
+                )
+            elif if_exists == APPEND:
+                f"Table {table_name} already exists- appending data as per argument"
+                return
+        # table doesn't exist- create it
+        columns = []
+        primary_keys = key_columns or [UPLOAD_ID, INDEX_COLUMN]
+        for name, sqlalchemy_dtype in schema.items():
+            if name in primary_keys:
+                columns.append(Column(name, sqlalchemy_dtype, primary_key=True))
+
+            else:
+                columns.append(Column(name, sqlalchemy_dtype))
+        _ = Table(table_name, self.meta, *columns)
+        self.meta.create_all()
