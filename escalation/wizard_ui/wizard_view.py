@@ -36,8 +36,7 @@ from utility.constants import (
 
 from wizard_ui.schemas_for_ui import (
     build_main_schemas_for_ui,
-    build_graphic_schemas_for_ui,
-    BACKEND_TYPES,
+    build_graphic_schemas_for_ui
 )
 from wizard_ui.wizard_utils import (
     load_graphic_config_dict,
