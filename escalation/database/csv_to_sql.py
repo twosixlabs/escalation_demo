@@ -37,6 +37,9 @@ from sqlalchemy.types import (
 from sqlacodegen.codegen import CodeGenerator
 
 from app_deploy_data.app_settings import DATABASE_CONFIG
+from app_deploy_data.models import DataUploadMetadata
+from database.database import db_session, Base
+from database.sql_handler import SqlDataInventory
 from utility.constants import INDEX_COLUMN, UPLOAD_ID, UPLOAD_TIME
 
 # from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
@@ -68,7 +71,7 @@ EXISTS_OPTIONS = [REPLACE, APPEND, FAIL]
 POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
 
 
-def connect(db_config_dict):
+def connect_to_db_using_psycopg2(db_config_dict):
     """ Connect to the PostgreSQL database server """
     config_dict = {
         k: v
@@ -119,19 +122,15 @@ class CreateTablesFromCSVs:
         self.db_config = db_config
         connection_url = URL(**self.db_config)
         self.engine = create_engine(connection_url)
-        self.Base = None
         self.reflect_db_tables_to_sqlalchemy_classes()
-        self.db_session = scoped_session(
-            sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
-        )
+        self.Base = Base
         self.meta = MetaData(bind=self.engine)
 
     def get_upload_id_for_table(self, table_name):
         # get the max upload id currently associated with the table and increment it
-        upload_metadata = self.Base.classes.data_upload_metadata
         result = (
-            self.db_session.query(func.max(upload_metadata.upload_id))
-            .filter(upload_metadata.table_name == table_name)
+            db_session.query(func.max(DataUploadMetadata.upload_id))
+            .filter(DataUploadMetadata.table_name == table_name)
             .first()
         )
         max_upload_id = result[0]  # always defined- tuple with None if no result
@@ -163,7 +162,7 @@ class CreateTablesFromCSVs:
             "user": self.db_config["username"],
             "password": self.db_config["password"],
         }
-        conn = connect(psycopg2_config_dict)
+        conn = connect_to_db_using_psycopg2(psycopg2_config_dict)
         success = psycopg2_copy_from_stringio(conn, data, table_name)
         if not success:
             raise Exception
@@ -174,17 +173,6 @@ class CreateTablesFromCSVs:
         # reflect the tables present in the sql database as sqlalchemy models
         self.Base.prepare(self.engine, reflect=True)
 
-    def write_upload_metadata_row(self, upload_id, upload_time, table_name, active):
-        upload_metadata = self.Base.classes.data_upload_metadata
-        row = upload_metadata(
-            upload_id=upload_id,
-            upload_time=upload_time,
-            table_name=table_name,
-            active=active,
-        )
-        self.db_session.add(row)
-        self.db_session.commit()
-
     @staticmethod
     def get_data_from_csv(csv_data_file_path):
         """
@@ -193,10 +181,10 @@ class CreateTablesFromCSVs:
         """
         return pd.read_csv(csv_data_file_path, encoding="utf-8", comment="#")
 
-    @classmethod
-    def get_schema_from_df(cls, data):
+    @staticmethod
+    def get_schema_from_df(data):
         """
-        Infers schema from df file
+        Infers schema from pandas df
         :return: schema_dict of names:data_types
         """
 
@@ -220,9 +208,13 @@ class CreateTablesFromCSVs:
         return data_cast, metadata_schema
 
     @staticmethod
-    def append_metadata_to_data(
-        data, upload_id, key_columns=None,
-    ):
+    def append_metadata_to_data(data, upload_id, key_columns=None):
+        """
+        :param data: pandas df
+        :param upload_id: integer upload id
+        :param key_columns: user-specified primary key columns, if any
+        :return: modified df with metadata columns
+        """
         # if there is no key specified, include the index
         index = key_columns is not None
         if not index:
@@ -305,7 +297,7 @@ if __name__ == "__main__":
         )
 
     db_config = DATABASE_CONFIG
-    db_config["host"] = "localhost"
+    # db_config["host"] = "localhost"
     csv_sql_writer = CreateTablesFromCSVs(db_config)
 
     data = csv_sql_writer.get_data_from_csv(filepath)
@@ -316,7 +308,7 @@ if __name__ == "__main__":
     ) = csv_sql_writer.create_and_fill_new_sql_table_from_df(
         table_name, data, if_exists
     )
-    csv_sql_writer.write_upload_metadata_row(
+    SqlDataInventory.write_upload_metadata_row(
         upload_id, upload_time, table_name, active=True
     )
 

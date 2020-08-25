@@ -1,10 +1,13 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
+from datetime import datetime
+
 from flask import current_app
 import pandas as pd
-from sqlalchemy import and_
+from sqlalchemy import and_, func
 
+from app_deploy_data.models import DataUploadMetadata
 from database.data_handler import DataHandler
 from database.database import db_session, Base
 from database.utils import sql_handler_filter_operation
@@ -23,6 +26,7 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
+    UPLOAD_TIME,
 )
 
 
@@ -200,16 +204,26 @@ class SqlDataInventory(SqlHandler):
         """
         return [table_name for table_name in Base.metadata.tables.keys()]
 
-    def get_identifiers_for_data_source(self):
+    @staticmethod
+    def write_upload_metadata_row(table_name, upload_time, upload_id, active=True):
+        row = DataUploadMetadata(
+            upload_id=upload_id,
+            upload_time=upload_time,
+            table_name=table_name,
+            active=active,
+        )
+        db_session.add(row)
+        db_session.commit()
+
+    def get_upload_ids_for_data_source(self):
         """
         :return: List of upload_id identifiers for the table source
         """
-        upload_id_column = TABLE_COLUMN_SEPARATOR.join(
-            [self.data_source_name, UPLOAD_ID]
+
+        query = db_session.query(func.max(DataUploadMetadata.upload_id)).filter(
+            DataUploadMetadata.table_name == self.data_source_name
         )
-        return self.get_column_unique_entries(
-            cols=[upload_id_column], filter_active_data=False
-        )[upload_id_column]
+        return query.all()
 
     def get_schema_for_data_source(self):
         """
@@ -238,12 +252,10 @@ class SqlDataInventory(SqlHandler):
         """
         sqlalchemy_model_class = self.get_sqlalchemy_model_class_for_data_source_name()
         table = self.table_lookup_by_name[self.data_source_name]
-        existing_upload_ids = self.get_identifiers_for_data_source()
+        existing_upload_ids = self.get_upload_ids_for_data_source()
         # todo: getting the id this way is sloppy- it's a race condition
         new_upload_id = int(max(existing_upload_ids) + 1)
         uploaded_data_df[UPLOAD_ID] = new_upload_id
-        # todo: write upload time and other upload information from the form to an uploads metadata table
-        # upload_time = datetime.utcnow()
 
         # if we are adding an index pk column, get it from the pandas df
         if INDEX_COLUMN in [c.name for c in table.primary_key]:
@@ -262,7 +274,7 @@ class SqlDataInventory(SqlHandler):
         existing_columns = {c.name for c in table.columns}
         ignored_columns = set(uploaded_data_df.columns) - existing_columns
         uploaded_data_df = uploaded_data_df[existing_columns]
-        # todo: columns in the sqlalchemy_model_class are attributes auto-names by sqlalchemy codegen, and have some character replacement
+        # todo: columns in the sqlalchemy_model_class are attributes auto-named by sqlalchemy codegen, and have some character replacement
         # how do we build the right inserts here?
         rename_dict = {
             k: k.replace("-", "_").replace("/", "_") for k in uploaded_data_df.columns
@@ -273,6 +285,11 @@ class SqlDataInventory(SqlHandler):
         row_to_write = [sqlalchemy_model_class(**row) for row in row_dicts_to_write]
         db_session.bulk_save_objects(row_to_write)
         db_session.commit()
+
+        # todo: write upload time and other upload information from the form to an uploads metadata table
+
+        # upload_time = datetime.utcnow()
+
         return ignored_columns
 
     def write_new_data_file_type(self):

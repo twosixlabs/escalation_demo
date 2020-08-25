@@ -92,8 +92,9 @@ def submission():
         )
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
-        # write upload history table record at the same time
         ignored_columns = data_inventory.write_data_upload_to_backend(df)
+        # write upload history table record at the same time
+
     except ValidationError as e:
         current_app.logger.info(e, exc_info=True)
         # check if POST comes from script instead of web UI

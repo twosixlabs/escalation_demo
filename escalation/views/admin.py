@@ -21,7 +21,7 @@ def admin_page():
     data_source_dict = {
         data_source: data_inventory(
             {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source}}
-        ).get_identifiers_for_data_source()
+        ).get_upload_ids_for_data_source()
         for data_source in data_sources
     }
     data_source_active_dict = copy.deepcopy(data_source_dict)
