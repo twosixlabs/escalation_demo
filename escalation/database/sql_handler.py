@@ -219,7 +219,6 @@ class SqlHandler(DataHandler):
         :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
-        # import ipdb; ipdb.set_trace()
         if filters is None:
             filters = []
         cols_for_filters = [filter_dict[OPTION_COL] for filter_dict in filters]
@@ -416,13 +415,6 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             active=True,
         )
         return ignored_columns
-
-    def write_new_data_file_type(self):
-        """
-        Handle the case where the user wants to upload a new data file type
-        :return:
-        """
-        raise NotImplementedError
 
 
 class CreateTablesFromCSVs(DataFrameConverter):
