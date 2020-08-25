@@ -36,8 +36,7 @@ from utility.constants import (
 
 from wizard_ui.schemas_for_ui import (
     build_main_schemas_for_ui,
-    build_graphic_schemas_for_ui,
-    BACKEND_TYPES,
+    build_graphic_schemas_for_ui
 )
 from wizard_ui.wizard_utils import (
     load_graphic_config_dict,
@@ -64,15 +63,12 @@ wizard_blueprint = Blueprint("wizard", __name__)
 @wizard_blueprint.route("/", methods=("GET",))
 def file_tree():
     config_dict = load_main_config_dict_if_exists(current_app)
-    inverted_backend_types = invert_dict_lists(BACKEND_TYPES)
     return render_template(
         CONFIG_FILES_HTML,
         available_pages=get_layout_for_dashboard(config_dict.get(AVAILABLE_PAGES, {})),
         current_config=config_dict,
         # load in the right schema based on the config dict, default to database
-        current_schema=inverted_backend_types.get(
-            config_dict.get(DATA_BACKEND, POSTGRES), DATABASE
-        ),
+        current_schema=config_dict.get(DATA_BACKEND, POSTGRES),
     )
 
 
