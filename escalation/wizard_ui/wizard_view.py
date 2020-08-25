@@ -33,6 +33,7 @@ from utility.constants import (
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
 )
+from validate_schema import get_data_inventory_class
 
 from wizard_ui.schemas_for_ui import (
     build_main_schemas_for_ui,
@@ -57,6 +58,7 @@ from wizard_ui.wizard_utils import (
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
 MAIN_CONFIG_EDITOR_HTML = "main_config_editor.html"
 CONFIG_FILES_HTML = "config_files.html"
+CSV_TO_DATABASE_UPLOAD_HTML = "csv_to_database_upload.html"
 wizard_blueprint = Blueprint("wizard", __name__)
 
 
@@ -238,3 +240,19 @@ def get_updated_schemas():
         200,
         {"ContentType": "application/json"},
     )
+
+
+@wizard_blueprint.route("/upload", methods=("GET",))
+def data_upload_page():
+    config_dict = load_main_config_dict_if_exists(current_app)
+    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
+    data_inventory_class = get_data_inventory_class(csv_flag)
+    data_source_names = data_inventory_class.get_available_data_sources()
+    return render_template(CSV_TO_DATABASE_UPLOAD_HTML, data_sources=data_source_names)
+
+
+@wizard_blueprint.route("/upload", methods=("POST",))
+def upload_csv_to_database():
+    # todo: nick add functionality here
+
+    return data_upload_page()
