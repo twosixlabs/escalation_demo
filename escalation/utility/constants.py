@@ -105,13 +105,13 @@ ACTIVE_SELECTORS = "active_selector"
 INDEX_COLUMN = "row_index"
 UPLOAD_ID = "upload_id"
 UPLOAD_TIME = "upload_time"
+INACTIVE = "inactive"
+ACTIVE = "active"
+TABLE_NAME = "table_name"
 
 # addendum constants
-
 GRAPHIC_NAME = "graphic_name"
 NUMERICAL_FILTER_NUM_LOC_TYPE = "numerical_filter_{:d}_{}_{}"
-
-
 PROCESS = "process"
 
 # setup constants

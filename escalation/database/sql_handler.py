@@ -46,6 +46,7 @@ from utility.constants import (
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
     DATA_UPLOAD_METADATA,
+    ACTIVE,
 )
 
 
@@ -362,18 +363,18 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         db_session.add(row)
         db_session.commit()
 
-    @staticmethod
-    def update_data_upload_metadata_active(data_source_name, active_data_dict):
+    @classmethod
+    def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
         for upload_id, active_status in active_data_dict.items():
             row = DataUploadMetadata.query.filter_by(
                 table_name=data_source_name, upload_id=upload_id
             ).first()
-            active_boolean = active_status == "active"
+            active_boolean = active_status == ACTIVE
             row.active = active_boolean
         db_session.commit()
 
-    @staticmethod
-    def get_identifiers_for_data_sources(data_source_names, active_filter=False):
+    @classmethod
+    def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
         """
 
         :param data_source_names: list of data sources

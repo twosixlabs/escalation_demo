@@ -25,6 +25,11 @@ from utility.constants import (
     CONFIG_FILE_FOLDER,
     DATA,
     SELECTED,
+    DATA_UPLOAD_METADATA,
+    UPLOAD_ID,
+    ACTIVE,
+    UPLOAD_TIME,
+    TABLE_NAME,
 )
 
 
@@ -50,14 +55,35 @@ class LocalCSVHandler(DataHandler):
             data_source.update({DATA_LOCATION: filepaths_list})
         self.combined_data_table = self.build_combined_data_table()
 
+    @staticmethod
+    def get_data_upload_metadata_path():
+        return os.path.join(
+            current_app.config[CONFIG_FILE_FOLDER],
+            DATA,
+            DATA_UPLOAD_METADATA,
+            DATA_UPLOAD_METADATA + ".csv",
+        )
+
+    @classmethod
+    def filter_out_inactive_files(cls, files_list, data_source_name):
+        metadata_path = cls.get_data_upload_metadata_path()
+        data_upload_metadata = pd.read_csv(metadata_path)
+        filtered_uploads = data_upload_metadata[
+            (data_upload_metadata.table_name == data_source_name)
+            & (~data_upload_metadata.active)
+        ][UPLOAD_ID].values
+        files_list = [
+            upload_id for upload_id in files_list if upload_id not in filtered_uploads
+        ]
+        return files_list
+
     def assemble_list_of_active_data_source_csvs(self, data_source):
         data_source_name = data_source[DATA_SOURCE_TYPE]
         data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
         filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
-        if data_source_name in current_app.config.active_data_source_filters:
-            filepaths_list = current_app.config.active_data_source_filters[
-                data_source_name
-            ]
+        filepaths_list = self.filter_out_inactive_files(
+            filepaths_list, data_source_name,
+        )
         assert len(filepaths_list) > 0
         return filepaths_list
 
@@ -150,24 +176,68 @@ class LocalCSVDataInventory(LocalCSVHandler):
 
     @staticmethod
     def get_available_data_sources():
-        return [
+        data_folders = [
             f.name
             for f in os.scandir(
                 os.path.join(current_app.config[CONFIG_FILE_FOLDER], DATA)
             )
             if f.is_dir()
         ]
+        existing_data_sources = [x for x in data_folders if x != DATA_UPLOAD_METADATA]
+        return existing_data_sources
 
-    def get_identifiers_for_data_source(self):
-        full_path = os.path.join(
-            current_app.config[CONFIG_FILE_FOLDER], DATA, self.data_source_name,
-        )
-        list_of_files = glob.glob(f"{full_path}/*.csv")
-        assert len(list_of_files) > 0
-        return list_of_files
+    @classmethod
+    def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
+        files_by_data_source = {}
+        for data_source_name in data_source_names:
+            full_path = os.path.join(
+                current_app.config[CONFIG_FILE_FOLDER], DATA, data_source_name,
+            )
+            list_of_files = glob.glob(f"{full_path}/*.csv")
+            assert len(list_of_files) > 0
+            files_by_data_source[data_source_name] = list_of_files
+
+        # check if any of these have been listed as inactive in a metadata table-
+        # defaults to active if not listed
+        if active_filter:
+
+            for data_source_name in data_source_names:
+                files_by_data_source[data_source_name] = cls.filter_out_inactive_files(
+                    files_by_data_source[data_source_name], data_source_name,
+                )
+        return files_by_data_source
+
+    @classmethod
+    def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
+        metadata_path = cls.get_data_upload_metadata_path()
+        data_upload_metadata = pd.read_csv(metadata_path)
+        for upload_id, active_str in active_data_dict.items():
+            active_status = active_str == ACTIVE
+            row_inds = (data_upload_metadata.table_name == data_source_name) & (
+                data_upload_metadata.upload_id == upload_id
+            )
+            if data_upload_metadata[row_inds].empty:
+                # there was no existing row for this file in the metadata records-
+                # create a new one
+                new_row = pd.DataFrame(
+                    {
+                        UPLOAD_ID: upload_id,
+                        ACTIVE: active_status,
+                        UPLOAD_TIME: None,
+                        TABLE_NAME: data_source_name,
+                    },
+                    index=[0],
+                )
+                data_upload_metadata = pd.concat([data_upload_metadata, new_row])
+            else:
+                # update an existing row corresponding to this file
+                data_upload_metadata.loc[row_inds, ACTIVE] = active_status
+        data_upload_metadata.to_csv(metadata_path, index=False)
 
     def get_schema_for_data_source(self):
-        list_of_files = self.get_identifiers_for_data_source()
+        list_of_files = self.get_identifiers_for_data_sources(
+            [self.data_source_name], active_filter=True
+        )
         latest_filepath = max(list_of_files, key=os.path.getctime)
         return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
 

@@ -6,8 +6,7 @@ from flask import current_app, render_template, Blueprint, request
 from utility.constants import DATA_SOURCES
 
 ADMIN_HTML = "admin.html"
-INACTIVE = "inactive"
-ACTIVE = "active"
+
 admin_blueprint = Blueprint("admin", __name__)
 
 
