@@ -1,6 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
 from datetime import datetime
 import sys
 from io import StringIO
@@ -45,6 +45,7 @@ from utility.constants import (
     COLUMN_NAME,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
+    DATA_UPLOAD_METADATA,
 )
 
 
@@ -193,19 +194,18 @@ class SqlHandler(DataHandler):
 
     def build_filters_from_active_data_source(self):
         current_tables = list(self.table_lookup_by_name.keys())
+        active_upload_ids = SqlDataInventory.get_identifiers_for_data_sources(
+            current_tables, active_filter=True
+        )
         active_data_source_filters = []
-        for (
-            table_name,
-            upload_ids,
-        ) in current_app.config.active_data_source_filters.items():
-            if table_name in current_tables:
-                active_data_source_filters.append(
-                    {
-                        OPTION_TYPE: FILTER,
-                        OPTION_COL: f"{table_name}:{UPLOAD_ID}",
-                        SELECTED: upload_ids,
-                    }
-                )
+        for (table_name, upload_ids,) in active_upload_ids.items():
+            active_data_source_filters.append(
+                {
+                    OPTION_TYPE: FILTER,
+                    OPTION_COL: f"{table_name}:{UPLOAD_ID}",
+                    SELECTED: upload_ids,
+                }
+            )
         return active_data_source_filters
 
     @staticmethod
@@ -345,7 +345,11 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         Lists all data sources available in the db
         :return:
         """
-        return [table_name for table_name in Base.metadata.tables.keys()]
+        return [
+            table_name
+            for table_name in Base.metadata.tables.keys()
+            if table_name != DATA_UPLOAD_METADATA
+        ]
 
     @staticmethod
     def write_upload_metadata_row(table_name, upload_time, upload_id, active=True):
@@ -357,6 +361,35 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         )
         db_session.add(row)
         db_session.commit()
+
+    @staticmethod
+    def update_data_upload_metadata_active(data_source_name, active_data_dict):
+        for upload_id, active_status in active_data_dict.items():
+            row = DataUploadMetadata.query.filter_by(
+                table_name=data_source_name, upload_id=upload_id
+            ).first()
+            active_boolean = active_status == "active"
+            row.active = active_boolean
+        db_session.commit()
+
+    @staticmethod
+    def get_identifiers_for_data_sources(data_source_names, active_filter=False):
+        """
+
+        :param data_source_names: list of data sources
+        :param active_filter:
+        :return: dict
+        """
+        query = db_session.query(DataUploadMetadata).filter(
+            DataUploadMetadata.table_name.in_(data_source_names)
+        )
+        if active_filter:
+            query = query.filter(DataUploadMetadata.active.is_(True))
+        results = query.all()
+        identifiers_by_table = defaultdict(list)
+        for result in results:
+            identifiers_by_table[result.table_name].append(result.upload_id)
+        return identifiers_by_table
 
     @staticmethod
     def get_new_upload_id_for_table(table_name):

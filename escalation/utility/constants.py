@@ -38,6 +38,7 @@ AGGREGATIONS = "aggregations"
 # path to the file folder for LocalHandler or table name for SqlHandler
 DATA_FILE_DIRECTORY = "data_file_directory"
 DATA_SOURCES = "data_sources"
+DATA_UPLOAD_METADATA = "data_upload_metadata"
 NEW_DATA_SOURCE = "new_data_source"
 DATA_SOURCE_TYPE = "data_source_type"
 JOIN_KEYS = "join_keys"

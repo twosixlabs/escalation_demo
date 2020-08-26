@@ -109,9 +109,6 @@ def test_build_combined_data_table(test_app_client):
 
 
 def test_build_combined_data_table_with_filtered_data_source(test_app_client):
-    current_app.config.active_data_source_filters = {
-        "penguin_size": ["test_app_deploy_data/data/penguin_size/penguin_size.csv"]
-    }
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # only the one included penguin size is loaded, not the second
     penguin_size = pd.read_csv(
@@ -154,7 +151,7 @@ def test_get_schema_for_data_source(test_app_client):
 def test_get_identifiers_for_data_source(test_app_client):
     file_names = LocalCSVDataInventory(
         {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}}
-    ).get_identifiers_for_data_source()
+    ).get_active_identifiers_for_data_source()
 
     assert "test_app_deploy_data/data/penguin_size/penguin_size.csv" in file_names
     assert "test_app_deploy_data/data/penguin_size/penguin_size_2.csv" in file_names
