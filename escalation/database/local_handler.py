@@ -49,7 +49,6 @@ class LocalCSVHandler(DataHandler):
         data_sources = [self.data_sources[MAIN_DATA_SOURCE]] + self.data_sources.get(
             ADDITIONAL_DATA_SOURCES, []
         )
-
         for data_source in data_sources:
             filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source)
             data_source.update({DATA_LOCATION: filepaths_list})
@@ -65,9 +64,15 @@ class LocalCSVHandler(DataHandler):
         )
 
     @classmethod
-    def filter_out_inactive_files(cls, files_list, data_source_name):
+    def get_data_upload_metadata(cls):
         metadata_path = cls.get_data_upload_metadata_path()
-        data_upload_metadata = pd.read_csv(metadata_path)
+        return pd.read_csv(metadata_path)
+
+    @classmethod
+    def filter_out_inactive_files(cls, files_list, data_source_name):
+        data_upload_metadata = cls.get_data_upload_metadata()
+        # looking for entries in the metadata that say a file is NOT active
+        # lets the files default to active if added outside the app functionality
         filtered_uploads = data_upload_metadata[
             (data_upload_metadata.table_name == data_source_name)
             & (~data_upload_metadata.active)
@@ -188,6 +193,12 @@ class LocalCSVDataInventory(LocalCSVHandler):
 
     @classmethod
     def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
+        """
+        Gets specific file names associates with data_source names (i.e., folder names)
+        :param data_source_names: list of data source folder names
+        :param active_filter: if True, filters out files listed as inactive
+        :return: dict keyed by data_source_names, valued by lists of files
+        """
         files_by_data_source = {}
         for data_source_name in data_source_names:
             full_path = os.path.join(
@@ -200,7 +211,6 @@ class LocalCSVDataInventory(LocalCSVHandler):
         # check if any of these have been listed as inactive in a metadata table-
         # defaults to active if not listed
         if active_filter:
-
             for data_source_name in data_source_names:
                 files_by_data_source[data_source_name] = cls.filter_out_inactive_files(
                     files_by_data_source[data_source_name], data_source_name,
@@ -209,8 +219,14 @@ class LocalCSVDataInventory(LocalCSVHandler):
 
     @classmethod
     def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
-        metadata_path = cls.get_data_upload_metadata_path()
-        data_upload_metadata = pd.read_csv(metadata_path)
+        """
+        Edits the data_upload_metadata file to indicate the active/inactive status of
+        files as selected in the admin panel of the app
+        :param data_source_name: data source folder name
+        :param active_data_dict: dict keyed by upload_id/file paths, valued with string INACTIVE or ACTIVE
+        :return: None. Writes a modified dataframe to the data_upload_metadata.csv
+        """
+        data_upload_metadata = cls.get_data_upload_metadata()
         for upload_id, active_str in active_data_dict.items():
             active_status = active_str == ACTIVE
             row_inds = (data_upload_metadata.table_name == data_source_name) & (
@@ -232,12 +248,13 @@ class LocalCSVDataInventory(LocalCSVHandler):
             else:
                 # update an existing row corresponding to this file
                 data_upload_metadata.loc[row_inds, ACTIVE] = active_status
-        data_upload_metadata.to_csv(metadata_path, index=False)
+        data_upload_metadata.to_csv(cls.get_data_upload_metadata_path(), index=False)
 
     def get_schema_for_data_source(self):
-        list_of_files = self.get_identifiers_for_data_sources(
+        files_by_source = self.get_identifiers_for_data_sources(
             [self.data_source_name], active_filter=True
         )
+        list_of_files = files_by_source[self.data_source_name]
         latest_filepath = max(list_of_files, key=os.path.getctime)
         return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
 
@@ -247,7 +264,7 @@ class LocalCSVDataInventory(LocalCSVHandler):
         :param uploaded_data_df: pandas dataframe on which we have already done validation
         :param data_source_name:
 
-        :return: Empty list representing columns not in the new file that are in the old. INcluded for function signature matching
+        :return: Empty list representing columns not in the new file that are in the old. Included for function signature matching
         """
 
         file_name = (
@@ -266,4 +283,5 @@ class LocalCSVDataInventory(LocalCSVHandler):
             file_name,
         )
         uploaded_data_df.to_csv(file_path)
+        # todo: write upload to metadata file
         return []

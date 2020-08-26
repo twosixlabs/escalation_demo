@@ -365,6 +365,13 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
 
     @classmethod
     def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
+        """
+       Edits the data_upload_metadata table to indicate the active/inactive status of uploads as indicated in the admin panel
+       :param data_source_name: data source table name
+       :param active_data_dict: dict keyed by upload_id, valued with string INACTIVE or ACTIVE
+       :return: None. updates rows in the data_upload_metadata table
+       """
+
         for upload_id, active_status in active_data_dict.items():
             row = DataUploadMetadata.query.filter_by(
                 table_name=data_source_name, upload_id=upload_id

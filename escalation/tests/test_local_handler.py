@@ -1,7 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-from flask import current_app
 import pandas as pd
 
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
@@ -10,6 +9,10 @@ from utility.constants import (
     DATA_SOURCE_TYPE,
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
+    ACTIVE,
+    TABLE_NAME,
+    UPLOAD_ID,
+    UPLOAD_TIME,
 )
 
 
@@ -108,7 +111,20 @@ def test_build_combined_data_table(test_app_client):
     # todo: one to many join, where we expect the number of rows to change
 
 
-def test_build_combined_data_table_with_filtered_data_source(test_app_client):
+def test_build_combined_data_table_with_filtered_data_source(test_app_client, mocker):
+    mock_metadata = pd.DataFrame(
+        {
+            ACTIVE: [False],
+            TABLE_NAME: ["penguin_size"],
+            UPLOAD_ID: ["test_app_deploy_data/data/penguin_size/penguin_size_2.csv"],
+            UPLOAD_TIME: [None],
+        }
+    )
+
+    mocker.patch(
+        "database.local_handler.LocalCSVHandler.get_data_upload_metadata",
+        return_value=mock_metadata,
+    )
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
     # only the one included penguin size is loaded, not the second
     penguin_size = pd.read_csv(
@@ -149,9 +165,13 @@ def test_get_schema_for_data_source(test_app_client):
 
 
 def test_get_identifiers_for_data_source(test_app_client):
-    file_names = LocalCSVDataInventory(
-        {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}}
-    ).get_active_identifiers_for_data_source()
-
-    assert "test_app_deploy_data/data/penguin_size/penguin_size.csv" in file_names
-    assert "test_app_deploy_data/data/penguin_size/penguin_size_2.csv" in file_names
+    file_names = LocalCSVDataInventory.get_identifiers_for_data_sources(
+        data_source_names=["penguin_size"], active_filter=False
+    )
+    expected_file_names = {
+        "penguin_size": [
+            "test_app_deploy_data/data/penguin_size/penguin_size.csv",
+            "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+        ]
+    }
+    assert file_names == expected_file_names
