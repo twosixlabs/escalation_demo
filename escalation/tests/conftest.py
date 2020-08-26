@@ -65,7 +65,6 @@ def make_main_config_for_testing():
         SITE_TITLE: "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
         DATA_BACKEND: LOCAL_CSV,
-        DATA_SOURCES: ["penguin_size", "mean_penguin_stat", "penguin_size_small"],
         AVAILABLE_PAGES: [
             {
                 WEBPAGE_LABEL: "PENGUINS!",
@@ -109,12 +108,7 @@ def make_graphic_config_for_testing():
                     {COLUMN_NAME: "penguin_size:sex", MULTIPLE: False,},
                     {COLUMN_NAME: "penguin_size:island", MULTIPLE: True,},
                 ],
-                NUMERICAL_FILTER: [
-                    {
-                        OPTION_TYPE: NUMERICAL_FILTER,
-                        COLUMN_NAME: "penguin_size:culmen_length_mm",
-                    }
-                ],
+                NUMERICAL_FILTER: [{COLUMN_NAME: "penguin_size:culmen_length_mm",}],
             },
         },
         "graphic_1": {
