@@ -141,9 +141,27 @@ To use the app, navigate in your browser to: [http://localhost:8000](http://loca
 
 ## Resetting the SQL database
 
-Todo: deleting the db volume
+You can re-build the sql database from a blank slate by deleting the "volume" associated with the database, 
+where the data is stored, and relaunching to create a new one.
 
-Todo: running docker cleanup
+    docker-compose down --volumes
+    docker-compose up --build -d
+    
+
+You can also manually delete tables in the sql database by connecting to the database directly and using sql commands.
+
+    Connect to db:
+    docker exec -it escos_db psql -h localhost -p 5432 -U escalation -d escalation
+    
+    List tables:
+    \dt
+    
+    Drop table:
+    DROP TABLE my_table;
+    
+    Disconnect:
+    \q
+    
 
 # Running Escalation as a web-accessible server
 
@@ -154,7 +172,7 @@ This can be a server on a local network, e.g. in your lab, or on a cloud provide
 ## Building your Docker image for deployment
 
 1. You'll want to change the default settings for the password and username for the database, defined here: `escos/escalation/app_deploy_data/app_settings.py`
-2. 
+2. Todo: instructions to build docker image and push
 
 # How can I contribute? (advanced)
 
