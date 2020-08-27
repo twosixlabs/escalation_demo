@@ -257,7 +257,7 @@ class SqlHandler(DataHandler):
         for col in cols:
             renamed_col = self.sanitize_column_name(col)
             sql_col_class = self.column_lookup_by_name[renamed_col]
-            query = current_app.db_sessionquery(sql_col_class).distinct()
+            query = current_app.db_session.query(sql_col_class).distinct()
             if filter_active_data:
                 active_data_filters = self.build_filters_from_active_data_source()
                 query = self.apply_filters_to_query(query, active_data_filters)
@@ -371,8 +371,8 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             table_name=table_name,
             active=active,
         )
-        current_app.db_sessionadd(row)
-        current_app.db_sessioncommit()
+        current_app.db_session.add(row)
+        current_app.db_session.commit()
 
     @classmethod
     def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
@@ -385,7 +385,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         for upload_id, active_status in active_data_dict.items():
             row = (
-                current_app.db_sessionquery(data_upload_metadata)
+                current_app.db_session.query(data_upload_metadata)
                 .filter_by(table_name=data_source_name, upload_id=upload_id)
                 .first()
             )
@@ -402,7 +402,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         :return: dict
         """
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
-        query = current_app.db_sessionquery(data_upload_metadata).filter(
+        query = current_app.db_session.query(data_upload_metadata).filter(
             data_upload_metadata.table_name.in_(data_source_names)
         )
         if active_filter:
@@ -418,7 +418,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         # get the max upload id currently associated with the table and increment it
         result = (
-            current_app.db_sessionquery(func.max(data_upload_metadata.upload_id))
+            current_app.db_session.query(func.max(data_upload_metadata.upload_id))
             .filter(data_upload_metadata.table_name == table_name)
             .first()
         )
