@@ -6,7 +6,7 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
-class DataUploadMetadatum(Base):
+class DataUploadMetadata(Base):
     __tablename__ = "data_upload_metadata"
 
     upload_id = Column(Integer, primary_key=True, nullable=False)

@@ -3,7 +3,7 @@ import os
 
 if not os.environ.get("DATABASE_CONFIG"):
     DATABASE_CONFIG = {
-        "drivername": "postgresql+pg8000",
+        "drivername": "postgresql+psycopg2",
         "host": "postgres_db",
         "port": "5432",
         "username": "escalation",

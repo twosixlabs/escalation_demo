@@ -13,10 +13,10 @@ from sqlalchemy.engine.url import URL
 from database.local_handler import LocalCSVHandler
 from graphics.plotly_plot import LAYOUT, TITLE
 from utility.constants import *
-
+from app_setup import configure_backend, create_app
 
 TESTING_DB_CONFIG = {
-    "drivername": "postgresql+pg8000",
+    "drivername": "postgresql+psycopg2",
     "host": "localhost",
     "port": "5432",
     "username": "escalation",
@@ -27,13 +27,12 @@ TESTING_DB_URI = URL(**TESTING_DB_CONFIG)
 
 
 @pytest.fixture()
-def test_app_client(main_json_fixture):
-    from app_setup import create_app
+def test_app_client_csv_backed(main_json_csv_backend_fixture):
 
-    flask_app = create_app(db_uri=TESTING_DB_URI)
-    flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_fixture)
+    flask_app = create_app()
+    flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_csv_backend_fixture)
     flask_app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
-
+    configure_backend(flask_app)
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
     testing_client = flask_app.test_client()
@@ -48,7 +47,26 @@ def test_app_client(main_json_fixture):
 
 
 @pytest.fixture()
-def local_handler_fixture_small(test_app_client):
+def test_app_client_sql_backed(main_json_sql_backend_fixture):
+    flask_app = create_app(db_uri=TESTING_DB_URI)
+    flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_sql_backend_fixture)
+    flask_app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
+    configure_backend(flask_app, models_path="test_app_deploy_data.models")
+    # Flask provides a way to test your application by exposing the Werkzeug test Client
+    # and handling the context locals for you.
+    testing_client = flask_app.test_client()
+    # Establish an application context before running the tests.
+    ctx = flask_app.app_context()
+    # application context needs to be pushed to be able to handle GETs and POSTs
+    ctx.push()
+    # provide the testing client to the tests
+    yield testing_client  # this is where the testing happens!
+    # remove the context to clean up the test environment
+    ctx.pop()
+
+
+@pytest.fixture()
+def local_handler_fixture_small(test_app_client_csv_backed):
     got_data = LocalCSVHandler(
         {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size_small"}}
     )
@@ -56,14 +74,19 @@ def local_handler_fixture_small(test_app_client):
 
 
 @pytest.fixture()
-def local_handler_fixture(test_app_client):
+def local_handler_fixture(test_app_client_csv_backed):
     got_data = LocalCSVHandler({MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}})
     return got_data
 
 
 @pytest.fixture()
-def main_json_fixture():
-    return make_main_config_for_testing()
+def main_json_csv_backend_fixture():
+    return make_main_config_for_testing(backend=LOCAL_CSV)
+
+
+@pytest.fixture()
+def main_json_sql_backend_fixture():
+    return make_main_config_for_testing(backend=POSTGRES)
 
 
 @pytest.fixture()
@@ -71,11 +94,11 @@ def graphic_json_fixture():
     return make_graphic_config_for_testing()
 
 
-def make_main_config_for_testing():
+def make_main_config_for_testing(backend):
     config_dict = {
         SITE_TITLE: "Escalation Test",
         "brief_desc": "This is a test/demo for the Escalation OS",
-        DATA_BACKEND: LOCAL_CSV,
+        DATA_BACKEND: backend,
         AVAILABLE_PAGES: [
             {
                 WEBPAGE_LABEL: "PENGUINS!",

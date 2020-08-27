@@ -2,13 +2,13 @@
 # Licensed under the Apache License, Version 2.0
 from collections import OrderedDict, defaultdict
 from datetime import datetime
-import sys
 from io import StringIO
+import sys
 
+from flask import current_app
 import pandas as pd
-import psycopg2  # used here for fast copy_from performance
+import psycopg2
 from sqlalchemy import and_, func, create_engine, MetaData, Column, Table
-from sqlalchemy.engine.url import URL
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.types import (
     Integer,
@@ -23,10 +23,7 @@ from sqlalchemy.types import (
     Interval,
 )
 
-from app_deploy_data.app_settings import DATABASE_CONFIG
-from app_deploy_data.models import DataUploadMetadata
 from database.data_handler import DataHandler
-from database.database_session import db_session, Base
 from database.utils import sql_handler_filter_operation
 
 from utility.constants import (
@@ -46,8 +43,8 @@ from utility.constants import (
     ADDITIONAL_DATA_SOURCES,
     DATA_UPLOAD_METADATA,
     ACTIVE,
+    SQLALCHEMY_DATABASE_URI,
 )
-
 
 # from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
 SQL_DATA_TYPE_MAP = {
@@ -76,16 +73,17 @@ APPEND = "append"
 FAIL = "fail"
 
 
-def connect_to_db_using_psycopg2(db_config_dict):
+def connect_to_db_using_psycopg2():
     # bulk copy of the contents using psycopg2 copy_from, which is much faster, see:
     # https://naysan.ca/2020/05/09/pandas-to-postgresql-using-psycopg2-bulk-insert-performance-benchmark/
 
     """ Connect to the PostgreSQL database server """
+    url_obj = current_app.config[SQLALCHEMY_DATABASE_URI]
     psycopg2_config_dict = {
-        "host": db_config_dict["host"],
-        "database": db_config_dict["database"],
-        "user": db_config_dict["username"],
-        "password": db_config_dict["password"],
+        "host": url_obj.host,
+        "database": url_obj.database,
+        "user": url_obj.username,
+        "password": url_obj.password,
     }
     try:
         # connect to the PostgreSQL server
@@ -142,7 +140,7 @@ class SqlHandler(DataHandler):
         :param tablename str
         :return: table class object
         """
-        return Base.metadata.tables[table_name]
+        return current_app.Base.metadata.tables[table_name]
 
     def apply_filters_to_query(self, query, filters):
         # add filters to the query dynamically
@@ -168,7 +166,7 @@ class SqlHandler(DataHandler):
         :return: dictionary keyed by column names and valued with SqlAlchemy column objects
         """
         # first build a query that will get all of the columns for all of active data in the requested tables
-        query = db_session.query(*list(self.table_lookup_by_name.values()))
+        query = current_app.db_session.query(*list(self.table_lookup_by_name.values()))
         # specify how the different data sources are joined
         for data_source in self.data_sources.get(ADDITIONAL_DATA_SOURCES, []):
             join_clauses = []
@@ -227,7 +225,7 @@ class SqlHandler(DataHandler):
             self.sanitize_column_name(c): c for c in all_to_include_cols
         }
         # build basic query requesting all of the columns needed
-        query = db_session.query(
+        query = current_app.db_session.query(
             *[self.column_lookup_by_name[c] for c in all_column_rename_dict.keys()]
         )
         active_data_filters = self.build_filters_from_active_data_source()
@@ -259,7 +257,7 @@ class SqlHandler(DataHandler):
         for col in cols:
             renamed_col = self.sanitize_column_name(col)
             sql_col_class = self.column_lookup_by_name[renamed_col]
-            query = db_session.query(sql_col_class).distinct()
+            query = current_app.db_sessionquery(sql_col_class).distinct()
             if filter_active_data:
                 active_data_filters = self.build_filters_from_active_data_source()
                 query = self.apply_filters_to_query(query, active_data_filters)
@@ -340,6 +338,19 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         self.data_source_name = [*self.table_lookup_by_name.keys()][0]
 
     @staticmethod
+    def get_sqlalchemy_model_class_for_data_upload_metadata():
+        """
+        Return the DataUploadMetadata class associated with the current base.
+        This is more complicated than simply importing from a file,
+         because we use different paths for testing environments
+        :return: sqlalchemy model class for DATA_UPLOAD_METADATA
+        """
+        for c in current_app.Base._decl_class_registry.values():
+            if hasattr(c, "__tablename__") and c.__tablename__ == DATA_UPLOAD_METADATA:
+                return c
+        raise KeyError(f"{DATA_UPLOAD_METADATA} not found in available model classes")
+
+    @staticmethod
     def get_available_data_sources():
         """
         Lists all data sources available in the db
@@ -347,20 +358,21 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         """
         return [
             table_name
-            for table_name in Base.metadata.tables.keys()
+            for table_name in current_app.Base.metadata.tables.keys()
             if table_name != DATA_UPLOAD_METADATA
         ]
 
-    @staticmethod
-    def write_upload_metadata_row(table_name, upload_time, upload_id, active=True):
-        row = DataUploadMetadata(
+    @classmethod
+    def write_upload_metadata_row(cls, table_name, upload_time, upload_id, active=True):
+        data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
+        row = data_upload_metadata(
             upload_id=upload_id,
             upload_time=upload_time,
             table_name=table_name,
             active=active,
         )
-        db_session.add(row)
-        db_session.commit()
+        current_app.db_sessionadd(row)
+        current_app.db_sessioncommit()
 
     @classmethod
     def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
@@ -370,14 +382,16 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
        :param active_data_dict: dict keyed by upload_id, valued with string INACTIVE or ACTIVE
        :return: None. updates rows in the data_upload_metadata table
        """
-
+        data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         for upload_id, active_status in active_data_dict.items():
-            row = DataUploadMetadata.query.filter_by(
-                table_name=data_source_name, upload_id=upload_id
-            ).first()
+            row = (
+                current_app.db_sessionquery(data_upload_metadata)
+                .filter_by(table_name=data_source_name, upload_id=upload_id)
+                .first()
+            )
             active_boolean = active_status == ACTIVE
             row.active = active_boolean
-        db_session.commit()
+            current_app.db_sessioncommit()
 
     @classmethod
     def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
@@ -387,23 +401,25 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         :param active_filter:
         :return: dict
         """
-        query = db_session.query(DataUploadMetadata).filter(
-            DataUploadMetadata.table_name.in_(data_source_names)
+        data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
+        query = current_app.db_sessionquery(data_upload_metadata).filter(
+            data_upload_metadata.table_name.in_(data_source_names)
         )
         if active_filter:
-            query = query.filter(DataUploadMetadata.active.is_(True))
+            query = query.filter(data_upload_metadata.active.is_(True))
         results = query.all()
         identifiers_by_table = defaultdict(list)
         for result in results:
             identifiers_by_table[result.table_name].append(result.upload_id)
         return identifiers_by_table
 
-    @staticmethod
-    def get_new_upload_id_for_table(table_name):
+    @classmethod
+    def get_new_upload_id_for_table(cls, table_name):
+        data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         # get the max upload id currently associated with the table and increment it
         result = (
-            db_session.query(func.max(DataUploadMetadata.upload_id))
-            .filter(DataUploadMetadata.table_name == table_name)
+            current_app.db_sessionquery(func.max(data_upload_metadata.upload_id))
+            .filter(data_upload_metadata.table_name == table_name)
             .first()
         )
         max_upload_id = result[0]  # always defined- tuple with None if no result
@@ -425,7 +441,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         :param data_source_name:
         Assumption: data_source for this upload is only one table, even though they can generally refer to more than one table
 
-        :return:
+        :return: list of df columns not written to the db (no corresponding db column)
         """
         uploaded_data_df = self.cast_dataframe_datatypes(uploaded_data_df)
         table = self.table_lookup_by_name[self.data_source_name]
@@ -434,18 +450,11 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             data=uploaded_data_df, upload_id=new_upload_id
         )
         # todo: handle custom pk columns
-        # # verify that all indices in the existing index column are unique
-        # num_uploaded_rows = uploaded_data_df.shape[0]
-        # num_unique_indexes = len(uploaded_data_df[INDEX_COLUMN].unique())
-        # assert (
-        #     num_unique_indexes == num_uploaded_rows
-        # ), f"{INDEX_COLUMN} has non-unique values"
-
         # subset the columns to write to equal those in the db
         existing_columns = [c.name for c in table.columns]
         ignored_columns = set(uploaded_data_df.columns) - set(existing_columns)
         uploaded_data_df = uploaded_data_df[existing_columns]
-        conn = connect_to_db_using_psycopg2(DATABASE_CONFIG)
+        conn = connect_to_db_using_psycopg2()
         psycopg2_copy_from_stringio(conn, uploaded_data_df, self.data_source_name)
         upload_time = datetime.utcnow()
         self.write_upload_metadata_row(
@@ -460,12 +469,10 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
 class CreateTablesFromCSVs(DataFrameConverter):
     """Infer a table schema from a CSV, and create a sql table from this definition"""
 
-    def __init__(self, db_config):
-        self.db_config = db_config
-        connection_url = URL(**self.db_config)
-        self.engine = create_engine(connection_url)
+    def __init__(self, db_url):
+        self.engine = create_engine(db_url)
         self.reflect_db_tables_to_sqlalchemy_classes()
-        self.Base = Base
+        self.Base = None
         self.meta = MetaData(bind=self.engine)
 
     def create_and_fill_new_sql_table_from_df(self, table_name, data, if_exists):
@@ -482,8 +489,7 @@ class CreateTablesFromCSVs(DataFrameConverter):
         self.create_new_table(
             table_name, schema, key_columns=key_column, if_exists=if_exists
         )
-
-        conn = connect_to_db_using_psycopg2(self.db_config)
+        conn = connect_to_db_using_psycopg2()
         success = psycopg2_copy_from_stringio(conn, data, table_name)
         if not success:
             raise Exception

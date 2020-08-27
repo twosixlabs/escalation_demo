@@ -14,8 +14,8 @@ import re
 
 from sqlacodegen.codegen import CodeGenerator
 
-from app_deploy_data.app_settings import DATABASE_CONFIG
 from database.sql_handler import SqlDataInventory, CreateTablesFromCSVs
+from utility.constants import SQLALCHEMY_DATABASE_URI
 
 
 POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     example usage:
     python database/csv_to_sql.py penguin_size escalation/test_app_deploy_data/data/penguin_size/penguin_size.csv replace
     create a models.py file with the sqlalchemy models of the tables in the db
-    sqlacodegen postgresql+pg8000://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
+    sqlacodegen postgresql+psycopg2://escalation_os:escalation_os_pwd@localhost:54320/escalation_os --outfile app_deploy_data/models.py
 
     """
     table_name = sys.argv[1]
@@ -56,8 +56,8 @@ if __name__ == "__main__":
             "tablename will be converted to lowercase letters"
         )
 
-    db_config = DATABASE_CONFIG
-    # db_config["host"] = "localhost"
+    db_config = os.environ.get(SQLALCHEMY_DATABASE_URI)
+    assert db_config is not None
     csv_sql_writer = CreateTablesFromCSVs(db_config)
 
     data = csv_sql_writer.get_data_from_csv(filepath)

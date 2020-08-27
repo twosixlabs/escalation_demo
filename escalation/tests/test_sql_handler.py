@@ -2,31 +2,31 @@
 # Licensed under the Apache License, Version 2.0
 import os
 
+from flask import current_app
 import pandas as pd
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, MetaData
 
 
 from database.sql_handler import SqlDataInventory
 from database.utils import sql_handler_filter_operation
-from database.database_session import Base
 from utility.constants import *
 from tests.conftest import TESTING_DB_URI
 
 
 @pytest.fixture()
-def rebuild_test_database():
-    # todo: clear out db
-    pytest.set_trace()
+def rebuild_test_database(test_app_client_sql_backed):
+    # drop all tables assocatiated with the testing app Sqlalchemy Base
     engine = create_engine(TESTING_DB_URI)
-    Base.metadata.drop_all(bind=engine)
-    pytest.set_trace()
-
-    Base.metadata.create_all(bind=engine)
+    current_app.engine = engine
+    current_app.Base.metadata.drop_all(bind=engine)
+    current_app.Base.metadata.create_all(bind=engine)
 
     test_app_data_path = os.path.join(TEST_APP_DEPLOY_DATA, DATA)
     data_sources = os.listdir(test_app_data_path)
     for data_source in data_sources:
+        if data_source == DATA_UPLOAD_METADATA:
+            continue
         data_inventory = SqlDataInventory(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source}}
         )

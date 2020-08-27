@@ -1,14 +1,16 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-
+import importlib
 import os
 from types import MappingProxyType
 
 from flask import Flask
 from sqlalchemy.engine.url import URL
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine
+from flask_sqlalchemy import SQLAlchemy
 
-from app_deploy_data.app_settings import DATABASE_CONFIG
 from controller import create_labels_for_available_pages, make_pages_dict
 from utility.constants import (
     APP_CONFIG_JSON,
@@ -17,7 +19,9 @@ from utility.constants import (
     AVAILABLE_PAGES_DICT,
     DATA_BACKEND,
     POSTGRES,
+    SQLALCHEMY_DATABASE_URI,
 )
+from app_deploy_data.app_settings import DATABASE_CONFIG
 from version import VERSION
 
 ENV_SPECIFIED_URL = os.environ.get("DATABASE_URL")
@@ -64,19 +68,28 @@ def configure_app(app, config_dict, config_file_folder):
     return app
 
 
-def configure_backend(app):
+def configure_backend(app, models_path="app_deploy_data.models"):
     # setup steps unique to SQL-backended apps
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [POSTGRES]:
         from database.sql_handler import SqlHandler, SqlDataInventory
-        from database.database_session import db, db_session
 
-        db.init_app(app)
+        app.db = SQLAlchemy()
+        engine = create_engine(
+            app.config[SQLALCHEMY_DATABASE_URI], convert_unicode=True
+        )
+        app.db_session = scoped_session(
+            sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        )
+        app.db.init_app(app)
+
         data_backend_class = SqlHandler
         data_backend_writer = SqlDataInventory
+        models_imports = importlib.import_module(models_path)
+        app.Base = getattr(models_imports, "Base")
 
         @app.teardown_appcontext
         def shutdown_session(exception=None):
-            db_session.remove()
+            app.db_session.remove()
 
     else:
         from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
