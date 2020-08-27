@@ -20,12 +20,13 @@ from utility.constants import (
 )
 from version import VERSION
 
+ENV_SPECIFIED_URL = os.environ.get("DATABASE_URL")
 
-def create_app():
+
+def create_app(db_uri=ENV_SPECIFIED_URL):
     app = Flask(__name__)
     app.config.from_mapping(
-        SQLALCHEMY_DATABASE_URI=os.environ.get("DATABASE_URL")
-        or URL(**DATABASE_CONFIG),
+        SQLALCHEMY_DATABASE_URI=db_uri or URL(**DATABASE_CONFIG),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         VERSION=VERSION,
     )
@@ -67,7 +68,7 @@ def configure_backend(app):
     # setup steps unique to SQL-backended apps
     if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [POSTGRES]:
         from database.sql_handler import SqlHandler, SqlDataInventory
-        from database.database import db, db_session
+        from database.database_session import db, db_session
 
         db.init_app(app)
         data_backend_class = SqlHandler

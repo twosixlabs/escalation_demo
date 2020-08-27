@@ -12,7 +12,6 @@ import os
 import sys
 import re
 
-
 from sqlacodegen.codegen import CodeGenerator
 
 from app_deploy_data.app_settings import DATABASE_CONFIG

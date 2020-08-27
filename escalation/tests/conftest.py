@@ -5,20 +5,32 @@
 Pytest configuration and test fixtures
 """
 
-import pytest
 from types import MappingProxyType
 
+import pytest
+from sqlalchemy.engine.url import URL
 
 from database.local_handler import LocalCSVHandler
 from graphics.plotly_plot import LAYOUT, TITLE
 from utility.constants import *
 
 
+TESTING_DB_CONFIG = {
+    "drivername": "postgresql+pg8000",
+    "host": "localhost",
+    "port": "5432",
+    "username": "escalation",
+    "password": "escalation_pwd",
+    "database": "testing_escalation",
+}
+TESTING_DB_URI = URL(**TESTING_DB_CONFIG)
+
+
 @pytest.fixture()
 def test_app_client(main_json_fixture):
     from app_setup import create_app
 
-    flask_app = create_app()
+    flask_app = create_app(db_uri=TESTING_DB_URI)
     flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_fixture)
     flask_app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
 

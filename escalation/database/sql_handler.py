@@ -5,7 +5,6 @@ from datetime import datetime
 import sys
 from io import StringIO
 
-from flask import current_app
 import pandas as pd
 import psycopg2  # used here for fast copy_from performance
 from sqlalchemy import and_, func, create_engine, MetaData, Column, Table
@@ -27,7 +26,7 @@ from sqlalchemy.types import (
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from app_deploy_data.models import DataUploadMetadata
 from database.data_handler import DataHandler
-from database.database import db_session, Base
+from database.database_session import db_session, Base
 from database.utils import sql_handler_filter_operation
 
 from utility.constants import (

@@ -1,9 +1,44 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
+import os
+
+import pandas as pd
+import pytest
+from sqlalchemy import create_engine
+
+
+from database.sql_handler import SqlDataInventory
 from database.utils import sql_handler_filter_operation
+from database.database_session import Base
+from utility.constants import *
+from tests.conftest import TESTING_DB_URI
 
 
-def test_sql_handler_get_column_names():
+@pytest.fixture()
+def rebuild_test_database():
+    # todo: clear out db
+    pytest.set_trace()
+    engine = create_engine(TESTING_DB_URI)
+    Base.metadata.drop_all(bind=engine)
+    pytest.set_trace()
+
+    Base.metadata.create_all(bind=engine)
+
+    test_app_data_path = os.path.join(TEST_APP_DEPLOY_DATA, DATA)
+    data_sources = os.listdir(test_app_data_path)
+    for data_source in data_sources:
+        data_inventory = SqlDataInventory(
+            data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source}}
+        )
+        data_source_path = os.path.join(test_app_data_path, data_source)
+        files = os.listdir(data_source_path)
+        for file in files:
+            df = pd.read_csv(os.path.join(data_source_path, file), sep=",", comment="#")
+            data_inventory.write_data_upload_to_backend(df)
+    return True
+
+
+def test_sql_handler_get_column_names(rebuild_test_database):
     # todo: write this test and many others
     assert False
 
