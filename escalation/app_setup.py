@@ -60,7 +60,6 @@ def configure_app(app, config_dict, config_file_folder):
         config_dict[AVAILABLE_PAGES], app.config[CONFIG_FILE_FOLDER]
     )
     configure_backend(app)
-    app.config.active_data_source_filters = {}
     return app
 
 

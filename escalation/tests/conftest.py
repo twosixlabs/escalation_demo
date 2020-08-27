@@ -21,7 +21,6 @@ def test_app_client(main_json_fixture):
     flask_app = create_app()
     flask_app.config[APP_CONFIG_JSON] = MappingProxyType(main_json_fixture)
     flask_app.config[CONFIG_FILE_FOLDER] = TEST_APP_DEPLOY_DATA
-    flask_app.config.active_data_source_filters = []
 
     # Flask provides a way to test your application by exposing the Werkzeug test Client
     # and handling the context locals for you.
