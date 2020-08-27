@@ -79,9 +79,9 @@ def test_get_layout_for_dashboard(main_json_fixture):
 
 
 def test_sanitize_string():
-    test_string = "this! is*$. test 42"
-    santitized = "this_is_test_42"
-    assert sanitize_string(test_string) == santitized
+    test_string = "this! i:/\s*$. test 42"
+    sanitized = "this_is_test_42"
+    assert sanitize_string(test_string) == sanitized
 
 
 def test_prune_visualization_dict():
@@ -127,6 +127,7 @@ def test_make_empty_component_dict():
     assert component_dict[VISUALIZATION] == {}
     assert component_dict[SELECTOR] == {}
     assert component_dict[PLOTLY] == {}
+    assert len(component_dict.keys()) == 4
 
 
 def test_extract_data_sources_from_config(graphic_json_fixture):
@@ -144,6 +145,7 @@ def test_extract_data_sources_from_config(graphic_json_fixture):
     data_sources = extract_data_sources_from_config(test_config)
     assert "penguin_size" in data_sources
     assert "mean_penguin_stat" in data_sources
+    assert len(data_sources)==2
 
 
 def test_copy_data_from_form_to_config(main_json_fixture):
@@ -173,6 +175,9 @@ def test_graphic_dict_to_graphic_component_dict(graphic_json_fixture):
     assert component_dict[PLOTLY] == test_config[PLOT_SPECIFIC_INFO]
     assert component_dict[SELECTOR] == test_config[SELECTABLE_DATA_DICT]
     test_config_copy = copy.deepcopy(test_config)
+    # component_dict[GRAPHIC_META_INFO] contains all the data besides the keys
+    # PLOT_SPECIFIC_INFO, SELECTABLE_DATA_DICT and VISUALIZATION_OPTIONS
+    # test_config_copy does not contain VISUALIZATION_OPTIONS and we delete the other two.
     del test_config_copy[PLOT_SPECIFIC_INFO]
     del test_config_copy[SELECTABLE_DATA_DICT]
     assert component_dict[GRAPHIC_META_INFO] == test_config_copy
