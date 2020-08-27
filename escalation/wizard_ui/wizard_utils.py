@@ -29,6 +29,7 @@ from utility.constants import (
     SITE_DESC,
     SITE_TITLE,
     DATA_BACKEND,
+    MAIN_DATA_SOURCE,
 )
 from validate_schema import get_data_inventory_class, get_possible_column_names
 from wizard_ui.schemas_for_ui import build_graphic_schemas_for_ui
@@ -92,10 +93,11 @@ def graphic_dict_to_graphic_component_dict(graphic_dict):
     :param graphic_dict:
     :return:
     """
+    graphic_dict_copy = copy.deepcopy(graphic_dict)
     component_dict = {}
     for ui_name, schema_name in UI_SCHEMA_PAIRS.items():
-        component_dict[ui_name] = graphic_dict.pop(schema_name, {})
-    component_dict[GRAPHIC_META_INFO] = graphic_dict
+        component_dict[ui_name] = graphic_dict_copy.pop(schema_name, {})
+    component_dict[GRAPHIC_META_INFO] = graphic_dict_copy
     return component_dict
 
 
@@ -135,7 +137,7 @@ def prune_visualization_dict(visualization_dict):
     # when the form is left blank the entries of visualization_dict have
     # COLUMN_NAME key that points to an empty list
     for vis_key, vis_dict in visualization_dict.items():
-        if vis_dict[COLUMN_NAME]:
+        if vis_dict.get(COLUMN_NAME):
             new_visualization_dict[vis_key] = vis_dict
     return new_visualization_dict
 
@@ -148,7 +150,7 @@ def prune_selector_dict(selector_dict):
     """
     new_selector_dict = {}
     for sel_key, sel_info in selector_dict.items():
-        if (sel_key == GROUPBY and sel_info[ENTRIES]) or (
+        if (sel_key == GROUPBY and sel_info.get(ENTRIES)) or (
             sel_key != GROUPBY and sel_info
         ):
             new_selector_dict[sel_key] = sel_info
@@ -210,10 +212,15 @@ def extract_data_sources_from_config(graphic_config):
     :param graphic_config:
     :return:
     """
-    data_sources = set()
-    for data_source_dict in graphic_config[DATA_SOURCES].values():
-        data_sources.add(data_source_dict.get(DATA_SOURCE_TYPE))
-    return list(data_sources)
+    if DATA_SOURCES in graphic_config:
+        data_source_dict = graphic_config[DATA_SOURCES]
+        data_sources = set([data_source_dict[MAIN_DATA_SOURCE].get(DATA_SOURCE_TYPE)])
+        additional_data_source_list = data_source_dict.get(ADDITIONAL_DATA_SOURCES, [])
+        for additional_data_source_dict in additional_data_source_list:
+            data_sources.add(additional_data_source_dict.get(DATA_SOURCE_TYPE))
+        return list(data_sources)
+    else:
+        return []
 
 
 def copy_data_from_form_to_config(main_config, form):
