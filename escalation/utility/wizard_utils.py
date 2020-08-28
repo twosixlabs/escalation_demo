@@ -5,9 +5,7 @@ import re
 
 from flask import current_app
 
-from app_setup import configure_backend
 from utility.constants import (
-    APP_CONFIG_JSON,
     CONFIG_FILE_FOLDER,
     MAIN_CONFIG,
     PLOTLY,
@@ -31,21 +29,13 @@ from utility.constants import (
     DATA_BACKEND,
     MAIN_DATA_SOURCE,
 )
-from validate_schema import get_data_inventory_class, get_possible_column_names
-from wizard_ui.schemas_for_ui import build_graphic_schemas_for_ui
+from validate_schema import get_possible_column_names
 
 UI_SCHEMA_PAIRS = {
     VISUALIZATION: VISUALIZATION_OPTIONS,
     SELECTOR: SELECTABLE_DATA_DICT,
     PLOTLY: PLOT_SPECIFIC_INFO,
 }
-
-
-def set_up_backend_for_wizard(config_dict, app):
-    # current app needs to have the config dict before calling configure backend
-    app.config[APP_CONFIG_JSON] = config_dict
-    # the first time the config_dict is made configured we need to get the data backend
-    configure_backend(app)
 
 
 def save_main_config_dict(config_dict):
@@ -195,9 +185,11 @@ def get_data_source_info(csv_flag, active_data_source_names=None):
     :param active_data_source_names:
     :return:
     """
-    data_inventory_class = get_data_inventory_class(csv_flag)
+    if active_data_source_names is None:
+        active_data_source_names = []
+    data_inventory_class = current_app.config.data_backend_writer
     data_source_names = data_inventory_class.get_available_data_sources()
-    if not active_data_source_names:
+    if data_source_names and not active_data_source_names:
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
     possible_column_names = get_possible_column_names(

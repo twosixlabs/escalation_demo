@@ -8,12 +8,11 @@ from sqlalchemy.engine.url import URL
 
 from utility.constants import (
     CONFIG_FILE_FOLDER,
-    TEST_APP_DEPLOY_DATA,
     APP_DEPLOY_DATA,
     DATA_BACKEND,
 )
 from app_deploy_data.app_settings import DATABASE_CONFIG
-from wizard_ui.wizard_utils import (
+from utility.wizard_utils import (
     load_main_config_dict_if_exists,
     set_up_backend_for_wizard,
 )
@@ -29,7 +28,7 @@ def create_app():
     )
 
     # register url blueprints with the app object
-    from wizard_ui.wizard_view import wizard_blueprint
+    from views.wizard_view import wizard_blueprint
 
     app.register_blueprint(wizard_blueprint)
 

@@ -3,11 +3,6 @@ import copy
 from werkzeug.datastructures import ImmutableMultiDict
 
 from utility.constants import (
-    AVAILABLE_PAGES,
-    WEBPAGE_LABEL,
-    URL_ENDPOINT,
-    GRAPHIC_CONFIG_FILES,
-    GRAPHIC_PATH,
     HOVER_DATA,
     COLUMN_NAME,
     GROUPBY,
@@ -15,7 +10,6 @@ from utility.constants import (
     FILTER,
     NUMERICAL_FILTER,
     MULTIPLE,
-    OPTION_TYPE,
     AXIS,
     GRAPHIC_META_INFO,
     VISUALIZATION,
@@ -29,13 +23,11 @@ from utility.constants import (
     SITE_DESC,
     DATA_BACKEND,
     POSTGRES,
-    VISUALIZATION_OPTIONS,
     PLOT_SPECIFIC_INFO,
     SELECTABLE_DATA_DICT,
 )
-from wizard_ui.wizard_utils import (
+from utility.wizard_utils import (
     invert_dict_lists,
-    get_layout_for_dashboard,
     sanitize_string,
     prune_visualization_dict,
     prune_selector_dict,
