@@ -34,7 +34,9 @@ def rebuild_test_database(test_app_client_sql_backed):
         files = os.listdir(data_source_path)
         for file in files:
             df = pd.read_csv(os.path.join(data_source_path, file), sep=",", comment="#")
-            data_inventory.write_data_upload_to_backend(df)
+            data_inventory.write_data_upload_to_backend(
+                df, username="test_fixture", notes="test case upload"
+            )
     return True
 
 
