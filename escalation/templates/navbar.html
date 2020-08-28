@@ -11,13 +11,6 @@
       <li class="nav-item {% if request.path==url_for('upload.submission_view') %} active {% endif %}">
         <a class="nav-link" href={{ url_for('upload.submission_view') }}>Upload</a>
       </li>
-
-      {% if config.ENV == "developmemt" %}
-        <li class="nav-item {% if request.path==url_for('wizard.file_tree') %} active {% endif %}">
-          <a class="nav-link" href={{ url_for('wizard.file_tree') }}>Configuration Wizard</a>
-        </li>
-      {% endif %}
-
       <li class="nav-item dropdown {% if "/dashboard/" in request.path %} active {% endif %}">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Dashboards
@@ -29,6 +22,11 @@
         {% endfor %}
         </div>
       </li>
+      {% if config.ENV == "development" %}
+        <li class="nav-item {% if request.path==url_for('wizard.file_tree') %} active {% endif %}">
+          <a class="nav-link" href={{ url_for('wizard.file_tree') }}>Configuration Wizard</a>
+        </li>
+      {% endif %}
 
     </ul>
 </nav>
