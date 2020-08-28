@@ -13,6 +13,8 @@ class DataUploadMetadata(Base):
     table_name = Column(Text, primary_key=True, nullable=False)
     upload_time = Column(DateTime)
     active = Column(Boolean)
+    username = Column(Text)
+    notes = Column(Text)
 
 
 class MeanPenguinStat(Base):
