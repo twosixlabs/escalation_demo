@@ -2,4 +2,6 @@
 black
 pre-commit
 pytest
+selenium
+chromedriver-binary
 pytest-mock
