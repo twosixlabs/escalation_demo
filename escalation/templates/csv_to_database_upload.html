@@ -12,16 +12,21 @@
 {% block content %}
 {% include 'navbar.html' %}
 <div class="jumbotron">
-    <h1 class="display-4">Upload CSV file to Database</h1>
+    <h1 class="display-4">Upload new type of CSV file to Database</h1>
     <hr class="my-4">
-    <p class="lead">Data Upload</p>
+    <p class="lead">Create new tables from data sources not already uploaded</p>
 </div>
 <div class="container-fluid pl-5 pr-5">
 <div class="row">
 <form id="upload_form" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label for="data_source">Data File Type</label>
-        <small class="form-text text-muted">Enter new data type name or select existing data type</small>
+
+        <label id="username" for="username">Username</label>
+        <textarea placeholder="Name to record for data table history tracking" class="form-control"  name="username" rows="10" cols="30"></textarea>
+
+
+        <small class="form-text text-muted">Enter new data type name, or select an existing data type<br> (Note! This will replace any existing data of this type!)</small>
             <input list="data_source_list" class="form-control"  id="data_source" name="data_source" required>
             <datalist id="data_source_list">
                 {% for existing_data_source in data_sources %}
