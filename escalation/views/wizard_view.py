@@ -32,7 +32,7 @@ from utility.constants import (
     NEW,
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
-    DATA_SOURCE_TYPE,
+    APP_DEPLOY_DATA,
     SQLALCHEMY_DATABASE_URI,
 )
 from utility.schemas_for_ui import (
@@ -244,12 +244,32 @@ def data_upload_page():
     return render_template(CSV_TO_DATABASE_UPLOAD_HTML, data_sources=data_source_names)
 
 
+def validate_table_name():
+    # todo: form validate table name, but in js for pre-submit warning?
+    # POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
+    # if not re.match(POSTGRES_TABLE_NAME_FORMAT_REGEX, table_name):
+    #     print(
+    #         "Table names name must start with a letter or an underscore;"
+    #         " the rest of the string can contain letters, digits, and underscores."
+    #     )
+    #     exit(1)
+    # if len(table_name) > 31:
+    #     print(
+    #         "Postgres SQL only supports table names with length <= 31-"
+    #         " additional characters will be ignored"
+    #     )
+    #     exit(1)
+    # if re.match("[A-Z]", table_name):
+    #     print(
+    #         "Postgres SQL table names are case insensitive- "
+    #         "tablename will be converted to lowercase letters"
+    #     )
+    #
+    pass
+
+
 # todo: this only makes sense for sql-backed apps
-# todo: verify on replace options
-# todo: verification notification that the upload was successful
-# todo: check that we're updating models.py
-
-
+# todo: verify on replace options- popup confirmation warning? in js?
 @wizard_blueprint.route("/wizard/upload", methods=("POST",))
 def upload_csv_to_database():
     table_name = request.form.get("data_source")
@@ -268,12 +288,11 @@ def upload_csv_to_database():
         active=True,
     )
     # Generate a new models.py
-    # Write the generated model code to the specified file or standard output
-    outfile = io_open(
-        os.path.join("app_deploy_data", "models.py"), "w", encoding="utf-8"
-    )
     # update the metadata to include all tables in the db
     csv_sql_writer.meta.reflect()
+    # write the database schema to models.py
     generator = CodeGenerator(csv_sql_writer.meta, noinflect=True)
+    # Write the generated model code to the specified file or standard output
+    outfile = io_open(os.path.join(APP_DEPLOY_DATA, "models.py"), "w", encoding="utf-8")
     generator.render(outfile)
-    return data_upload_page()
+    return render_template("success.html", username="username", ignored_columns=[])
