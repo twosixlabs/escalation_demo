@@ -18,7 +18,6 @@ from database.sql_handler import SqlDataInventory, CreateTablesFromCSVs
 from utility.constants import SQLALCHEMY_DATABASE_URI
 
 
-POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
 REPLACE = "replace"
 APPEND = "append"
 FAIL = "fail"
@@ -38,6 +37,7 @@ if __name__ == "__main__":
     # todo - better arg handling with argparse or something
     assert if_exists in EXISTS_OPTIONS
 
+    POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
     if not re.match(POSTGRES_TABLE_NAME_FORMAT_REGEX, table_name):
         print(
             "Table names name must start with a letter or an underscore;"
@@ -73,6 +73,8 @@ if __name__ == "__main__":
         upload_time=upload_time,
         table_name=table_name,
         active=True,
+        username=None,
+        notes=None,
     )
 
     # Write the generated model code to the specified file or standard output

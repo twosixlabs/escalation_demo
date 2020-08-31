@@ -20,9 +20,14 @@ from utility.constants import (
     DATA_BACKEND,
     POSTGRES,
     SQLALCHEMY_DATABASE_URI,
+    DEVELOPMENT,
 )
 from app_deploy_data.app_settings import DATABASE_CONFIG
 from version import VERSION
+from views.dashboard import dashboard_blueprint
+from views.file_upload import upload_blueprint
+from views.admin import admin_blueprint
+from views.wizard_view import wizard_blueprint
 
 ENV_SPECIFIED_URL = os.environ.get("DATABASE_URL")
 
@@ -36,20 +41,17 @@ def create_app(db_uri=ENV_SPECIFIED_URL):
     )
 
     # register url blueprints with the app object
-    from views.dashboard import dashboard_blueprint
-
     app.register_blueprint(dashboard_blueprint)
-    from views.file_upload import upload_blueprint
-
     app.register_blueprint(upload_blueprint)
-    from views.admin import admin_blueprint
-
     app.register_blueprint(admin_blueprint)
+    if app.config.get("ENV") == DEVELOPMENT:
+        # only include the wizard blueprint when running in debug mode
+        app.register_blueprint(wizard_blueprint)
 
     @app.context_processor
     def get_dashboard_pages():
         # used for the navigation bar
-        available_pages = app.config.get(APP_CONFIG_JSON)[AVAILABLE_PAGES]
+        available_pages = app.config.get(APP_CONFIG_JSON).get(AVAILABLE_PAGES, [])
         dashboard_pages = create_labels_for_available_pages(available_pages)
         return dict(dashboard_pages=dashboard_pages)
 
@@ -62,7 +64,7 @@ def configure_app(app, config_dict, config_file_folder):
     config_file_folder = config_file_folder
     app.config[CONFIG_FILE_FOLDER] = config_file_folder
     app.config[AVAILABLE_PAGES_DICT] = make_pages_dict(
-        config_dict[AVAILABLE_PAGES], app.config[CONFIG_FILE_FOLDER]
+        config_dict.get(AVAILABLE_PAGES, []), app.config[CONFIG_FILE_FOLDER]
     )
     configure_backend(app)
     return app
@@ -70,7 +72,7 @@ def configure_app(app, config_dict, config_file_folder):
 
 def configure_backend(app, models_path="app_deploy_data.models"):
     # setup steps unique to SQL-backended apps
-    if app.config[APP_CONFIG_JSON][DATA_BACKEND] in [POSTGRES]:
+    if app.config[APP_CONFIG_JSON].get(DATA_BACKEND) in [POSTGRES]:
         from database.sql_handler import SqlHandler, SqlDataInventory
 
         app.db = SQLAlchemy()

@@ -363,13 +363,17 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         ]
 
     @classmethod
-    def write_upload_metadata_row(cls, table_name, upload_time, upload_id, active=True):
+    def write_upload_metadata_row(
+        cls, table_name, upload_time, upload_id, username, notes, active=True
+    ):
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         row = data_upload_metadata(
             upload_id=upload_id,
             upload_time=upload_time,
             table_name=table_name,
             active=active,
+            username=username,
+            notes=notes,
         )
         current_app.db_session.add(row)
         current_app.db_session.commit()
@@ -435,7 +439,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         """
         return [c for c in self.table_lookup_by_name[self.data_source_name].columns]
 
-    def write_data_upload_to_backend(self, uploaded_data_df):
+    def write_data_upload_to_backend(self, uploaded_data_df, username, notes):
         """
         :param uploaded_data_df: pandas dataframe on which we have already done validation
         :param data_source_name:
@@ -462,6 +466,8 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             upload_id=new_upload_id,
             table_name=self.data_source_name,
             active=True,
+            username=username,
+            notes=notes,
         )
         return ignored_columns
 
