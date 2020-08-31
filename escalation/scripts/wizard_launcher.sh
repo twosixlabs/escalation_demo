@@ -8,7 +8,7 @@ if [[ ! -d  "$(pwd)/escalation/app_deploy_data" ]]; then
   exit 1
 fi
 
-docker-compose run --entrypoint /escalation/wizard_ui/boot_escalation_debug_mode.sh \
+docker-compose run --entrypoint /escalation/scripts/boot_escalation_debug_mode.sh \
 -p "8000:8000" \
 -v "$(pwd)/escalation/app_deploy_data":/escalation/app_deploy_data \
 web

@@ -87,13 +87,17 @@ def submission():
         username, data_source_name, csvfile = validate_data_form(
             request.form, request.files
         )
+        notes = request.form.get("notes")
+
         # if the form of the submission is right, let's validate the content of the submitted file
         data_inventory = current_app.config.data_backend_writer(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
-        ignored_columns = data_inventory.write_data_upload_to_backend(df)
+        ignored_columns = data_inventory.write_data_upload_to_backend(
+            df, username, notes
+        )
         # write upload history table record at the same time
 
     except ValidationError as e:

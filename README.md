@@ -72,11 +72,11 @@ The script uses the infrastructure of the Docker containers you built, so there 
 
 Run the script from the top level directory of the repo
 
-    ./escalation/csv_to_sql.sh {name_of_sql_table} {ABSOLUTE path_to_csv_file} {replace/append/fail}
+    ./escalation/scripts/csv_to_sql.sh {name_of_sql_table} {ABSOLUTE path_to_csv_file} {replace/append/fail}
     
 example usage: 
 
-    ./escalation/csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
+    ./escalation/scripts/csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
 
 This creates sql tables that can be used by the graphics and tables on your Escalation dashboard.
 
@@ -99,15 +99,9 @@ How to set up a [local file system backed](config_information/local_example/loca
 
 Run the configuration wizard app from the root directory of this repo:
     
-    ./escalation/wizard_ui/wizard_launcher.sh
+    ./escalation/scripts/wizard_launcher.sh
     
-This launches the Configurer UI Wizard in a Docker container. Navigate in your the web app in your browser at: [http://localhost:8001](http://localhost:8001) or [http://127.0.0.1:8001](http://127.0.0.1:8001)
-   
-To see how your config looks in Escalation, launch the web app in debug mode: 
-
-    ./escalation/wizard_ui/web_app_debug_launcher.sh
-
-Navigate to the Escalation app in your browser at: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000). 
+This launches the Configurer UI Wizard in a Docker container. Navigate in your the web app in your browser at: [http://localhost:8000](http://localhost:8000) or [http://127.0.0.1:8000](http://127.0.0.1:8000)
 This app runs in debug mode, and should detect the changes you make as you edit the configuration. 
 Refresh your browser to update the contents to match your saved configuration.
      
@@ -141,9 +135,27 @@ To use the app, navigate in your browser to: [http://localhost:8000](http://loca
 
 ## Resetting the SQL database
 
-Todo: deleting the db volume
+You can re-build the sql database from a blank slate by deleting the "volume" associated with the database, 
+where the data is stored, and relaunching to create a new one.
 
-Todo: running docker cleanup
+    docker-compose down --volumes
+    docker-compose up --build -d
+    
+
+You can also manually delete tables in the sql database by connecting to the database directly and using sql commands.
+
+    Connect to db:
+    docker exec -it escos_db psql -h localhost -p 5432 -U escalation -d escalation
+    
+    List tables:
+    \dt
+    
+    Drop table:
+    DROP TABLE my_table;
+    
+    Disconnect:
+    \q
+    
 
 # Running Escalation as a web-accessible server
 
@@ -154,7 +166,7 @@ This can be a server on a local network, e.g. in your lab, or on a cloud provide
 ## Building your Docker image for deployment
 
 1. You'll want to change the default settings for the password and username for the database, defined here: `escos/escalation/app_deploy_data/app_settings.py`
-2. 
+2. Todo: instructions to build docker image and push
 
 # How can I contribute? (advanced)
 

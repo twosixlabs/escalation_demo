@@ -1,17 +1,18 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
+from io import open as io_open
 import json
 import os
 
 from flask import current_app, render_template, Blueprint, request
+from sqlacodegen.codegen import CodeGenerator
 
+from database.sql_handler import CreateTablesFromCSVs, REPLACE, SqlDataInventory
 from utility.build_plotly_schema import SELECTOR_DICT
-
 from utility.constants import (
     DATA_BACKEND,
     LOCAL_CSV,
-    APP_CONFIG_JSON,
     AVAILABLE_PAGES,
     PAGE_ID,
     GRAPHIC,
@@ -21,7 +22,6 @@ from utility.constants import (
     GRAPHIC_CONFIG_FILES,
     WEBPAGE_LABEL,
     URL_ENDPOINT,
-    DATABASE,
     SCATTER,
     POSTGRES,
     DATA,
@@ -32,16 +32,16 @@ from utility.constants import (
     NEW,
     GRAPHIC_PATH,
     GRAPHIC_TITLE,
+    APP_DEPLOY_DATA,
+    SQLALCHEMY_DATABASE_URI,
 )
-
-from wizard_ui.schemas_for_ui import (
+from utility.schemas_for_ui import (
     build_main_schemas_for_ui,
     build_graphic_schemas_for_ui,
 )
-from wizard_ui.wizard_utils import (
+from utility.wizard_utils import (
     load_graphic_config_dict,
     save_main_config_dict,
-    set_up_backend_for_wizard,
     load_main_config_dict_if_exists,
     sanitize_string,
     invert_dict_lists,
@@ -57,10 +57,11 @@ from wizard_ui.wizard_utils import (
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
 MAIN_CONFIG_EDITOR_HTML = "main_config_editor.html"
 CONFIG_FILES_HTML = "config_files.html"
+CSV_TO_DATABASE_UPLOAD_HTML = "csv_to_database_upload.html"
 wizard_blueprint = Blueprint("wizard", __name__)
 
 
-@wizard_blueprint.route("/", methods=("GET",))
+@wizard_blueprint.route("/wizard/", methods=("GET",))
 def file_tree():
     config_dict = load_main_config_dict_if_exists(current_app)
     return render_template(
@@ -72,7 +73,7 @@ def file_tree():
     )
 
 
-@wizard_blueprint.route("/", methods=("POST",))
+@wizard_blueprint.route("/wizard/", methods=("POST",))
 def modify_layout():
     """
     Add a page
@@ -110,22 +111,21 @@ def modify_layout():
     return file_tree()
 
 
-@wizard_blueprint.route("/main", methods=("GET",))
+@wizard_blueprint.route("/wizard/main", methods=("GET",))
 def main_config_setup():
     config_dict = load_main_config_dict_if_exists(current_app)
-    inverted_backend_types = invert_dict_lists(BACKEND_TYPES)
+    schema_lookup = build_main_schemas_for_ui()
+    main_schema = schema_lookup.get(config_dict.get(DATA_BACKEND, POSTGRES))
     return render_template(
         MAIN_CONFIG_EDITOR_HTML,
-        schema=json.dumps(build_main_schemas_for_ui()),
+        schema=json.dumps(schema_lookup),
         current_config=json.dumps(config_dict),
         # load in the right schema based on the config dict, default to database
-        current_schema=inverted_backend_types.get(
-            config_dict.get(DATA_BACKEND, POSTGRES), DATABASE
-        ),
+        current_schema=main_schema,
     )
 
 
-@wizard_blueprint.route("/graphic", methods=("POST",))
+@wizard_blueprint.route("/wizard/graphic", methods=("POST",))
 def graphic_config_setup():
     graphic_status = request.form[GRAPHIC_STATUS]
 
@@ -166,17 +166,14 @@ def graphic_config_setup():
     )
 
 
-@wizard_blueprint.route("/main/save", methods=("POST",))
+@wizard_blueprint.route("/wizard/main/save", methods=("POST",))
 def update_main_json_config_with_ui_changes():
     config_dict = request.get_json()
-    if APP_CONFIG_JSON not in current_app.config:
-        set_up_backend_for_wizard(config_dict, current_app)
     save_main_config_dict(config_dict)
-
     return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
 
 
-@wizard_blueprint.route("/graphic/save", methods=("POST",))
+@wizard_blueprint.route("/wizard/graphic/save", methods=("POST",))
 def update_graphic_json_config_with_ui_changes():
     config_information_dict = request.get_json()
     page_id = config_information_dict[PAGE_ID]
@@ -221,7 +218,7 @@ def update_graphic_json_config_with_ui_changes():
     return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
 
 
-@wizard_blueprint.route("/graphic/update_schemas", methods=("POST",))
+@wizard_blueprint.route("/wizard/graphic/update_schemas", methods=("POST",))
 def get_updated_schemas():
     active_data_source_names = request.get_json()
     config_dict = load_main_config_dict_if_exists(current_app)
@@ -238,3 +235,64 @@ def get_updated_schemas():
         200,
         {"ContentType": "application/json"},
     )
+
+
+@wizard_blueprint.route("/wizard/upload", methods=("GET",))
+def data_upload_page():
+    data_inventory_class = current_app.config.data_backend_writer
+    data_source_names = data_inventory_class.get_available_data_sources()
+    return render_template(CSV_TO_DATABASE_UPLOAD_HTML, data_sources=data_source_names)
+
+
+def validate_table_name():
+    # todo: form validate table name, but in js for pre-submit warning?
+    # POSTGRES_TABLE_NAME_FORMAT_REGEX = r"^[a-zA-Z_]\w+$"
+    # if not re.match(POSTGRES_TABLE_NAME_FORMAT_REGEX, table_name):
+    #     print(
+    #         "Table names name must start with a letter or an underscore;"
+    #         " the rest of the string can contain letters, digits, and underscores."
+    #     )
+    #     exit(1)
+    # if len(table_name) > 31:
+    #     print(
+    #         "Postgres SQL only supports table names with length <= 31-"
+    #         " additional characters will be ignored"
+    #     )
+    #     exit(1)
+    # if re.match("[A-Z]", table_name):
+    #     print(
+    #         "Postgres SQL table names are case insensitive- "
+    #         "tablename will be converted to lowercase letters"
+    #     )
+    #
+    pass
+
+
+# todo: this only makes sense for sql-backed apps
+# todo: verify on replace options- popup confirmation warning? in js?
+@wizard_blueprint.route("/wizard/upload", methods=("POST",))
+def upload_csv_to_database():
+    table_name = request.form.get("data_source")
+    csvfile = request.files.get("csvfile")
+    csv_sql_writer = CreateTablesFromCSVs(current_app.config[SQLALCHEMY_DATABASE_URI])
+    data = csv_sql_writer.get_data_from_csv(csvfile)
+    (
+        upload_id,
+        upload_time,
+        table_name,
+    ) = csv_sql_writer.create_and_fill_new_sql_table_from_df(table_name, data, REPLACE)
+    SqlDataInventory.write_upload_metadata_row(
+        upload_id=upload_id,
+        upload_time=upload_time,
+        table_name=table_name,
+        active=True,
+    )
+    # Generate a new models.py
+    # update the metadata to include all tables in the db
+    csv_sql_writer.meta.reflect()
+    # write the database schema to models.py
+    generator = CodeGenerator(csv_sql_writer.meta, noinflect=True)
+    # Write the generated model code to the specified file or standard output
+    outfile = io_open(os.path.join(APP_DEPLOY_DATA, "models.py"), "w", encoding="utf-8")
+    generator.render(outfile)
+    return render_template("success.html", username="username", ignored_columns=[])

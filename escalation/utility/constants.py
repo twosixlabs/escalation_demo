@@ -26,6 +26,8 @@ APP_DEPLOY_DATA = "app_deploy_data"
 TEST_APP_DEPLOY_DATA = "test_app_deploy_data"
 MAIN_DATA_SOURCE = "main_data_source"
 ADDITIONAL_DATA_SOURCES = "additional_data_sources"
+SQLALCHEMY_DATABASE_URI = "SQLALCHEMY_DATABASE_URI"
+DEVELOPMENT = "development"
 
 # Plotly constants
 LAYOUT = "layout"

@@ -3,11 +3,6 @@ import copy
 from werkzeug.datastructures import ImmutableMultiDict
 
 from utility.constants import (
-    AVAILABLE_PAGES,
-    WEBPAGE_LABEL,
-    URL_ENDPOINT,
-    GRAPHIC_CONFIG_FILES,
-    GRAPHIC_PATH,
     HOVER_DATA,
     COLUMN_NAME,
     GROUPBY,
@@ -15,7 +10,6 @@ from utility.constants import (
     FILTER,
     NUMERICAL_FILTER,
     MULTIPLE,
-    OPTION_TYPE,
     AXIS,
     GRAPHIC_META_INFO,
     VISUALIZATION,
@@ -29,13 +23,11 @@ from utility.constants import (
     SITE_DESC,
     DATA_BACKEND,
     POSTGRES,
-    VISUALIZATION_OPTIONS,
     PLOT_SPECIFIC_INFO,
     SELECTABLE_DATA_DICT,
 )
-from wizard_ui.wizard_utils import (
+from utility.wizard_utils import (
     invert_dict_lists,
-    get_layout_for_dashboard,
     sanitize_string,
     prune_visualization_dict,
     prune_selector_dict,
@@ -54,33 +46,33 @@ def test_invert_dict_lists():
     assert inverted_dict == expected_dict
 
 
-def test_get_layout_for_dashboard(main_json_fixture):
+def test_get_layout_for_dashboard(main_json_csv_backend_fixture):
     # Need to set up file system
-    new_dict = get_layout_for_dashboard(main_json_fixture[AVAILABLE_PAGES])
-
-    ground_truth = (
-        [
-            {
-                WEBPAGE_LABEL: "PENGUINS!",
-                URL_ENDPOINT: "penguin",
-                GRAPHIC_CONFIG_FILES: [
-                    {GRAPHIC_PATH: "big_penguins.json"},
-                    "hist_penguins.json",
-                ],
-            },
-            {
-                WEBPAGE_LABEL: "Radio Penguins",
-                URL_ENDPOINT: "radio_penguins",
-                GRAPHIC_CONFIG_FILES: ["radio_penguins.json"],
-            },
-        ],
-    )
+    # new_dict = get_layout_for_dashboard(main_json_csv_backend_fixture[AVAILABLE_PAGES])
+    #
+    # ground_truth = (
+    #     [
+    #         {
+    #             WEBPAGE_LABEL: "PENGUINS!",
+    #             URL_ENDPOINT: "penguin",
+    #             GRAPHIC_CONFIG_FILES: [
+    #                 {GRAPHIC_PATH: "big_penguins.json"},
+    #                 "hist_penguins.json",
+    #             ],
+    #         },
+    #         {
+    #             WEBPAGE_LABEL: "Radio Penguins",
+    #             URL_ENDPOINT: "radio_penguins",
+    #             GRAPHIC_CONFIG_FILES: ["radio_penguins.json"],
+    #         },
+    #     ],
+    # )
     assert False
 
 
 def test_sanitize_string():
-    test_string = "this! i:/\s*$. test 42"
-    sanitized = "this_is_test_42"
+    test_string = r"this! i:/\s*$. test 42"
+    sanitized = r"this_is_test_42"
     assert sanitize_string(test_string) == sanitized
 
 
@@ -145,11 +137,11 @@ def test_extract_data_sources_from_config(graphic_json_fixture):
     data_sources = extract_data_sources_from_config(test_config)
     assert "penguin_size" in data_sources
     assert "mean_penguin_stat" in data_sources
-    assert len(data_sources)==2
+    assert len(data_sources) == 2
 
 
-def test_copy_data_from_form_to_config(main_json_fixture):
-    main_config = copy.deepcopy(main_json_fixture)
+def test_copy_data_from_form_to_config(main_json_csv_backend_fixture):
+    main_config = copy.deepcopy(main_json_csv_backend_fixture)
     placer_holder_text = (
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod"
         " tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam"
@@ -188,10 +180,6 @@ def test_graphic_component_dict_to_graphic_dict(graphic_json_fixture):
     component_dict = graphic_dict_to_graphic_component_dict(test_config)
     new_test_config = graphic_component_dict_to_graphic_dict(component_dict)
     assert new_test_config == test_config
-
-
-def test_get_layout_for_dashboard():
-    assert False
 
 
 def test_get_data_source_info():
