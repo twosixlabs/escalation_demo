@@ -119,7 +119,7 @@ class LocalCSVHandler(DataHandler):
             left_keys, right_keys = zip(*data_source[JOIN_KEYS])
             # left join the next data source to our combined data table
             combined_data_table = combined_data_table.merge(
-                data_source_df, how="left", left_on=left_keys, right_on=right_keys,
+                data_source_df, how="inner", left_on=left_keys, right_on=right_keys,
             )
         return combined_data_table
 

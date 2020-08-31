@@ -399,7 +399,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             )
             active_boolean = active_status == ACTIVE
             row.active = active_boolean
-            current_app.db_sessioncommit()
+            current_app.db_session.commit()
 
     @classmethod
     def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):

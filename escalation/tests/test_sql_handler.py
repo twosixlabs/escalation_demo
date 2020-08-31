@@ -12,8 +12,8 @@ from database.utils import sql_handler_filter_operation
 from utility.constants import *
 from tests.conftest import TESTING_DB_URI
 
-PQ_SIZE = "penguin_size"
-PQ_SIZE_SMALL = "penguin_size_small"
+PENGUIN_SIZE = "penguin_size"
+PENGUIN_SIZE_SMALL = "penguin_size_small"
 
 SEX = "sex"
 ISLAND = "island"
@@ -78,7 +78,7 @@ def test_sql_handler_init(get_sql_handler_fixture):
     assert "mean_penguin_stat" == data_sources[1][DATA_SOURCE_TYPE]
 
 
-def test_get_column_data(get_sql_handler_fixture_small):
+def test_get_column_data_no_filter(get_sql_handler_fixture_small):
     # also test apply filters to data
     data_dict = [
         "penguin_size_small:body_mass_g",
@@ -88,6 +88,13 @@ def test_get_column_data(get_sql_handler_fixture_small):
     assert (test_dict["penguin_size_small:body_mass_g"] == [3750, 3800, 3250]).all()
     assert (test_dict["penguin_size_small:flipper_length_mm"] == [181, 186, 195]).all()
 
+
+def test_get_column_data_filter(get_sql_handler_fixture_small):
+    # also test apply filters to data
+    data_dict = [
+        "penguin_size_small:body_mass_g",
+        "penguin_size_small:flipper_length_mm",
+    ]
     test_dict = get_sql_handler_fixture_small.get_column_data(
         data_dict,
         [{"type": "filter", "column": "penguin_size_small:sex", "selected": ["MALE"]}],
@@ -95,6 +102,12 @@ def test_get_column_data(get_sql_handler_fixture_small):
     assert (test_dict["penguin_size_small:body_mass_g"] == [3750]).all()
     assert (test_dict["penguin_size_small:flipper_length_mm"] == [181]).all()
 
+
+def test_get_column_data_numerical_filter(get_sql_handler_fixture_small):
+    data_dict = [
+        "penguin_size_small:body_mass_g",
+        "penguin_size_small:flipper_length_mm",
+    ]
     test_dict = get_sql_handler_fixture_small.get_column_data(
         data_dict,
         [
@@ -137,12 +150,10 @@ def test_build_combined_data_table(get_sql_handler_fixture):
         penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
     )
     num_rows_in_inner_table = inner_join_table.shape[0]
-    rows = get_sql_handler_fixture.get_column_data([f"{PQ_SIZE}:{CULMEN_DEPTH}"])[
-        f"{PQ_SIZE}:{CULMEN_DEPTH}"
+    rows = get_sql_handler_fixture.get_column_data([f"{PENGUIN_SIZE}:{CULMEN_DEPTH}"])[
+        f"{PENGUIN_SIZE}:{CULMEN_DEPTH}"
     ]
     num_rows_in_combined_table = len(rows)
-    # this is a left join, so assuming only one matching key in right table per key in left,
-    # the number of rows of final table should equal the left/first table
     assert num_rows_in_inner_table == num_rows_in_combined_table
 
 
@@ -158,14 +169,15 @@ def test_build_combined_data_table_with_filtered_data_source(get_sql_handler_fix
         penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
     )
     num_rows_in_inner_table = inner_join_table.shape[0]
+    SqlDataInventory.update_data_upload_metadata_active(
+        PENGUIN_SIZE, {1: "ACTIVE", 2: "INACTIVE"}
+    )
     num_rows_in_combined_table = len(
         get_sql_handler_fixture.get_column_data(
-            [f"{PQ_SIZE}:{ISLAND}"],
-            [{"type": FILTER, "column": f"{PQ_SIZE}:upload_id", "selected": [1],}],
-        )[f"{PQ_SIZE}:{ISLAND}"]
+            [f"{PENGUIN_SIZE}:{ISLAND}"],
+            [{"type": FILTER, "column": f"{PENGUIN_SIZE}:upload_id", "selected": [1],}],
+        )[f"{PENGUIN_SIZE}:{ISLAND}"]
     )
-    # this is a left join, so assuming only one matching key in right table per key in left,
-    # the number of rows of final table should equal the left/first table
     assert num_rows_in_inner_table == num_rows_in_combined_table
 
 
@@ -174,6 +186,7 @@ def test_get_available_data_sources(rebuild_test_database):
     assert "penguin_size_small" in file_names
     assert "penguin_size" in file_names
     assert "mean_penguin_stat" in file_names
+    assert len(file_names) == 3
 
 
 def test_get_schema_for_data_source(rebuild_test_database):

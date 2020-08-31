@@ -1,16 +1,16 @@
-import time
-
 import pytest
 from selenium import webdriver
 import chromedriver_binary
 
+CLIENT_TEST = "client test"
 
-@pytest.mark.skip(reason="Run by itslef")
+
+@pytest.mark.skip(reason=CLIENT_TEST)
 def test_add_a_new_page_with_a_graphic(test_app_client_sql_backed):
     driver = webdriver.Chrome()
 
     driver.get("http://127.0.0.1:5000/")
-    time.sleep(2)
+    driver.implicitly_wait(2)
     title = driver.find_element_by_name("title")
     title.clear()
     title.send_keys("auto test")
@@ -26,8 +26,8 @@ def test_add_a_new_page_with_a_graphic(test_app_client_sql_backed):
     button.click()
     button = driver.find_element_by_xpath('//button[normalize-space()="Add a Graphic"]')
     button.click()
-    time.sleep(2)
+    driver.implicitly_wait(2)
     button = driver.find_element_by_xpath('//button[normalize-space()="Submit"]')
     button.click()
-    time.sleep(2)
+    driver.implicitly_wait(2)
     assert True
