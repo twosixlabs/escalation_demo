@@ -5,31 +5,7 @@ import re
 
 from flask import current_app
 
-from utility.constants import (
-    CONFIG_FILE_FOLDER,
-    MAIN_CONFIG,
-    PLOTLY,
-    SELECTOR,
-    VISUALIZATION,
-    VISUALIZATION_OPTIONS,
-    SELECTABLE_DATA_DICT,
-    PLOT_SPECIFIC_INFO,
-    COLUMN_NAME,
-    GROUPBY,
-    ENTRIES,
-    GRAPHIC_META_INFO,
-    ADDITIONAL_DATA_SOURCES,
-    DATA_SOURCES,
-    GRAPHIC_PATH,
-    GRAPHIC_TITLE,
-    GRAPHIC_CONFIG_FILES,
-    DATA_SOURCE_TYPE,
-    SITE_DESC,
-    SITE_TITLE,
-    DATA_BACKEND,
-    MAIN_DATA_SOURCE,
-)
-from validate_schema import get_possible_column_names
+from utility.constants import *
 
 UI_SCHEMA_PAIRS = {
     VISUALIZATION: VISUALIZATION_OPTIONS,
@@ -39,9 +15,10 @@ UI_SCHEMA_PAIRS = {
 
 
 def save_main_config_dict(config_dict):
-    with open(
-        os.path.join(current_app.config[CONFIG_FILE_FOLDER], MAIN_CONFIG), "w"
-    ) as fout:
+    main_config_path = os.path.join(current_app.config[CONFIG_FILE_FOLDER], MAIN_CONFIG)
+    if os.path.exists(main_config_path):
+        os.remove(main_config_path)
+    with open(main_config_path, "w") as fout:
         json.dump(config_dict, fout, indent=4)
 
 
@@ -178,11 +155,36 @@ def get_layout_for_dashboard(available_pages_list):
     return available_pages_list_copy
 
 
-def get_data_source_info(csv_flag, active_data_source_names=None):
+def get_possible_column_names(data_source_names, data_inventory_class):
+    """
+    Used to populate a dropdown in the config wizard with any column from the data
+    sources included in a figure
+    :param data_source_names: list of data source name strings
+    :param data_inventory_class: backend-specific data inventory class
+    :return: possible_column_names list
+    """
+    possible_column_names = []
+    csv_flag = current_app.config[APP_CONFIG_JSON].get(DATA_BACKEND) == LOCAL_CSV
+    for data_source_name in data_source_names:
+        data_inventory = data_inventory_class(
+            data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
+        )
+        column_names = data_inventory.get_schema_for_data_source()
+        possible_column_names.extend(
+            [
+                TABLE_COLUMN_SEPARATOR.join(
+                    [data_source_name, column_name if csv_flag else column_name.name,]
+                )
+                for column_name in column_names
+            ]
+        )
+    return possible_column_names
+
+
+def get_data_source_info(active_data_source_names=None):
     """
     gets the available data sources and the possible column names based on the data source in the config
-    :param csv_flag:
-    :param active_data_source_names:
+    :param active_data_source_names: list of data source name strings
     :return:
     """
     if active_data_source_names is None:
@@ -193,7 +195,7 @@ def get_data_source_info(csv_flag, active_data_source_names=None):
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
     possible_column_names = get_possible_column_names(
-        active_data_source_names, data_inventory_class, csv_flag
+        active_data_source_names, data_inventory_class
     )
     return data_source_names, possible_column_names
 
