@@ -101,9 +101,17 @@ def modify_layout():
         available_pages.append(page_dict)
     elif modification == DELETE_PAGE:
         del available_pages[int(request.form[PAGE_ID])]
+        # todo: iterate and delete actual json configs? But add confirmation?
     elif modification == DELETE_GRAPHIC:
+        graphic_filename = request.form[GRAPHIC]
+        graphic_filepath = os.path.join(
+            current_app.config[CONFIG_FILE_FOLDER], graphic_filename
+        )
+        # remove and write new file to trigger file watcher and refresh flask app
+        if os.path.exists(graphic_filepath):
+            os.remove(graphic_filepath)
         available_pages[int(request.form[PAGE_ID])][GRAPHIC_CONFIG_FILES].remove(
-            request.form[GRAPHIC]
+            graphic_filepath
         )
 
     config_dict[AVAILABLE_PAGES] = available_pages
@@ -137,9 +145,8 @@ def graphic_config_setup():
         graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         active_data_source_names = extract_data_sources_from_config(graphic_dict)
 
-    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
     data_source_names, possible_column_names = get_data_source_info(
-        csv_flag, active_data_source_names
+        active_data_source_names
     )
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
@@ -210,21 +217,22 @@ def update_graphic_json_config_with_ui_changes():
         page_dict[GRAPHIC_CONFIG_FILES] = graphic_list
         save_main_config_dict(main_config_dict)
 
-    with open(
-        os.path.join(current_app.config[CONFIG_FILE_FOLDER], graphic_filename), "w"
-    ) as fout:
+    graphic_filepath = os.path.join(
+        current_app.config[CONFIG_FILE_FOLDER], graphic_filename
+    )
+    # remove and write new file to trigger file watcher and refresh flask app
+    if os.path.exists(graphic_filepath):
+        os.remove(graphic_filepath)
+    with open(graphic_filepath, "w") as fout:
         json.dump(graphic_dict, fout, indent=4)
-
     return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
 
 
 @wizard_blueprint.route("/wizard/graphic/update_schemas", methods=("POST",))
 def get_updated_schemas():
     active_data_source_names = request.get_json()
-    config_dict = load_main_config_dict_if_exists(current_app)
-    csv_flag = config_dict[DATA_BACKEND] == LOCAL_CSV
     data_source_names, possible_column_names = get_data_source_info(
-        csv_flag, active_data_source_names
+        active_data_source_names
     )
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names
@@ -304,6 +312,10 @@ def upload_csv_to_database():
     # write the database schema to models.py
     generator = CodeGenerator(csv_sql_writer.meta, noinflect=True)
     # Write the generated model code to the specified file or standard output
-    outfile = io_open(os.path.join(APP_DEPLOY_DATA, "models.py"), "w", encoding="utf-8")
-    generator.render(outfile)
+    models_filepath = os.path.join(APP_DEPLOY_DATA, "models.py")
+    # remove and write new file to trigger file watcher and refresh flask app
+    if os.path.exists(models_filepath):
+        os.remove(models_filepath)
+    with io_open(os.path.join(models_filepath), "w", encoding="utf-8") as outfile:
+        generator.render(outfile)
     return data_upload_page("success")
