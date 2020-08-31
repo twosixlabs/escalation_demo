@@ -76,7 +76,10 @@ def upload_page(success_text=None):
     data_inventory = current_app.config.data_backend_writer
     existing_data_sources = data_inventory.get_available_data_sources()
     data_sources = sorted(existing_data_sources)
-    return render_template(UPLOAD_HTML, data_sources=data_sources, success_text=success_text)
+    return render_template(
+        UPLOAD_HTML, data_sources=data_sources, success_text=success_text
+    )
+
 
 @upload_blueprint.route("/upload", methods=("GET",))
 def submission_view():
@@ -110,4 +113,4 @@ def submission():
 
     # todo: log information about what the submission is
     current_app.logger.info("Added submission")
-    return upload_page('Success')
+    return upload_page("Success")

@@ -189,7 +189,7 @@ class SqlHandler(DataHandler):
                         == getattr(right_table.columns, right_column_name)
                     )
                 )
-            query = query.outerjoin(data_source[DATA_LOCATION], and_(*join_clauses))
+            query = query.join(data_source[DATA_LOCATION], and_(*join_clauses))
 
         column_lookup_by_name = {c.name: c for c in query.selectable.alias().columns}
         return column_lookup_by_name

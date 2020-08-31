@@ -236,11 +236,17 @@ def get_updated_schemas():
         {"ContentType": "application/json"},
     )
 
+
 def data_upload_page(success_text=None):
     data_inventory_class = current_app.config.data_backend_writer
     data_source_names = data_inventory_class.get_available_data_sources()
     data_sources = sorted(data_source_names)
-    return render_template(CSV_TO_DATABASE_UPLOAD_HTML, data_sources=data_sources, success_text=success_text)
+    return render_template(
+        CSV_TO_DATABASE_UPLOAD_HTML,
+        data_sources=data_sources,
+        success_text=success_text,
+    )
+
 
 @wizard_blueprint.route("/wizard/upload", methods=("GET",))
 def data_upload_page_view():
@@ -290,7 +296,7 @@ def upload_csv_to_database():
         table_name=table_name,
         active=True,
         username=request.form.get("username"),
-        notes=request.form.get("notes")
+        notes=request.form.get("notes"),
     )
     # Generate a new models.py
     # update the metadata to include all tables in the db
@@ -300,4 +306,4 @@ def upload_csv_to_database():
     # Write the generated model code to the specified file or standard output
     outfile = io_open(os.path.join(APP_DEPLOY_DATA, "models.py"), "w", encoding="utf-8")
     generator.render(outfile)
-    return data_upload_page('success')
+    return data_upload_page("success")

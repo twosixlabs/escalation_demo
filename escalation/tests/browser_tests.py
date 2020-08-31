@@ -1,8 +1,11 @@
 import time
+
+import pytest
 from selenium import webdriver
 import chromedriver_binary
 
 
+@pytest.mark.skip(reason="Run by itslef")
 def test_add_a_new_page_with_a_graphic(test_app_client_sql_backed):
     driver = webdriver.Chrome()
 
