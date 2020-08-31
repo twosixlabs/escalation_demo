@@ -156,6 +156,13 @@ def get_layout_for_dashboard(available_pages_list):
 
 
 def get_possible_column_names(data_source_names, data_inventory_class):
+    """
+    Used to populate a dropdown in the config wizard with any column from the data
+    sources included in a figure
+    :param data_source_names: list of data source name strings
+    :param data_inventory_class: backend-specific data inventory class
+    :return: possible_column_names list
+    """
     possible_column_names = []
     csv_flag = current_app.config[APP_CONFIG_JSON].get(DATA_BACKEND) == LOCAL_CSV
     for data_source_name in data_source_names:
