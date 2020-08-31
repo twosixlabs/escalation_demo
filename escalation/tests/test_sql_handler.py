@@ -130,15 +130,20 @@ def test_build_combined_data_table(get_sql_handler_fixture):
             pd.read_csv("test_app_deploy_data/data/penguin_size/penguin_size_2.csv"),
         ]
     )
-    num_rows_in_leftmost_table = penguin_size.shape[0]
+    penguin_mean = pd.read_csv(
+        "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
+    )
+    inner_join_table = pd.merge(
+        penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
+    )
+    num_rows_in_inner_table = inner_join_table.shape[0]
     rows = get_sql_handler_fixture.get_column_data([f"{PQ_SIZE}:{CULMEN_DEPTH}"])[
         f"{PQ_SIZE}:{CULMEN_DEPTH}"
     ]
     num_rows_in_combined_table = len(rows)
     # this is a left join, so assuming only one matching key in right table per key in left,
     # the number of rows of final table should equal the left/first table
-    assert num_rows_in_leftmost_table == num_rows_in_combined_table
-    # todo: one to many join, where we expect the number of rows to change
+    assert num_rows_in_inner_table == num_rows_in_combined_table
 
 
 def test_build_combined_data_table_with_filtered_data_source(get_sql_handler_fixture):
@@ -146,7 +151,13 @@ def test_build_combined_data_table_with_filtered_data_source(get_sql_handler_fix
     penguin_size = pd.read_csv(
         "test_app_deploy_data/data/penguin_size/penguin_size.csv"
     )
-    num_rows_in_leftmost_table = penguin_size.shape[0]
+    penguin_mean = pd.read_csv(
+        "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
+    )
+    inner_join_table = pd.merge(
+        penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
+    )
+    num_rows_in_inner_table = inner_join_table.shape[0]
     num_rows_in_combined_table = len(
         get_sql_handler_fixture.get_column_data(
             [f"{PQ_SIZE}:{ISLAND}"],
@@ -155,8 +166,7 @@ def test_build_combined_data_table_with_filtered_data_source(get_sql_handler_fix
     )
     # this is a left join, so assuming only one matching key in right table per key in left,
     # the number of rows of final table should equal the left/first table
-    assert num_rows_in_leftmost_table == num_rows_in_combined_table
-    # todo: one to many join, where we expect the number of rows to change
+    assert num_rows_in_inner_table == num_rows_in_combined_table
 
 
 def test_get_available_data_sources(rebuild_test_database):
