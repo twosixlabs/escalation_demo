@@ -6,24 +6,6 @@
 
 {% block header %}
 {% include 'navbar.html' %}
-
-<script type="text/javascript">
-  function displayInstructions() {
-  var x = document.getElementById("instructions");
-  var y = document.getElementById("instruction-button");
-
-  if (x.style.display === "none") {
-    x.style.display = "block";
-    y.innerHTML="Hide Instructions   <i class=\"fa fa-caret-up\"></i>" ;
-  } else {
-    x.style.display = "none";
-    y.innerHTML="Show Instructions   <i class=\"fa fa-caret-down\"></i>";
-  }
-  }
-
-
-</script>
-
 {% endblock %}
 
 
@@ -34,39 +16,36 @@
     <p class="lead">Upload data csvs to existing data tables. To add new data tables, you'll have to run the app in development mode using the setup wizard.</p>
 </div>
 <div class="container-fluid pl-5 pr-5">
-
-<div class="row">
-<button id="instruction-button" class="btn btn-outline-secondary" onclick="displayInstructions()">Show Instructions   <i
-        class="fa fa-caret-down"></i></button>
+{% if success_text %}
+<div class="row mb">
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Success!</strong> File was uploaded.
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
-<div class="row">
-    <div id="instructions" style="display:none;">
-
-        <ul>
-            <li><b>This is used to add additional data to an existing data table</b>
-            </li>
-        </ul>
-
-    </div>
+</div>
+{% endif %}
+{% if config.ENV == "development" %}
+<div class="row mb-3">
+    <a class="btn btn-outline-secondary" href={{ url_for('wizard.data_upload_page_view') }} role="button">Create/Replace a Table</a> <button type="button" class="btn btn-secondary">Append to a Existing Table</button>
  </div>
-
+{% endif %}
 <div class="row">
-
 <form id="upload_form" method="post" enctype="multipart/form-data">
     <div class="form-group">
 
         <label id="username" for="username">Username</label>
-        <input class="form-control" type="text" name="username" placeholder="Name to record for data table history tracking" required>
+        <input class="form-control" type="text" name="username" placeholder="Name for data table history tracking" required>
     </div>
     <div class="form-group">
         <label for="data_source">Data File Type</label>
-        <small class="form-list text-muted">Select existing data type. To add new data types, run the wizard setup app.</small>
-            <input list="data_source_list" class="form-control"  id="data_source" name="data_source" required>
-            <datalist id="data_source_list">
+        <small class="form-text text-muted">Select existing data type. To add new data types, run the wizard setup app.</small>
+            <select class="selectpicker form-control"  id="data_source_list" name="data_source">
                 {% for existing_data_source in data_sources %}
-                <option value={{ existing_data_source }}>
+                    <option value={{ existing_data_source }}>{{ existing_data_source }}</option>
                     {% endfor %}
-            </datalist>
+            </select>
     </div>
 
 
@@ -79,7 +58,7 @@
     <div class="form-group">
         <label id="notes" for="notes">Notes</label>
 
-        <textarea placeholder="Enter any notes describing your submission to identify it later" class="form-control"  name="notes" rows="10" cols="30"></textarea>
+        <textarea placeholder="Enter any notes describing your submission to identify it later" class="form-control"  name="notes" rows="5" cols="15"></textarea>
 
     </div>
 
@@ -87,8 +66,7 @@
 
 </form>
 </div>
-    </div>
-
+</div>
 {% endblock %}
 
 

@@ -44,6 +44,8 @@ from utility.constants import (
     DATA_UPLOAD_METADATA,
     ACTIVE,
     SQLALCHEMY_DATABASE_URI,
+    SELECTOR_TYPE,
+    NUMERICAL_FILTER,
 )
 
 # from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
@@ -146,7 +148,9 @@ class SqlHandler(DataHandler):
         # add filters to the query dynamically
         filter_tuples = []
         for filter_dict in filters:
-            if not filter_dict[SELECTED]:
+            if not (
+                filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER or filter_dict[SELECTED]
+            ):
                 # No filter has been applied
                 continue
             column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
@@ -395,7 +399,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             )
             active_boolean = active_status == ACTIVE
             row.active = active_boolean
-            current_app.db_sessioncommit()
+            current_app.db_session.commit()
 
     @classmethod
     def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):

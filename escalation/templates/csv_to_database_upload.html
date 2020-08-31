@@ -17,20 +17,34 @@
     <p class="lead">Create new tables from data sources not already uploaded</p>
 </div>
 <div class="container-fluid pl-5 pr-5">
+{% if success_text %}
+<div class="row mb">
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <strong>Success!</strong> File was uploaded.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+</div>
+{% endif %}
+<div class="row mb-3">
+<button type="button" class="btn btn-secondary">Create/Replace a Table</button> <a class="btn btn-outline-secondary" href={{ url_for('upload.submission_view') }} role="button">Append to a Existing Table</a>
+ </div>
 <div class="row">
 <form id="upload_form" method="post" enctype="multipart/form-data">
     <div class="form-group">
-        <label for="data_source">Data File Type</label>
+
 
         <label id="username" for="username">Username</label>
-        <textarea placeholder="Name to record for data table history tracking" class="form-control"  name="username" rows="10" cols="30"></textarea>
-
-
+        <input placeholder="Name for data table history tracking" type="text" class="form-control"  name="username" required>
+    </div>
+    <div class="form-group">
+        <label for="data_source">Data File Type</label>
         <small class="form-text text-muted">Enter new data type name, or select an existing data type<br> (Note! This will replace any existing data of this type!)</small>
             <input list="data_source_list" class="form-control"  id="data_source" name="data_source" required>
             <datalist id="data_source_list">
                 {% for existing_data_source in data_sources %}
-                <option value={{ existing_data_source }}>
+                    <option value={{ existing_data_source }}></option>
                     {% endfor %}
             </datalist>
     </div>
