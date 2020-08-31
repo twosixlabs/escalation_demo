@@ -44,6 +44,8 @@ from utility.constants import (
     DATA_UPLOAD_METADATA,
     ACTIVE,
     SQLALCHEMY_DATABASE_URI,
+    SELECTOR_TYPE,
+    NUMERICAL_FILTER,
 )
 
 # from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
@@ -146,7 +148,9 @@ class SqlHandler(DataHandler):
         # add filters to the query dynamically
         filter_tuples = []
         for filter_dict in filters:
-            if not filter_dict[SELECTED]:
+            if not (
+                filter_dict[SELECTOR_TYPE] == NUMERICAL_FILTER or filter_dict[SELECTED]
+            ):
                 # No filter has been applied
                 continue
             column_name = self.sanitize_column_name(filter_dict[OPTION_COL])
@@ -185,7 +189,7 @@ class SqlHandler(DataHandler):
                         == getattr(right_table.columns, right_column_name)
                     )
                 )
-            query = query.join(data_source[DATA_LOCATION], and_(*join_clauses))
+            query = query.outerjoin(data_source[DATA_LOCATION], and_(*join_clauses))
 
         column_lookup_by_name = {c.name: c for c in query.selectable.alias().columns}
         return column_lookup_by_name
