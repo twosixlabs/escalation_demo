@@ -71,11 +71,11 @@ Refresh your browser to update the contents to match your saved configuration.
      
 Some notes on [creating your first config files with the UI wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
-#### Build a config from scratch (advanced)
+#### Build a config from scratch (advanced, optional)
 Run `python build_app_config_json_template.py` to build a base config file. 
 Everything blank or in `<>` should be changed.
 
-#### Debugging config files manually (advanced)
+#### Debugging config files manually (advanced, optional)
 
 How to set up [local file system and config](config_information/local_example/local_data_storage_config_info.md) for the app.  
 An example of a [main config file](config_information/main_config_example/main_config_example.md).  
