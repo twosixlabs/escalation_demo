@@ -57,7 +57,7 @@ from utility.wizard_utils import (
 GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
 MAIN_CONFIG_EDITOR_HTML = "main_config_editor.html"
 CONFIG_FILES_HTML = "config_files.html"
-CSV_TO_DATABASE_UPLOAD_HTML = "csv_to_database_upload.html"
+CSV_TO_DATABASE_UPLOAD_HTML = "data_upload_wizard_mode.html"
 wizard_blueprint = Blueprint("wizard", __name__)
 
 

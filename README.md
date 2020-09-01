@@ -21,6 +21,10 @@ Yes. Escalation has a few advantages:
 - Open-source code
 - Integration with data versioning and analysis pipelines (In development)
 
+## Limitations of Escalation
+
+- Currently uses either a SQL database or CSV files to store data. Escalation provides functionality to create a SQL database from CSV files
+
 
 # Setup
 
@@ -43,7 +47,7 @@ The instructions below have been tested on Mac and Linux.
 
 Each of these components are discussed further below.
 
-## 1. Stand up empty instances of the web app and database using Docker
+## 1. Set up your local environment to run the web app and database using Docker
 
 From the root level of the code repository, run: 
 
@@ -64,7 +68,7 @@ Run the configuration wizard app from the root directory of this repo:
     
     ./escalation/scripts/wizard_launcher.sh
     
-This launches the Configurer UI Wizard in a Docker container. Navigate in your the web app in your browser at: 
+This launches the UI Configuration Wizard in a Docker container. Navigate in your the web app in your browser at: 
 [http://localhost:8000/wizard](http://localhost:8000/wizard) or [http://127.0.0.1:8000/wizard](http://127.0.0.1:8000/wizard)
 This app runs in debug mode, and should detect the changes you make as you edit the configuration. 
 Refresh your browser to update the contents to match your saved configuration.
@@ -84,29 +88,25 @@ Examples of [different selectors](config_information/selector_examples/selector_
 
 ### 2.2 Load your data
 
-#### SQL database backend
+#### SQL database backend (recommended)
     
-We provide a script to parse csv data files, determine the relevant sql schema, and create tables in the SQL database from your file. 
-The script uses the infrastructure of the Docker containers you built, so there is no need to install anything else.
-
-Run the script from the top level directory of the repo
-
-    ./escalation/scripts/csv_to_sql.sh {name_of_sql_table} {ABSOLUTE path_to_csv_file} {replace/append/fail}
-    
-example usage: 
-
-    ./escalation/scripts/csv_to_sql.sh experimental_stability_score /Users/nick.leiby/repos/versioned-datasets/data/protein-design/experimental_stability_scores/100K_winter19.v1.experimental_stability_scores.csv replace
-
+Escalation provides functionality to parse csv data files, determine the relevant sql schema,
+ create tables in the SQL database from your file, and create the necessary `models.py` file for the app to interact with the database. 
 This creates sql tables that can be used by the graphics and tables on your Escalation dashboard.
 
-Run this script for each file you'd like to use for your visualizations and include in the database. Note, it may take a little while to run.
+In the configuration wizard in your browser, navigate to [http://localhost:8000/upload](http://localhost:8000/upload)
 
-The flag replace, append, or fail is instructions for what to do if a sql table of that name already exists,
- as per the [pandas](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.to_sql.html) method used for ingestion.
+Use this web form to upload each file you'd like to use for your visualizations and include in the database. 
+Note, it may take a little while to run.
 
-If you'd like to add more than one csv to the same table, you have two options: combine them before running the script, or wait until the Escalation web app is running, and submit the additional CSVs as new data to the app (explained below, Todo: Here)
+If you'd like to add more than one csv to the same table, you have two options: 
+combine them before uploading, or submit the additional CSVs using the  "Append to existing table" option.
+
 Todo: If you have an existing SQL database, how do you copy it into Escalation?
-Todo: On the feature roadmap- add csvs using the web interface rather than a shell script
+ We require each table to have an `upload_id` column, and a key that is unique within an `upload_id` value
+ (i.e, the pair `(upload_id, row_index)` is a unique key.)
+ 
+Todo: Add csvs programatically using a script
 
 #### CSV data file system backend
 
