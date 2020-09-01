@@ -111,7 +111,7 @@ def modify_layout():
         if os.path.exists(graphic_filepath):
             os.remove(graphic_filepath)
         available_pages[int(request.form[PAGE_ID])][GRAPHIC_CONFIG_FILES].remove(
-            graphic_filepath
+            graphic_filename
         )
 
     config_dict[AVAILABLE_PAGES] = available_pages
