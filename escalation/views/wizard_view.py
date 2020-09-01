@@ -12,7 +12,6 @@ from database.sql_handler import CreateTablesFromCSVs, REPLACE, SqlDataInventory
 from utility.build_plotly_schema import SELECTOR_DICT
 from utility.constants import (
     DATA_BACKEND,
-    LOCAL_CSV,
     AVAILABLE_PAGES,
     PAGE_ID,
     GRAPHIC,
@@ -34,6 +33,8 @@ from utility.constants import (
     GRAPHIC_TITLE,
     APP_DEPLOY_DATA,
     SQLALCHEMY_DATABASE_URI,
+    USERNAME,
+    NOTES,
 )
 from utility.schemas_for_ui import (
     build_main_schemas_for_ui,
@@ -303,8 +304,8 @@ def upload_csv_to_database():
         upload_time=upload_time,
         table_name=table_name,
         active=True,
-        username=request.form.get("username"),
-        notes=request.form.get("notes"),
+        username=request.form.get(USERNAME),
+        notes=request.form.get(NOTES),
     )
     # Generate a new models.py
     # update the metadata to include all tables in the db

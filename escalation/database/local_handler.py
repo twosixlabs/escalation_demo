@@ -1,6 +1,7 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
+from collections import defaultdict
 from datetime import datetime
 import glob
 import os
@@ -30,6 +31,8 @@ from utility.constants import (
     ACTIVE,
     UPLOAD_TIME,
     TABLE_NAME,
+    USERNAME,
+    NOTES,
 )
 
 
@@ -64,13 +67,13 @@ class LocalCSVHandler(DataHandler):
         )
 
     @classmethod
-    def get_data_upload_metadata(cls):
+    def get_data_upload_metadata_df(cls):
         metadata_path = cls.get_data_upload_metadata_path()
         return pd.read_csv(metadata_path)
 
     @classmethod
     def filter_out_inactive_files(cls, files_list, data_source_name):
-        data_upload_metadata = cls.get_data_upload_metadata()
+        data_upload_metadata = cls.get_data_upload_metadata_df()
         # looking for entries in the metadata that say a file is NOT active
         # lets the files default to active if added outside the app functionality
         filtered_uploads = data_upload_metadata[
@@ -192,13 +195,15 @@ class LocalCSVDataInventory(LocalCSVHandler):
         return existing_data_sources
 
     @classmethod
-    def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
+    def get_data_upload_metadata(cls, data_source_names):
         """
-        Gets specific file names associates with data_source names (i.e., folder names)
-        :param data_source_names: list of data source folder names
-        :param active_filter: if True, filters out files listed as inactive
-        :return: dict keyed by data_source_names, valued by lists of files
+        Get a dicts of lists of all of the files by data source type,
+        along with any metadata we have about the files
+        :param data_source_names: list of data sources
+        :param active_filter:
+        :return: dict keyed by table name, valued with list of dicts describing the upload
         """
+        data_upload_metadata = cls.get_data_upload_metadata_df()
         files_by_data_source = {}
         for data_source_name in data_source_names:
             full_path = os.path.join(
@@ -207,15 +212,62 @@ class LocalCSVDataInventory(LocalCSVHandler):
             list_of_files = glob.glob(f"{full_path}/*.csv")
             assert len(list_of_files) > 0
             files_by_data_source[data_source_name] = list_of_files
+        identifiers_by_table = defaultdict(list)
+        # for each file identifier in the file system, match up any metadata we have
+        for data_source_name, data_source_identifiers in files_by_data_source.items():
+            for data_source_identifier in data_source_identifiers:
+                corresponding_metadata_row = data_upload_metadata[
+                    data_upload_metadata.upload_id == data_source_identifier
+                ]
+                if corresponding_metadata_row.empty:
+                    metadata_row_dict = {}
+                else:
+                    metadata_row_dict = corresponding_metadata_row.to_dict("records")[0]
+                identifier_row = {
+                    UPLOAD_ID: data_source_identifier,
+                    USERNAME: metadata_row_dict.get(USERNAME),
+                    UPLOAD_TIME: metadata_row_dict.get(UPLOAD_TIME),
+                    ACTIVE: metadata_row_dict.get(ACTIVE),
+                    NOTES: metadata_row_dict.get(NOTES),
+                }
+                identifiers_by_table[data_source_name].append(identifier_row)
+        return identifiers_by_table
 
-        # check if any of these have been listed as inactive in a metadata table-
-        # defaults to active if not listed
-        if active_filter:
-            for data_source_name in data_source_names:
-                files_by_data_source[data_source_name] = cls.filter_out_inactive_files(
-                    files_by_data_source[data_source_name], data_source_name,
+    @classmethod
+    def _get_updated_metadata_df_for_csv_write(cls, data_source_name, active_data_dict):
+        """
+        Called by update_data_upload_metadata_active- function formatted with a return
+        for testing, since update_data_upload_metadata_active writes a file as output
+        :param data_source_name: data source folder name
+        :param active_data_dict: dict keyed by upload_id/file paths, valued with string INACTIVE or ACTIVE
+        :return: pandas dataframe containing entire updated data_upload_metadata_df
+        """
+        data_upload_metadata = cls.get_data_upload_metadata_df()
+        for upload_id, active_str in active_data_dict.items():
+            active_status = active_str == ACTIVE
+            row_inds = (data_upload_metadata.table_name == data_source_name) & (
+                data_upload_metadata.upload_id == upload_id
+            )
+            if data_upload_metadata[row_inds].empty:
+                # there was no existing row for this file in the metadata records-
+                # create a new one
+                new_row = pd.DataFrame(
+                    [
+                        {
+                            UPLOAD_ID: upload_id,
+                            ACTIVE: active_status,
+                            UPLOAD_TIME: None,
+                            TABLE_NAME: data_source_name,
+                            NOTES: None,
+                            USERNAME: None,
+                        }
+                    ]
                 )
-        return files_by_data_source
+                data_upload_metadata = pd.concat([data_upload_metadata, new_row])
+            else:
+                # update an existing row corresponding to this file
+                data_upload_metadata.loc[row_inds, ACTIVE] = active_status
+        return data_upload_metadata.reset_index(drop=True)
 
     @classmethod
     def update_data_upload_metadata_active(cls, data_source_name, active_data_dict):
@@ -226,35 +278,18 @@ class LocalCSVDataInventory(LocalCSVHandler):
         :param active_data_dict: dict keyed by upload_id/file paths, valued with string INACTIVE or ACTIVE
         :return: None. Writes a modified dataframe to the data_upload_metadata.csv
         """
-        data_upload_metadata = cls.get_data_upload_metadata()
-        for upload_id, active_str in active_data_dict.items():
-            active_status = active_str == ACTIVE
-            row_inds = (data_upload_metadata.table_name == data_source_name) & (
-                data_upload_metadata.upload_id == upload_id
-            )
-            if data_upload_metadata[row_inds].empty:
-                # there was no existing row for this file in the metadata records-
-                # create a new one
-                new_row = pd.DataFrame(
-                    {
-                        UPLOAD_ID: upload_id,
-                        ACTIVE: active_status,
-                        UPLOAD_TIME: None,
-                        TABLE_NAME: data_source_name,
-                    },
-                    index=[0],
-                )
-                data_upload_metadata = pd.concat([data_upload_metadata, new_row])
-            else:
-                # update an existing row corresponding to this file
-                data_upload_metadata.loc[row_inds, ACTIVE] = active_status
+        data_upload_metadata = cls._get_updated_metadata_df_for_csv_write(
+            data_source_name, active_data_dict
+        )
         data_upload_metadata.to_csv(cls.get_data_upload_metadata_path(), index=False)
 
     def get_schema_for_data_source(self):
-        files_by_source = self.get_identifiers_for_data_sources(
-            [self.data_source_name], active_filter=True
-        )
-        list_of_files = files_by_source[self.data_source_name]
+        files_by_source = self.get_data_upload_metadata([self.data_source_name])
+        list_of_files = [
+            f[UPLOAD_ID]
+            for f in files_by_source[self.data_source_name]
+            if f.get(ACTIVE)
+        ]
         latest_filepath = max(list_of_files, key=os.path.getctime)
         return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
 
