@@ -9,7 +9,7 @@
             const rbs = document.querySelectorAll(`input[form=form_${data_source}]`);
             let flag=0;
             for (const rb of rbs) {
-                if (rb.checked && 'active'===rb.value) {
+                if (rb.checked) {
                     flag=1
                 }
             }
@@ -21,7 +21,8 @@
             }
 
         };
-    </script>
+
+</script>
 {% endblock %}
 
 
@@ -30,58 +31,66 @@
 <div class="jumbotron">
     <h1 class="display-4">Administration Options</h1>
     <hr class="my-4">
-    <p class="lead">Select which data uploads are included in the visualizations produced in the Escalation dashboard</p>
+    <p class="lead">Select which data uploads are included in the visualizations produced in the Escalation
+        dashboard</p>
 </div>
 
 <div class="container-fluid pl-5 pr-5">
-    {% for data_source, identifiers in data_source_dict.items() %}
-        <form method="post" id={{
-    "form_" ~ data_source }}>
-    <input type="hidden" name="data_sources" value={{ data_source }}>
-    </form>
-    <div class="row" id={{ data_source }}>
-        <h1>{{ data_source }} </h1>
-    </div>
-    <div class="row">
-    <div class="col-10">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">Identifier</th>
-              <th scope="col" class="text-right">Data Set Active</th>
-            </tr>
-          </thead>
-      <tbody>
-      {% for identifier in identifiers %}
-        <tr>
-          <th scope="row">{{ identifier }}</th>
-          <td class="text-right">
-              {%  set identifier_active = identifier in data_source_active_dict[data_source] %}
-              <div class="form-check form-check-inline">
-                <label class="form-check-label" for={{ data_source~"_"~identifier~"_active" }}><i class="fa fa-check" aria-hidden="true"></i></label>
-                <input class="form-check-input" type="radio" name={{ identifier }} id={{ data_source~"_"~identifier~"_active" }} value='active' form={{ "form_" ~ data_source }} {% if identifier_active %} checked>{% else %} > {% endif %}
+    {% for data_source, identifiers_metadata_dict_list in data_source_dict.items() %}
+        <form method="post" id={{"form_" ~ data_source }}>
+            <input type="hidden" name="data_sources" value={{ data_source }}>
+        </form>
 
+        <div class="row" id={{ data_source }}>
+            <h1>{{ data_source }}</h1>
+        </div>
+
+        <div class="row">
+            <div class="col-10">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">Identifier</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Upload Time</th>
+                        <th scope="col">Notes</th>
+                        <th scope="col" class="text-right">Data Set Active</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for identifier_metadata_dict in identifiers_metadata_dict_list %}
+                        {% set identifier = identifier_metadata_dict["upload_id"] %}
+                        {% set identifier_active = identifier_metadata_dict["active"] %}
+
+                        <tr>
+                            <th scope="row">{{ identifier }}</th>
+                            <th scope="col">{{ identifier_metadata_dict["username"] }}</th>
+                            <th scope="col">{{ identifier_metadata_dict["upload_time"] }}</th>
+                            <th scope="col">{{ identifier_metadata_dict["notes"] }}</th>
+                            <td class="text-right">
+
+                                <div class="form-check form-check-inline" >
+                                    <input class="form-check-input"
+                                           type="checkbox"
+                                           id={{ data_source~"_"~identifier~"_active" }}
+                                           form={{ "form_" ~ data_source }}
+                                           {% if identifier_active %}checked="checked"{% endif %}>
+                                </div>
+
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <div class="form-check form-check-inline">
 
-                <label class="form-check-label" for={{ data_source~"_"~identifier~"_inactive" }}><i class="fa fa-times" aria-hidden="true"></i></label>
-                <input class="form-check-input" type="radio" name={{ identifier }} id={{ data_source~"_"~identifier~"_inactive" }} value='inactive' form={{ "form_" ~ data_source }} {% if identifier_active %} >{% else %} checked> {% endif %}
+            <div class="col-2 align-self-center">
+                <button type="button" class="btn btn-primary btn-lg" onclick=any_identifiers_active("{{ data_source }}")>Update</button>
             </div>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
-    </div>
-    <div class="col-2 align-self-center">
-        <button type="button" class="btn btn-primary btn-lg" onclick=any_identifiers_active('{{ data_source }}')>Update
-            </button>
-    </div>
-    </div>
+        </div>
 
-{% endfor %}
+    {% endfor %}
 </div>
-
 {% endblock %}
 
 
