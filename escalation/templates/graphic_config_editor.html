@@ -73,6 +73,7 @@
         if (errors.length){
             let success_text = document.querySelector('#feedback_message');
             success_text.innerHTML = "Not a Valid Schema"
+            // Message disappears after 5 secs
             setTimeout(function() {
               success_text.innerHTML="";
             }, 5000);
