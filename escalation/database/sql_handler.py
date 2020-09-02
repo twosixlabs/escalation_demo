@@ -199,7 +199,7 @@ class SqlHandler(DataHandler):
 
     def build_filters_from_active_data_source(self):
         current_tables = list(self.table_lookup_by_name.keys())
-        upload_rows = SqlDataInventory.get_data_upload_metadata(current_tables,)
+        upload_rows = SqlDataInventory.get_data_upload_metadata(current_tables)
         active_upload_rows = {
             table_name: [r for r in rows if r.get(ACTIVE)]
             for table_name, rows in upload_rows.items()
@@ -414,6 +414,8 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         :param active_filter:
         :return: dict keyed by table name, valued with list of dicts describing the upload
         """
+        DATETIME_FORMAT = "%d %B %Y %I:%M%p"
+
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         query = current_app.db_session.query(data_upload_metadata).filter(
             data_upload_metadata.table_name.in_(data_source_names)
@@ -425,7 +427,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
                 {
                     UPLOAD_ID: result.upload_id,
                     USERNAME: result.username,
-                    UPLOAD_TIME: result.upload_time,
+                    UPLOAD_TIME: result.upload_time.strftime(DATETIME_FORMAT),
                     ACTIVE: result.active,
                     NOTES: result.notes,
                 }
