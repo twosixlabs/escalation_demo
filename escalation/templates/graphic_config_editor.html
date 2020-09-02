@@ -66,21 +66,33 @@
     function new_editor(type,display_required_only,schema) {
         return new JSONEditor(document.getElementById('editor_holder_'.concat(type)),
             options={theme: 'bootstrap4',display_required_only: display_required_only, disable_edit_json:true,
-                disable_array_delete_last_row:true, iconlib: 'fontawesome4', schema: schema });
+                disable_array_delete_last_row:true, iconlib: 'fontawesome4', show_errors:'always' ,schema: schema });
     }
     function save_json_editor_to_file(redirect){
-        const url = "{{ url_for('.update_graphic_json_config_with_ui_changes') }}";
+        const errors=get_json_editor_errors();
+        if (errors.length){
+            let success_text = document.querySelector('#feedback_message');
+            success_text.innerHTML = "Not a Valid Schema"
+            // Message disappears after 5 secs
+            setTimeout(function() {
+              success_text.innerHTML="";
+            }, 5000);
+        }
+        else{
+            const url = "{{ url_for('.update_graphic_json_config_with_ui_changes') }}";
 
-        let webpage = '';
-        if (redirect) {webpage = "{{ url_for('.file_tree') }}"}
-        current_state=get_json_editor_value();
-        saved_plot_type = current_plot_type;
-        // The form contains nested dictionaries so it is easier to send a json than a form
-        let data = JSON.stringify({"config_dict" : current_state,
-            "page_id":{{ page_id }},
-            "graphic_path": '{{ graphic_path }}',
-            "graphic_status":'{{ graphic_status }}'});
-        send_json_in_post_request(url, data, webpage);// The form contains nested dictionaries so it is easier to send a json than a form
+            let webpage = '';
+            if (redirect) {webpage = "{{ url_for('.file_tree') }}"}
+            current_state=get_json_editor_value();
+            saved_plot_type = current_plot_type;
+            // The form contains nested dictionaries so it is easier to send a json than a form
+            let data = JSON.stringify({"config_dict" : current_state,
+                "page_id":{{ page_id }},
+                "graphic_path": '{{ graphic_path }}',
+                "graphic_status":'{{ graphic_status }}'});
+            send_json_in_post_request(url, data, webpage);// The form contains nested dictionaries so it is easier to send a json than a form
+        }
+
     }
     function reset_json_editor(){
         for(let editor_name in editors){
@@ -105,6 +117,14 @@
         }
         return editor_values
     }
+    function get_json_editor_errors(){
+        let errors= [];
+        for(let editor_name in editors){
+            errors=errors.concat(editors[editor_name].validate());
+        }
+        return errors
+    }
+
     function reload_last_save(){
         if (current_plot_type != saved_plot_type){
             current_plot_type=saved_plot_type;
