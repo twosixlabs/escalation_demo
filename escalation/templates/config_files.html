@@ -30,6 +30,10 @@
                         <option value="local_csv" {% if current_schema == "local_csv" %}  selected {% endif %}>Local</option>
                     </select>
                 </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary form-control" onclick=modify_config('save')>Save
+                    </button>
+                </div>
                     <input type="hidden" name="page_id" value=''>
                     <input type="hidden" name="graphic" value=''>
                     <input type="hidden" name="graphic_status" value=''>
