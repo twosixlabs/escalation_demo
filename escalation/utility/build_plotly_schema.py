@@ -23,18 +23,47 @@ SCATTER3D = "scatter3d"
 # SURFACE = "surface"
 MESH3D = "mesh3d"
 
+PLOT_TYPE = "plot_type"
 
 SELECTOR_DICT = {
-    SCATTER: "Scatter or Line Plot",
-    BAR: "Bar Plot",
-    HEATMAP: "Heatmap",
-    CONTOUR: "Contour Plot",
-    BOX: "Box Plot",
-    VIOLIN: "Violin Plot",
-    HISTOGRAM: "Histogram",
-    HISTOGRAM2D: "2D Histogram",
-    SCATTER3D: "3D Scatter/Line Plot",
-    MESH3D: "3D Mesh Plot",
+    "$schema": "http://json-schema.org/draft/2019-09/schema#",
+    "title": "Type of Plot",
+    REQUIRED: [PLOT_TYPE],
+    PROPERTIES: {
+        PLOT_TYPE: {
+            TYPE: "string",
+            TITLE: "Plot Type",
+            "enum": [
+                SCATTER,
+                BAR,
+                HEATMAP,
+                CONTOUR,
+                BOX,
+                VIOLIN,
+                HISTOGRAM,
+                HISTOGRAM2D,
+                SCATTER3D,
+                MESH3D,
+            ],
+            OPTIONS: {
+                "enum_titles": [
+                    "Scatter or Line Plot",
+                    "Bar Plot",
+                    "Heatmap",
+                    "Contour Plot",
+                    "Box Plot",
+                    "Violin Plot",
+                    "Histogram",
+                    "2D Histogram",
+                    "3D Scatter/Line Plot",
+                    "3D Mesh Plot",
+                ]
+            },
+        }
+    },
+    OPTIONS:{
+
+    }
 }
 
 
@@ -59,7 +88,7 @@ def build_plotly_schema(column_names):
                     "properties": {
                         "type": {
                             "type": "string",
-                            TITLE: "Plot Type",
+                            TITLE: "Render Mode",
                             "enum": [
                                 "scatter",
                                 "scattergl",
@@ -79,6 +108,7 @@ def build_plotly_schema(column_names):
                                 "surface",
                                 "mesh3d",
                             ],
+                            OPTIONS: {HIDDEN: True},
                         },
                         X: {
                             "type": "string",
@@ -182,7 +212,7 @@ def build_plotly_schema_individual_dicts(column_names):
             ENUM: [BOX],
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
-                TYPE: "To show more than one box in the plot,"
+                TYPE: "To show more than one box in the plot, "
                 'set "group by" in visualization options below',
             },
         },
@@ -190,7 +220,7 @@ def build_plotly_schema_individual_dicts(column_names):
             ENUM: [VIOLIN],
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
-                TYPE: "To show more than one violin in the plot,"
+                TYPE: "To show more than one violin in the plot, "
                 'set "group by" in visualization options below',
             },
         },
@@ -226,6 +256,10 @@ def build_plotly_schema_individual_dicts(column_names):
     for plot_type, directions in directions_for_building_schemas.items():
         plot_schema = copy.deepcopy(main_schema)
         plot_schema[PROPERTIES][DATA][ITEMS][PROPERTIES][TYPE][ENUM] = directions[ENUM]
+        if len(directions[ENUM]) > 1:
+            plot_schema[PROPERTIES][DATA][ITEMS][PROPERTIES][TYPE][OPTIONS][
+                HIDDEN
+            ] = False
         plot_schema[PROPERTIES][DATA][ITEMS][REQUIRED] = directions[REQUIRED]
         # removing unnecessary elements from the general Plotly schema
         # that are not needed for this plot type

@@ -143,6 +143,9 @@ DEPENDENCIES = "dependencies"
 ENUM = "enum"
 ONEOF = "oneOf"
 HIDDEN = "hidden"
+DISABLE_COLLAPSE = "disable_collapse"
+COLLAPSED = "collapsed"
+DISABLE_PROPERTIES = "disable_properties"
 
 # plotly constants
 

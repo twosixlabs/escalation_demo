@@ -153,7 +153,7 @@ def graphic_config_setup():
         data_source_names, possible_column_names
     )
     component_graphic_dict = make_empty_component_dict()
-    current_schema = ""
+    current_schema = SCATTER
 
     if graphic_status in [COPY, OLD]:
         type_to_schema = invert_dict_lists(schema_to_type)
