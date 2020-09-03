@@ -414,7 +414,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         :param active_filter:
         :return: dict keyed by table name, valued with list of dicts describing the upload
         """
-        DATETIME_FORMAT = "%d %B %Y %I:%M%p"
+        DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         query = current_app.db_session.query(data_upload_metadata).filter(

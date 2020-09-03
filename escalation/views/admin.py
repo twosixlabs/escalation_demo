@@ -20,9 +20,6 @@ def admin_page():
     # this allows the dictionary to work with bootstrap-table with html form as a post request.
     data_source_dict = {
         data_source: {
-            "height": min(
-                len(identifiers_metadata_dict_list) * 48 + 110, 360
-            ),  # to fix
             "ids": [element[UPLOAD_ID] for element in identifiers_metadata_dict_list],
             "data": json.dumps(identifiers_metadata_dict_list),
         }
