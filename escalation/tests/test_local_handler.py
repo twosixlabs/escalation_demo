@@ -106,11 +106,17 @@ def test_build_combined_data_table(test_app_client_csv_backed):
             pd.read_csv("test_app_deploy_data/data/penguin_size/penguin_size_2.csv"),
         ]
     )
-    num_rows_in_leftmost_table = penguin_size.shape[0]
+    penguin_mean = pd.read_csv(
+        "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
+    )
+    inner_join_table = pd.merge(
+        penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
+    )
+    num_rows_in_inner_table = inner_join_table.shape[0]
     num_rows_in_combined_table = handler.combined_data_table.shape[0]
     # this is a left join, so assuming only one matching key in right table per key in left,
     # the number of rows of final table should equal the left/first table
-    assert num_rows_in_leftmost_table == num_rows_in_combined_table
+    assert num_rows_in_inner_table == num_rows_in_combined_table
     # todo: one to many join, where we expect the number of rows to change
 
 
