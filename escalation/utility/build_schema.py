@@ -101,6 +101,10 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             PLOT_SPECIFIC_INFO,
         ],
         "additionalProperties": False,
+        OPTIONS: {
+            DISABLE_COLLAPSE: True,
+            DISABLE_PROPERTIES: True
+        },
         PROPERTIES: {
             PLOT_MANAGER: {
                 "type": "string",
@@ -133,6 +137,10 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "enum": data_source_names,
                             },
                         },
+                        OPTIONS: {
+                            DISABLE_COLLAPSE: True,
+                            DISABLE_PROPERTIES: True
+                        },
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
@@ -141,6 +149,9 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             TITLE: "Additional Data Source",
                             "additionalProperties": False,
                             REQUIRED: [DATA_SOURCE_TYPE, JOIN_KEYS],
+                            OPTIONS: {
+                                COLLAPSED: True,
+                            },
                             PROPERTIES: {
                                 DATA_SOURCE_TYPE: {
                                     "type": "string",
@@ -179,6 +190,9 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Visualization List",
                 "description": "Transformations made to the graph",
                 "additionalProperties": False,
+                OPTIONS: {
+                    COLLAPSED: True
+                },
                 PROPERTIES: {
                     HOVER_DATA: {
                         "type": "object",
@@ -261,6 +275,9 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Selector List",
                 "description": "Data selectors that the user can interact with for a graphic",
                 ADDITIONAL_PROPERTIES: False,
+                OPTIONS: {
+                    COLLAPSED: True,
+                },
                 PROPERTIES: {
                     FILTER: {
                         "type": "array",

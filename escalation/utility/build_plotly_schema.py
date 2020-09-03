@@ -62,7 +62,8 @@ SELECTOR_DICT = {
         }
     },
     OPTIONS:{
-
+        DISABLE_COLLAPSE: True,
+        DISABLE_PROPERTIES: True
     }
 }
 
@@ -76,6 +77,9 @@ def build_plotly_schema(column_names):
         "description": "dictionary that follows https://plotly.com/javascript/reference/",
         "type": "object",
         "required": [DATA],
+        OPTIONS: {
+            DISABLE_COLLAPSE: True
+        },
         "properties": {
             DATA: {
                 "type": "array",
