@@ -22,9 +22,12 @@
             <div class="row">
                 <div class="w-100" id="editor_holder_graphic"></div>
             </div>
-            <div class="row ml-1 mb-4">
+            <div class="row ml-1 mb-4 mt-4">
                 <h2>Type of Plot:</h2>
                 <select class="selectpicker mt-1 ml-3" data-dropdown-align-right='auto' id = "plot_type" data-style = "btn-info">
+                    {% if graphic_status=="new" %}
+                        <option id="default_graph_option" value="no_graph">None</option>
+                    {% endif %}
                     {% for value, selector_text in schema_selector_dict.items() %}
                         <option value={{ value }} {% if current_schema == value %} selected {% endif %}>{{ selector_text }}</option>
                     {% endfor %}
@@ -56,10 +59,14 @@
     let editors= new Object();
     let current_plot_type = "{{ current_schema }}";
     let saved_plot_type = current_plot_type;
-    make_json_editor();
 
+    let first_time=1;
     {% if graphic_status in ['old', 'copy'] %}
+        make_json_editor();
         set_json_editor_value(current_state);
+        first_time=0;
+    {% else %}
+        editors['graphic_meta_info'] = new_editor('graphic', false, dict_of_schemas['graphic_schema']);
     {% endif %}
     let current_data_sources = get_main_data_sources(editors['graphic_meta_info'].getEditor('root.data_sources').getValue());
     add_watcher_to_data_sources();
@@ -144,8 +151,18 @@
     $("select").on("changed.bs.select",
           function(e, clickedIndex, newValue, oldValue) {
         current_plot_type=this.value;
-        editors['plotly'].destroy();
+        if (first_time) {
+            $('#selectBox option[id="default_graph_option"]').remove()
+            editors['visualization'] = new_editor('visualization', false, dict_of_schemas["visualization_schema"]);
+            editors['selector'] = new_editor('selector', false, dict_of_schemas["selector_schema"]);
+            first_time=0;
+        }
+        else{
+            editors['plotly'].destroy();
+
+        }
         editors['plotly'] = new_editor('plotly',true, dict_of_plotly_schemas[current_plot_type]);
+
 
     });
     function add_watcher_to_data_sources() {
