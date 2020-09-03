@@ -25,6 +25,7 @@
 - search for feature (opacity, hover text) and where in the config it goes
 - in-line documentation to configuration wizard-Add a second column to the config wizard that explains the properties that can be edited in a specific dropdown? Lots of hover text?
 - reloading the editor after a post generates the same post effects again- duplicating the new additions
+- Warning that you replace the existing table when you upload to the same table name in wizard mode? Or explicit enough?
 
 ## Testing
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?

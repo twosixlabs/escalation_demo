@@ -9,6 +9,7 @@ from flask import current_app, render_template, Blueprint, request
 from sqlacodegen.codegen import CodeGenerator
 
 from database.sql_handler import CreateTablesFromCSVs, REPLACE, SqlDataInventory
+from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
 from utility.build_plotly_schema import SELECTOR_DICT
 from utility.constants import (
     DATA_BACKEND,
@@ -35,6 +36,11 @@ from utility.constants import (
     SQLALCHEMY_DATABASE_URI,
     USERNAME,
     NOTES,
+    APP_CONFIG_JSON,
+    MAIN_DATA_SOURCE,
+    DATA_SOURCE_TYPE,
+    LOCAL_CSV,
+    DATA_SOURCE,
 )
 from utility.schemas_for_ui import (
     build_main_schemas_for_ui,
@@ -286,12 +292,10 @@ def validate_table_name():
     pass
 
 
-# todo: this only makes sense for sql-backed apps
-# todo: verify on replace options- popup confirmation warning? in js?
-@wizard_blueprint.route("/wizard/upload", methods=("POST",))
-def upload_csv_to_database():
-    table_name = request.form.get("data_source")
-    csvfile = request.files.get("csvfile")
+def sql_backend_file_upload(upload_form, csvfile):
+    table_name = upload_form.get(DATA_SOURCE)
+    username = upload_form.get(USERNAME)
+    notes = upload_form.get(NOTES)
     csv_sql_writer = CreateTablesFromCSVs(current_app.config[SQLALCHEMY_DATABASE_URI])
     data = csv_sql_writer.get_data_from_csv(csvfile)
     (
@@ -304,8 +308,8 @@ def upload_csv_to_database():
         upload_time=upload_time,
         table_name=table_name,
         active=True,
-        username=request.form.get(USERNAME),
-        notes=request.form.get(NOTES),
+        username=username,
+        notes=notes,
     )
     # Generate a new models.py
     # update the metadata to include all tables in the db
@@ -319,4 +323,29 @@ def upload_csv_to_database():
         os.remove(models_filepath)
     with io_open(os.path.join(models_filepath), "w", encoding="utf-8") as outfile:
         generator.render(outfile)
+
+
+def csv_backend_file_upload(upload_form, csvfile):
+    table_name = upload_form.get(DATA_SOURCE)
+    username = upload_form.get(USERNAME)
+    notes = upload_form.get(NOTES)
+    df = LocalCSVHandler.load_df_from_csv(csvfile)
+    data_inventory = LocalCSVDataInventory(
+        data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: table_name}}
+    )
+    data_inventory.delete_data_source()
+    data_inventory.write_data_upload_to_backend(df, username=username, notes=notes)
+
+
+@wizard_blueprint.route("/wizard/upload", methods=("POST",))
+def upload_csv_to_database():
+    upload_form = request.form
+    csvfile = request.files.get("csvfile")
+    data_backend = current_app.config[APP_CONFIG_JSON].get(DATA_BACKEND)
+    if data_backend in [POSTGRES]:
+        sql_backend_file_upload(upload_form, csvfile)
+    elif data_backend in [LOCAL_CSV]:
+        csv_backend_file_upload(upload_form, csvfile)
+    else:
+        return data_upload_page("Failure- data backend not recognized")
     return data_upload_page("success")

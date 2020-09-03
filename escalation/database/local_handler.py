@@ -1,10 +1,11 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-from collections import defaultdict
+from collections import defaultdict, namedtuple
 from datetime import datetime
 import glob
 import os
+import shutil
 
 from flask import current_app
 import pandas as pd
@@ -33,6 +34,7 @@ from utility.constants import (
     TABLE_NAME,
     USERNAME,
     NOTES,
+    DATETIME_FORMAT,
 )
 
 
@@ -96,10 +98,14 @@ class LocalCSVHandler(DataHandler):
         return filepaths_list
 
     @staticmethod
-    def build_df_for_data_source_type(data_source):
+    def load_df_from_csv(filepath):
+        return pd.read_csv(filepath, comment="#")
+
+    @classmethod
+    def build_df_for_data_source_type(cls, data_source):
         # There may be multiple files for a particular data source type
         data_source_df = pd.concat(
-            [pd.read_csv(filepath) for filepath in data_source[DATA_LOCATION]]
+            [cls.load_df_from_csv(filepath) for filepath in data_source[DATA_LOCATION]]
         )
         # add the data_source/table name as a prefix to disambiguate columns
         data_source_df = data_source_df.add_prefix(
@@ -181,6 +187,9 @@ class LocalCSVDataInventory(LocalCSVHandler):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1
         self.data_source_name = data_sources[MAIN_DATA_SOURCE][DATA_SOURCE_TYPE]
+        self.data_file_directory = os.path.join(
+            current_app.config[CONFIG_FILE_FOLDER], DATA, self.data_source_name
+        )
 
     @staticmethod
     def get_available_data_sources():
@@ -211,7 +220,9 @@ class LocalCSVDataInventory(LocalCSVHandler):
             )
             list_of_files = glob.glob(f"{full_path}/*.csv")
             assert len(list_of_files) > 0
-            files_by_data_source[data_source_name] = list_of_files
+            files_by_data_source[data_source_name] = [
+                os.path.basename(f) for f in list_of_files
+            ]
         identifiers_by_table = defaultdict(list)
         # for each file identifier in the file system, match up any metadata we have
         for data_source_name, data_source_identifiers in files_by_data_source.items():
@@ -284,39 +295,63 @@ class LocalCSVDataInventory(LocalCSVHandler):
         data_upload_metadata.to_csv(cls.get_data_upload_metadata_path(), index=False)
 
     def get_schema_for_data_source(self):
+        """
+        :return: list of namedtuples that contain the name and data type of the df columns
+        This is designed to match the data format of the column tuples used in sqlalchemy
+        """
         files_by_source = self.get_data_upload_metadata([self.data_source_name])
         list_of_files = [
-            f[UPLOAD_ID]
+            os.path.join(self.data_file_directory, f[UPLOAD_ID])
             for f in files_by_source[self.data_source_name]
             if f.get(ACTIVE)
         ]
         latest_filepath = max(list_of_files, key=os.path.getctime)
-        return pd.read_csv(latest_filepath, nrows=1).columns.tolist()
+        data_types = pd.read_csv(latest_filepath, nrows=1).dtypes
+        column_schema = namedtuple("column_schema", ["name", "data_type"])
+        return [
+            column_schema(k, v) for k, v in zip(data_types.index, data_types.values)
+        ]
 
-    def write_data_upload_to_backend(self, uploaded_data_df, file_name=None):
+    def delete_data_source(self):
+        # if there are files in this data source directory, clear it out
+        if os.path.exists(self.data_file_directory):
+            shutil.rmtree(self.data_file_directory)
+        # remove rows corresponding to this datasource from the metadata file
+        data_upload_metadata = self.get_data_upload_metadata_df()
+        data_upload_metadata = data_upload_metadata[
+            data_upload_metadata[TABLE_NAME] != self.data_source_name
+        ]
+        data_upload_metadata.to_csv(self.get_data_upload_metadata_path(), index=False)
+
+    def write_data_upload_to_backend(self, uploaded_data_df, username, notes):
         """
-        :param file_name:
         :param uploaded_data_df: pandas dataframe on which we have already done validation
-        :param data_source_name:
-
+        :param username: str
+        :param notes: str
         :return: Empty list representing columns not in the new file that are in the old. Included for function signature matching
         """
+        # todo: add filename arg back in, and check if filename exists and raise exception if it does- don't overwrite existing files
+        upload_time = datetime.utcnow()
+        file_name = upload_time.strftime(DATETIME_FORMAT) + ".csv"
 
-        file_name = (
-            datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-            if (file_name is None)
-            else sanitize_filename(secure_filename(file_name))
-        )
-        file_name = (
-            file_name if file_name.endswith(".csv") else "".join([file_name, ".csv"])
-        )
+        if not os.path.exists(self.data_file_directory):
+            os.makedirs(self.data_file_directory)
+        file_path = os.path.join(self.data_file_directory, file_name)
+        uploaded_data_df.to_csv(file_path, index=False)
 
-        file_path = os.path.join(
-            current_app.config[CONFIG_FILE_FOLDER],
-            DATA,
-            self.data_source_name,
-            file_name,
+        # update the data upload metadata
+        data_upload_metadata = self.get_data_upload_metadata_df()
+        new_row = {
+            UPLOAD_ID: file_name,
+            TABLE_NAME: self.data_source_name,
+            USERNAME: username,
+            NOTES: notes,
+            ACTIVE: True,
+            UPLOAD_TIME: upload_time,
+        }
+        data_upload_metadata = pd.concat(
+            [data_upload_metadata, pd.DataFrame([new_row])]
         )
-        uploaded_data_df.to_csv(file_path)
-        # todo: write upload to metadata file
+        data_upload_metadata.to_csv(self.get_data_upload_metadata_path(), index=False)
+
         return []
