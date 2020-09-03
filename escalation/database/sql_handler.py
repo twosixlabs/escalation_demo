@@ -46,6 +46,9 @@ from utility.constants import (
     SQLALCHEMY_DATABASE_URI,
     SELECTOR_TYPE,
     NUMERICAL_FILTER,
+    USERNAME,
+    UPLOAD_TIME,
+    NOTES,
 )
 
 # from: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.api.types.infer_dtype.html
@@ -196,16 +199,18 @@ class SqlHandler(DataHandler):
 
     def build_filters_from_active_data_source(self):
         current_tables = list(self.table_lookup_by_name.keys())
-        active_upload_ids = SqlDataInventory.get_identifiers_for_data_sources(
-            current_tables, active_filter=True
-        )
+        upload_rows = SqlDataInventory.get_data_upload_metadata(current_tables)
+        active_upload_rows = {
+            table_name: [r for r in rows if r.get(ACTIVE)]
+            for table_name, rows in upload_rows.items()
+        }
         active_data_source_filters = []
-        for (table_name, upload_ids,) in active_upload_ids.items():
+        for (table_name, upload_rows,) in active_upload_rows.items():
             active_data_source_filters.append(
                 {
                     OPTION_TYPE: FILTER,
                     OPTION_COL: f"{table_name}:{UPLOAD_ID}",
-                    SELECTED: upload_ids,
+                    SELECTED: [r[UPLOAD_ID] for r in upload_rows],
                 }
             )
         return active_data_source_filters
@@ -402,23 +407,31 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
             current_app.db_session.commit()
 
     @classmethod
-    def get_identifiers_for_data_sources(cls, data_source_names, active_filter=False):
+    def get_data_upload_metadata(cls, data_source_names):
         """
 
         :param data_source_names: list of data sources
         :param active_filter:
-        :return: dict
+        :return: dict keyed by table name, valued with list of dicts describing the upload
         """
+        DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
         data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
         query = current_app.db_session.query(data_upload_metadata).filter(
             data_upload_metadata.table_name.in_(data_source_names)
         )
-        if active_filter:
-            query = query.filter(data_upload_metadata.active.is_(True))
         results = query.all()
         identifiers_by_table = defaultdict(list)
         for result in results:
-            identifiers_by_table[result.table_name].append(result.upload_id)
+            identifiers_by_table[result.table_name].append(
+                {
+                    UPLOAD_ID: result.upload_id,
+                    USERNAME: result.username,
+                    UPLOAD_TIME: result.upload_time.strftime(DATETIME_FORMAT),
+                    ACTIVE: result.active,
+                    NOTES: result.notes,
+                }
+            )
         return identifiers_by_table
 
     @classmethod

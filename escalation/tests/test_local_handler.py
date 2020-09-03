@@ -10,9 +10,12 @@ from utility.constants import (
     MAIN_DATA_SOURCE,
     ADDITIONAL_DATA_SOURCES,
     ACTIVE,
+    INACTIVE,
     TABLE_NAME,
     UPLOAD_ID,
     UPLOAD_TIME,
+    USERNAME,
+    NOTES,
 )
 
 
@@ -103,11 +106,17 @@ def test_build_combined_data_table(test_app_client_csv_backed):
             pd.read_csv("test_app_deploy_data/data/penguin_size/penguin_size_2.csv"),
         ]
     )
-    num_rows_in_leftmost_table = penguin_size.shape[0]
+    penguin_mean = pd.read_csv(
+        "test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv"
+    )
+    inner_join_table = pd.merge(
+        penguin_size, penguin_mean, how="inner", on=["study_name", "sex", "species"]
+    )
+    num_rows_in_inner_table = inner_join_table.shape[0]
     num_rows_in_combined_table = handler.combined_data_table.shape[0]
     # this is a left join, so assuming only one matching key in right table per key in left,
     # the number of rows of final table should equal the left/first table
-    assert num_rows_in_leftmost_table == num_rows_in_combined_table
+    assert num_rows_in_inner_table == num_rows_in_combined_table
     # todo: one to many join, where we expect the number of rows to change
 
 
@@ -115,16 +124,20 @@ def test_build_combined_data_table_with_filtered_data_source(
     test_app_client_csv_backed, mocker
 ):
     mock_metadata = pd.DataFrame(
-        {
-            ACTIVE: [False],
-            TABLE_NAME: ["penguin_size"],
-            UPLOAD_ID: ["test_app_deploy_data/data/penguin_size/penguin_size_2.csv"],
-            UPLOAD_TIME: [None],
-        }
+        [
+            {
+                ACTIVE: False,
+                TABLE_NAME: "penguin_size",
+                UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+                UPLOAD_TIME: None,
+                USERNAME: "Nick",
+                NOTES: "test penguin size upload",
+            }
+        ]
     )
 
     mocker.patch(
-        "database.local_handler.LocalCSVHandler.get_data_upload_metadata",
+        "database.local_handler.LocalCSVHandler.get_data_upload_metadata_df",
         return_value=mock_metadata,
     )
     handler = LocalCSVHandler(data_sources=TWO_DATA_SOURCES_CONFIG)
@@ -166,14 +179,116 @@ def test_get_schema_for_data_source(test_app_client_csv_backed):
     assert column_names == expected_column_names
 
 
-def test_get_identifiers_for_data_source(test_app_client_csv_backed):
-    file_names = LocalCSVDataInventory.get_identifiers_for_data_sources(
-        data_source_names=["penguin_size"], active_filter=False
+def test_get_data_upload_metadata(test_app_client_csv_backed):
+    data_upload_metadata = LocalCSVDataInventory.get_data_upload_metadata(
+        data_source_names=["penguin_size"]
     )
-    expected_file_names = {
+
+    expected_metadata = {
         "penguin_size": [
-            "test_app_deploy_data/data/penguin_size/penguin_size.csv",
-            "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+            # there is no corresponding metadata row for this file, so metadata is None
+            {
+                UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size.csv",
+                USERNAME: None,
+                UPLOAD_TIME: None,
+                ACTIVE: None,
+                NOTES: None,
+            },
+            {
+                UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+                USERNAME: "Nick",
+                UPLOAD_TIME: "2020-09-01 12:05:02",
+                ACTIVE: True,
+                NOTES: "My second penguin data!",
+            },
         ]
     }
-    assert file_names == expected_file_names
+    assert data_upload_metadata == expected_metadata
+
+
+MOCK_METADATA = pd.DataFrame(
+    [
+        {
+            ACTIVE: False,
+            TABLE_NAME: "penguin_size",
+            UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size.csv",
+            UPLOAD_TIME: None,
+            USERNAME: "Nick",
+            NOTES: "test penguin size upload 1",
+        },
+        {
+            ACTIVE: True,
+            TABLE_NAME: "penguin_size",
+            UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+            UPLOAD_TIME: "2020-09-01 12:05:02",
+            USERNAME: "Nick",
+            NOTES: "test penguin size upload 2",
+        },
+    ]
+)
+
+
+def test_get_updated_metadata_df_write_no_change(test_app_client_csv_backed, mocker):
+    # test that the metadata is unchanged if we don't update any active status
+    mocker.patch(
+        "database.local_handler.LocalCSVHandler.get_data_upload_metadata_df",
+        return_value=MOCK_METADATA,
+    )
+
+    data_upload_metadata = LocalCSVDataInventory._get_updated_metadata_df_for_csv_write(
+        data_source_name="penguin_size",
+        active_data_dict={
+            "test_app_deploy_data/data/penguin_size/penguin_size.csv": INACTIVE,
+            "test_app_deploy_data/data/penguin_size/penguin_size_2.csv": ACTIVE,
+        },
+    )
+    assert data_upload_metadata.equals(MOCK_METADATA)
+
+
+def test_get_updated_metadata_df_write_active_change(
+    test_app_client_csv_backed, mocker
+):
+    # test that the metadata shows an updated ACTIVE/INACTIVE status
+    mocker.patch(
+        "database.local_handler.LocalCSVHandler.get_data_upload_metadata_df",
+        return_value=MOCK_METADATA,
+    )
+
+    data_upload_metadata = LocalCSVDataInventory._get_updated_metadata_df_for_csv_write(
+        data_source_name="penguin_size",
+        active_data_dict={
+            "test_app_deploy_data/data/penguin_size/penguin_size.csv": ACTIVE,
+            "test_app_deploy_data/data/penguin_size/penguin_size_2.csv": INACTIVE,
+        },
+    )
+    expected_df = MOCK_METADATA.copy()
+    expected_df.loc[0, ACTIVE] = True
+    expected_df.loc[1, ACTIVE] = False
+    assert data_upload_metadata.equals(expected_df)
+
+
+def test_get_updated_metadata_df_write_for_file_not_yet_in_metadata(
+    test_app_client_csv_backed, mocker
+):
+    # test that the metadata shows an updated ACTIVE/INACTIVE status
+    mocker.patch(
+        "database.local_handler.LocalCSVHandler.get_data_upload_metadata_df",
+        return_value=MOCK_METADATA,
+    )
+
+    new_upload_id = "test_app_deploy_data/data/penguin_size/penguin_size_3.csv"
+    data_upload_metadata = LocalCSVDataInventory._get_updated_metadata_df_for_csv_write(
+        data_source_name="penguin_size",
+        active_data_dict={
+            "test_app_deploy_data/data/penguin_size/penguin_size.csv": INACTIVE,
+            "test_app_deploy_data/data/penguin_size/penguin_size_2.csv": INACTIVE,
+            new_upload_id: ACTIVE,
+        },
+    )
+    expected_df = MOCK_METADATA.copy()
+    # write the new row- we're missing values for notes and username for this
+    new_row = {TABLE_NAME: "penguin_size", UPLOAD_ID: new_upload_id, ACTIVE: True}
+    expected_df = expected_df.append(
+        pd.DataFrame([new_row], columns=expected_df.columns)
+    ).reset_index(drop=True)
+    assert data_upload_metadata.equals(expected_df)

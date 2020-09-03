@@ -11,5 +11,6 @@ fi
 docker-compose run --entrypoint /escalation/scripts/boot_escalation_debug_mode.sh \
 -p "8000:8000" \
 -v "$(pwd)/escalation/app_deploy_data":/escalation/app_deploy_data \
+-v "$(pwd)/escalation/templates/:/escalation/templates/" \
 web
 
