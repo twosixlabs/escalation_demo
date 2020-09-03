@@ -168,7 +168,7 @@ def graphic_config_setup():
         page_id=request.form[PAGE_ID],
         current_config=json.dumps(component_graphic_dict),
         graphic_status=graphic_status,
-        schema_selector_dict=SELECTOR_DICT,
+        schema_selector_dict=json.dumps(SELECTOR_DICT),
         current_schema=current_schema,
         graphic_path=request.form[GRAPHIC],
     )

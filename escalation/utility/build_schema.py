@@ -126,6 +126,10 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "description": "Define which data tables are used in this graphic,"
                 " and on which columns the data tables are joined",
                 "required": [MAIN_DATA_SOURCE],
+                OPTIONS: {
+                    DISABLE_COLLAPSE: True,
+                    DISABLE_PROPERTIES: True
+                },
                 PROPERTIES: {
                     MAIN_DATA_SOURCE: {
                         "type": "object",
@@ -144,14 +148,14 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
+                        OPTIONS: {
+                            COLLAPSED: True,
+                        },
                         ITEMS: {
                             "type": "object",
                             TITLE: "Additional Data Source",
                             "additionalProperties": False,
                             REQUIRED: [DATA_SOURCE_TYPE, JOIN_KEYS],
-                            OPTIONS: {
-                                COLLAPSED: True,
-                            },
                             PROPERTIES: {
                                 DATA_SOURCE_TYPE: {
                                     "type": "string",
@@ -191,7 +195,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "description": "Transformations made to the graph",
                 "additionalProperties": False,
                 OPTIONS: {
-                    COLLAPSED: True
+                    COLLAPSED: False #todo to be true in a future commit
                 },
                 PROPERTIES: {
                     HOVER_DATA: {
@@ -276,7 +280,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "description": "Data selectors that the user can interact with for a graphic",
                 ADDITIONAL_PROPERTIES: False,
                 OPTIONS: {
-                    COLLAPSED: True,
+                    COLLAPSED: False, #todo to be true in a future commit
                 },
                 PROPERTIES: {
                     FILTER: {
