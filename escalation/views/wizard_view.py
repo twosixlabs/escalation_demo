@@ -333,6 +333,7 @@ def csv_backend_file_upload(upload_form, csvfile):
     data_inventory = LocalCSVDataInventory(
         data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: table_name}}
     )
+    data_inventory.delete_data_source()
     data_inventory.write_data_upload_to_backend(df, username=username, notes=notes)
 
 

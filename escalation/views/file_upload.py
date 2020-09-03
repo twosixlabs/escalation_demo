@@ -60,7 +60,8 @@ def validate_submission_content(csvfile, data_source_schema):
         existing_column_names = set([x.name for x in data_source_schema])
         # if we have added an index column on the backend, don't look for it in the data
         for app_added_column in [INDEX_COLUMN, UPLOAD_ID]:
-            existing_column_names.remove(app_added_column)
+            if app_added_column in existing_column_names:
+                existing_column_names.remove(app_added_column)
         # all of the columns in the existing data source are specified in upload
         assert set(df.columns).issuperset(
             existing_column_names
@@ -101,15 +102,13 @@ def submission():
         )
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
-        ignored_columns = data_inventory.write_data_upload_to_backend(
-            df, username, notes
-        )
+        data_inventory.write_data_upload_to_backend(df, username, notes)
         # write upload history table record at the same time
 
     except ValidationError as e:
         current_app.logger.info(e, exc_info=True)
         # check if POST comes from script instead of web UI
-        return jsonify({"error": e}), 400
+        return jsonify({"error": str(e)}), 400
 
     # todo: log information about what the submission is
     current_app.logger.info("Added submission")
