@@ -3,7 +3,6 @@
 - Method not allowed; create another page with same name as existing page, get command doesn't work?
 - Ability to rename pages
 - Selecting other filters, when show all rows is selected by default, means you have to unselect show all rows or it overrides your selections
-- update button not working on admin page: Uncaught TypeError: Cannot set property 'value' of undefined at active_table_data_to_form (admin:54)  at Array.forEach (<anonymous>) at any_identifiers_active (admin:59) at HTMLButtonElement.onclick (admin:170)
 
 # Nice to have Features
 
