@@ -3,6 +3,7 @@
 - Method not allowed; create another page with same name as existing page, get command doesn't work?
 - Ability to rename pages
 - Selecting other filters, when show all rows is selected by default, means you have to unselect show all rows or it overrides your selections
+- update button not working on admin page: Uncaught TypeError: Cannot set property 'value' of undefined at active_table_data_to_form (admin:54)  at Array.forEach (<anonymous>) at any_identifiers_active (admin:59) at HTMLButtonElement.onclick (admin:170)
 
 # Nice to have Features
 
@@ -18,6 +19,7 @@
 - Data privacy- do we want to add some kind of key checking or password functionality?
 - Add data download option (both most recent data and older versions of the data?), next to identifiers on admin page
 - script to update models.py. Integrate with delete db to clear db but leave metadata
+- csv-backed wizard upload: replacing a data source doesn't remove old files in that directory, so you see both old and new in admin
 
 ## Wizard
 - Allow Tables in the wizard
@@ -25,6 +27,7 @@
 - search for feature (opacity, hover text) and where in the config it goes
 - in-line documentation to configuration wizard-Add a second column to the config wizard that explains the properties that can be edited in a specific dropdown? Lots of hover text?
 - reloading the editor after a post generates the same post effects again- duplicating the new additions
+- Warning that you replace the existing table when you upload to the same table name in wizard mode? Or explicit enough?
 
 ## Testing
 - Don't just validate schema format, but run functional/integration test validation of data against required requests defined in config. Can we run all of the Handler functions against each dataset using the config file to make sure we have consistency between a config and a newly-uploaded data file?
