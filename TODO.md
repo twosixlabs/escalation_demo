@@ -19,7 +19,6 @@
 - Data privacy- do we want to add some kind of key checking or password functionality?
 - Add data download option (both most recent data and older versions of the data?), next to identifiers on admin page
 - script to update models.py. Integrate with delete db to clear db but leave metadata
-- csv-backed wizard upload: replacing a data source doesn't remove old files in that directory, so you see both old and new in admin
 
 ## Wizard
 - Allow Tables in the wizard

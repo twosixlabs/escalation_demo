@@ -1,6 +1,8 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
+from collections import namedtuple
+import numpy as np
 import pandas as pd
 
 from database.local_handler import LocalCSVHandler, LocalCSVDataInventory
@@ -164,16 +166,17 @@ def test_get_schema_for_data_source(test_app_client_csv_backed):
     column_names = LocalCSVDataInventory(
         {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "penguin_size"}}
     ).get_schema_for_data_source()
+    column_schema = namedtuple("column_schema", ["name", "data_type"])
     expected_column_names = [
-        "study_name",
-        "species",
-        "island",
-        "sex",
-        "region",
-        "culmen_depth_mm",
-        "culmen_length_mm",
-        "flipper_length_mm",
-        "body_mass_g",
+        column_schema("study_name", np.dtype("O")),
+        column_schema("species", np.dtype("O")),
+        column_schema("island", np.dtype("O")),
+        column_schema("sex", np.dtype("O")),
+        column_schema("region", np.dtype("O")),
+        column_schema("culmen_depth_mm", np.dtype("float64")),
+        column_schema("culmen_length_mm", np.dtype("float64")),
+        column_schema("flipper_length_mm", np.dtype("float64")),
+        column_schema("body_mass_g", np.dtype("float64")),
     ]
 
     assert column_names == expected_column_names
@@ -188,14 +191,14 @@ def test_get_data_upload_metadata(test_app_client_csv_backed):
         "penguin_size": [
             # there is no corresponding metadata row for this file, so metadata is None
             {
-                UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size.csv",
+                UPLOAD_ID: "penguin_size.csv",
                 USERNAME: None,
                 UPLOAD_TIME: None,
                 ACTIVE: None,
                 NOTES: None,
             },
             {
-                UPLOAD_ID: "test_app_deploy_data/data/penguin_size/penguin_size_2.csv",
+                UPLOAD_ID: "penguin_size_2.csv",
                 USERNAME: "Nick",
                 UPLOAD_TIME: "2020-09-01 12:05:02",
                 ACTIVE: True,
