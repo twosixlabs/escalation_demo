@@ -112,6 +112,9 @@ NOTES = "notes"
 INACTIVE = "inactive"
 ACTIVE = "active"
 TABLE_NAME = "table_name"
+DATA_SOURCE = "data_source"
+CSVFILE = "csvfile"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # addendum constants
 GRAPHIC_NAME = "graphic_name"

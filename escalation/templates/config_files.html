@@ -27,7 +27,7 @@
                     <label for="data_backend">Data Backend</label>
                     <select class="selectpicker form-control" data-dropdown-align-right='auto' name="data_backend" id="data_backend">
                         <option value="psql" {% if current_schema == "psql" %}  selected {% endif %}>SQL</option>
-                        <option value="local_csv" {% if current_schema == "local_csv" %}  selected {% endif %}>Local</option>
+                        <option value="local_csv" {% if current_schema == "local_csv" %}  selected {% endif %}>CSV Filesystem</option>
                     </select>
                 </div>
                 <div class="form-group">
