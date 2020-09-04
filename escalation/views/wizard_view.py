@@ -98,11 +98,19 @@ def modify_layout():
     modification = request.form[MODIFICATION]
     if modification == ADD_PAGE:
         webpage_label = request.form[WEBPAGE_LABEL]
+        page_urls = [page_dict[URL_ENDPOINT] for page_dict in available_pages]
+        candidate_url = sanitize_string(
+            webpage_label
+        )  # sanitizing the string so it is valid url
+        if candidate_url in page_urls:
+            i = 0
+            while f"{candidate_url}_{i}" in page_urls:
+                i += 1
+            candidate_url = f"{candidate_url}_{i}"
+
         page_dict = {
             WEBPAGE_LABEL: webpage_label,
-            URL_ENDPOINT: sanitize_string(
-                webpage_label
-            ),  # sanitizing the string so it is valid url
+            URL_ENDPOINT: candidate_url,
             GRAPHIC_CONFIG_FILES: [],
         }
         available_pages.append(page_dict)
