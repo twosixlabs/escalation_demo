@@ -189,7 +189,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Visualization List",
                 "description": "Transformations made to the graph",
                 "additionalProperties": False,
-                OPTIONS: {COLLAPSED: True},
+                OPTIONS: {COLLAPSED: True, REMOVE_EMPTY_PROPERTIES: True},
                 PROPERTIES: {
                     HOVER_DATA: {
                         "type": "object",
@@ -215,7 +215,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "title": "Group By",
                         "description": "Grouping of the data see https://plotly.com/javascript/group-by/",
                         "required": [COLUMN_NAME],
-                        OPTIONS: {COLLAPSED: True},
+                        OPTIONS: {COLLAPSED: True, REMOVE_EMPTY_PROPERTIES: True},
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
@@ -239,7 +239,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "type": "object",
                         "title": "Aggregate",
                         "description": "See https://plotly.com/javascript/aggregations/ for examples",
-                        "required": [COLUMN_NAME],
+                        "required": [COLUMN_NAME, AGGREGATIONS],
                         OPTIONS: {COLLAPSED: True},
                         "properties": {
                             COLUMN_NAME: {
@@ -285,7 +285,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Selector List",
                 "description": "Data selectors that the user can interact with for a graphic",
                 ADDITIONAL_PROPERTIES: False,
-                OPTIONS: {COLLAPSED: True,},
+                OPTIONS: {COLLAPSED: True, REMOVE_EMPTY_PROPERTIES: True},
                 PROPERTIES: {
                     FILTER: {
                         "type": "array",

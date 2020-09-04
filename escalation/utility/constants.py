@@ -149,6 +149,7 @@ HIDDEN = "hidden"
 DISABLE_COLLAPSE = "disable_collapse"
 COLLAPSED = "collapsed"
 DISABLE_PROPERTIES = "disable_properties"
+REMOVE_EMPTY_PROPERTIES = "remove_empty_properties"
 
 # plotly constants
 
