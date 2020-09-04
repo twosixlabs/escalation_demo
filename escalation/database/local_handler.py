@@ -306,6 +306,8 @@ class LocalCSVDataInventory(LocalCSVHandler):
             for f in files_by_source[self.data_source_name]
             if f.get(ACTIVE)
         ]
+        if not list_of_files:
+            return []
         latest_filepath = max(list_of_files, key=os.path.getctime)
         data_types = pd.read_csv(latest_filepath, nrows=1).dtypes
         column_schema = namedtuple("column_schema", ["name", "data_type"])
