@@ -1,7 +1,7 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
 
-from flask import current_app, render_template, Blueprint, request, jsonify, flash
+from flask import current_app, render_template, Blueprint, request, jsonify
 import pandas as pd
 
 from utility.constants import (
@@ -10,19 +10,11 @@ from utility.constants import (
     DATA_SOURCE_TYPE,
     MAIN_DATA_SOURCE,
 )
+from utility.exceptions import ValidationError
 
 UPLOAD_HTML = "data_upload.html"
 
 upload_blueprint = Blueprint("upload", __name__)
-
-
-class ValidationError(Exception):
-    """
-    Exception class for when an Escalation validation step fails.
-    This is a catchall for many Python exceptions that correspond to bad file contents
-    """
-
-    pass
 
 
 def validate_data_form(request_form, request_files):
@@ -102,7 +94,9 @@ def submission():
         )
         data_source_schema = data_inventory.get_schema_for_data_source()
         df = validate_submission_content(csvfile, data_source_schema)
-        data_inventory.write_data_upload_to_backend(df, username, notes)
+        data_inventory.write_data_upload_to_backend(
+            df, username, notes, filename=csvfile.filename
+        )
         # write upload history table record at the same time
 
     except ValidationError as e:
