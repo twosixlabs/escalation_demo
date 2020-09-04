@@ -491,6 +491,15 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         )
         return ignored_columns
 
+    @classmethod
+    def remove_metadata_rows_for_table_name(cls, table_name):
+        data_upload_metadata = cls.get_sqlalchemy_model_class_for_data_upload_metadata()
+        metadata_rows = current_app.db_session.query(data_upload_metadata).filter(
+            data_upload_metadata.table_name == table_name
+        )
+        metadata_rows.delete()
+        current_app.db_session.commit()
+
 
 class CreateTablesFromCSVs(DataFrameConverter):
     """Infer a table schema from a CSV, and create a sql table from this definition"""
