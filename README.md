@@ -128,9 +128,7 @@ To use the app, navigate in your browser to: [http://localhost:8000](http://loca
 
 To shut down the app and stop the containers:
 
-    docker-compose down 
-    
-(the optional: `--volumes` flag) deletes the data stored in the database and gives you a clean slate while debugging.
+    docker-compose down  
     
 
 ## Interacting with the SQL database
@@ -147,9 +145,10 @@ To connect directly to the SQL database, this command
 You can re-build the sql database from a blank slate by deleting the "volume" associated with the database, 
 where the data is stored, and relaunching to create a new one.
 
-    docker-compose down --volumes
-    docker-compose up --build -d
-    
+1. Run the command `docker-compose down --volumes`
+2. Delete the file `escalation/app_deploy_data/models.py`
+3. Re-start the app
+
 
 You can also manually delete tables in the sql database by connecting to the database directly and using sql commands.
 
