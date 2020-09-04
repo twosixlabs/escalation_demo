@@ -311,6 +311,9 @@ def sql_backend_file_upload(upload_form, csvfile):
         upload_time,
         table_name,
     ) = csv_sql_writer.create_and_fill_new_sql_table_from_df(table_name, data, REPLACE)
+
+    # remove any existing metadata for this table name and write a new row
+    SqlDataInventory.remove_metadata_rows_for_table_name(table_name)
     SqlDataInventory.write_upload_metadata_row(
         upload_id=upload_id,
         upload_time=upload_time,
