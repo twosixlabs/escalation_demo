@@ -196,10 +196,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "title": "Hover Data",
                         "description": "data shown on hover over by mouse",
                         "required": [COLUMN_NAME],
+                        OPTIONS: {COLLAPSED: True},
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
+                                OPTIONS: {DISABLE_COLLAPSE: True},
                                 "items": {
                                     "type": "string",
                                     TITLE: "Column Name",
@@ -213,10 +215,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "title": "Group By",
                         "description": "Grouping of the data see https://plotly.com/javascript/group-by/",
                         "required": [COLUMN_NAME],
+                        OPTIONS: {COLLAPSED: True},
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
+                                OPTIONS: {DISABLE_COLLAPSE: True},
                                 "items": {
                                     "type": "string",
                                     TITLE: "Column Name",
@@ -227,6 +231,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 TYPE: "object",
                                 TITLE: "Styles",
                                 DESCRIPTION: "Optional, see https://plotly.com/javascript/group-by/ for examples",
+                                OPTIONS: {COLLAPSED: True},
                             },
                         },
                     },
@@ -235,10 +240,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "title": "Aggregate",
                         "description": "See https://plotly.com/javascript/aggregations/ for examples",
                         "required": [COLUMN_NAME],
+                        OPTIONS: {COLLAPSED: True},
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
                                 TITLE: "List of Column Names",
+                                OPTIONS: {DISABLE_COLLAPSE: True},
                                 "items": {
                                     "type": "string",
                                     TITLE: "Column Name",
@@ -249,6 +256,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 "type": "object",
                                 TITLE: "Aggregations",
                                 "description": "axis to function on the data e.g. x:avg",
+                                OPTIONS: {DISABLE_COLLAPSE: True},
                                 "patternProperties": {
                                     ONE_LETTER: {
                                         "type": "string",
@@ -283,11 +291,13 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "type": "array",
                         "title": "List of Filters",
                         DESCRIPTION: "a filter operation based on label",
+                        OPTIONS: {COLLAPSED: True},
                         "items": {
                             "type": "object",
                             TITLE: "Filter",
                             "required": [COLUMN_NAME],
                             "additionalProperties": False,
+                            OPTIONS: {DISABLE_COLLAPSE: True},
                             PROPERTIES: {
                                 COLUMN_NAME: {
                                     "type": "string",
@@ -303,7 +313,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 DEFAULT_SELECTED: {
                                     "type": "array",
                                     TITLE: "Default Selected",
-                                    "description": "Default value(s) selected in this filter, a list of values to include",
+                                    "description": "Optional, Default value(s) selected in this filter, a list of values to include",
                                     "items": {"type": "string"},
                                 },
                                 UNFILTERED_SELECTOR: {
@@ -318,10 +328,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "type": "array",
                         "title": "List of Numerical Filters",
                         DESCRIPTION: "a filter operation on numerical data",
+                        OPTIONS: {COLLAPSED: True},
                         "items": {
                             TITLE: "Numerical Filters",
                             "type": "object",
                             "required": [COLUMN_NAME],
+                            OPTIONS: {DISABLE_COLLAPSE: True},
                             "additionalProperties": False,
                             PROPERTIES: {
                                 COLUMN_NAME: {
@@ -337,9 +349,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "type": "array",
                         "title": "List of Axis Selectors",
                         DESCRIPTION: "change what column data is shown on a axis",
+                        OPTIONS: {COLLAPSED: True},
                         "items": {
                             "type": "object",
                             TITLE: "Axis Selector",
+                            OPTIONS: {DISABLE_COLLAPSE: True},
                             "required": [COLUMN_NAME, ENTRIES],
                             "additionalProperties": False,
                             PROPERTIES: {
@@ -360,10 +374,12 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         "type": "object",
                         "title": "Group By Selector",
                         "required": [ENTRIES],
+                        OPTIONS: {COLLAPSED: True},
                         "additionalProperties": False,
                         PROPERTIES: {
                             ENTRIES: {
                                 "type": "array",
+                                OPTIONS: {DISABLE_COLLAPSE: True},
                                 TITLE: "Entries",
                                 "items": {"type": "string", "enum": column_names},
                             },
@@ -371,7 +387,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             DEFAULT_SELECTED: {
                                 "type": "array",
                                 TITLE: "Default Selected",
-                                "description": "default filter, list of column values",
+                                "description": "optional, default filter, list of column values",
                                 "items": {"type": "string"},
                             },
                         },
