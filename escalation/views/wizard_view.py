@@ -342,7 +342,9 @@ def csv_backend_file_upload(upload_form, csvfile):
         data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: table_name}}
     )
     data_inventory.delete_data_source()
-    data_inventory.write_data_upload_to_backend(df, username=username, notes=notes)
+    data_inventory.write_data_upload_to_backend(
+        uploaded_data_df=df, filename=csvfile.filename, username=username, notes=notes
+    )
 
 
 @wizard_blueprint.route("/wizard/upload", methods=("POST",))

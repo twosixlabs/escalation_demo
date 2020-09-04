@@ -2,7 +2,7 @@
 <!--# Licensed under the Apache License, Version 2.0-->
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="{{ url_for('dashboard.main_page') }}">EscOS</a>
+  <a class="navbar-brand" href="{{ url_for('dashboard.main_page') }}">{{ config.app_config_json.title }}</a>
 
     <ul class="navbar-nav mr-auto">
       <li class="nav-item {% if request.path=="/admin" %} active {% endif %}">

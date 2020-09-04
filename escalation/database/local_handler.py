@@ -36,6 +36,7 @@ from utility.constants import (
     NOTES,
     DATETIME_FORMAT,
 )
+from utility.exceptions import ValidationError
 
 
 class LocalCSVHandler(DataHandler):
@@ -323,26 +324,39 @@ class LocalCSVDataInventory(LocalCSVHandler):
         ]
         data_upload_metadata.to_csv(self.get_data_upload_metadata_path(), index=False)
 
-    def write_data_upload_to_backend(self, uploaded_data_df, username, notes):
+    def write_data_upload_to_backend(
+        self, uploaded_data_df, username, notes, filename=None
+    ):
         """
+        :param file_name: str
         :param uploaded_data_df: pandas dataframe on which we have already done validation
         :param username: str
         :param notes: str
         :return: Empty list representing columns not in the new file that are in the old. Included for function signature matching
         """
-        # todo: add filename arg back in, and check if filename exists and raise exception if it does- don't overwrite existing files
         upload_time = datetime.utcnow()
-        file_name = upload_time.strftime(DATETIME_FORMAT) + ".csv"
+        filename = (
+            upload_time.strftime(DATETIME_FORMAT)
+            if (filename is None)
+            else sanitize_filename(secure_filename(filename))
+        )
+        filename = (
+            filename if filename.endswith(".csv") else "".join([filename, ".csv"])
+        )
 
         if not os.path.exists(self.data_file_directory):
             os.makedirs(self.data_file_directory)
-        file_path = os.path.join(self.data_file_directory, file_name)
+        file_path = os.path.join(self.data_file_directory, filename)
+        if os.path.exists(file_path):
+            raise ValidationError(
+                f"Filename {filename} already exists for data source type {self.data_source_name}"
+            )
         uploaded_data_df.to_csv(file_path, index=False)
 
         # update the data upload metadata
         data_upload_metadata = self.get_data_upload_metadata_df()
         new_row = {
-            UPLOAD_ID: file_name,
+            UPLOAD_ID: filename,
             TABLE_NAME: self.data_source_name,
             USERNAME: username,
             NOTES: notes,
