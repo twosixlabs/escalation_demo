@@ -42,10 +42,7 @@ from utility.constants import (
     LOCAL_CSV,
     DATA_SOURCE,
 )
-from utility.schemas_for_ui import (
-    build_main_schemas_for_ui,
-    build_graphic_schemas_for_ui,
-)
+from utility.schemas_for_ui import build_graphic_schemas_for_ui
 from utility.wizard_utils import (
     load_graphic_config_dict,
     save_main_config_dict,
@@ -61,10 +58,9 @@ from utility.wizard_utils import (
     copy_data_from_form_to_config,
 )
 
-GRAPHIC_CONFIG_EDITOR_HTML = "graphic_config_editor.html"
-MAIN_CONFIG_EDITOR_HTML = "main_config_editor.html"
-CONFIG_FILES_HTML = "config_files.html"
-CSV_TO_DATABASE_UPLOAD_HTML = "data_upload_wizard_mode.html"
+GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
+CONFIG_FILES_HTML = "wizard_configurer.html"
+CSV_TO_DATABASE_UPLOAD_HTML = "wizard_data_upload.html"
 wizard_blueprint = Blueprint("wizard", __name__)
 
 
@@ -132,20 +128,6 @@ def modify_layout():
     config_dict[AVAILABLE_PAGES] = available_pages
     save_main_config_dict(config_dict)
     return file_tree()
-
-
-@wizard_blueprint.route("/wizard/main", methods=("GET",))
-def main_config_setup():
-    config_dict = load_main_config_dict_if_exists(current_app)
-    schema_lookup = build_main_schemas_for_ui()
-    main_schema = schema_lookup.get(config_dict.get(DATA_BACKEND, POSTGRES))
-    return render_template(
-        MAIN_CONFIG_EDITOR_HTML,
-        schema=json.dumps(schema_lookup),
-        current_config=json.dumps(config_dict),
-        # load in the right schema based on the config dict, default to database
-        current_schema=main_schema,
-    )
 
 
 @wizard_blueprint.route("/wizard/graphic", methods=("POST",))
