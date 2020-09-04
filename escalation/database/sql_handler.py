@@ -456,10 +456,13 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         """
         return [c for c in self.table_lookup_by_name[self.data_source_name].columns]
 
-    def write_data_upload_to_backend(self, uploaded_data_df, username, notes):
+    def write_data_upload_to_backend(
+        self, uploaded_data_df, username, notes, filename=None
+    ):
         """
         :param uploaded_data_df: pandas dataframe on which we have already done validation
-        :param data_source_name:
+        :param data_source_name: str
+        :param filename: str. Unused, just matching csvhandler. Todo: consider using this as identifier instead of integer?
         Assumption: data_source for this upload is only one table, even though they can generally refer to more than one table
 
         :return: list of df columns not written to the db (no corresponding db column)
