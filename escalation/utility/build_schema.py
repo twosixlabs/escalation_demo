@@ -101,56 +101,50 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             PLOT_SPECIFIC_INFO,
         ],
         "additionalProperties": False,
-        OPTIONS: {
-            DISABLE_COLLAPSE: True,
-            DISABLE_PROPERTIES: True
-        },
+        OPTIONS: {DISABLE_COLLAPSE: True, DISABLE_PROPERTIES: True},
         PROPERTIES: {
             PLOT_MANAGER: {
                 "type": "string",
+                TITLE: "Plot Backend",
                 "description": "plot library you would like to use"
                 " (only plotly is currently available)",
                 "enum": ["plotly"],
             },
             GRAPHIC_TITLE: {
                 "type": "string",
-                "description": "Graph title",
+                TITLE: "Graph Title",
                 PATTERN: NON_EMPTY_STRING,
             },
             GRAPHIC_DESC: {
                 "type": "string",
+                TITLE: "Graph Description",
                 "description": "Text caption shown above the graph (optional)",
             },
             DATA_SOURCES: {
                 "type": "object",
+                TITLE: "Data Sources",
                 "description": "Define which data tables are used in this graphic,"
                 " and on which columns the data tables are joined",
                 "required": [MAIN_DATA_SOURCE],
-                OPTIONS: {
-                    DISABLE_COLLAPSE: True,
-                    DISABLE_PROPERTIES: True
-                },
+                OPTIONS: {DISABLE_COLLAPSE: True, DISABLE_PROPERTIES: True},
                 PROPERTIES: {
                     MAIN_DATA_SOURCE: {
+                        TITLE: "Main Data Source",
                         "type": "object",
                         "additionalProperties": False,
                         REQUIRED: [DATA_SOURCE_TYPE],
                         PROPERTIES: {
                             DATA_SOURCE_TYPE: {
                                 "type": "string",
+                                TITLE: "Data Source Type",
                                 "enum": data_source_names,
                             },
                         },
-                        OPTIONS: {
-                            DISABLE_COLLAPSE: True,
-                            DISABLE_PROPERTIES: True
-                        },
+                        OPTIONS: {DISABLE_COLLAPSE: True, DISABLE_PROPERTIES: True},
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
-                        OPTIONS: {
-                            COLLAPSED: True,
-                        },
+                        OPTIONS: {COLLAPSED: True,},
                         ITEMS: {
                             "type": "object",
                             TITLE: "Additional Data Source",
@@ -159,6 +153,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             PROPERTIES: {
                                 DATA_SOURCE_TYPE: {
                                     "type": "string",
+                                    TITLE: "Data Source Type",
                                     "enum": data_source_names,
                                 },
                                 JOIN_KEYS: {
@@ -194,13 +189,11 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Visualization List",
                 "description": "Transformations made to the graph",
                 "additionalProperties": False,
-                OPTIONS: {
-                    COLLAPSED: False #todo to be true in a future commit
-                },
+                OPTIONS: {COLLAPSED: True},
                 PROPERTIES: {
                     HOVER_DATA: {
                         "type": "object",
-                        "title": "Hover data",
+                        "title": "Hover Data",
                         "description": "data shown on hover over by mouse",
                         "required": [COLUMN_NAME],
                         "properties": {
@@ -217,7 +210,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                     },
                     GROUPBY: {
                         "type": "object",
-                        "title": "Group by",
+                        "title": "Group By",
                         "description": "Grouping of the data see https://plotly.com/javascript/group-by/",
                         "required": [COLUMN_NAME],
                         "properties": {
@@ -230,13 +223,17 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                     "enum": column_names,
                                 },
                             },
-                            STYLES: {TYPE: "object"},
+                            STYLES: {
+                                TYPE: "object",
+                                TITLE: "Styles",
+                                DESCRIPTION: "Optional, see https://plotly.com/javascript/group-by/ for examples",
+                            },
                         },
                     },
                     AGGREGATE: {
                         "type": "object",
                         "title": "Aggregate",
-                        "description": "see https://plotly.com/javascript/aggregations/",
+                        "description": "See https://plotly.com/javascript/aggregations/ for examples",
                         "required": [COLUMN_NAME],
                         "properties": {
                             COLUMN_NAME: {
@@ -250,6 +247,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                             },
                             AGGREGATIONS: {
                                 "type": "object",
+                                TITLE: "Aggregations",
                                 "description": "axis to function on the data e.g. x:avg",
                                 "patternProperties": {
                                     ONE_LETTER: {
@@ -279,9 +277,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                 "title": "Selector List",
                 "description": "Data selectors that the user can interact with for a graphic",
                 ADDITIONAL_PROPERTIES: False,
-                OPTIONS: {
-                    COLLAPSED: False, #todo to be true in a future commit
-                },
+                OPTIONS: {COLLAPSED: True,},
                 PROPERTIES: {
                     FILTER: {
                         "type": "array",
@@ -306,6 +302,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 },
                                 DEFAULT_SELECTED: {
                                     "type": "array",
+                                    TITLE: "Default Selected",
                                     "description": "Default value(s) selected in this filter, a list of values to include",
                                     "items": {"type": "string"},
                                 },
@@ -353,6 +350,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                                 },
                                 ENTRIES: {
                                     "type": "array",
+                                    TITLE: "Entries",
                                     "items": {"type": "string", "enum": column_names,},
                                 },
                             },
@@ -366,11 +364,13 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         PROPERTIES: {
                             ENTRIES: {
                                 "type": "array",
+                                TITLE: "Entries",
                                 "items": {"type": "string", "enum": column_names},
                             },
                             "multiple": {"type": "boolean"},
                             DEFAULT_SELECTED: {
                                 "type": "array",
+                                TITLE: "Default Selected",
                                 "description": "default filter, list of column values",
                                 "items": {"type": "string"},
                             },

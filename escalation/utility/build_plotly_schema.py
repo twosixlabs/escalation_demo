@@ -61,10 +61,7 @@ SELECTOR_DICT = {
             },
         }
     },
-    OPTIONS:{
-        DISABLE_COLLAPSE: True,
-        DISABLE_PROPERTIES: True
-    }
+    OPTIONS: {DISABLE_COLLAPSE: True, DISABLE_PROPERTIES: True},
 }
 
 
@@ -73,21 +70,22 @@ def build_plotly_schema(column_names):
         column_names.sort()
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
-        "title": "plotly graph definition",
+        "title": "Plotly Graph Config",
         "description": "dictionary that follows https://plotly.com/javascript/reference/",
         "type": "object",
         "required": [DATA],
-        OPTIONS: {
-            DISABLE_COLLAPSE: True
-        },
+        OPTIONS: {DISABLE_COLLAPSE: True},
         "properties": {
             DATA: {
                 "type": "array",
                 "description": "list of graphs to be plotted on a single plot",
+                TITLE: "Data",
                 MIN_ITEMS: 1,
+                OPTIONS: {DISABLE_COLLAPSE: True},
                 "items": {
                     "type": "object",
                     "title": "Data Dictionary",
+                    OPTIONS: {DISABLE_COLLAPSE: True},
                     "required": ["type"],
                     "properties": {
                         "type": {
@@ -149,7 +147,7 @@ def build_plotly_schema(column_names):
                 },
             },
             LAYOUT: {
-                "title": "Graph layout",
+                "title": "Graph Layout",
                 "description": "Determines how the graph looks",
                 "type": "object",
                 "properties": {
