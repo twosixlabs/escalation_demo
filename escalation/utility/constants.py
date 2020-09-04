@@ -130,7 +130,7 @@ COPY = "copy"
 OLD = "old"
 NEW = "new"
 
-# schema constants
+# schema constants, these come from json schema
 ADDITIONAL_PROPERTIES = "additionalProperties"
 PROPERTIES = "properties"
 PATTERN_PROPERTIES = "patternProperties"
@@ -145,6 +145,8 @@ OPTIONS = "options"
 DEPENDENCIES = "dependencies"
 ENUM = "enum"
 ONEOF = "oneOf"
+
+# schema constants, these come from https://github.com/json-editor/json-editor
 HIDDEN = "hidden"
 DISABLE_COLLAPSE = "disable_collapse"
 COLLAPSED = "collapsed"
