@@ -1,5 +1,4 @@
 # Next release todo Features
-- Fix dropdown for plot type in config wizard- need to select to view detailed options. Make gl/normal plot type "render mode", hide when NA
 - Ability to rename pages
 - Selecting other filters, when show all rows is selected by default, means you have to unselect show all rows or it overrides your selections
 
