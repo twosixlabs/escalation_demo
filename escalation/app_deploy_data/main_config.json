@@ -1,5 +1,5 @@
 {
     "title": "",
     "brief_desc": "",
-    "data_backend": ""
+    "data_backend": "psql"
 }
