@@ -65,6 +65,18 @@ def graphic_dict_to_graphic_component_dict(graphic_dict):
     for ui_name, schema_name in UI_SCHEMA_PAIRS.items():
         component_dict[ui_name] = graphic_dict_copy.pop(schema_name, {})
     component_dict[GRAPHIC_META_INFO] = graphic_dict_copy
+
+    visualization_components = {HOVER_DATA: {}, GROUPBY: {}, AGGREGATE: {}}
+    selector_components = {FILTER: [], NUMERICAL_FILTER: [], AXIS: [], GROUPBY: []}
+    for component, empty_element in visualization_components.items():
+        component_dict[VISUALIZATION][component] = component_dict[VISUALIZATION].get(
+            component, empty_element
+        )
+    for component, empty_element in selector_components.items():
+        component_dict[SELECTOR][component] = component_dict[SELECTOR].get(
+            component, empty_element
+        )
+
     return component_dict
 
 
