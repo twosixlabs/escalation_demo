@@ -75,6 +75,11 @@ Refresh your browser to update the contents to match your saved configuration.
      
 Some notes on [creating your first config files with the UI wizard](config_information/wizard_guide/creating_first_graphic_with_wizard.md).  
 
+This includes a gallery of various chart types and how they're configured.
+
+![config_gallery_thumbnail](config_information/gallery/images/gallery_thumbnail.png)
+
+
 #### Build a config from scratch (advanced, optional)
 Run `python build_app_config_json_template.py` to build a base config file. 
 Everything blank or in `<>` should be changed.

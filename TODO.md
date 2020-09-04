@@ -1,8 +1,20 @@
+# To Triage
+
+- Bug: localhandler test_file+ as data_source name uploads ok, but then doesn’t show any matching files in the admin page. We probably are messing up in the glob match. We should filter those at the form level before we accept the data source name.
+- models.py not refreshed when docker down run on volumes to handle any reset
+- Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
+- Add documentation for programmatic file upload via POST 
+- When we edit the config for an existing json that does have selector and visualization options filled out, don't minimize those filled fields by default
+- For pages with multiple graphs, updating one graph resets the the other graph(s). Yeast: Can't set multiple graphs to different ER's than the default ER.
+- Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
+- Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)
+
 # Next release todo Features
+
 - Ability to rename pages
 - Selecting other filters, when show all rows is selected by default, means you have to unselect show all rows or it overrides your selections
 
-# Nice to have Features
+# ToDo Work by category
 
 ## graphics functionality
 - Allow user to add their own hand-coded Plotly plots- where do they do the config, how is it included in the HTML?
@@ -20,7 +32,8 @@
 
 ## Wizard
 - Allow Tables in the wizard
-- add pages in any order
+- Ability to rearrange panels
+- Ability to rearrange graphs in panel
 - search for feature (opacity, hover text) and where in the config it goes
 - in-line documentation to configuration wizard-Add a second column to the config wizard that explains the properties that can be edited in a specific dropdown? Lots of hover text?
 - reloading the editor after a post generates the same post effects again- duplicating the new additions
@@ -34,7 +47,7 @@
 - add link to external Docker deployment instructions (Heroku? AWS free tier? Google Cloud Run?)
 
 
-# USER STORIES
+# User stories to support
 
-Real time data from fermenter (temp, pH) with updates on dashboard, including
+Real time data from fermenter (temp, pH) with updates on dashboard
 Data-enabled publication. Upload static set of data and interactive viz to accompany a paper
