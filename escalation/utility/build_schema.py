@@ -92,7 +92,7 @@ def build_graphic_schema(data_source_names=None, column_names=None):
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "type": "object",
         "title": "Escalation Graphic Config Generator",
-        "description": "Have a unique one of these for each graphic on the page",
+        "description": "This form configures a single graphic",
         "required": [
             PLOT_MANAGER,
             GRAPHIC_TITLE,
@@ -186,8 +186,8 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             },
             VISUALIZATION_OPTIONS: {
                 "type": "object",
-                "title": "Visualization List",
-                "description": "Transformations made to the graph",
+                "title": "Visualization Options",
+                "description": "Graph options: hover tooltips, aggregation functions, group by",
                 "additionalProperties": False,
                 OPTIONS: {COLLAPSED: True},
                 PROPERTIES: {
@@ -282,8 +282,8 @@ def build_graphic_schema(data_source_names=None, column_names=None):
             },
             SELECTABLE_DATA_DICT: {
                 "type": "object",
-                "title": "Selector List",
-                "description": "Data selectors that the user can interact with for a graphic",
+                "title": "Data Selector Options",
+                "description": "Interactive data selectors: filter data by values, change axes, change columns to group by",
                 ADDITIONAL_PROPERTIES: False,
                 OPTIONS: {COLLAPSED: True,},
                 PROPERTIES: {
