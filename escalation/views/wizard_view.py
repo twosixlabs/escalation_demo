@@ -56,6 +56,7 @@ from utility.wizard_utils import (
     get_data_source_info,
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
+    make_page_dict_for_main_config,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
@@ -87,31 +88,29 @@ def modify_layout():
     MODIFICATION = "modification"
     ADD_PAGE = "add_page"
     DELETE_PAGE = "delete_page"
+    RENAME_PAGE = "rename_page"
     DELETE_GRAPHIC = "delete_graphic"
+
     config_dict = load_main_config_dict_if_exists(current_app)
     copy_data_from_form_to_config(config_dict, request.form)
     available_pages = config_dict.get(AVAILABLE_PAGES, [])
     modification = request.form[MODIFICATION]
+    webpage_label = request.form[WEBPAGE_LABEL]
+    page_id = int(request.form[PAGE_ID])
     if modification == ADD_PAGE:
-        webpage_label = request.form[WEBPAGE_LABEL]
         page_urls = [page_dict[URL_ENDPOINT] for page_dict in available_pages]
-        candidate_url = sanitize_string(
-            webpage_label
-        )  # sanitizing the string so it is valid url
-        if candidate_url in page_urls:
-            i = 0
-            while f"{candidate_url}_{i}" in page_urls:
-                i += 1
-            candidate_url = f"{candidate_url}_{i}"
-
-        page_dict = {
-            WEBPAGE_LABEL: webpage_label,
-            URL_ENDPOINT: candidate_url,
-            GRAPHIC_CONFIG_FILES: [],
-        }
+        page_dict = make_page_dict_for_main_config(webpage_label, page_urls)
         available_pages.append(page_dict)
+    elif modification == RENAME_PAGE:
+        page_urls = [page_dict[URL_ENDPOINT] for page_dict in available_pages]
+        page_urls.pop(page_id)
+        page_dict = make_page_dict_for_main_config(webpage_label, page_urls)
+        page_dict[GRAPHIC_CONFIG_FILES] = available_pages[page_id].get(
+            GRAPHIC_CONFIG_FILES, []
+        )
+        available_pages[page_id] = page_dict
     elif modification == DELETE_PAGE:
-        del available_pages[int(request.form[PAGE_ID])]
+        del available_pages[page_id]
         # todo: iterate and delete actual json configs? But add confirmation?
     elif modification == DELETE_GRAPHIC:
         graphic_filename = request.form[GRAPHIC]
@@ -121,7 +120,7 @@ def modify_layout():
         # remove and write new file to trigger file watcher and refresh flask app
         if os.path.exists(graphic_filepath):
             os.remove(graphic_filepath)
-        available_pages[int(request.form[PAGE_ID])][GRAPHIC_CONFIG_FILES].remove(
+        available_pages[page_id][GRAPHIC_CONFIG_FILES].remove(
             graphic_filename
         )
 
