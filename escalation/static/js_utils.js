@@ -15,6 +15,26 @@ function reset_form(id_on_web_page) {
 
 }
 
+function show_all_row_handler(selector_id) {
+    let selector = $("#".concat(selector_id));
+    const selected_elements = selector.val();
+    if (selected_elements.length==0){
+        selector.val("Show All Rows");
+        selector.attr('data-show_all_rows',true)
+    }
+    else if (selector.attr('data-show_all_rows')=="true"){
+        selected_elements.shift();
+        selector.val(selected_elements);
+        selector.attr('data-show_all_rows',false)
+    }
+    else if (selected_elements.includes("Show All Rows")){
+        selector.selectpicker('deselectAll');
+        selector.val("Show All Rows");
+        selector.attr('data-show_all_rows',true)
+    }
+    selector.selectpicker('refresh');
+}
+
 
 function edit_graphic(page_id,graphic,graphic_status) {
     //This allows the web page to focus where the plot was updated instead of starting at the top of the web page
