@@ -23,11 +23,14 @@ function show_all_row_handler(selector_id) {
         selector.attr('data-show_all_rows',true)
     }
     else if (selector.attr('data-show_all_rows')=="true"){
+        // If something is selected along with show all rows
+        // Pop the show all rows item out using shift, then set elements to remaining
         selected_elements.shift();
         selector.val(selected_elements);
         selector.attr('data-show_all_rows',false)
     }
     else if (selected_elements.includes("Show All Rows")){
+        // If the user has selected show all rows, deselect everything else
         selector.selectpicker('deselectAll');
         selector.val("Show All Rows");
         selector.attr('data-show_all_rows',true)
