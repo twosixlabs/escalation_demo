@@ -84,7 +84,7 @@
                 {% for graphic in page["graphic_config_files"] %}
                     <div class="row">
                     <div class="btn-group  mb-1 mt-1 ml-5">
-                        <button class="btn btn-outline-secondary pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}   <i class="far fa-edit"></i></button>
+                        <button class="btn btn-outline-secondary pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}   <i class="far fa-file"></i></button>
                         <button class="btn btn-outline-secondary" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','copy')><i class="far fa-copy"></i></button>
                         <button class="btn btn-outline-secondary" type="button" onclick=modify_config('delete_graphic',{{ page_id }},'{{ graphic['graphic_path'] }}')><i class="far fa-trash-alt"></i></button>
                     </div>
