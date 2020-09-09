@@ -8,11 +8,13 @@
 - For pages with multiple graphs, updating one graph resets the the other graph(s). Yeast: Can't set multiple graphs to different ER's than the default ER.
 - Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
 - Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)
+- Error bars for scatter plot
+- Bug- new graph- multiple submissions and json for graph config when I apply then submit
+- Nice to have: get unique values in default_selected dropdown after column is populated on wizard
+- Nice to have: numerical filters can have defaults via wizard
+- Default settings for appearance- opacity < 1?
 
 # Next release todo Features
-
-- Ability to rename pages
-- Selecting other filters, when show all rows is selected by default, means you have to unselect show all rows or it overrides your selections
 
 # ToDo Work by category
 
