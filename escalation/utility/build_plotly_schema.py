@@ -2,12 +2,9 @@
 # Licensed under the Apache License, Version 2.0
 import copy
 
-from graphics.plotly_plot import LAYOUT
+from graphics.plotly_plot import LAYOUT, X, Y, Z, ERROR_X, ERROR_Y, ERROR_Z, ARRAY
 from utility.constants import *
 
-X = "x"
-Y = "y"
-Z = "z"
 MODE = "mode"
 
 BAR = "bar"
@@ -122,10 +119,29 @@ def build_plotly_schema(column_names):
                             TITLE: "Data on Y Axis",
                             "enum": column_names,
                         },
-                        Z: {
-                            "type": "string",
-                            TITLE: "Data on Z Axis",
-                            "enum": column_names,
+                        ERROR_X: {
+                            "type": "object",
+                            "properties": {
+                                ARRAY: {"type": "string", "enum": column_names},
+                                TITLE: "Data column to use for error bars",
+                            },
+                            TITLE: "Symmetric error bars in the Y axis",
+                        },
+                        ERROR_Y: {
+                            "type": "object",
+                            "properties": {
+                                ARRAY: {"type": "string", "enum": column_names},
+                                TITLE: "Data column to use for error bars",
+                            },
+                            TITLE: "Symmetric error bars in the Y axis",
+                        },
+                        ERROR_Z: {
+                            "type": "object",
+                            "properties": {
+                                ARRAY: {"type": "string", "enum": column_names},
+                                TITLE: "Data column to use for error bars",
+                            },
+                            TITLE: "Symmetric error bars in the Z axis",
                         },
                         "mode": {
                             "type": "string",

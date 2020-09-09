@@ -16,7 +16,6 @@ from utility.constants import (
 )
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
-
 DATA = "data"
 LAYOUT = "layout"
 PLOT_AXIS = "{}axis"
@@ -42,8 +41,14 @@ AXIS_TO_SORT_ALONG = "x"
 AUTOMARGIN = "automargin"
 HOVERMODE = "hovermode"
 CLOSEST = "closest"
-POSSIBLE_AXIS = ["x", "y", "z"]
-POSSIBLE_ERROR_AXES = ["error_x", "error_y", "error_z"]
+X = "x"
+Y = "y"
+Z = "z"
+ERROR_X = "error_x"
+ERROR_Y = "error_y"
+ERROR_Z = "error_z"
+POSSIBLE_AXIS = [X, Y, Z]
+POSSIBLE_ERROR_AXES = [ERROR_X, ERROR_Y, ERROR_Z]
 
 
 def get_hover_data_in_plotly_form(
