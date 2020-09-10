@@ -120,9 +120,7 @@ def modify_layout():
         # remove and write new file to trigger file watcher and refresh flask app
         if os.path.exists(graphic_filepath):
             os.remove(graphic_filepath)
-        available_pages[page_id][GRAPHIC_CONFIG_FILES].remove(
-            graphic_filename
-        )
+        available_pages[page_id][GRAPHIC_CONFIG_FILES].remove(graphic_filename)
 
     config_dict[AVAILABLE_PAGES] = available_pages
     save_main_config_dict(config_dict)

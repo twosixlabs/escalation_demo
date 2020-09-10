@@ -68,6 +68,12 @@ def graphic_dict_to_graphic_component_dict(graphic_dict):
 
     visualization_components = {HOVER_DATA: {}, GROUPBY: {}, AGGREGATE: {}}
     selector_components = {FILTER: [], NUMERICAL_FILTER: [], AXIS: [], GROUPBY: []}
+
+    # add in missing elements so the options show up in the json dditor
+    component_dict[GRAPHIC_META_INFO][DATA_SOURCES][
+        ADDITIONAL_DATA_SOURCES
+    ] = component_dict[GRAPHIC_META_INFO][DATA_SOURCES].get(ADDITIONAL_DATA_SOURCES, [])
+
     for component, empty_element in visualization_components.items():
         component_dict[VISUALIZATION][component] = component_dict[VISUALIZATION].get(
             component, empty_element
