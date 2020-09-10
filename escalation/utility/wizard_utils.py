@@ -191,7 +191,7 @@ def get_possible_column_names(data_source_names, data_inventory_class):
         possible_column_names.extend(
             [
                 TABLE_COLUMN_SEPARATOR.join(
-                    [data_source_name, column_name if csv_flag else column_name.name,]
+                    [data_source_name, column_name.name if csv_flag else column_name.name,]
                 )
                 for column_name in column_names
             ]

@@ -1,5 +1,5 @@
 # To Triage
-
+- Bug: crashes if the graphic config references data sources that do not exist. 
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
 
 # Next release todo Features
@@ -20,10 +20,6 @@
     - (won't do) Legend string shortening?
 
 ## Alexander
-
-- Bug: Additional data sources field not visible in wizard on edit existing config: https://gitlab.sd2e.org/sd2program/escos/issues/1
-- Bug- new graph- multiple submissions and json for graph config when I apply then submit
-- Bug: localhandler test_file+ as data_source name uploads ok, but then doesn’t show any matching files in the admin page. We probably are messing up in the glob match. We should filter those at the form level before we accept the data source name.
 - For pages with multiple graphs, updating one graph resets the the other graph(s). Yeast: Can't set multiple graphs to different ER's than the default ER.
 - When we edit the config for an existing json that does have selector and visualization options filled out, don't minimize those filled fields by default. Hover, groupby not visible
 - Wizard: get unique values in default_selected dropdown after column is populated on wizard

@@ -280,7 +280,7 @@ def validate_table_name():
 
 
 def sql_backend_file_upload(upload_form, csvfile):
-    table_name = upload_form.get(DATA_SOURCE)
+    table_name = sanitize_string(upload_form.get(DATA_SOURCE))
     username = upload_form.get(USERNAME)
     notes = upload_form.get(NOTES)
     csv_sql_writer = CreateTablesFromCSVs(current_app.config[SQLALCHEMY_DATABASE_URI])
@@ -316,7 +316,7 @@ def sql_backend_file_upload(upload_form, csvfile):
 
 
 def csv_backend_file_upload(upload_form, csvfile):
-    table_name = upload_form.get(DATA_SOURCE)
+    table_name = sanitize_string(upload_form.get(DATA_SOURCE))
     username = upload_form.get(USERNAME)
     notes = upload_form.get(NOTES)
     df = LocalCSVHandler.load_df_from_csv(csvfile)
