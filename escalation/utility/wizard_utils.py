@@ -238,3 +238,27 @@ def copy_data_from_form_to_config(main_config, form):
     """
     for key in [SITE_TITLE, SITE_DESC, DATA_BACKEND]:
         main_config[key] = form[key]
+
+
+def make_page_dict_for_main_config(webpage_label, page_urls):
+    """
+    Helper function for adding or renaming a page
+    :param webpage_label:
+    :param page_urls:
+    :return:
+    """
+    candidate_url = sanitize_string(
+        webpage_label
+    )  # sanitizing the string so it is valid url
+    if candidate_url in page_urls:
+        i = 0
+        while f"{candidate_url}_{i}" in page_urls:
+            i += 1
+        candidate_url = f"{candidate_url}_{i}"
+
+    page_dict = {
+        WEBPAGE_LABEL: webpage_label,
+        URL_ENDPOINT: candidate_url,
+        GRAPHIC_CONFIG_FILES: [],
+    }
+    return page_dict

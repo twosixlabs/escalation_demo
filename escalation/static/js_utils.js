@@ -51,13 +51,16 @@ function edit_graphic(page_id,graphic,graphic_status) {
 function modify_config(modification, page_id=-1,graphic=''){
     let graphic_form=$('#form_button_click');
     let add_page_form = $('#form_add_page');
-    if (modification!='add_page' || add_page_form[0].webpage_label.value) {
+    let name = document.getElementById("webpage_label_".concat(page_id)).value;
+
+    if ((modification!='add_page' && modification!='rename_page') || name) {
         add_page_form[0].page_id.value = page_id;
         add_page_form[0].graphic.value = graphic;
         add_page_form[0].modification.value = modification;
         add_page_form[0].title.value = graphic_form[0].title.value;
         add_page_form[0].brief_desc.value = graphic_form[0].brief_desc.value;
         add_page_form[0].data_backend.value = graphic_form[0].data_backend.value;
+        add_page_form[0].webpage_label.value = name;
         add_page_form.submit();
     }
 }
@@ -92,4 +95,16 @@ function get_main_data_sources(data_source_dict){
         }
     }
     return data_sources
+}
+
+function toggle_rename_page(page_id) {
+    let page_div = document.getElementById("page_".concat(page_id));
+    let rename_page_div = document.getElementById("rename_page_".concat(page_id));
+    if (page_div.style.display === "none") {
+        page_div.style.display = "block";
+        rename_page_div.style.display = "none";
+    } else {
+        page_div.style.display = "none";
+        rename_page_div.style.display = "block";
+    }
 }
