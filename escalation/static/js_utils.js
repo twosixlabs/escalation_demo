@@ -65,26 +65,6 @@ function modify_config(modification, page_id=-1,graphic=''){
     }
 }
 
-function send_json_in_post_request(url, data, webpage){
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.onreadystatechange = function () {
-        let success_text = document.querySelector('#feedback_message');
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            if (webpage) {window.location.href = webpage}
-            success_text.innerHTML = "Applied"
-        } else {
-            success_text.innerHTML = "Failed"
-        }
-        // Message disappears after 5 secs
-        setTimeout(function() {
-              success_text.innerHTML="";
-            }, 5000);
-        };
-    xhr.send(data);
-}
-
 function get_main_data_sources(data_source_dict){
     let data_sources = new Set();
     data_sources.add(data_source_dict['main_data_source']['data_source_type']);
