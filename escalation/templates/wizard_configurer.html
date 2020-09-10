@@ -75,18 +75,21 @@
                 <div class="row" id={{ "page_" ~ page_id }}>
 
                     <div class="btn-group  mb-1 mt-1">
-                    <button type="button" class="btn btn-secondary pr-5 pl-5" onclick=toggle_rename_page({{ page_id }})>
-                        {{ page["webpage_label"] }} <i class="fas fa-pencil-alt"></i>
-                    </button>
-                    <button class="btn btn-secondary pr-3 pl-3" type="button" onclick=modify_config('delete_page',{{ page_id }})><i class="far fa-trash-alt"></i></button>
+                        <button type="button" class="btn btn-secondary pr-5 pl-5">
+                            {{ page["webpage_label"] }}
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary pr-3 pl-3" onclick=toggle_rename_page({{ page_id }})>
+                        Rename
+                        </button>
+                        <button class="btn btn-outline-danger pr-3 pl-3" type="button" onclick=modify_config('delete_page',{{ page_id }})><i class="far fa-trash-alt"></i></button>
                     </div>
                 </div>
                 {% for graphic in page["graphic_config_files"] %}
                     <div class="row">
                     <div class="btn-group  mb-1 mt-1 ml-5">
-                        <button class="btn btn-outline-secondary pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }}   <i class="far fa-file"></i></button>
-                        <button class="btn btn-outline-secondary" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','copy')><i class="far fa-copy"></i></button>
-                        <button class="btn btn-outline-secondary" type="button" onclick=modify_config('delete_graphic',{{ page_id }},'{{ graphic['graphic_path'] }}')><i class="far fa-trash-alt"></i></button>
+                        <button class="btn btn-outline-secondary pr-3 pl-3" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','old')>{{ graphic['title'] }} <i class="far fa-edit"></i> </button>
+                        <button class="btn btn-outline-secondary" type="button" onclick=edit_graphic({{ page_id }},'{{ graphic['graphic_path'] }}','copy')>Make a Copy</button>
+                        <button class="btn btn-outline-danger" type="button" onclick=modify_config('delete_graphic',{{ page_id }},'{{ graphic['graphic_path'] }}')><i class="far fa-trash-alt"></i></button>
                     </div>
                     </div>
                 {% endfor %}
