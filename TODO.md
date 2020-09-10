@@ -13,6 +13,9 @@
 - Nice to have: get unique values in default_selected dropdown after column is populated on wizard
 - Nice to have: numerical filters can have defaults via wizard
 - Default settings for appearance- opacity < 1?
+- Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
+- Customize what goes into the legend from groupby args- some strings are long and repetitive
+- Bug: Additional data sources field not visible in wizard on edit existing config: https://gitlab.sd2e.org/sd2program/escos/issues/1
 
 # Next release todo Features
 
