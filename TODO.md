@@ -1,5 +1,6 @@
 # To Triage
 - Bug: crashes if the graphic config references data sources that do not exist. 
+- Bug: program crashes if models.py does not exist
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
 
 # Next release todo Features
