@@ -119,27 +119,41 @@ def build_plotly_schema(column_names):
                             TITLE: "Data on Y Axis",
                             "enum": column_names,
                         },
+                        Z: {
+                            TYPE: "string",
+                            TITLE: "Data on Y Axis",
+                            ENUM: column_names,
+                        },
                         ERROR_X: {
-                            "type": "object",
+                            TYPE: "object",
                             "properties": {
-                                ARRAY: {"type": "string", "enum": column_names},
-                                TITLE: "Data column to use for error bars",
+                                ARRAY: {
+                                    "type": "string",
+                                    TITLE: "Data column to use for error bars",
+                                    ENUM: column_names,
+                                },
                             },
                             TITLE: "Symmetric error bars in the Y axis",
                         },
                         ERROR_Y: {
-                            "type": "object",
+                            TYPE: "object",
                             "properties": {
-                                ARRAY: {"type": "string", "enum": column_names},
-                                TITLE: "Data column to use for error bars",
+                                ARRAY: {
+                                    "type": "string",
+                                    TITLE: "Data column to use for error bars",
+                                    ENUM: column_names,
+                                },
                             },
                             TITLE: "Symmetric error bars in the Y axis",
                         },
                         ERROR_Z: {
-                            "type": "object",
+                            TYPE: "object",
                             "properties": {
-                                ARRAY: {"type": "string", "enum": column_names},
-                                TITLE: "Data column to use for error bars",
+                                ARRAY: {
+                                    "type": "string",
+                                    TITLE: "Data column to use for error bars",
+                                    ENUM: column_names,
+                                },
                             },
                             TITLE: "Symmetric error bars in the Z axis",
                         },
