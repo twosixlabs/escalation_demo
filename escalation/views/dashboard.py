@@ -32,7 +32,6 @@ def main_page():
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET", "POST"])
 def graphic_page(page_name):
     addendum_dict = json.loads(request.cookies.get(ADDENDUM_DICT, "{}"))
-    print(addendum_dict)
     if request.form:
         # request.form[PROCESS]=='' means the reset button sent the request
         if request.form[PROCESS]:
