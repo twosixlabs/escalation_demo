@@ -29,6 +29,7 @@ def main_page():
 
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET", "POST"])
 def graphic_page(page_name):
+    print(request.form)
     try:
         html_data_list = get_data_for_page(
             single_page_config_dict=current_app.config.get(AVAILABLE_PAGES_DICT).get(
