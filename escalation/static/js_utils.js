@@ -4,10 +4,8 @@
 function post_to_server(id_on_web_page) {
     //This allows the web page to focus where the plot was updated instead of starting at the top of the web page
     let web_form=$('#form_'.concat(id_on_web_page));
-    console.log(web_form.serialize());
-    console.log(web_form.serializeArray());
     web_form.attr('action','#'.concat(id_on_web_page));
-    //web_form.submit();
+    web_form.submit();
 }
 
 function reset_form(id_on_web_page) {
