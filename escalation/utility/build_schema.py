@@ -143,7 +143,8 @@ def build_graphic_schema(data_source_names=None, column_names=None):
                         OPTIONS: {DISABLE_COLLAPSE: True, DISABLE_PROPERTIES: True},
                     },
                     ADDITIONAL_DATA_SOURCES: {
-                        "type": "array",
+                        TYPE: "array",
+                        TITLE: "Additional Data Sources",
                         OPTIONS: {COLLAPSED: True,},
                         ITEMS: {
                             "type": "object",
