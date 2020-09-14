@@ -3,6 +3,7 @@
 - Bug: program crashes if models.py does not exist
 - Hover text for join keys so they know to use the command/ctr key
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
+- Are you sure you want to delete? alert box
 
 # Next release todo Features
 
