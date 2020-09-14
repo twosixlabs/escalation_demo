@@ -108,3 +108,19 @@ function toggle_rename_page(page_id) {
         rename_page_div.style.display = "block";
     }
 }
+
+
+function get_collapse_dict(editors) {
+    let collapse_dict= new Object();
+    collapse_dict['additional_data_sources'] =  editors['graphic_meta_info'].getEditor('root.data_sources.additional_data_sources').collapsed
+    collapse_dict['hover_data'] = editors['visualization'].getEditor('root.hover_data').collapsed
+    collapse_dict['groupby'] =  editors['visualization'].getEditor('root.groupby').collapsed
+    collapse_dict['aggregate'] = editors['visualization'].getEditor('root.aggregate').collapsed
+    collapse_dict['filter'] = editors['selector'].getEditor('root.filter').collapsed
+    collapse_dict['numerical_filter'] = editors['selector'].getEditor('root.numerical_filter').collapsed
+    collapse_dict['axis'] = editors['selector'].getEditor('root.axis').collapsed
+    collapse_dict['groupby_selector'] = editors['selector'].getEditor('root.groupby').collapsed
+    collapse_dict['visualization_options'] = editors['visualization'].getEditor('root').collapsed
+    collapse_dict['selectable_data_dict'] = editors['selector'].getEditor('root').collapsed
+    return collapse_dict
+}

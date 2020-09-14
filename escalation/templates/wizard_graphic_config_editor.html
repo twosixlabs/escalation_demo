@@ -154,6 +154,7 @@
             // check if sets are not equal
             if (!(new_data_sources.size === current_data_sources.size && [...new_data_sources].every(value => current_data_sources.has(value)))) {
                 current_data_sources = new_data_sources;
+                const collapse_dict=get_collapse_dict(editors)
 
                 let xhr = new XMLHttpRequest();
                 xhr.open("POST", "{{ url_for('.get_updated_schemas') }}");
@@ -173,7 +174,10 @@
                         console.log("Failed")
                     }
                 };
-                xhr.send(JSON.stringify(Array.from(new_data_sources)));
+                xhr.send(JSON.stringify({
+                      "data_sources": Array.from(new_data_sources),
+                      "collapse_dict": collapse_dict
+                    }));
 
             }
         });

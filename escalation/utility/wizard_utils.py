@@ -112,22 +112,46 @@ def graphic_component_dict_to_graphic_dict(graphic_component_dict):
     return graphic_dict
 
 
-def generate_minimize_dict_from_graphic_component_dict(graphic_dict):
+def generate_collapse_dict_from_graphic_component_dict(graphic_dict):
+    """
+    Makes a dictionary for the ui wizard which elements should be collapsed (True)/ not collapsed (False)
+    :param graphic_dict:
+    :return:
+    """
     HIGH_LEVEL_COLLAPSE = {
         ADDITIONAL_DATA_SOURCES: [DATA_SOURCES, ADDITIONAL_DATA_SOURCES],
         HOVER_DATA: [VISUALIZATION_OPTIONS, HOVER_DATA],
         GROUPBY: [VISUALIZATION_OPTIONS, GROUPBY],
-        AGGREGATE: [VISUALIZATION_OPTIONS, GROUPBY],
+        AGGREGATE: [VISUALIZATION_OPTIONS, AGGREGATE],
         FILTER: [SELECTABLE_DATA_DICT, FILTER],
         NUMERICAL_FILTER: [SELECTABLE_DATA_DICT, NUMERICAL_FILTER],
         AXIS: [SELECTABLE_DATA_DICT, AXIS],
-        GROUPBY: [SELECTABLE_DATA_DICT, GROUPBY],
+        GROUPBY_SELECTOR: [SELECTABLE_DATA_DICT, GROUPBY],
     }
     FIRST_LEVEL_COLLAPSE = {
         VISUALIZATION_OPTIONS: [HOVER_DATA, GROUPBY, AGGREGATE],
         SELECTABLE_DATA_DICT: [FILTER, NUMERICAL_FILTER, AXIS, GROUPBY],
     }
-    pass
+
+    collapse_dict = {}
+    for key, path in HIGH_LEVEL_COLLAPSE.items():
+        dict_copy = graphic_dict
+        for item in path:
+            if item in dict_copy:
+                dict_copy = dict_copy[item]
+            else:
+                collapse_dict[key] = True
+                break
+        if key not in collapse_dict:
+            collapse_dict[key] = False if dict_copy else True
+
+    for key, dependant_elements in FIRST_LEVEL_COLLAPSE.items():
+        temp = True
+        for item in dependant_elements:
+            temp = temp and collapse_dict[item]
+        collapse_dict[key] = temp
+
+    return collapse_dict
 
 
 def prune_visualization_dict(visualization_dict):

@@ -1,6 +1,7 @@
 # To Triage
 - Bug: crashes if the graphic config references data sources that do not exist. 
 - Bug: program crashes if models.py does not exist
+- Hover text for join keys so they know to use the command/ctr key
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
 
 # Next release todo Features
@@ -21,8 +22,6 @@
     - (won't do) Legend string shortening?
 
 ## Alexander
-- For pages with multiple graphs, updating one graph resets the the other graph(s). Yeast: Can't set multiple graphs to different ER's than the default ER.
-- When we edit the config for an existing json that does have selector and visualization options filled out, don't minimize those filled fields by default. Hover, groupby not visible
 - Wizard: get unique values in default_selected dropdown after column is populated on wizard
 
 ## Unassigned/Maybe do
