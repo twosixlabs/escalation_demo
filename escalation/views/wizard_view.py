@@ -219,7 +219,11 @@ def update_graphic_json_config_with_ui_changes():
         os.remove(graphic_filepath)
     with open(graphic_filepath, "w") as fout:
         json.dump(graphic_dict, fout, indent=4)
-    return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
+    return (
+        json.dumps({"success": True, GRAPHIC_PATH: graphic_filename}),
+        200,
+        {"ContentType": "application/json"},
+    )
 
 
 @wizard_blueprint.route("/wizard/graphic/update_schemas", methods=("POST",))
