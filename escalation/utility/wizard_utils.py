@@ -112,6 +112,39 @@ def graphic_component_dict_to_graphic_dict(graphic_component_dict):
     return graphic_dict
 
 
+def generate_collapse_dict_from_graphic_component_dict(graphic_dict):
+    """
+    Makes a dictionary for the ui wizard which elements should be collapsed (True)/ not collapsed (False)
+    :param graphic_dict:
+    :return:
+    """
+    HIGH_LEVEL_COLLAPSE = {
+        ADDITIONAL_DATA_SOURCES: [DATA_SOURCES, ADDITIONAL_DATA_SOURCES],
+        HOVER_DATA: [VISUALIZATION_OPTIONS, HOVER_DATA],
+        GROUPBY: [VISUALIZATION_OPTIONS, GROUPBY],
+        AGGREGATE: [VISUALIZATION_OPTIONS, AGGREGATE],
+        FILTER: [SELECTABLE_DATA_DICT, FILTER],
+        NUMERICAL_FILTER: [SELECTABLE_DATA_DICT, NUMERICAL_FILTER],
+        AXIS: [SELECTABLE_DATA_DICT, AXIS],
+        GROUPBY_SELECTOR: [SELECTABLE_DATA_DICT, GROUPBY],
+    }
+    FIRST_LEVEL_COLLAPSE = {
+        VISUALIZATION_OPTIONS: [HOVER_DATA, GROUPBY, AGGREGATE],
+        SELECTABLE_DATA_DICT: [FILTER, NUMERICAL_FILTER, AXIS, GROUPBY],
+    }
+
+    collapse_dict = {}
+    for key, path in HIGH_LEVEL_COLLAPSE.items():
+        collapse_dict[key] = (
+            False if graphic_dict.get(path[0], {}).get(path[1]) else True
+        )
+
+    for key, dependant_elements in FIRST_LEVEL_COLLAPSE.items():
+        collapse_dict[key] = all([collapse_dict[item] for item in dependant_elements])
+
+    return collapse_dict
+
+
 def prune_visualization_dict(visualization_dict):
     """
     Get rid of empty entries in visualization dict
@@ -191,7 +224,10 @@ def get_possible_column_names(data_source_names, data_inventory_class):
         possible_column_names.extend(
             [
                 TABLE_COLUMN_SEPARATOR.join(
-                    [data_source_name, column_name.name if csv_flag else column_name.name,]
+                    [
+                        data_source_name,
+                        column_name.name if csv_flag else column_name.name,
+                    ]
                 )
                 for column_name in column_names
             ]
