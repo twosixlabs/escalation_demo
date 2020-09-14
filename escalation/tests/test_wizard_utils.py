@@ -26,6 +26,7 @@ from utility.constants import (
     PLOT_SPECIFIC_INFO,
     SELECTABLE_DATA_DICT,
     VISUALIZATION_OPTIONS,
+    GROUPBY_SELECTOR,
 )
 from utility.wizard_utils import (
     invert_dict_lists,
@@ -199,7 +200,7 @@ def test_generate_collapse_dict_from_graphic_component_dict(graphic_json_fixture
         FILTER: False,
         NUMERICAL_FILTER: False,
         AXIS: True,
-        GROUPBY: True,
+        GROUPBY_SELECTOR: True,
         VISUALIZATION_OPTIONS: False,
         SELECTABLE_DATA_DICT: False,
     }

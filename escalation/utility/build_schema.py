@@ -194,7 +194,10 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
                 "title": "Visualization Options",
                 "description": "Graph options: hover tooltips, aggregation functions, group by",
                 "additionalProperties": False,
-                OPTIONS: {COLLAPSED: collapse_dict[VISUALIZATION_OPTIONS], REMOVE_EMPTY_PROPERTIES: True},
+                OPTIONS: {
+                    COLLAPSED: collapse_dict[VISUALIZATION_OPTIONS],
+                    REMOVE_EMPTY_PROPERTIES: True,
+                },
                 PROPERTIES: {
                     HOVER_DATA: {
                         "type": "object",
@@ -220,7 +223,10 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
                         "title": "Group By",
                         "description": "Grouping of the data see https://plotly.com/javascript/group-by/",
                         "required": [COLUMN_NAME],
-                        OPTIONS: {COLLAPSED: collapse_dict[GROUPBY], REMOVE_EMPTY_PROPERTIES: True},
+                        OPTIONS: {
+                            COLLAPSED: collapse_dict[GROUPBY],
+                            REMOVE_EMPTY_PROPERTIES: True,
+                        },
                         "properties": {
                             COLUMN_NAME: {
                                 "type": "array",
@@ -290,7 +296,10 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
                 "title": "Data Selector Options",
                 "description": "Interactive data selectors: filter data by values, change axes, change columns to group by",
                 ADDITIONAL_PROPERTIES: False,
-                OPTIONS: {COLLAPSED: collapse_dict[SELECTABLE_DATA_DICT], REMOVE_EMPTY_PROPERTIES: True},
+                OPTIONS: {
+                    COLLAPSED: collapse_dict[SELECTABLE_DATA_DICT],
+                    REMOVE_EMPTY_PROPERTIES: True,
+                },
                 PROPERTIES: {
                     FILTER: {
                         "type": "array",

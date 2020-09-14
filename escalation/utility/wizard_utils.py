@@ -135,21 +135,12 @@ def generate_collapse_dict_from_graphic_component_dict(graphic_dict):
 
     collapse_dict = {}
     for key, path in HIGH_LEVEL_COLLAPSE.items():
-        dict_copy = graphic_dict
-        for item in path:
-            if item in dict_copy:
-                dict_copy = dict_copy[item]
-            else:
-                collapse_dict[key] = True
-                break
-        if key not in collapse_dict:
-            collapse_dict[key] = False if dict_copy else True
+        collapse_dict[key] = (
+            False if graphic_dict.get(path[0], {}).get(path[1]) else True
+        )
 
     for key, dependant_elements in FIRST_LEVEL_COLLAPSE.items():
-        temp = True
-        for item in dependant_elements:
-            temp = temp and collapse_dict[item]
-        collapse_dict[key] = temp
+        collapse_dict[key] = all([collapse_dict[item] for item in dependant_elements])
 
     return collapse_dict
 

@@ -40,7 +40,9 @@ from utility.constants import (
     MAIN_DATA_SOURCE,
     DATA_SOURCE_TYPE,
     LOCAL_CSV,
-    DATA_SOURCE, DATA_SOURCES, COLLAPSE_DICT,
+    DATA_SOURCE,
+    DATA_SOURCES,
+    COLLAPSE_DICT,
 )
 from utility.schemas_for_ui import build_graphic_schemas_for_ui
 from utility.wizard_utils import (
@@ -56,7 +58,8 @@ from utility.wizard_utils import (
     get_data_source_info,
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
-    make_page_dict_for_main_config, generate_collapse_dict_from_graphic_component_dict,
+    make_page_dict_for_main_config,
+    generate_collapse_dict_from_graphic_component_dict,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
@@ -231,7 +234,7 @@ def get_updated_schemas():
         ui_editor_info_dict[DATA_SOURCES]
     )
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
-        data_source_names, possible_column_names,ui_editor_info_dict[COLLAPSE_DICT]
+        data_source_names, possible_column_names, ui_editor_info_dict[COLLAPSE_DICT]
     )
 
     return (
