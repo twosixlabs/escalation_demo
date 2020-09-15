@@ -15,25 +15,25 @@ function reset_form(id_on_web_page) {
 
 }
 
-function show_all_row_handler(selector_id) {
+function show_all_row_handler(selector_id, exclusive_value) {
     let selector = $("#".concat(selector_id));
     const selected_elements = selector.val();
     if (selected_elements.length==0){
-        selector.val("Show All Rows");
-        selector.attr('data-show_all_rows',true)
+        selector.val(exclusive_value);
+        selector.attr('data-top_selected',true)
     }
-    else if (selector.attr('data-show_all_rows')=="true"){
+    else if (selector.attr('data-top_selected')=="true"){
         // If something is selected along with show all rows
         // Pop the show all rows item out using shift, then set elements to remaining
         selected_elements.shift();
         selector.val(selected_elements);
-        selector.attr('data-show_all_rows',false)
+        selector.attr('data-top_selected',false)
     }
-    else if (selected_elements.includes("Show All Rows")){
+    else if (selected_elements.includes(exclusive_value)){
         // If the user has selected show all rows, deselect everything else
         selector.selectpicker('deselectAll');
-        selector.val("Show All Rows");
-        selector.attr('data-show_all_rows',true)
+        selector.val(exclusive_value);
+        selector.attr('data-top_selected',true)
     }
     selector.selectpicker('refresh');
 }

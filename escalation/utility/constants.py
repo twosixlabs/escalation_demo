@@ -118,6 +118,7 @@ CSVFILE = "csvfile"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # addendum constants
+ADDENDUM_DICT = "addendum_dict"
 GRAPHIC_NAME = "graphic_name"
 NUMERICAL_FILTER_NUM_LOC_TYPE = "numerical_filter_{:d}_{}_{}"
 PROCESS = "process"
