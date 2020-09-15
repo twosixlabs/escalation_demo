@@ -145,6 +145,26 @@ def generate_collapse_dict_from_graphic_component_dict(graphic_dict):
     return collapse_dict
 
 
+def get_default_collapse_dict():
+    """
+    collapse dict for a new graphic
+    :return:
+    """
+    keys = [
+        SELECTABLE_DATA_DICT,
+        VISUALIZATION_OPTIONS,
+        ADDITIONAL_DATA_SOURCES,
+        HOVER_DATA,
+        GROUPBY,
+        AGGREGATE,
+        FILTER,
+        NUMERICAL_FILTER,
+        AXIS,
+        GROUPBY_SELECTOR,
+    ]
+    return dict.fromkeys(keys, True)
+
+
 def prune_visualization_dict(visualization_dict):
     """
     Get rid of empty entries in visualization dict

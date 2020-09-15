@@ -59,7 +59,7 @@ from utility.wizard_utils import (
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
     make_page_dict_for_main_config,
-    generate_collapse_dict_from_graphic_component_dict,
+    generate_collapse_dict_from_graphic_component_dict, get_default_collapse_dict,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
@@ -138,14 +138,16 @@ def graphic_config_setup():
     copy_data_from_form_to_config(config_dict, request.form)
     save_main_config_dict(config_dict)
     active_data_source_names = None
+    collapse_dict = get_default_collapse_dict()
     if graphic_status in [COPY, OLD]:
         graphic_dict = json.loads(load_graphic_config_dict(request.form[GRAPHIC]))
         active_data_source_names = extract_data_sources_from_config(graphic_dict)
+        collapse_dict = generate_collapse_dict_from_graphic_component_dict(graphic_dict)
 
     data_source_names, possible_column_names = get_data_source_info(
         active_data_source_names
     )
-    collapse_dict = generate_collapse_dict_from_graphic_component_dict(graphic_dict)
+
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names, collapse_dict
     )
