@@ -24,7 +24,9 @@
 
 ## Alexander
 - Wizard: get unique values in default_selected dropdown after column is populated on wizard
-
+-  add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
+empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
+on another request. I think the current_app and request context may handle that nicely.
 ## Unassigned/Maybe do
 
 - Wizard: numerical filters can have defaults via wizard. Put an inequality selector in the wizard?

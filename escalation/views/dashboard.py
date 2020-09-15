@@ -31,6 +31,13 @@ def main_page():
 
 @dashboard_blueprint.route("/dashboard/<page_name>", methods=["GET", "POST"])
 def graphic_page(page_name):
+    """
+    We store the user settings as a cookie in ADDENDUM_DICT
+    When a post request is sent, We modify the cookie
+    with the form submission of new filters.
+    :param page_name:
+    :return:
+    """
     addendum_dict = json.loads(request.cookies.get(ADDENDUM_DICT, "{}"))
     if request.form:
         # request.form[PROCESS]=='' means the reset button sent the request
@@ -59,6 +66,7 @@ def graphic_page(page_name):
             DATA_LAYOUT, **{CURRENT_PAGE: page_name, JINJA_PLOT: html_data_list}
         )
     )
+    # we're attaching a cookie tracking the state of the filters to the rendered template response.
     resp.set_cookie(ADDENDUM_DICT, json.dumps(addendum_dict))
     return resp
 

@@ -245,6 +245,13 @@ def get_key_for_form(selector_type, index):
 
 
 def add_form_to_addendum_dict(form: ImmutableMultiDict, addendum_dict: dict):
+    """
+    Used to update the addendum_dict that contains the previous graphic
+     selection elements with a new set of selections from a posted form
+    :param form:
+    :param addendum_dict:
+    :return:
+    """
     graphic_dict = {}
     for key, value in form.lists():
         if key in [GRAPHIC_NAME, PROCESS]:
