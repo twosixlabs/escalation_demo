@@ -65,26 +65,6 @@ function modify_config(modification, page_id=-1,graphic=''){
     }
 }
 
-function send_json_in_post_request(url, data, webpage){
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", url);
-    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    xhr.onreadystatechange = function () {
-        let success_text = document.querySelector('#feedback_message');
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            if (webpage) {window.location.href = webpage}
-            success_text.innerHTML = "Applied"
-        } else {
-            success_text.innerHTML = "Failed"
-        }
-        // Message disappears after 5 secs
-        setTimeout(function() {
-              success_text.innerHTML="";
-            }, 5000);
-        };
-    xhr.send(data);
-}
-
 function get_main_data_sources(data_source_dict){
     let data_sources = new Set();
     data_sources.add(data_source_dict['main_data_source']['data_source_type']);
@@ -107,4 +87,20 @@ function toggle_rename_page(page_id) {
         page_div.style.display = "none";
         rename_page_div.style.display = "block";
     }
+}
+
+
+function get_collapse_dict(editors) {
+    let collapse_dict= new Object();
+    collapse_dict['additional_data_sources'] =  editors['graphic_meta_info'].getEditor('root.data_sources.additional_data_sources').collapsed
+    collapse_dict['hover_data'] = editors['visualization'].getEditor('root.hover_data').collapsed
+    collapse_dict['groupby'] =  editors['visualization'].getEditor('root.groupby').collapsed
+    collapse_dict['aggregate'] = editors['visualization'].getEditor('root.aggregate').collapsed
+    collapse_dict['filter'] = editors['selector'].getEditor('root.filter').collapsed
+    collapse_dict['numerical_filter'] = editors['selector'].getEditor('root.numerical_filter').collapsed
+    collapse_dict['axis'] = editors['selector'].getEditor('root.axis').collapsed
+    collapse_dict['groupby_selector'] = editors['selector'].getEditor('root.groupby').collapsed
+    collapse_dict['visualization_options'] = editors['visualization'].getEditor('root').collapsed
+    collapse_dict['selectable_data_dict'] = editors['selector'].getEditor('root').collapsed
+    return collapse_dict
 }

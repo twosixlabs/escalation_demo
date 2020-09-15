@@ -41,6 +41,8 @@ from utility.constants import (
     DATA_SOURCE_TYPE,
     LOCAL_CSV,
     DATA_SOURCE,
+    DATA_SOURCES,
+    COLLAPSE_DICT,
 )
 from utility.schemas_for_ui import build_graphic_schemas_for_ui
 from utility.wizard_utils import (
@@ -57,6 +59,7 @@ from utility.wizard_utils import (
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
     make_page_dict_for_main_config,
+    generate_collapse_dict_from_graphic_component_dict,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
@@ -142,8 +145,9 @@ def graphic_config_setup():
     data_source_names, possible_column_names = get_data_source_info(
         active_data_source_names
     )
+    collapse_dict = generate_collapse_dict_from_graphic_component_dict(graphic_dict)
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
-        data_source_names, possible_column_names
+        data_source_names, possible_column_names, collapse_dict
     )
     component_graphic_dict = make_empty_component_dict()
     current_schema = SCATTER
@@ -219,17 +223,22 @@ def update_graphic_json_config_with_ui_changes():
         os.remove(graphic_filepath)
     with open(graphic_filepath, "w") as fout:
         json.dump(graphic_dict, fout, indent=4)
-    return json.dumps({"success": True}), 200, {"ContentType": "application/json"}
+    return (
+        json.dumps({"success": True, GRAPHIC_PATH: graphic_filename}),
+        200,
+        {"ContentType": "application/json"},
+    )
 
 
 @wizard_blueprint.route("/wizard/graphic/update_schemas", methods=("POST",))
 def get_updated_schemas():
-    active_data_source_names = request.get_json()
+
+    ui_editor_info_dict = request.get_json()
     data_source_names, possible_column_names = get_data_source_info(
-        active_data_source_names
+        ui_editor_info_dict[DATA_SOURCES]
     )
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
-        data_source_names, possible_column_names
+        data_source_names, possible_column_names, ui_editor_info_dict[COLLAPSE_DICT]
     )
 
     return (
