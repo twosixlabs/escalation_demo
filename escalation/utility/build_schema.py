@@ -79,11 +79,14 @@ def build_settings_schema():
     return schema
 
 
-def build_graphic_schema(data_source_names=None, column_names=None, collapse_dict=None):
+def build_graphic_schema(
+    data_source_names=None, column_names=None, unique_entries=None, collapse_dict=None
+):
     """
 
     :param data_source_names: names from DATA_SOURCES, already checked against the file system
     :param column_names: possible column names from files or database (format data_source_name.column_name)
+    :param unique_entries: values from possible column names
     :param collapse_dict: whether the element should be collapsed or not
     :return:
     """
@@ -93,6 +96,8 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
         data_source_names.sort()
     if column_names:
         column_names.sort()
+    if unique_entries:
+        unique_entries.sort()
     schema = {
         "$schema": "http://json-schema.org/draft/2019-09/schema#",
         "type": "object",
@@ -309,6 +314,7 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
                         "items": {
                             "type": "object",
                             TITLE: "Filter",
+                            "id": "filter_item",
                             "required": [COLUMN_NAME],
                             "additionalProperties": False,
                             OPTIONS: {DISABLE_COLLAPSE: True},
@@ -328,7 +334,22 @@ def build_graphic_schema(data_source_names=None, column_names=None, collapse_dic
                                     "type": "array",
                                     TITLE: "Default Selected",
                                     "description": "Optional, Default value(s) selected in this filter, a list of values to include",
-                                    "items": {"type": "string"},
+                                    "items": {
+                                        "type": "string",
+                                        "watch": {
+                                            COLUMN_NAME: ".".join(
+                                                ["filter_item", COLUMN_NAME]
+                                            )
+                                        },
+                                        "enumSource": [
+                                            {
+                                                "source": unique_entries,
+                                                "filter": "default_selected_filter",
+                                                "title": "identity_callback",
+                                                "value": "identity_callback",
+                                            }
+                                        ],
+                                    },
                                 },
                                 UNFILTERED_SELECTOR: {
                                     "type": "boolean",
