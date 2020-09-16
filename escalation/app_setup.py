@@ -29,13 +29,14 @@ from views.file_upload import upload_blueprint
 from views.admin import admin_blueprint
 from views.wizard_view import wizard_blueprint
 
-ENV_SPECIFIED_URL = os.environ.get("DATABASE_URL")
 
-
-def create_app(db_uri=ENV_SPECIFIED_URL):
+def create_app(db_uri=None):
     app = Flask(__name__)
+    # specify the env variable DATABASE_CONFIG to control the content of DATABASE_CONFIG
+    sqlalchemy_database_uri = URL(db_uri) if db_uri else URL(**DATABASE_CONFIG)
+
     app.config.from_mapping(
-        SQLALCHEMY_DATABASE_URI=db_uri or URL(**DATABASE_CONFIG),
+        SQLALCHEMY_DATABASE_URI=sqlalchemy_database_uri,
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         VERSION=VERSION,
     )

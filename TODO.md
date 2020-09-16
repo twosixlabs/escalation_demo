@@ -1,20 +1,35 @@
 # To Triage
-
-- Bug: localhandler test_file+ as data_source name uploads ok, but then doesn’t show any matching files in the admin page. We probably are messing up in the glob match. We should filter those at the form level before we accept the data source name.
-- models.py not refreshed when docker down run on volumes to handle any reset
+- Bug: crashes if the graphic config references data sources that do not exist. 
+- Bug: program crashes if models.py does not exist
+- Hover text for join keys so they know to use the command/ctr key
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
-- Add documentation for programmatic file upload via POST 
-- When we edit the config for an existing json that does have selector and visualization options filled out, don't minimize those filled fields by default
-- For pages with multiple graphs, updating one graph resets the the other graph(s). Yeast: Can't set multiple graphs to different ER's than the default ER.
-- Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
-- Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)
-- Error bars for scatter plot
-- Bug- new graph- multiple submissions and json for graph config when I apply then submit
-- Nice to have: get unique values in default_selected dropdown after column is populated on wizard
-- Nice to have: numerical filters can have defaults via wizard
-- Default settings for appearance- opacity < 1?
+- Are you sure you want to delete? alert box
 
 # Next release todo Features
+
+## Nick
+
+- Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
+- models.py not refreshed when docker down run on volumes to handle any reset
+- Light data Processor functionality for data diagnostics: 
+    - Error bars for scatter plot: 1) in case error is pre-calculated in data 2) in case we want to live-calculate error bars (stddev?)
+    - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
+    - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
+- Legend
+    - Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
+    - (not urgent) Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)- default on/off
+    - (won't do) Customize what goes into the legend from groupby args- some strings are long and repetitive
+    - (won't do) Legend string shortening?
+
+## Alexander
+- Wizard: get unique values in default_selected dropdown after column is populated on wizard
+-  add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
+empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
+on another request. I think the current_app and request context may handle that nicely.
+## Unassigned/Maybe do
+
+- Wizard: numerical filters can have defaults via wizard. Put an inequality selector in the wizard?
+
 
 # ToDo Work by category
 
@@ -24,6 +39,8 @@
 - Shareable graph configs- either a URL-encoded version for a GET that could be shared, or store a config server side that can be selected
 - Nice to have: "decimation" feature- only plot a random sample of a big data set.
 - rich hover text- images? HTML?
+- Default settings for appearance- opacity < 1?
+
 
 ## Data management
 
