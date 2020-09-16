@@ -52,8 +52,7 @@ function modify_config(modification, page_id=-1,graphic=''){
     let graphic_form=$('#form_button_click');
     let add_page_form = $('#form_add_page');
     let name = document.getElementById("webpage_label_".concat(page_id)).value;
-
-    if ((modification!='add_page' && modification!='rename_page') || name) {
+    if ((!modification.includes('delete') || confirm('Confirm deletion')) && ((modification!='add_page' && modification!='rename_page') || name)) {
         add_page_form[0].page_id.value = page_id;
         add_page_form[0].graphic.value = graphic;
         add_page_form[0].modification.value = modification;

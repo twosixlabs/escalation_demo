@@ -173,6 +173,7 @@ def build_graphic_schema(
                                     " (in the case of 2 or more tables)",
                                     ITEMS: {
                                         TITLE: "Pairs of Keys",
+                                        DESCRIPTION: "Use the command/ctr key to select more than one entry",
                                         "type": "array",
                                         "uniqueItems": True,
                                         "minItems": 2,
