@@ -28,7 +28,7 @@ RUN pip install --trusted-host pypi.python.org -r requirements-app.txt
 #copy data from current dir into container
 COPY escalation /escalation
 # imports for this script behave strangely- copy to workdir to prevent issues
-COPY escalation/database/csv_to_sql.py /escalation
+COPY escalation/scripts/csv_to_sql.py /escalation
 
 RUN chmod +x /escalation/boot.sh
 
