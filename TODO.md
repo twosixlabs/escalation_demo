@@ -9,7 +9,6 @@
 
 ## Nick
 
-- Add documentation for programmatic file upload via POST 
 - Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
 - models.py not refreshed when docker down run on volumes to handle any reset
 - Light data Processor functionality for data diagnostics: 
