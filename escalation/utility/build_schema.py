@@ -154,6 +154,7 @@ def build_graphic_schema(
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
+                        TITLE: "Additional Data Sources",
                         OPTIONS: {COLLAPSED: collapse_dict[ADDITIONAL_DATA_SOURCES],},
                         ITEMS: {
                             "type": "object",
