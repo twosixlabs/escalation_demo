@@ -5,7 +5,7 @@
 {% set selector_id=plot_id ~ "_" ~ selector['name'] %}
 <h6>{{ selector['text'] }}</h6>
     <select class="selectpicker form-control m-2" data-dropdown-align-right='auto' id={{ selector_id }} name={{ selector_name }} form={{ "form_" ~ plot_id }}
-      {% if "Show All Rows" in selector['active_selector'] %} data-top_selected=true {% else %} data-show_all_rows=false {% endif %} {% if selector['multiple'] -%} onchange="show_all_row_handler('{{ selector_id }}','{{ selector['entries'][0] }}')"  multiple {%- endif %}>
+       {% if selector['multiple'] -%} {% if selector['entries'][0] in selector['active_selector'] %} data-top_selected=true {% else %} data-top_selected=false {% endif %} onchange="show_all_row_handler('{{ selector_id }}','{{ selector['entries'][0] }}')"  multiple {%- endif %}>
     {% for col_name in selector['entries'] %}
   <option value="{{ col_name }}" {% if col_name in selector['active_selector'] -%} selected {%- endif %}> {{ col_name }}</option>
         {% if selector['multiple'] and  loop.index0==0 -%} <option data-divider="true"></option> {% endif %}

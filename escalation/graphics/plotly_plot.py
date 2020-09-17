@@ -13,7 +13,6 @@ from utility.constants import (
     AGGREGATIONS,
     SCATTER,
     SCATTERGL,
-    TYPE,
 )
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
@@ -44,8 +43,13 @@ HOVERMODE = "hovermode"
 CLOSEST = "closest"
 X = "x"
 Y = "y"
-Z = "Z"
+Z = "z"
+ERROR_X = "error_x"
+ERROR_Y = "error_y"
+ERROR_Z = "error_z"
 POSSIBLE_AXIS = [X, Y, Z]
+POSSIBLE_ERROR_AXES = [ERROR_X, ERROR_Y, ERROR_Z]
+
 CONFIG = "config"
 
 MODE_BAR_REMOVE = "modeBarButtonsToRemove"
@@ -54,7 +58,6 @@ MODE_BAR_ADD = "modeBarButtonsToAdd"
 DISPLAY_LOGO = "displaylogo"
 UPDATE_MENUS = "updatemenus"
 BUTTONS = "buttons"
-
 
 def get_hover_data_in_plotly_form(
     data, hover_options, visualization_type, plot_options_data_dict
@@ -248,7 +251,11 @@ class PlotlyPlot(Graphic):
                     # moving the contents of the data to where plotly expects it
                     # from the output of the database
                     plotly_data_dict[axis] = data[plotly_data_dict[axis]]
-
+            for error_axis in POSSIBLE_ERROR_AXES:
+                if error_axis in plotly_data_dict:
+                    plotly_data_dict[error_axis][ARRAY] = data[
+                        plotly_data_dict[error_axis][ARRAY]
+                    ]
             plotly_data_dict[TRANSFORMS] = []
 
             if visualization_options is not None:
@@ -278,4 +285,10 @@ class PlotlyPlot(Graphic):
             for axis in POSSIBLE_AXIS:
                 if axis in dict_of_data_for_each_plot:
                     set_of_column_names.add(dict_of_data_for_each_plot[axis])
+            for error_axis in POSSIBLE_ERROR_AXES:
+                if error_axis in dict_of_data_for_each_plot:
+                    # this is error specified in data
+                    set_of_column_names.add(
+                        dict_of_data_for_each_plot[error_axis][ARRAY]
+                    )
         return set_of_column_names

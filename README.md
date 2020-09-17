@@ -168,6 +168,15 @@ You can also manually delete tables in the sql database by connecting to the dat
     
     Disconnect:
     \q
+   
+### Uploading data files to the db from the command line
+
+You can directly upload files by POSTing requests to the Escalalation upload endpoints.
+
+http://localhost:8000/wizard/upload
+http://localhost:8000/upload
+
+There is a helper script in `escalation/scripts/csv_to_sql.py` that does this, with documentation there about how to use it.
     
 
 # Running Escalation as a web-accessible server

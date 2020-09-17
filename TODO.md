@@ -1,19 +1,19 @@
 # To Triage
 - Bug: crashes if the graphic config references data sources that do not exist. 
 - Bug: program crashes if models.py does not exist
-- Hover text for join keys so they know to use the command/ctr key
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
-- Are you sure you want to delete? alert box
+- add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
+empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
+on another request. I think the current_app and request context may handle that nicely.
 
 # Next release todo Features
 
 ## Nick
 
-- Add documentation for programmatic file upload via POST 
 - Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
 - models.py not refreshed when docker down run on volumes to handle any reset
 - Light data Processor functionality for data diagnostics: 
-    - Error bars for scatter plot: 1) in case error is pre-calculated in data 2) in case we want to live-calculate error bars (stddev?)
+    - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
     - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
 - Legend
@@ -23,10 +23,7 @@
     - (won't do) Legend string shortening?
 
 ## Alexander
-- Wizard: get unique values in default_selected dropdown after column is populated on wizard
--  add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
-empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
-on another request. I think the current_app and request context may handle that nicely.
+
 ## Unassigned/Maybe do
 
 - Wizard: numerical filters can have defaults via wizard. Put an inequality selector in the wizard?

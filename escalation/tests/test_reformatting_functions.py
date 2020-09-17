@@ -27,6 +27,7 @@ from utility.constants import (
     COLUMN_NAME,
     PLOT_SPECIFIC_INFO,
     GRAPHIC_NAME,
+    DEFAULT_SELECTED,
 )
 from utility.reformatting_functions import (
     add_operations_to_the_data_from_addendum,
@@ -60,7 +61,7 @@ def addendum_dict():
     return addendum_dict
 
 
-def test_add_form_to_addendum_dict(form, addendum_dict):
+def test_add_form_to_addendum_dict(addendum_dict):
     form = ImmutableMultiDict(
         [
             ("graphic_name", "graphic_0"),
@@ -130,6 +131,7 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
 ):
     single_page_config_dict = single_page_config_dict
     graphic_0_dict = single_page_config_dict["graphic_0"]
+    graphic_0_dict[SELECTABLE_DATA_DICT][FILTER][1][DEFAULT_SELECTED] = ["Dream"]
     add_active_selectors_to_selectable_data_list(
         graphic_0_dict[SELECTABLE_DATA_DICT],
         graphic_0_dict[PLOT_SPECIFIC_INFO][DATA],
@@ -140,7 +142,7 @@ def test_add_active_selectors_to_selectable_data_list_without_addendum(
     assert len(filter_list[0][ACTIVE_SELECTORS]) == 1
     assert SHOW_ALL_ROW in filter_list[0][ACTIVE_SELECTORS]
     assert len(filter_list[1][ACTIVE_SELECTORS]) == 1
-    assert SHOW_ALL_ROW in filter_list[1][ACTIVE_SELECTORS]
+    assert "Dream" in filter_list[1][ACTIVE_SELECTORS]
 
     numerical_filter_list = graphic_0_dict[SELECTABLE_DATA_DICT][NUMERICAL_FILTER]
     assert numerical_filter_list[0][ACTIVE_SELECTORS][UPPER_INEQUALITY][VALUE] == ""

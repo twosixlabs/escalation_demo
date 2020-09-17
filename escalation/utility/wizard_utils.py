@@ -226,15 +226,16 @@ def get_layout_for_dashboard(available_pages_list):
     return available_pages_list_copy
 
 
-def get_possible_column_names(data_source_names, data_inventory_class):
+def get_possible_column_names_and_values(data_source_names, data_inventory_class):
     """
     Used to populate a dropdown in the config wizard with any column from the data
-    sources included in a figure
+    sources included in a figure, unique_entries used to populate default selected.
     :param data_source_names: list of data source name strings
     :param data_inventory_class: backend-specific data inventory class
-    :return: possible_column_names list
+    :return: possible_column_names list, unique_entries dict.
     """
     possible_column_names = []
+    unique_entries = {}
     csv_flag = current_app.config[APP_CONFIG_JSON].get(DATA_BACKEND) == LOCAL_CSV
     for data_source_name in data_source_names:
         data_inventory = data_inventory_class(
@@ -252,7 +253,11 @@ def get_possible_column_names(data_source_names, data_inventory_class):
                 for column_name in column_names
             ]
         )
-    return possible_column_names
+        unique_entries_for_data_source = data_inventory.get_column_unique_entries(
+            possible_column_names
+        )
+        unique_entries.update(unique_entries_for_data_source)
+    return possible_column_names, unique_entries
 
 
 def get_data_source_info(active_data_source_names=None):
@@ -268,10 +273,10 @@ def get_data_source_info(active_data_source_names=None):
     if data_source_names and not active_data_source_names:
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
-    possible_column_names = get_possible_column_names(
+    possible_column_names, unique_entries = get_possible_column_names_and_values(
         active_data_source_names, data_inventory_class
     )
-    return data_source_names, possible_column_names
+    return data_source_names, possible_column_names, unique_entries
 
 
 def extract_data_sources_from_config(graphic_config):
