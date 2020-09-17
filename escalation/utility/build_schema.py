@@ -299,7 +299,8 @@ def build_graphic_schema(
             SELECTABLE_DATA_DICT: {
                 "type": "object",
                 "title": "Data Selector Options",
-                "description": "Interactive data selectors: filter data by values, change axes, change columns to group by",
+                "description": "Interactive data selectors: filter data by values, change axes,"
+                " change columns to group by",
                 ADDITIONAL_PROPERTIES: False,
                 OPTIONS: {
                     COLLAPSED: collapse_dict[SELECTABLE_DATA_DICT],
@@ -333,9 +334,14 @@ def build_graphic_schema(
                                 DEFAULT_SELECTED: {
                                     "type": "array",
                                     TITLE: "Default Selected",
-                                    "description": "Optional, Default value(s) selected in this filter, a list of values to include",
+                                    "description": "Optional, Default value(s) selected in this filter,"
+                                    " a list of values to include",
                                     "items": {
                                         "type": "string",
+                                        # watch will call the functions in enumSource (default_selected_filter,
+                                        # identity_callback; defined in the JS) whenever COLUMN_NAME is changed,
+                                        # it will also store the value of COLUMN_NAME to a variable called COLUMN_NAME
+                                        #  to be used by the JS
                                         "watch": {
                                             COLUMN_NAME: ".".join(
                                                 ["filter_item", COLUMN_NAME]
@@ -354,7 +360,9 @@ def build_graphic_schema(
                                 UNFILTERED_SELECTOR: {
                                     "type": "boolean",
                                     TITLE: "Should Selector Be Filtered",
-                                    DESCRIPTION: "If selector is filtered, the user can only select values in this field that are present in the data subsetted by the currently-applied filters",
+                                    DESCRIPTION: "If selector is filtered, the user can only select values in this"
+                                    " field that are present in the data subsetted by the"
+                                    " currently-applied filters",
                                 },
                             },
                         },

@@ -26,7 +26,8 @@ from utility.constants import (
     AXIS,
     COLUMN_NAME,
     PLOT_SPECIFIC_INFO,
-    GRAPHIC_NAME, DEFAULT_SELECTED,
+    GRAPHIC_NAME,
+    DEFAULT_SELECTED,
 )
 from utility.reformatting_functions import (
     add_operations_to_the_data_from_addendum,

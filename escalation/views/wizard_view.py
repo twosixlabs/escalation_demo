@@ -1,6 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
-
+import itertools
 from io import open as io_open
 import json
 import os
@@ -152,11 +152,7 @@ def graphic_config_setup():
     ) = get_data_source_info(active_data_source_names)
     # concatenating into one large list with no duplicates
     unique_entries_list = list(
-        {
-            entry
-            for unique_entries_sub_list in unique_entries_dict.values()
-            for entry in unique_entries_sub_list
-        }
+        set(itertools.chain.from_iterable(unique_entries_dict.values()))
     )
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
         data_source_names, possible_column_names, unique_entries_list, collapse_dict
