@@ -12,7 +12,8 @@ from utility.constants import (
     HOVER_DATA,
     AGGREGATIONS,
     SCATTER,
-    SCATTERGL, TYPE,
+    SCATTERGL,
+    TYPE,
 )
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
@@ -59,6 +60,7 @@ MODE_BAR_ADD = "modeBarButtonsToAdd"
 DISPLAY_LOGO = "displaylogo"
 UPDATE_MENUS = "updatemenus"
 BUTTONS = "buttons"
+
 
 def get_hover_data_in_plotly_form(
     data, hover_options, visualization_type, plot_options_data_dict
