@@ -12,7 +12,7 @@ from utility.constants import (
     HOVER_DATA,
     AGGREGATIONS,
     SCATTER,
-    SCATTERGL,
+    SCATTERGL, TYPE,
 )
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
@@ -50,6 +50,7 @@ ERROR_Z = "error_z"
 POSSIBLE_AXIS = [X, Y, Z]
 POSSIBLE_ERROR_AXES = [ERROR_X, ERROR_Y, ERROR_Z]
 
+ARRAY = "array"
 CONFIG = "config"
 
 MODE_BAR_REMOVE = "modeBarButtonsToRemove"
