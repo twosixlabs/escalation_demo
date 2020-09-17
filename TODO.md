@@ -12,7 +12,7 @@
 - Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
 - models.py not refreshed when docker down run on volumes to handle any reset
 - Light data Processor functionality for data diagnostics: 
-    - Error bars for scatter plot: 1) in case error is pre-calculated in data 2) in case we want to live-calculate error bars (stddev?)
+    - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
     - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
 - Legend
