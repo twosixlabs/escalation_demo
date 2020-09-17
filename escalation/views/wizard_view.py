@@ -1,6 +1,6 @@
 # Copyright [2020] [Two Six Labs, LLC]
 # Licensed under the Apache License, Version 2.0
-
+import itertools
 from io import open as io_open
 import json
 import os
@@ -59,7 +59,8 @@ from utility.wizard_utils import (
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
     make_page_dict_for_main_config,
-    generate_collapse_dict_from_graphic_component_dict, get_default_collapse_dict,
+    generate_collapse_dict_from_graphic_component_dict,
+    get_default_collapse_dict,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
@@ -144,12 +145,17 @@ def graphic_config_setup():
         active_data_source_names = extract_data_sources_from_config(graphic_dict)
         collapse_dict = generate_collapse_dict_from_graphic_component_dict(graphic_dict)
 
-    data_source_names, possible_column_names = get_data_source_info(
-        active_data_source_names
+    (
+        data_source_names,
+        possible_column_names,
+        unique_entries_dict,
+    ) = get_data_source_info(active_data_source_names)
+    # concatenating into one large list with no duplicates
+    unique_entries_list = list(
+        set(itertools.chain.from_iterable(unique_entries_dict.values()))
     )
-
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
-        data_source_names, possible_column_names, collapse_dict
+        data_source_names, possible_column_names, unique_entries_list, collapse_dict
     )
     component_graphic_dict = make_empty_component_dict()
     current_schema = SCATTER
@@ -170,6 +176,7 @@ def graphic_config_setup():
         schema_selector_dict=json.dumps(SELECTOR_DICT),
         current_schema=current_schema,
         graphic_path=request.form[GRAPHIC],
+        default_entries_dict=json.dumps(unique_entries_dict),
     )
 
 

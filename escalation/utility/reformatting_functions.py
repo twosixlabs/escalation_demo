@@ -97,8 +97,8 @@ def add_active_selectors_to_selectable_data_list(
     filter_list = selectable_data_dict.get(FILTER, [])
     for index, filter_dict in enumerate(filter_list):
 
-        selected_filters = addendum_dict.get(get_key_for_form(FILTER, index))
-        if not selected_filters or SHOW_ALL_ROW in selected_filters:
+        selected_filters = addendum_dict.get(get_key_for_form(FILTER, index), [])
+        if SHOW_ALL_ROW in selected_filters:
             filter_dict[ACTIVE_SELECTORS] = [SHOW_ALL_ROW]
         else:
             filter_dict[ACTIVE_SELECTORS] = selected_filters or filter_dict.get(
