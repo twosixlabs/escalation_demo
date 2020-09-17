@@ -59,7 +59,8 @@ from utility.wizard_utils import (
     extract_data_sources_from_config,
     copy_data_from_form_to_config,
     make_page_dict_for_main_config,
-    generate_collapse_dict_from_graphic_component_dict, get_default_collapse_dict,
+    generate_collapse_dict_from_graphic_component_dict,
+    get_default_collapse_dict,
 )
 
 GRAPHIC_CONFIG_EDITOR_HTML = "wizard_graphic_config_editor.html"
