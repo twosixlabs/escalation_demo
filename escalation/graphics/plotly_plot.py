@@ -223,7 +223,6 @@ class PlotlyPlot(Graphic):
             for axis in POSSIBLE_AXIS:
                 if axis in dict_of_data_for_each_plot:
                     set_of_column_names.add(dict_of_data_for_each_plot[axis])
-            # todo: add to schema
             for error_axis in POSSIBLE_ERROR_AXES:
                 if error_axis in dict_of_data_for_each_plot:
                     # this is error specified in data
