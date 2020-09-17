@@ -173,6 +173,12 @@ def build_plotly_schema(column_names):
                                 "group",
                             ],
                         },
+                        "opacity": {
+                            "type": "number",
+                            TITLE: "Opacity",
+                            "minimum": 0,
+                            "maximum": 0,
+                        },
                     },
                 },
             },
@@ -213,6 +219,10 @@ def build_plotly_schema(column_names):
                             "x unified",
                             "y unified",
                         ],
+                    },
+                    "barmode": {
+                        "type": "string",
+                        "enum": ["stack", "group", "overlay", "relative"],
                     },
                 },
             },
