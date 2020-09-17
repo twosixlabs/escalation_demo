@@ -154,6 +154,7 @@ def build_graphic_schema(
                     },
                     ADDITIONAL_DATA_SOURCES: {
                         "type": "array",
+                        TITLE: "Additional Data Sources",
                         OPTIONS: {COLLAPSED: collapse_dict[ADDITIONAL_DATA_SOURCES],},
                         ITEMS: {
                             "type": "object",
@@ -173,6 +174,7 @@ def build_graphic_schema(
                                     " (in the case of 2 or more tables)",
                                     ITEMS: {
                                         TITLE: "Pairs of Keys",
+                                        DESCRIPTION: "Use the command/ctr key to select more than one entry",
                                         "type": "array",
                                         "uniqueItems": True,
                                         "minItems": 2,
