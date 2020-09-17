@@ -199,6 +199,7 @@ def add_toggle_layout_button(layout_dict: dict):
                     "args2": ["showlegend", False],
                 }
             ],
+            # these align the button with the legend labels
             X: 1.16,
             Y: 1.15,
             "pad": {"r": 4},
@@ -222,9 +223,10 @@ class PlotlyPlot(Graphic):
         # todo: cut off all text data to used in group by or titles to 47 charaters
         data_sorted = False
         plot_options[CONFIG] = add_config_defaults(plot_options.get(CONFIG, {}))
-        if (visualization_options and GROUPBY in visualization_options) or len(
-            plot_options[DATA]
-        ) > 1:
+        # only have a legend if there is more than one plot by having a group by.
+        # Future: if we support having more than graphic plotted need-
+        # or len(plot_options[DATA]) > 1 with some other logic.
+        if visualization_options and GROUPBY in visualization_options:
             plot_options[LAYOUT] = add_toggle_layout_button(
                 plot_options.get(LAYOUT, {})
             )
