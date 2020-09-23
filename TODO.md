@@ -15,7 +15,6 @@ on another request. I think the current_app and request context may handle that 
     - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
     - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
-
 ## Alexander
 
 ## Unassigned/Maybe do
@@ -56,6 +55,8 @@ on another request. I think the current_app and request context may handle that 
 - How much RAM do we need to handle big data files? Can we stream things more efficiently than Pandas is doing?
 - add link to external Docker deployment instructions (Heroku? AWS free tier? Google Cloud Run?)
 
+## Miscellaneous
+- change confirm/alert boxes to modals/make them better 
 
 # User stories to support
 

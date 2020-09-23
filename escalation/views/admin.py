@@ -32,7 +32,6 @@ def admin_page():
 def submission():
     active_data_dict = request.form.to_dict()
     data_source_name = active_data_dict.pop(DATA_SOURCES)
-    print(active_data_dict)
     data_inventory = current_app.config.data_backend_writer
     data_inventory.update_data_upload_metadata_active(
         data_source_name, active_data_dict
