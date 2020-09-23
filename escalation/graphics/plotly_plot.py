@@ -206,9 +206,11 @@ def add_toggle_layout_button(layout_dict: dict):
                 }
             ],
             # these align the button with the legend labels
-            X: 1.16,
-            Y: 1.15,
-            "pad": {"r": 4},
+            "xanchor": "left",
+            "yanchor": "bottom",
+            X: 1.0,
+            Y: 1.0,
+            "pad": {"r": 2, "l": 38},
         }
     )
     layout_dict[UPDATE_MENUS] = updatemenus
