@@ -27,6 +27,7 @@ from version import VERSION
 from views.dashboard import dashboard_blueprint
 from views.file_upload import upload_blueprint
 from views.admin import admin_blueprint
+from views.download import download_blueprint
 from views.wizard_view import wizard_blueprint
 
 
@@ -53,6 +54,7 @@ def create_app(db_uri=None):
     app.register_blueprint(dashboard_blueprint)
     app.register_blueprint(upload_blueprint)
     app.register_blueprint(admin_blueprint)
+    app.register_blueprint(download_blueprint)
     if app.config.get("ENV") == DEVELOPMENT:
         # only include the wizard blueprint when running in debug mode
         app.register_blueprint(wizard_blueprint)

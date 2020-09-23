@@ -3,83 +3,26 @@
 
 {% extends 'base.html' %}
 
-{% block header %}
-<script>
-    function any_identifiers_active(data_source) {
-        let web_form=$('#form_'.concat(data_source));
-        const table_data=$(`#table_${data_source}`).bootstrapTable('getData')
-        let flag=0;
-        function active_table_data_to_form(dict) {
-            web_form[0][dict['upload_id']].value=(dict['active'] ? 'active' : 'inactive');
-          if (dict['active']){
-              flag=1
-          }
-        }
-        table_data.forEach(active_table_data_to_form)
-        if (flag){
-            web_form.attr('action','#'.concat(data_source));
-            web_form.submit()
-        }
-        else{
-           alert('At least one identifier needs to be active');
-        }
-
-    };
-
-
-    function download_data(){
-
-    }
-    function show_active(){
-        {% for data_source in data_source_dict.keys() %}
-            document.getElementById("{{ "update_" ~ data_source }}").hidden = false;
-            $('{{ "#table_" ~ data_source }}').bootstrapTable('showColumn', 'active')
-
-            document.getElementById("{{ "download_" ~ data_source }}").hidden = true;
-            $('{{ "#table_" ~ data_source }}').bootstrapTable('hideColumn', 'download')
-
-        {% endfor %}
-    }
-    function show_download(){
-        {% for data_source in data_source_dict.keys() %}
-            document.getElementById("{{ "update_" ~ data_source }}").hidden = true;
-            $('{{ "#table_" ~ data_source }}').bootstrapTable('hideColumn', 'active')
-
-            document.getElementById("{{ "download_" ~ data_source }}").hidden = false;
-            $('{{ "#table_" ~ data_source }}').bootstrapTable('showColumn', 'download')
-
-        {% endfor %}
-
-    }
-
-</script>
-{% endblock %}
-
 
 {% block content %}
 {% include 'navbar.html' %}
+{% if admin %}
 <div class="jumbotron">
     <h1 class="display-4">Administration Options</h1>
     <hr class="my-4">
     <p class="lead">Select which data uploads are included in the visualizations produced in the Escalation
-        dashboard\n
-    Download data
+        dashboard
     </p>
 </div>
-
+{% else %}
+    <div class="jumbotron">
+    <h1 class="display-4">Download</h1>
+    <hr class="my-4">
+    <p class="lead">Select which data is downloaded
+    </p>
+</div>
+{% endif %}
 <div class="container-fluid pl-5 pr-5">
-    <div class="row">
-        <div class="col-10">
-            <div class="btn-group btn-group-toggle mb-5 ml-5" data-toggle="buttons">
-              <label class="btn btn-secondary btn-lg active">
-                <input type="radio" onchange=show_active() checked>Set Active State
-              </label>
-              <label class="btn btn-secondary btn-lg">
-                <input type="radio" onchange=show_download()> Choose Downloads
-              </label>
-            </div>
-        </div>
-    </div>
     {% for data_source, identifiers_metadata_dict_list in data_source_dict.items() %}
         <form method="post" id={{"form_" ~ data_source }}>
             <input type="hidden" name="data_sources" value={{ data_source }}>
@@ -108,8 +51,7 @@
                         <th scope="col" data-field="username" data-sortable="true">Username</th>
                         <th scope="col" data-field="upload_time" data-sortable="true">Upload Time</th>
                         <th scope="col" data-field="notes" data-sortable="true">Notes</th>
-                        <th scope="col" data-field="active" data-checkbox="true" data-show-select-title="true">Data Set Active</th>
-                        <th scope="col" data-field="download" data-checkbox="true" data-show-select-title="true" data-visible="false">Download</th>
+                        <th scope="col" data-field="active" data-checkbox="true" data-show-select-title="true">{{ "Data Set Active" if admin else "Download" }}</th>
                     </tr>
                     </thead>
                 </table>
@@ -133,8 +75,8 @@
                         })
                       })
                     </script>
-                    <button id="{{ "update_" ~ data_source }}" type="button" class="btn btn-primary btn-block m-2" onclick=any_identifiers_active("{{ data_source }}")>Update</button>
-                    <button id="{{ "download_" ~ data_source }}" type="button" class="btn btn-primary btn-block m-2" hidden="true" onclick=download_data("{{ data_source }}")>Download</button>
+                    <button id="{{ "update_" ~ data_source }}" type="button" class="btn btn-primary btn-block m-2" onclick=any_identifiers_active("{{ data_source }}")>{{ "Update" if admin else "Download" }}</button>
+
                 </div>
             </div>
         </div>
