@@ -28,8 +28,10 @@
 {% endif %}
 {% if config.ENV == "development" %}
 <div class="row mb-3">
-    <a class="btn btn-outline-secondary" href={{ url_for('wizard.data_upload_page_view') }} role="button">Create/Replace a Table</a> <button type="button" class="btn btn-secondary">Append to a Existing Table</button>
- </div>
+    <div class="btn-group" role="group">
+        <a class="btn btn-outline-secondary" href={{ url_for('wizard.data_upload_page_view') }} role="button">Create/Replace a Table</a> <button type="button" class="btn btn-secondary">Append to a Existing Table</button>
+    </div>
+</div>
 {% endif %}
 <div class="row">
 <form id="upload_form" method="post" enctype="multipart/form-data">
