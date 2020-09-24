@@ -177,7 +177,7 @@ def build_plotly_schema(column_names):
                             "type": "number",
                             TITLE: "Opacity",
                             "minimum": 0,
-                            "maximum": 0,
+                            "maximum": 1,
                         },
                     },
                 },
