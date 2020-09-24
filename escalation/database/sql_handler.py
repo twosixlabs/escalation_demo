@@ -221,8 +221,11 @@ class SqlHandler(DataHandler):
         # todo: better match how our auto schema is working to catch all rename logic
         return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
 
-    def get_column_data(self, columns: list, filters: [] = None) -> dict:
+    def get_column_data(
+        self, columns: list, filters: [] = None, only_use_active: bool = True
+    ) -> dict:
         """
+        :param only_use_active:
         :param columns: A complete list of the columns to be returned
         :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
@@ -238,8 +241,9 @@ class SqlHandler(DataHandler):
         query = current_app.db_session.query(
             *[self.column_lookup_by_name[c] for c in all_column_rename_dict.keys()]
         )
-        active_data_filters = self.build_filters_from_active_data_source()
-        filters.extend(active_data_filters)
+        if only_use_active:
+            active_data_filters = self.build_filters_from_active_data_source()
+            filters.extend(active_data_filters)
         query = self.apply_filters_to_query(query, filters)
         response_rows = query.all()
         if response_rows:

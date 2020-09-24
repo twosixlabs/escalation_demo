@@ -226,13 +226,16 @@ def get_layout_for_dashboard(available_pages_list):
     return available_pages_list_copy
 
 
-def get_possible_column_names_and_values(data_source_names, data_inventory_class):
+def get_possible_column_names_and_values(
+    data_source_names, data_inventory_class, get_unique_values=True
+):
     """
     Used to populate a dropdown in the config wizard with any column from the data
     sources included in a figure, unique_entries used to populate default selected.
     :param data_source_names: list of data source name strings
     :param data_inventory_class: backend-specific data inventory class
     :return: possible_column_names list, unique_entries dict.
+    :param get_unique_values: if true calculates unique values for each column
     """
     possible_column_names = []
     unique_entries = {}
@@ -253,10 +256,11 @@ def get_possible_column_names_and_values(data_source_names, data_inventory_class
                 for column_name in column_names
             ]
         )
-        unique_entries_for_data_source = data_inventory.get_column_unique_entries(
-            possible_column_names
-        )
-        unique_entries.update(unique_entries_for_data_source)
+        if get_unique_values:
+            unique_entries_for_data_source = data_inventory.get_column_unique_entries(
+                possible_column_names
+            )
+            unique_entries.update(unique_entries_for_data_source)
     return possible_column_names, unique_entries
 
 
