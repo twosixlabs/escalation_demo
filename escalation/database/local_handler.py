@@ -49,6 +49,7 @@ class LocalCSVHandler(DataHandler):
         (..., ...)]]
         """
         self.data_sources = data_sources
+        self.only_use_active = only_use_active
         self.data_file_directory = os.path.join(
             current_app.config[CONFIG_FILE_FOLDER], DATA
         )
@@ -56,7 +57,7 @@ class LocalCSVHandler(DataHandler):
             ADDITIONAL_DATA_SOURCES, []
         )
         for data_source in data_sources:
-            filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source, only_use_active)
+            filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source)
             data_source.update({DATA_LOCATION: filepaths_list})
         self.combined_data_table = self.build_combined_data_table()
 
@@ -88,11 +89,11 @@ class LocalCSVHandler(DataHandler):
         ]
         return files_list
 
-    def assemble_list_of_active_data_source_csvs(self, data_source, only_use_active: bool = True):
+    def assemble_list_of_active_data_source_csvs(self, data_source):
         data_source_name = data_source[DATA_SOURCE_TYPE]
         data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
         filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
-        if only_use_active:
+        if self.only_use_active:
             filepaths_list = self.filter_out_inactive_files(
                 filepaths_list, data_source_name,
             )
@@ -152,6 +153,9 @@ class LocalCSVHandler(DataHandler):
 
         return df[cols]
 
+    def get_table(self, filters: list = None) -> dict:
+        pass
+
     def get_column_unique_entries(self, cols: list, filters: list = None) -> dict:
         if filters is None:
             filters = []
@@ -185,6 +189,9 @@ class LocalCSVHandler(DataHandler):
 
 
 class LocalCSVDataInventory(LocalCSVHandler):
+    """
+    Used for getting meta data information and uploading to backend
+    """
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1

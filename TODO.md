@@ -37,7 +37,8 @@ on another request. I think the current_app and request context may handle that 
 
 - Data privacy- do we want to add some kind of key checking or password functionality?
 - Render validation error response on file upload in HTML rather than printing json
-- possibly rename config.data_back_writer
+- move get_schema_for_data_source to handler and use handler in get_possible_column_names...
+instead of config.data_back_writer
 
 ## Wizard
 - Allow Tables in the wizard

@@ -350,6 +350,9 @@ class DataFrameConverter:
 
 
 class SqlDataInventory(SqlHandler, DataFrameConverter):
+    """
+    Used for getting meta data information and uploading to backend
+    """
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1
