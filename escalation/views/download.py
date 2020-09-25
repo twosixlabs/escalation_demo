@@ -4,7 +4,7 @@ import json
 
 from flask import current_app, render_template, Blueprint, request, Response
 
-from controller import get_meta_data
+from controller import get_metadata
 from utility.constants import (
     DATA_SOURCES,
     MAIN_DATA_SOURCE,
@@ -25,7 +25,7 @@ download_blueprint = Blueprint("download", __name__)
 
 @download_blueprint.route("/download", methods=("GET",))
 def download_page():
-    data_source_dict = get_meta_data()
+    data_source_dict = get_metadata()
     return render_template(
         DOWNLOAD_HTML, data_source_dict=data_source_dict, admin=False
     )
@@ -35,12 +35,11 @@ def download_page():
 def download_data():
     download_data_dict = request.form.to_dict()
     data_source_name = download_data_dict.pop(DATA_SOURCES)
-    data_inventory_class = current_app.config.data_backend_writer
-    data_inventory = data_inventory_class(
-        data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
+    data_inventory = current_app.config.data_handler(
+        data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}, only_use_active=False
     )
     column_names, _ = get_possible_column_names_and_values(
-        [data_source_name], data_inventory_class, get_unique_values=False
+        [data_source_name], current_app.config.data_backend_writer, get_unique_values=False
     )
     data_source_filters = [
         {
@@ -50,11 +49,13 @@ def download_data():
                 upload_id
                 for upload_id, selected in download_data_dict.items()
                 if selected == ACTIVE
+                # reusing the active logic from the admin page,
+                # ACTIVE here means user-selected for download
             ],
         }
     ]
     df = data_inventory.get_column_data(
-        column_names, data_source_filters, only_use_active=False
+        column_names, data_source_filters
     )
     return Response(
         df.to_csv(index=False),

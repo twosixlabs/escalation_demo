@@ -40,7 +40,7 @@ from utility.exceptions import ValidationError
 
 
 class LocalCSVHandler(DataHandler):
-    def __init__(self, data_sources):
+    def __init__(self, data_sources, only_use_active: bool = True):
         """
         :param data_sources: dict defining data files and join rules
         e.g., {MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: "file_type_a"},
@@ -56,7 +56,7 @@ class LocalCSVHandler(DataHandler):
             ADDITIONAL_DATA_SOURCES, []
         )
         for data_source in data_sources:
-            filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source)
+            filepaths_list = self.assemble_list_of_active_data_source_csvs(data_source, only_use_active)
             data_source.update({DATA_LOCATION: filepaths_list})
         self.combined_data_table = self.build_combined_data_table()
 
@@ -88,13 +88,14 @@ class LocalCSVHandler(DataHandler):
         ]
         return files_list
 
-    def assemble_list_of_active_data_source_csvs(self, data_source):
+    def assemble_list_of_active_data_source_csvs(self, data_source, only_use_active: bool = True):
         data_source_name = data_source[DATA_SOURCE_TYPE]
         data_source_subfolder = os.path.join(self.data_file_directory, data_source_name)
         filepaths_list = glob.glob(f"{data_source_subfolder}/*.csv")
-        filepaths_list = self.filter_out_inactive_files(
-            filepaths_list, data_source_name,
-        )
+        if only_use_active:
+            filepaths_list = self.filter_out_inactive_files(
+                filepaths_list, data_source_name,
+            )
         assert len(filepaths_list) > 0
         return filepaths_list
 

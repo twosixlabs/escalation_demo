@@ -125,9 +125,15 @@ def psycopg2_copy_from_stringio(conn, df, table_name):
 
 
 class SqlHandler(DataHandler):
-    def __init__(self, data_sources):
+    def __init__(self, data_sources, only_use_active: bool = True):
+        """
+        :param only_use_active: filters the query based on the "active" value
+        in the upload_metadata table for each upload
+        :param data_sources:
+        """
         self.data_sources = data_sources
         self.table_lookup_by_name = {}
+        self.only_use_active = only_use_active
         # create a flattened list from the data_sources object
         self.flat_data_sources = [
             self.data_sources[MAIN_DATA_SOURCE]
@@ -222,10 +228,9 @@ class SqlHandler(DataHandler):
         return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
 
     def get_column_data(
-        self, columns: list, filters: [] = None, only_use_active: bool = True
+        self, columns: list, filters: [] = None
     ) -> dict:
         """
-        :param only_use_active:
         :param columns: A complete list of the columns to be returned
         :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
@@ -241,7 +246,7 @@ class SqlHandler(DataHandler):
         query = current_app.db_session.query(
             *[self.column_lookup_by_name[c] for c in all_column_rename_dict.keys()]
         )
-        if only_use_active:
+        if self.only_use_active:
             active_data_filters = self.build_filters_from_active_data_source()
             filters.extend(active_data_filters)
         query = self.apply_filters_to_query(query, filters)

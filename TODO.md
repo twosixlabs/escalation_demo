@@ -36,8 +36,8 @@ on another request. I think the current_app and request context may handle that 
 ## Data management
 
 - Data privacy- do we want to add some kind of key checking or password functionality?
-- Add data download option (both most recent data and older versions of the data?), next to identifiers on admin page
 - Render validation error response on file upload in HTML rather than printing json
+- possibly rename config.data_back_writer
 
 ## Wizard
 - Allow Tables in the wizard

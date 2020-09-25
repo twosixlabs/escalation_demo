@@ -4,7 +4,7 @@ import json
 
 from flask import current_app, render_template, Blueprint, request
 
-from controller import get_meta_data
+from controller import get_metadata
 from utility.constants import DATA_SOURCES, UPLOAD_ID
 
 ADMIN_HTML = "view_uploaded_data.html"
@@ -14,7 +14,7 @@ admin_blueprint = Blueprint("admin", __name__)
 
 @admin_blueprint.route("/admin", methods=("GET",))
 def admin_page():
-    data_source_dict = get_meta_data()
+    data_source_dict = get_metadata()
     return render_template(ADMIN_HTML, data_source_dict=data_source_dict, admin=True)
 
 

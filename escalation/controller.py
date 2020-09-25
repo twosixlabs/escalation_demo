@@ -236,7 +236,7 @@ def make_pages_dict(available_pages_list, config_file_folder) -> dict:
     return available_pages_dict
 
 
-def get_meta_data():
+def get_metadata():
     """
     gets meta data for admin and download page
     :return:
