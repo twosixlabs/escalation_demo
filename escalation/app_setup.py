@@ -33,7 +33,15 @@ from views.wizard_view import wizard_blueprint
 def create_app(db_uri=None):
     app = Flask(__name__)
     # specify the env variable DATABASE_CONFIG to control the content of DATABASE_CONFIG
-    sqlalchemy_database_uri = URL(db_uri) if db_uri else URL(**DATABASE_CONFIG)
+    if db_uri:
+        if isinstance(db_uri, URL):
+            sqlalchemy_database_uri = db_uri
+        elif isinstance(db_uri, str):
+            sqlalchemy_database_uri = URL(db_uri)
+        else:
+            raise TypeError("db_uri must be url string or sqlalchemy URL object")
+    else:
+        sqlalchemy_database_uri = URL(**DATABASE_CONFIG)
 
     app.config.from_mapping(
         SQLALCHEMY_DATABASE_URI=sqlalchemy_database_uri,
