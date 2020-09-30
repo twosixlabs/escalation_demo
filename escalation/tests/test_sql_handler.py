@@ -191,28 +191,30 @@ def test_get_available_data_sources(rebuild_test_database):
 
 def test_get_schema_for_data_source(get_sql_handler_fixture):
     column_names = get_sql_handler_fixture.get_schema_for_data_source()
-    expected_column_names = {'mean_penguin_stat:body_mass',
-                             'mean_penguin_stat:culmen_depth',
-                             'mean_penguin_stat:culmen_length',
-                             'mean_penguin_stat:delta_13_c',
-                             'mean_penguin_stat:delta_15_n',
-                             'mean_penguin_stat:flipper_length',
-                             'mean_penguin_stat:row_index',
-                             'mean_penguin_stat:sex',
-                             'mean_penguin_stat:species',
-                             'mean_penguin_stat:study_name',
-                             'mean_penguin_stat:upload_id',
-                             'penguin_size:body_mass_g',
-                             'penguin_size:culmen_depth_mm',
-                             'penguin_size:culmen_length_mm',
-                             'penguin_size:flipper_length_mm',
-                             'penguin_size:island',
-                             'penguin_size:region',
-                             'penguin_size:row_index',
-                             'penguin_size:sex',
-                             'penguin_size:species',
-                             'penguin_size:study_name',
-                             'penguin_size:upload_id'}
+    expected_column_names = {
+        "mean_penguin_stat:body_mass",
+        "mean_penguin_stat:culmen_depth",
+        "mean_penguin_stat:culmen_length",
+        "mean_penguin_stat:delta_13_c",
+        "mean_penguin_stat:delta_15_n",
+        "mean_penguin_stat:flipper_length",
+        "mean_penguin_stat:row_index",
+        "mean_penguin_stat:sex",
+        "mean_penguin_stat:species",
+        "mean_penguin_stat:study_name",
+        "mean_penguin_stat:upload_id",
+        "penguin_size:body_mass_g",
+        "penguin_size:culmen_depth_mm",
+        "penguin_size:culmen_length_mm",
+        "penguin_size:flipper_length_mm",
+        "penguin_size:island",
+        "penguin_size:region",
+        "penguin_size:row_index",
+        "penguin_size:sex",
+        "penguin_size:species",
+        "penguin_size:study_name",
+        "penguin_size:upload_id",
+    }
 
     assert set(column_names) == expected_column_names
 

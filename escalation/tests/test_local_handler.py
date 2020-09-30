@@ -175,7 +175,7 @@ def test_get_schema_for_data_source(test_app_client_csv_backed):
         "penguin_size:culmen_depth_mm",
         "penguin_size:culmen_length_mm",
         "penguin_size:flipper_length_mm",
-        "penguin_size:body_mass_g"
+        "penguin_size:body_mass_g",
     ]
 
     assert set(column_names) == set(expected_column_names)
