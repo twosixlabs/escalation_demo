@@ -136,6 +136,13 @@ class LocalCSVHandler(DataHandler):
             )
         return combined_data_table
 
+    def get_schema_for_data_source(self):
+        """
+        :return: list of named tuples that contain the name and data type of the df columns
+        This is designed to match the data format of the column tuples used in sqlalchemy
+        """
+        return self.combined_data_table.columns
+
     def get_column_data(self, cols: list, filters: list = None) -> dict:
         # error checking would be good
         """
@@ -310,26 +317,6 @@ class LocalCSVDataInventory(LocalCSVHandler):
             data_source_name, active_data_dict
         )
         data_upload_metadata.to_csv(cls.get_data_upload_metadata_path(), index=False)
-
-    def get_schema_for_data_source(self):
-        """
-        :return: list of namedtuples that contain the name and data type of the df columns
-        This is designed to match the data format of the column tuples used in sqlalchemy
-        """
-        files_by_source = self.get_data_upload_metadata([self.data_source_name])
-        list_of_files = [
-            os.path.join(self.data_file_directory, f[UPLOAD_ID])
-            for f in files_by_source[self.data_source_name]
-            if f.get(ACTIVE)
-        ]
-        if not list_of_files:
-            return []
-        latest_filepath = max(list_of_files, key=os.path.getctime)
-        data_types = pd.read_csv(latest_filepath, nrows=1).dtypes
-        column_schema = namedtuple("column_schema", ["name", "data_type"])
-        return [
-            column_schema(k, v) for k, v in zip(data_types.index, data_types.values)
-        ]
 
     def delete_data_source(self):
         # if there are files in this data source directory, clear it out

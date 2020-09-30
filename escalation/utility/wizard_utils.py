@@ -227,35 +227,24 @@ def get_layout_for_dashboard(available_pages_list):
 
 
 def get_possible_column_names_and_values(
-    data_source_names, data_inventory_class, get_unique_values=True
+    data_source_names, data_handler_class, get_unique_values=True
 ):
     """
     Used to populate a dropdown in the config wizard with any column from the data
     sources included in a figure, unique_entries used to populate default selected.
     :param data_source_names: list of data source name strings
-    :param data_inventory_class: backend-specific data inventory class
+    :param data_handler_class: backend-specific data inventory class
     :return: possible_column_names list, unique_entries dict.
     :param get_unique_values: if true calculates unique values for each column
     """
     possible_column_names = []
     unique_entries = {}
-    csv_flag = current_app.config[APP_CONFIG_JSON].get(DATA_BACKEND) == LOCAL_CSV
     for data_source_name in data_source_names:
-        data_inventory = data_inventory_class(
+        data_inventory = data_handler_class(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
         column_names = data_inventory.get_schema_for_data_source()
-        possible_column_names.extend(
-            [
-                TABLE_COLUMN_SEPARATOR.join(
-                    [
-                        data_source_name,
-                        column_name.name if csv_flag else column_name.name,
-                    ]
-                )
-                for column_name in column_names
-            ]
-        )
+        possible_column_names.extend(column_names)
         if get_unique_values:
             unique_entries_for_data_source = data_inventory.get_column_unique_entries(
                 possible_column_names
@@ -278,7 +267,7 @@ def get_data_source_info(active_data_source_names=None):
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
     possible_column_names, unique_entries = get_possible_column_names_and_values(
-        active_data_source_names, data_inventory_class
+        active_data_source_names, current_app.config.data_handler
     )
     return data_source_names, possible_column_names, unique_entries
 

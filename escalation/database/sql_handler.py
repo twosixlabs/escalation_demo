@@ -227,6 +227,18 @@ class SqlHandler(DataHandler):
         # todo: better match how our auto schema is working to catch all rename logic
         return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
 
+    def get_schema_for_data_source(self):
+        """
+        gets the column names for the current handler object
+        todo: debate whether we should prefix the table name
+        :return: list of sqlalchemy column objects
+        """
+        return [
+            TABLE_COLUMN_SEPARATOR.join([data_source, c.name])
+            for data_source, column_object in self.table_lookup_by_name.items()
+            for c in column_object.columns
+        ]
+
     def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
         :param columns: A complete list of the columns to be returned
@@ -496,13 +508,6 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
         max_upload_id = max_upload_id or 0
         upload_id = max_upload_id + 1
         return upload_id
-
-    def get_schema_for_data_source(self):
-        """
-        :param data_source_name: str
-        :return: list of sqlalchemy column objects
-        """
-        return [c for c in self.table_lookup_by_name[self.data_source_name].columns]
 
     def write_data_upload_to_backend(
         self, uploaded_data_df, username, notes, filename=None
