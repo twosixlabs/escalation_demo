@@ -35,6 +35,7 @@ from utility.constants import (
     USERNAME,
     NOTES,
     DATETIME_FORMAT,
+    INDEX_COLUMN,
 )
 from utility.exceptions import ValidationError
 
@@ -153,8 +154,14 @@ class LocalCSVHandler(DataHandler):
 
         return df[cols]
 
-    def get_table(self, filters: list = None) -> dict:
-        pass
+    def get_table_data(self, filters: list = None) -> dict:
+        df = self.combined_data_table
+        if filters is None:
+            filters = []
+        for filter_dict in filters:
+            column = df[filter_dict[OPTION_COL]]
+            df = df[local_csv_handler_filter_operation(column, filter_dict)]
+        return df
 
     def get_column_unique_entries(self, cols: list, filters: list = None) -> dict:
         if filters is None:
@@ -192,6 +199,7 @@ class LocalCSVDataInventory(LocalCSVHandler):
     """
     Used for getting meta data information and uploading to backend
     """
+
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1
@@ -361,7 +369,9 @@ class LocalCSVDataInventory(LocalCSVHandler):
             raise ValidationError(
                 f"Filename {filename} already exists for data source type {self.data_source_name}"
             )
-        uploaded_data_df.to_csv(file_path, index=False)
+        # write UPLOAD_ID and INDEX_COLUMN to match SQL handler
+        uploaded_data_df[UPLOAD_ID] = filename
+        uploaded_data_df.to_csv(file_path, index_label=INDEX_COLUMN)
 
         # update the data upload metadata
         data_upload_metadata = self.get_data_upload_metadata_df()

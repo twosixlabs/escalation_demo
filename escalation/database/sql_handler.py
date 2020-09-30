@@ -227,9 +227,7 @@ class SqlHandler(DataHandler):
         # todo: better match how our auto schema is working to catch all rename logic
         return column_name.replace(TABLE_COLUMN_SEPARATOR, "_")
 
-    def get_column_data(
-        self, columns: list, filters: [] = None
-    ) -> dict:
+    def get_column_data(self, columns: list, filters: [] = None) -> dict:
         """
         :param columns: A complete list of the columns to be returned
         :param filters: Optional list specifying how to filter the requested columns based on the row values
@@ -260,6 +258,43 @@ class SqlHandler(DataHandler):
             # if the sql query returns no rows, we want an empty df to format our response
             response_as_df = pd.DataFrame(columns=columns)
         return response_as_df[columns]
+
+    def get_table_data(self, filters: [] = None) -> dict:
+        """
+        :param columns: A complete list of the columns to be returned
+        :param filters: Optional list specifying how to filter the requested columns based on the row values
+        :return: a dict keyed by column name and valued with lists of row datapoints for the column
+        """
+
+        def remove_prefix_from_column_name(text, list_prefix):
+            for prefix in list_prefix:
+                prefix = f"{prefix}_"
+                if text.startswith(prefix):
+                    return text[len(prefix) :]
+            return text
+
+        if filters is None:
+            filters = []
+        # build basic query requesting all of the columns needed
+        column_rename_dict = {
+            c: remove_prefix_from_column_name(c, self.table_lookup_by_name.keys())
+            for c in self.column_lookup_by_name.keys()
+        }
+        query = current_app.db_session.query(*self.column_lookup_by_name.values())
+        if self.only_use_active:
+            active_data_filters = self.build_filters_from_active_data_source()
+            filters.extend(active_data_filters)
+        query = self.apply_filters_to_query(query, filters)
+        response_rows = query.all()
+        if response_rows:
+            # rename is switching the '_' separation back to TABLE_COLUMN_SEPARATOR
+            response_as_df = pd.DataFrame(response_rows).rename(
+                columns=column_rename_dict
+            )
+        else:
+            # if the sql query returns no rows, we want an empty df to format our response
+            response_as_df = pd.DataFrame(columns=column_rename_dict.values())
+        return response_as_df
 
     def get_column_unique_entries(
         self, cols: list, filter_active_data=True, filters: list = None
@@ -353,6 +388,7 @@ class SqlDataInventory(SqlHandler, DataFrameConverter):
     """
     Used for getting meta data information and uploading to backend
     """
+
     def __init__(self, data_sources):
         # Instance methods for this class refer to single data source table
         assert len(data_sources) == 1

@@ -36,10 +36,8 @@ def download_data():
     download_data_dict = request.form.to_dict()
     data_source_name = download_data_dict.pop(DATA_SOURCES)
     data_inventory = current_app.config.data_handler(
-        data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}, only_use_active=False
-    )
-    column_names, _ = get_possible_column_names_and_values(
-        [data_source_name], current_app.config.data_backend_writer, get_unique_values=False
+        data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}},
+        only_use_active=False,
     )
     data_source_filters = [
         {
@@ -54,9 +52,7 @@ def download_data():
             ],
         }
     ]
-    df = data_inventory.get_column_data(
-        column_names, data_source_filters
-    )
+    df = data_inventory.get_table_data(data_source_filters)
     return Response(
         df.to_csv(index=False),
         mimetype="text/csv",

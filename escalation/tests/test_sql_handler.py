@@ -212,3 +212,17 @@ def test_get_schema_for_data_source(rebuild_test_database):
 
 def test_write_data_upload_to_backend():
     assert False
+
+
+def test_get_table_data(get_sql_handler_fixture_small):
+    result = get_sql_handler_fixture_small.get_table_data()
+
+    penguin_small = pd.read_csv(
+        "test_app_deploy_data/data/penguin_size_small/penguin_size_small.csv"
+    )
+    penguin_small["upload_id"] = 1
+    penguin_small["row_index"] = [0, 1, 2]
+    assert all(
+        result.sort_index().sort_index(axis=1)
+        == penguin_small.sort_index().sort_index(axis=1)
+    )
