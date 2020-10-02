@@ -1,5 +1,36 @@
 {
-    "title": "",
-    "brief_desc": "",
-    "data_backend": "psql"
+    "title": "Escalation Visualization Software",
+    "brief_desc": "This is a demo for Escalation",
+    "data_backend": "psql",
+    "data_file_directory": "",
+    "available_pages": [
+        {
+            "webpage_label": "Graphs",
+            "url_endpoint": "graphs",
+            "graphic_config_files": [
+                "scatter_example.json",
+                "hist_example.json",
+                "scatter_3d_example.json"
+            ]
+        },
+        {
+            "webpage_label": "Graphs With Features",
+            "url_endpoint": "features",
+            "graphic_config_files": [
+                "hover_example.json",
+                "line_axis_label_example.json",
+                "box_group_by_example.json",
+                "bar_aggregate_example.json"
+            ]
+        },
+        {
+            "webpage_label": "Selector Examples",
+            "url_endpoint": "selector",
+            "graphic_config_files": [
+                "filter.json",
+                "advanced_filters.json",
+                "group_by_and_axis.json"
+            ]
+        }
+    ]
 }

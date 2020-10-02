@@ -1,0 +1,26 @@
+{
+    "plot_manager": "plotly",
+    "title": "Group By Functionality",
+    "brief_desc": "Utilize group by to group the data by different column values in your data",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "box",
+                "y": "penguin_size:body_mass_g"
+            }
+        ]
+    },
+    "visualization_options": {
+        "groupby": {
+            "column": [
+                "penguin_size:island",
+                "penguin_size:sex"
+            ]
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "plot_manager": "plotly",
+    "title": "Filter example",
+    "brief_desc": "Use the selector to the right to choose between different filters on the penguin_size:sex data",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "x": "penguin_size:body_mass_g",
+                "y": "penguin_size:flipper_length_mm",
+                "mode": "markers"
+            }
+        ]
+    },
+    "selectable_data_dict": {
+        "filter": [
+            {
+                "column": "penguin_size:sex"
+            }
+        ]
+    }
+}
