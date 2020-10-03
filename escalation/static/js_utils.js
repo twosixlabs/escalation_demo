@@ -76,6 +76,26 @@ function get_main_data_sources(data_source_dict){
     return data_sources
 }
 
+function any_identifiers_active(data_source) {
+    let web_form=$('#form_'.concat(data_source));
+    const table_data=$(`#table_${data_source}`).bootstrapTable('getData')
+    let flag=0;
+    function active_table_data_to_form(dict) {
+        web_form[0][dict['upload_id']].value=(dict['active'] ? 'active' : 'inactive');
+      if (dict['active']){
+          flag=1
+      }
+    }
+    table_data.forEach(active_table_data_to_form)
+    if (flag){
+        web_form.attr('action','#'.concat(data_source));
+        web_form.submit()
+    }
+    else{
+       alert('At least one identifier needs to be selected');
+    }
+}
+
 function toggle_rename_page(page_id) {
     let page_div = document.getElementById("page_".concat(page_id));
     let rename_page_div = document.getElementById("rename_page_".concat(page_id));
