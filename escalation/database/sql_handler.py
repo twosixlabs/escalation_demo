@@ -273,12 +273,11 @@ class SqlHandler(DataHandler):
 
     def get_table_data(self, filters: [] = None) -> dict:
         """
-        :param columns: A complete list of the columns to be returned
         :param filters: Optional list specifying how to filter the requested columns based on the row values
         :return: a dict keyed by column name and valued with lists of row datapoints for the column
         """
 
-        def remove_prefix_from_column_name(text, list_prefix):
+        def remove_tablename_prefix_from_column_name(text, list_prefix):
             for prefix in list_prefix:
                 prefix = f"{prefix}_"
                 if text.startswith(prefix):
@@ -289,7 +288,9 @@ class SqlHandler(DataHandler):
             filters = []
         # build basic query requesting all of the columns needed
         column_rename_dict = {
-            c: remove_prefix_from_column_name(c, self.table_lookup_by_name.keys())
+            c: remove_tablename_prefix_from_column_name(
+                c, self.table_lookup_by_name.keys()
+            )
             for c in self.column_lookup_by_name.keys()
         }
         query = current_app.db_session.query(*self.column_lookup_by_name.values())

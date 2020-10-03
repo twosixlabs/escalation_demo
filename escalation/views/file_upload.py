@@ -95,10 +95,10 @@ def submission():
         data_inventory = current_app.config.data_backend_writer(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
-        data_inventory_class = current_app.config.data_handler(
+        data_handler_class = current_app.config.data_handler(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
-        data_source_schema = data_inventory_class.get_schema_for_data_source()
+        data_source_schema = data_handler_class.get_schema_for_data_source()
 
         df = validate_submission_content(csvfile, data_source_schema)
         data_inventory.write_data_upload_to_backend(
