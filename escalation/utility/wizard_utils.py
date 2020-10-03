@@ -243,11 +243,11 @@ def get_possible_column_names_and_values(
         data_inventory = data_handler_class(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
-        column_names = data_inventory.get_schema_for_data_source()
-        possible_column_names.extend(column_names)
+        column_names_for_data_source = data_inventory.get_schema_for_data_source()
+        possible_column_names.extend(column_names_for_data_source)
         if get_unique_values:
             unique_entries_for_data_source = data_inventory.get_column_unique_entries(
-                possible_column_names
+                column_names_for_data_source
             )
             unique_entries.update(unique_entries_for_data_source)
     return possible_column_names, unique_entries
