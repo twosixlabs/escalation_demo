@@ -5,6 +5,8 @@
 - add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
 empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
 on another request. I think the current_app and request context may handle that nicely.
+- Cookbook examples for app deployment and integration: example scripts to integrate data uploads from GitLFS
+
 - Bug?: restarts on "Detected change in
  '/usr/local/lib/python3.7/encodings/__pycache__/unicode_escape.cpython-37.pyc', reloading"
 # Next release todo Features
@@ -44,9 +46,9 @@ on another request. I think the current_app and request context may handle that 
 ## Data management
 
 - Data privacy- do we want to add some kind of key checking or password functionality?
-- Add data download option (both most recent data and older versions of the data?), next to identifiers on admin page
-- script to update models.py. Integrate with delete db to clear db but leave metadata
 - Render validation error response on file upload in HTML rather than printing json
+- move get_schema_for_data_source to handler and use handler in get_possible_column_names...
+instead of config.data_back_writer
 
 ## Wizard
 - Allow Tables in the wizard
@@ -64,6 +66,8 @@ on another request. I think the current_app and request context may handle that 
 - How much RAM do we need to handle big data files? Can we stream things more efficiently than Pandas is doing?
 - add link to external Docker deployment instructions (Heroku? AWS free tier? Google Cloud Run?)
 
+## Miscellaneous
+- change confirm/alert boxes to modals/make them better 
 
 # User stories to support
 
