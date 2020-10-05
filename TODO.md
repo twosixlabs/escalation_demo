@@ -5,7 +5,8 @@
 - add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
 empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
 on another request. I think the current_app and request context may handle that nicely.
-
+- Bug?: restarts on "Detected change in
+ '/usr/local/lib/python3.7/encodings/__pycache__/unicode_escape.cpython-37.pyc', reloading"
 # Next release todo Features
 
 ## Nick
