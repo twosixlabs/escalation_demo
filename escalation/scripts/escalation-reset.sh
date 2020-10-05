@@ -13,8 +13,8 @@ then
     echo "running"
     echo "docker-compose down --volumes"
     docker-compose down --volumes
-    echo "git checkout master -- /escalation/app_deploy_data/models.py"
-    git checkout master -- escalation/app_deploy_data/models.py
+    echo "Resetting models.py"
+    cp escalation/database/models_template.py escalation/app_deploy_data/models.py
 else
     echo "Aborting- no action taken"
 fi
