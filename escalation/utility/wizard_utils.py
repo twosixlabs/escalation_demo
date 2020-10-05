@@ -263,6 +263,11 @@ def get_data_source_info(active_data_source_names=None):
         active_data_source_names = []
     data_inventory_class = current_app.config.data_backend_writer
     data_source_names = data_inventory_class.get_available_data_sources()
+    active_data_source_names = [
+        data_source_name
+        for data_source_name in active_data_source_names
+        if data_source_name in data_source_names
+    ]
     if data_source_names and not active_data_source_names:
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
