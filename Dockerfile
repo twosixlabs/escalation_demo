@@ -18,6 +18,7 @@ FROM python:3.7.8-buster
 #Set escalation as working directory
 WORKDIR /escalation
 ENV PYTHONPATH "${PYTHONPATH}:/escalation"
+ENV DOCKER_DEPLOYED true
 
 #install dependencies
 RUN apt-get update
