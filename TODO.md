@@ -1,6 +1,5 @@
 # To Triage
 - Bug: crashes if the graphic config references data sources that do not exist. 
-- Bug: program crashes if models.py does not exist
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
 - add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
 empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
@@ -12,9 +11,6 @@ on another request. I think the current_app and request context may handle that 
 # Next release todo Features
 
 ## Nick
-
-- Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
-- models.py not refreshed when docker down run on volumes to handle any reset
 - Light data Processor functionality for data diagnostics: 
     - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
