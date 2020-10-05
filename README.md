@@ -147,15 +147,16 @@ To connect directly to the SQL database, this command
 
 ### Resetting the SQL database
 
-You can re-build the sql database from a blank slate by deleting the "volume" associated with the database, 
-where the data is stored, and relaunching to create a new one.
+Run the reset script from the top level of the repository
 
-1. Run the command `docker-compose down --volumes`
-2. Delete the file `escalation/app_deploy_data/models.py`
-3. Re-start the app
+    ./escalation/scripts/escalation-reset.sh
+    
+This deletes the volume associated with the database, where the data is stored, and resets a models.py code file that decribes the database.
+
+Simply re-start the configuration as above(#2.-Configuring-the-app) to work from this blank state.
 
 
-You can also manually delete tables in the sql database by connecting to the database directly and using sql commands.
+You can also manually delete tables in the sql database by connecting to the database directly and using sql commands. Note that this doesn't reset the models.py file, so may result in strange behavior.
 
     Connect to db:
     docker exec -it escos_db psql -h localhost -p 5432 -U escalation -d escalation

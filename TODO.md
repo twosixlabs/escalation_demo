@@ -5,23 +5,16 @@
 - add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
 empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
 on another request. I think the current_app and request context may handle that nicely.
+- Cookbook examples for app deployment and integration: example scripts to integrate data uploads from GitLFS
 
 # Next release todo Features
 
 ## Nick
 
-- Group by selector option processing in backend doesn't allow a "None" option. Can we include- switch between grouping and not in one graph
-- models.py not refreshed when docker down run on volumes to handle any reset
 - Light data Processor functionality for data diagnostics: 
     - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
     - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
-- Legend
-    - Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
-    - (not urgent) Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)- default on/off
-    - (won't do) Customize what goes into the legend from groupby args- some strings are long and repetitive
-    - (won't do) Legend string shortening?
-
 ## Alexander
 
 ## Unassigned/Maybe do
@@ -43,9 +36,9 @@ on another request. I think the current_app and request context may handle that 
 ## Data management
 
 - Data privacy- do we want to add some kind of key checking or password functionality?
-- Add data download option (both most recent data and older versions of the data?), next to identifiers on admin page
-- script to update models.py. Integrate with delete db to clear db but leave metadata
 - Render validation error response on file upload in HTML rather than printing json
+- move get_schema_for_data_source to handler and use handler in get_possible_column_names...
+instead of config.data_back_writer
 
 ## Wizard
 - Allow Tables in the wizard
@@ -63,6 +56,8 @@ on another request. I think the current_app and request context may handle that 
 - How much RAM do we need to handle big data files? Can we stream things more efficiently than Pandas is doing?
 - add link to external Docker deployment instructions (Heroku? AWS free tier? Google Cloud Run?)
 
+## Miscellaneous
+- change confirm/alert boxes to modals/make them better 
 
 # User stories to support
 
