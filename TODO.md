@@ -1,20 +1,26 @@
 # To Triage
 - Bug: crashes if the graphic config references data sources that do not exist. 
-- Bug: program crashes if models.py does not exist
 - Cool summary screenshots to put into the readme. Penguin test with formatted axes labels, showing tooltips, maybe change opacity- just make it snazzier
 - add a single test case that does multiple requests on the same session, asserting that the cookie addendum dict starts 
 empty, then preserves a round of filters after one request is made, and finally handles the fields being rewritten 
 on another request. I think the current_app and request context may handle that nicely.
 - Cookbook examples for app deployment and integration: example scripts to integrate data uploads from GitLFS
 
+- Bug?: restarts on "Detected change in
+ '/usr/local/lib/python3.7/encodings/__pycache__/unicode_escape.cpython-37.pyc', reloading"
 # Next release todo Features
 
 ## Nick
-
 - Light data Processor functionality for data diagnostics: 
     - Error bars for scatter plot: in case we want to live-calculate error bars (stddev?)
     - Can we apply functions to data to annotate graph- e.g., calculate correlation coefficient for filtered data
     - Processor class, reads config json explaining which data to use, how to apply a function, and what gets returned. Pass to render or to plotly? Include in plot title? Annotation?
+- Legend
+    - Clean up the Plotly modebar- remove useless buttons https://plotly.com/javascript/configuration-options/#hide-the-plotly-logo-on-the-modebar. Use Add Buttons to ModeBar functionality to add legend hide/show toggle
+    - (not urgent) Add showlegend toggle to wizard graph config (field goes in plot_specific_info:layout)- default on/off
+    - (won't do) Customize what goes into the legend from groupby args- some strings are long and repetitive
+    - (won't do) Legend string shortening?
+
 ## Alexander
 
 ## Unassigned/Maybe do
