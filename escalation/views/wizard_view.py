@@ -243,11 +243,15 @@ def update_graphic_json_config_with_ui_changes():
 def get_updated_schemas():
 
     ui_editor_info_dict = request.get_json()
-    data_source_names, possible_column_names = get_data_source_info(
-        ui_editor_info_dict[DATA_SOURCES]
-    )
+    (
+        data_source_names,
+        possible_column_names,
+        unique_entries_dict,
+    ) = get_data_source_info(ui_editor_info_dict[DATA_SOURCES])
     graphic_schemas, schema_to_type = build_graphic_schemas_for_ui(
-        data_source_names, possible_column_names, ui_editor_info_dict[COLLAPSE_DICT]
+        data_source_names=data_source_names,
+        column_names=possible_column_names,
+        collapse_dict=ui_editor_info_dict[COLLAPSE_DICT],
     )
 
     return (

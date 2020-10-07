@@ -243,11 +243,11 @@ def get_possible_column_names_and_values(
         data_inventory = data_handler_class(
             data_sources={MAIN_DATA_SOURCE: {DATA_SOURCE_TYPE: data_source_name}}
         )
-        column_names = data_inventory.get_schema_for_data_source()
-        possible_column_names.extend(column_names)
+        column_names_for_data_source = data_inventory.get_schema_for_data_source()
+        possible_column_names.extend(column_names_for_data_source)
         if get_unique_values:
             unique_entries_for_data_source = data_inventory.get_column_unique_entries(
-                possible_column_names
+                column_names_for_data_source
             )
             unique_entries.update(unique_entries_for_data_source)
     return possible_column_names, unique_entries
@@ -263,6 +263,11 @@ def get_data_source_info(active_data_source_names=None):
         active_data_source_names = []
     data_inventory_class = current_app.config.data_backend_writer
     data_source_names = data_inventory_class.get_available_data_sources()
+    active_data_source_names = [
+        data_source_name
+        for data_source_name in active_data_source_names
+        if data_source_name in data_source_names
+    ]
     if data_source_names and not active_data_source_names:
         # default to the first in alphabetical order
         active_data_source_names = [min(data_source_names)]
