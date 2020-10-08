@@ -24,7 +24,7 @@ services:
   postgres_db:
     restart: always
     image: postgres:latest
-    container_name: escos_db
+    container_name: escos_db_penguin
     env_file:
     - ./escalation/app_deploy_data/database_env_file
     volumes:
