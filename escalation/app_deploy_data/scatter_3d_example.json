@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
-    "title": "A 3D Scatter plot",
-    "brief_desc": "",
+    "title": "Escalation Plots",
+    "brief_desc": "We currently support 2d/3d scatter/line plots, 1d/2d histograms, box plots, violin plots, bar plots, heatmaps, contour plots and 3d mesh plots.",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "penguin_size"
@@ -34,9 +34,33 @@
                 "camera": {
                     "center": {
                         "z": -0.5
+                    },
+                    "eye": {
+                        "x": 0,
+                        "z": 1,
+                        "y": 2
                     }
                 }
             }
         }
+    },
+    "visualization_options": {
+        "groupby": {
+            "column": [
+                "penguin_size:species"
+            ]
+        }
+    },
+    "selectable_data_dict": {
+        "filter": [
+            {
+                "column": "penguin_size:sex",
+                "multiple": false,
+                "default_selected": [
+                    "MALE"
+                ],
+                "unfiltered_selector": false
+            }
+        ]
     }
 }

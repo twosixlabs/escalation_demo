@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
     "title": "Group By Functionality",
-    "brief_desc": "Utilize group by to group the data by different column values in your data",
+    "brief_desc": "Utilize group by to group the data by labels in your data, The legend toggles on and off.",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "penguin_size"

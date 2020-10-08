@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
     "title": "Filter example",
-    "brief_desc": "Use the selector to the right to choose between different filters on the penguin_size:sex data",
+    "brief_desc": "Use the selector to the right to show data filtered by different labels in the penguin_size:sex column.",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "penguin_size"

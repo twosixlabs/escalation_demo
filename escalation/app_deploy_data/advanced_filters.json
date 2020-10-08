@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
     "title": "Even More Filters",
-    "brief_desc": "The second sector allows you to filter on multiple values. You can also filter numerical data.",
+    "brief_desc": "The second sector allows you to filter on multiple values. Additionally, you can set what the default selected option is. The third selector allows filtering on numerical numerical data.",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "penguin_size"

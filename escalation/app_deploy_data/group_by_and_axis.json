@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
     "title": "Group By and Axis Selector",
-    "brief_desc": "Try out the group by and axis selector",
+    "brief_desc": "You can create selectors to change which column of data is shown on an axis and which column is used for the group by operation.",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "penguin_size"

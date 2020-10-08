@@ -13,7 +13,7 @@
                 "type": "scatter",
                 "x": "penguin_size_small:culmen_length_mm",
                 "y": "penguin_size_small:flipper_length_mm",
-                "mode": "markers"
+                "mode": "lines+markers"
             }
         ],
         "layout": {
