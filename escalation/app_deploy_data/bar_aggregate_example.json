@@ -1,0 +1,29 @@
+{
+    "plot_manager": "plotly",
+    "title": "Transform the Data",
+    "brief_desc": "This bar plot is using aggregate (mean) functionality. Each bar is made by grouping the data by a particular label and then taking the mean of those data.  You can use any of aggregations supported by ploty: https://plotly.com/javascript/aggregations/#aggregate-functions.",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "bar",
+                "x": "penguin_size:island",
+                "y": "penguin_size:body_mass_g"
+            }
+        ]
+    },
+    "visualization_options": {
+        "aggregate": {
+            "column": [
+                "penguin_size:island"
+            ],
+            "aggregations": {
+                "y": "avg"
+            }
+        }
+    }
+}

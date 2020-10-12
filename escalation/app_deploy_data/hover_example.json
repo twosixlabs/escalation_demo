@@ -1,0 +1,40 @@
+{
+    "plot_manager": "plotly",
+    "title": "Set Up the Layout",
+    "brief_desc": "You can customize the axis labels as you please and you can add additional information in tooltips.  Try hovering over the data points.",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "x": "penguin_size:body_mass_g",
+                "y": "penguin_size:flipper_length_mm",
+                "mode": "markers"
+            }
+        ],
+        "layout": {
+            "xaxis": {
+                "title": {
+                    "text": "Body Mass (g)"
+                }
+            },
+            "yaxis": {
+                "title": {
+                    "text": "Flipper Length (mm)"
+                }
+            }
+        }
+    },
+    "visualization_options": {
+        "hover_data": {
+            "column": [
+                "penguin_size:sex",
+                "penguin_size:culmen_length_mm"
+            ]
+        }
+    }
+}

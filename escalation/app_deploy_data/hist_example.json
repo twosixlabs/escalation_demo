@@ -1,0 +1,18 @@
+{
+    "plot_manager": "plotly",
+    "title": "Histogram",
+    "brief_desc": "A basic histogram",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "histogram",
+                "x": "penguin_size:body_mass_g"
+            }
+        ]
+    }
+}

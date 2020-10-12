@@ -1,0 +1,32 @@
+{
+    "plot_manager": "plotly",
+    "title": "Customized Axes Labels",
+    "brief_desc": "You can specified labels for the axes",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size_small"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "x": "penguin_size_small:culmen_length_mm",
+                "y": "penguin_size_small:flipper_length_mm",
+                "mode": "lines+markers"
+            }
+        ],
+        "layout": {
+            "yaxis": {
+                "title": {
+                    "text": "Beak Length"
+                }
+            },
+            "xaxis": {
+                "title": {
+                    "text": "Filler Length"
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "plot_manager": "plotly",
+    "title": "Even More Filters",
+    "brief_desc": "The second sector allows you to filter on multiple values. Additionally, you can set what the default selected option is. The third selector allows filtering on numerical numerical data.",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "penguin_size"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scatter",
+                "x": "penguin_size:body_mass_g",
+                "y": "penguin_size:flipper_length_mm",
+                "mode": "markers"
+            }
+        ]
+    },
+    "selectable_data_dict": {
+        "filter": [
+            {
+                "column": "penguin_size:sex",
+                "multiple": false
+            },
+            {
+                "column": "penguin_size:island",
+                "multiple": true,
+                "default_selected": [
+                    "Dream"
+                ],
+                "unfiltered_selector": false
+            }
+        ],
+        "numerical_filter": [
+            {
+                "column": "penguin_size:culmen_length_mm"
+            }
+        ]
+    }
+}
