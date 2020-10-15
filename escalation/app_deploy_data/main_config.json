@@ -1,6 +1,6 @@
 {
     "title": "Escalation Visualization Software",
-    "brief_desc": "Welcome to the demo page for the Escalation Visualization Software.",
+    "brief_desc": "Welcome to the demo page for the Escalation Visualization Software. You can find more information about Escalation on our <A HREF=\"https://www.twosixlabs.com/escalation/\">blog post</A> or on <A HREF=\"https://github.com/twosixlabs/escalation\">Github</A>",
     "data_backend": "psql",
     "data_file_directory": "",
     "available_pages": [
@@ -21,6 +21,13 @@
                 "filter.json",
                 "advanced_filters.json",
                 "group_by_and_axis.json"
+            ]
+        },
+         {
+            "webpage_label": "Fires",
+            "url_endpoint": "fires",
+            "graphic_config_files": [
+                "california_fires.json"
             ]
         }
     ]

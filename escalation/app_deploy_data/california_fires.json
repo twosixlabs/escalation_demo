@@ -1,0 +1,64 @@
+{
+    "plot_manager": "plotly",
+    "title": "California Fires",
+    "brief_desc": "Map plotting example using up-to-date California fire data uploaded using Github Continuous Integration",
+    "data_sources": {
+        "main_data_source": {
+            "data_source_type": "california_fires"
+        }
+    },
+    "plot_specific_info": {
+        "data": [
+            {
+                "type": "scattergeo",
+                "lat": "california_fires:latitude",
+                "lon": "california_fires:longitude",
+                "mode": "markers",
+                "marker": {
+                    "size": "california_fires:acresburned",
+                    "line": {
+                        "color": "black",
+                        "width": 1
+                    },
+                    "sizeref": 5000,
+                    "sizemode": "area",
+                    "sizemin": 2
+                }
+            }
+        ],
+        "layout": {
+            "geo": {
+                "scope": "usa",
+                "projection": {
+                    "type": "albers usa"
+                },
+                "showland": true,
+                "landcolor": "rgb(217, 217, 217)",
+                "subunitwidth": 1,
+                "countrywidth": 1,
+                "subunitcolor": "rgb(255,255,255)",
+                "countrycolor": "rgb(255,255,255)"
+            }
+        }
+    },
+    "visualization_options": {
+        "hover_data": {
+            "column": [
+                "california_fires:name",
+                "california_fires:acresburned",
+                "california_fires:started"
+            ]
+        }
+    },
+    "selectable_data_dict": {
+        "numerical_filter": [
+            {
+                "column": "california_fires:acresburned"
+            },
+            {
+                "column": "california_fires:personnelinvolved"
+            }
+
+        ]
+    }
+}
