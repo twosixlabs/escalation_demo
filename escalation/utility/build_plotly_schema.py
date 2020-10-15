@@ -2,7 +2,8 @@
 # Licensed under the Apache License, Version 2.0
 import copy
 
-from graphics.plotly_plot import LAYOUT, X, Y, Z, ERROR_X, ERROR_Y, ERROR_Z, ARRAY
+from graphics.plotly_plot import (LAYOUT, X, Y, Z, ERROR_X, ERROR_Y, ERROR_Z, ARRAY,
+    LATITUDE, LONGITUDE)
 from utility.constants import *
 
 MODE = "mode"
@@ -19,6 +20,7 @@ HISTOGRAM2DCONTOUR = "histogram2dcontour"
 SCATTER3D = "scatter3d"
 # SURFACE = "surface"
 MESH3D = "mesh3d"
+SCATTERGEO = "scattergeo"
 
 PLOT_TYPE = "plot_type"
 
@@ -90,6 +92,7 @@ def build_plotly_schema(column_names):
                             TITLE: "Render Mode",
                             "enum": [
                                 "scatter",
+                                "scattergeo",
                                 "scattergl",
                                 "bar",
                                 "pie",
@@ -122,6 +125,16 @@ def build_plotly_schema(column_names):
                         Z: {
                             TYPE: "string",
                             TITLE: "Data on Y Axis",
+                            ENUM: column_names,
+                        },
+                        LATITUDE: {
+                            TYPE: "string",
+                            TITLE: "Data column with latitude values",
+                            ENUM: column_names,
+                        },
+                        LONGITUDE: {
+                            TYPE: "string",
+                            TITLE: "Data column with longitude values",
                             ENUM: column_names,
                         },
                         ERROR_X: {
@@ -238,7 +251,7 @@ def build_plotly_schema_individual_dicts(column_names):
     :return:
     """
     # If the element is not in required we will delete it
-    programmed_data_options = [TYPE, X, Y, Z, MODE]
+    programmed_data_options = [TYPE, X, Y, Z, MODE, LATITUDE, LONGITUDE]
 
     directions_for_building_schemas = {
         SCATTER: {
@@ -249,13 +262,19 @@ def build_plotly_schema_individual_dicts(column_names):
                 MODE: "marker for scatter plot, line for line plot",
             },
         },
-        BAR: {ENUM: [BAR], REQUIRED: [TYPE, X, Y],},
+        SCATTERGEO: {
+            ENUM: [SCATTERGEO],
+            REQUIRED: [TYPE, LATITUDE, LONGITUDE, MODE],
+
+        },
+
+        BAR: {ENUM: [BAR], REQUIRED: [TYPE, X, Y], },
         BOX: {
             ENUM: [BOX],
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
                 TYPE: "To show more than one box in the plot, "
-                'set "group by" in visualization options below',
+                      'set "group by" in visualization options below',
             },
         },
         VIOLIN: {
@@ -263,13 +282,14 @@ def build_plotly_schema_individual_dicts(column_names):
             REQUIRED: [TYPE, Y],
             DESCRIPTION: {
                 TYPE: "To show more than one violin in the plot, "
-                'set "group by" in visualization options below',
+                      'set "group by" in visualization options below',
             },
         },
-        HISTOGRAM: {ENUM: [HISTOGRAM], REQUIRED: [TYPE, X],},
-        CONTOUR: {ENUM: [CONTOUR], REQUIRED: [TYPE, X, Y, Z],},
-        HISTOGRAM2D: {ENUM: [HISTOGRAM2D, HISTOGRAM2DCONTOUR], REQUIRED: [TYPE, X, Y],},
-        MESH3D: {ENUM: [MESH3D], REQUIRED: [TYPE, X, Y, Z],},
+        HISTOGRAM: {ENUM: [HISTOGRAM], REQUIRED: [TYPE, X], },
+        CONTOUR: {ENUM: [CONTOUR], REQUIRED: [TYPE, X, Y, Z], },
+        HISTOGRAM2D: {ENUM: [HISTOGRAM2D, HISTOGRAM2DCONTOUR],
+                      REQUIRED: [TYPE, X, Y], },
+        MESH3D: {ENUM: [MESH3D], REQUIRED: [TYPE, X, Y, Z], },
         HEATMAP: {
             ENUM: [HEATMAPGL, HEATMAP],
             REQUIRED: [TYPE, X, Y, Z],

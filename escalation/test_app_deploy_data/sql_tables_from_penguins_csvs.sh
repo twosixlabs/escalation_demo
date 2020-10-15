@@ -8,12 +8,12 @@ fi
 TESTING_DATABASE=testing_escalation
 MAIN_DATABASE=escalation
 # write to the TESTING database.
-export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://escalation:escalation_pwd@localhost:5432/$TESTING_DATABASE
+export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://escalation:escalation_pwd@localhost:5432/$AIN_DATABASE
 
-python database/csv_to_sql.py penguin_size test_app_deploy_data/data/penguin_size/penguin_size.csv replace
-python database/csv_to_sql.py penguin_size test_app_deploy_data/data/penguin_size/penguin_size_2.csv append
-python database/csv_to_sql.py mean_penguin_stat test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv replace
-python database/csv_to_sql.py penguin_size_small test_app_deploy_data/data/penguin_size_small/penguin_size_small.csv replace
+python scripts/csv_to_sql.py penguin_size test_app_deploy_data/data/penguin_size/penguin_size.csv replace test_user "created by setup script"
+python scripts/csv_to_sql.py penguin_size test_app_deploy_data/data/penguin_size/penguin_size_2.csv append test_user "created by setup script"
+python scripts/csv_to_sql.py mean_penguin_stat test_app_deploy_data/data/mean_penguin_stat/mean_penguin_stat.csv replace test_user "created by setup script"
+python scripts/csv_to_sql.py penguin_size_small test_app_deploy_data/data/penguin_size_small/penguin_size_small.csv replace test_user "created by setup script"
 
 sqlacodegen $SQLALCHEMY_DATABASE_URI --outfile test_app_deploy_data/models.py --noinflect
 

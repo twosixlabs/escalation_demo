@@ -2,8 +2,11 @@
 # Licensed under the Apache License, Version 2.0
 
 import json
-import plotly
+
 from flask import render_template
+import plotly
+import re
+
 from graphics.graphic_class import Graphic
 from utility.constants import (
     OPTION_COL,
@@ -15,6 +18,7 @@ from utility.constants import (
     SCATTERGL,
     TYPE,
 )
+from utility.helper_classes import NestedDict
 
 HOVER_TEMPLATE_HTML = "hover_template.html"
 
@@ -48,8 +52,11 @@ Z = "z"
 ERROR_X = "error_x"
 ERROR_Y = "error_y"
 ERROR_Z = "error_z"
-POSSIBLE_AXIS = [X, Y, Z]
+LATITUDE = 'lat'
+LONGITUDE = 'lon'
+POSSIBLE_AXIS = [X, Y, Z, LATITUDE, LONGITUDE]
 POSSIBLE_ERROR_AXES = [ERROR_X, ERROR_Y, ERROR_Z]
+POSSIBLE_ATTRIBUTES = ["marker.size", "marker.line.width"]
 
 ARRAY = "array"
 CONFIG = "config"
@@ -238,13 +245,14 @@ class PlotlyPlot(Graphic):
             plot_options[LAYOUT] = add_toggle_layout_button(
                 plot_options.get(LAYOUT, {})
             )
+        # allow us to access keys at arbitrary depth using tuples of keys
+        plot_options[DATA] = [NestedDict(d) for d in plot_options[DATA]]
         for index, plotly_data_dict in enumerate(plot_options[DATA]):
             if not data_sorted and does_data_need_to_be_sorted(plotly_data_dict):
                 data.sort_values(plotly_data_dict[AXIS_TO_SORT_ALONG], inplace=True)
                 data_sorted = True
             for axis in POSSIBLE_AXIS:
                 if axis in plotly_data_dict:
-
                     if index == 0:
                         # if there is no label, label the columns with the first lines/scatters column names
                         layout_dict = plot_options.get(LAYOUT, {})
@@ -261,6 +269,16 @@ class PlotlyPlot(Graphic):
                     plotly_data_dict[error_axis][ARRAY] = data[
                         plotly_data_dict[error_axis][ARRAY]
                     ]
+            for attribute in POSSIBLE_ATTRIBUTES:
+                # get nested attribute
+                dict_nesting_location = attribute.split('.')
+                column_for_attribute = plotly_data_dict[dict_nesting_location]
+                # if there is anything at this nesting depth,
+                # and it matches a column name in the data,
+                # overwrite it with the corresponding data
+                if column_for_attribute and column_for_attribute in data.columns:
+                    plotly_data_dict[dict_nesting_location] = data[column_for_attribute]
+
             plotly_data_dict[TRANSFORMS] = []
 
             if visualization_options is not None:
@@ -296,4 +314,13 @@ class PlotlyPlot(Graphic):
                     set_of_column_names.add(
                         dict_of_data_for_each_plot[error_axis][ARRAY]
                     )
+            for attribute in POSSIBLE_ATTRIBUTES:
+                dict_nesting_location = attribute.split('.')
+                subdict = dict_of_data_for_each_plot.copy()
+                for depth_level in dict_nesting_location:
+                    subdict = subdict.get(depth_level, {})
+                # todo: how do we reliably check that the value stored here is a column name and not an integer?
+                if subdict and isinstance(subdict, str) and re.match("\w+:\w+", subdict):
+                    set_of_column_names.add(subdict)
         return set_of_column_names
+

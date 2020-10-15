@@ -101,7 +101,6 @@ def assemble_plot_from_instructions(plot_specification, plot_data_handler):
     plot_directions_dict = graphic_to_plot.make_dict_for_html_plot(
         plot_data, plot_specification[PLOT_SPECIFIC_INFO], visualization_options,
     )
-
     return plot_directions_dict, graphic_data[GRAPH_HTML_TEMPLATE]
 
 
