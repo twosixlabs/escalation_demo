@@ -5,7 +5,7 @@ services:
   web:
     restart: always
     build: .
-    container_name: escos_web
+    container_name: escos_web_demo
     expose:
       - "8000"
     links:
@@ -20,7 +20,7 @@ services:
   nginx:
     restart: always
     image: "nginx:1.13.5"
-    container_name: escos_nginx
+    container_name: escos_nginx_demo
     ports:
       - "80:80"
     volumes:
@@ -37,7 +37,7 @@ services:
   postgres_db:
     restart: always
     image: postgres:latest
-    container_name: escos_db
+    container_name: escos_db_demo
     env_file:
     - ./escalation/app_deploy_data/database_env_file
     volumes:
