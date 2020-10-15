@@ -1,7 +1,7 @@
 {
     "plot_manager": "plotly",
     "title": "California Fires",
-    "brief_desc": "Map plotting example using up-to-date California fire data uploaded using Github Continuous Integration",
+    "brief_desc": "Map plotting example using up-to-date California fire data uploaded using Github Continuous Integration. Plotly documentation for Mapbox plots here: https://plotly.com/javascript/mapbox-layers/",
     "data_sources": {
         "main_data_source": {
             "data_source_type": "california_fires"
@@ -10,7 +10,7 @@
     "plot_specific_info": {
         "data": [
             {
-                "type": "scattergeo",
+                "type": "scattermapbox",
                 "lat": "california_fires:latitude",
                 "lon": "california_fires:longitude",
                 "mode": "markers",
@@ -20,24 +20,34 @@
                         "color": "black",
                         "width": 1
                     },
-                    "sizeref": 5000,
+                    "color": "red",
+                    "sizeref": 4000,
                     "sizemode": "area",
-                    "sizemin": 2
+                    "sizemin": 3
                 }
             }
         ],
         "layout": {
-            "geo": {
-                "scope": "usa",
-                "projection": {
-                    "type": "albers usa"
-                },
-                "showland": true,
-                "landcolor": "rgb(217, 217, 217)",
-                "subunitwidth": 1,
-                "countrywidth": 1,
-                "subunitcolor": "rgb(255,255,255)",
-                "countrycolor": "rgb(255,255,255)"
+            "height": 800,
+            "width": 600,
+            "mapbox": {
+                "style": "white-bg",
+                "layers": [
+                    {
+                        "below": "traces",
+                        "sourcetype": "raster",
+                        "sourceattribution": "United States Geological Survey",
+                        "source": [
+                            "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"
+                        ]
+
+                    }
+                ],
+                 "center": {
+                            "lat": 38,
+                            "lon": -120
+                        },
+                "zoom": 5
             }
         }
     },

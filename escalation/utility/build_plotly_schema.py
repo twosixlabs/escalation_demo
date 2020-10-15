@@ -7,7 +7,7 @@ from graphics.plotly_plot import (LAYOUT, X, Y, Z, ERROR_X, ERROR_Y, ERROR_Z, AR
 from utility.constants import *
 
 MODE = "mode"
-
+MARKER = "marker"
 BAR = "bar"
 HEATMAP = "heatmap"
 HEATMAPGL = "heatmapgl"
@@ -21,6 +21,7 @@ SCATTER3D = "scatter3d"
 # SURFACE = "surface"
 MESH3D = "mesh3d"
 SCATTERGEO = "scattergeo"
+SCATTERMAPBOX = "scattermapbox"
 
 PLOT_TYPE = "plot_type"
 
@@ -237,6 +238,15 @@ def build_plotly_schema(column_names):
                         "type": "string",
                         "enum": ["stack", "group", "overlay", "relative"],
                     },
+                    "mapbox": {
+                        "type": "object",
+                        "properties": {
+                            "style": {"type": "string"},
+                            "zoom": {"type": "number"},
+                            "center": {"type": "object"},
+                            "layers": {"type": "object"}
+                        }
+                    }
                 },
             },
         },
@@ -265,6 +275,11 @@ def build_plotly_schema_individual_dicts(column_names):
         SCATTERGEO: {
             ENUM: [SCATTERGEO],
             REQUIRED: [TYPE, LATITUDE, LONGITUDE, MODE],
+
+        },
+        SCATTERMAPBOX: {
+            ENUM: [SCATTERGEO],
+            REQUIRED: [TYPE, LATITUDE, LONGITUDE, MODE, MARKER],
 
         },
 
