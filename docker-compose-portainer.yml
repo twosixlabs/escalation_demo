@@ -18,7 +18,7 @@ services:
   data:
     image: postgres:latest
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data-penguin:/var/lib/postgresql/data
     command: "true"
 
   postgres_db:
@@ -28,7 +28,7 @@ services:
     env_file:
     - ./escalation/app_deploy_data/database_env_file
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data-penguin:/var/lib/postgresql/data
 #      This file runs a db setup command that creates the upload metadata table
       - ./escalation/database/container_db_init.sql:/docker-entrypoint-initdb.d/init.sql
 
