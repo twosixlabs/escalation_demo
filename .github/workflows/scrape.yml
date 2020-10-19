@@ -20,6 +20,9 @@ jobs:
         python-version: '3.6'
         # Optional - x64 or x86 architecture, defaults to x64
         architecture: 'x64'
+    - name: Fetch latest data
+      run: |-
+        curl https://www.fire.ca.gov/umbraco/Api/IncidentApi/GetIncidents | jq . > escalation/app_deploy_data/fire_data_parsing/incidents.json
     - name: Display Python version
       run: python -V
     - name: Install requirements
