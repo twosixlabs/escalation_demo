@@ -13,7 +13,7 @@ ESCALATION_APP_UPLOAD_ENDPOINT = "http://escalation-demo.sd2e.org/upload"
 TABLE_NAME = "california_fires"
 
 
-incidents_filepath = "app_deploy_data/fire_data_parsing/incidents.json"
+incidents_filepath = "escalation/app_deploy_data/fire_data_parsing/incidents.json"
 with open(incidents_filepath, "r") as fin:
     incidents = json.load(fin)
 incidents_df = pd.DataFrame(incidents["Incidents"])
