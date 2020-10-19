@@ -25,4 +25,4 @@ jobs:
     - name: Install requirements
       run: pip install -r escalation/app_deploy_data/fire_data_parsing/scraper-requirements.txt
     - name: Run scrape script
-      run: python escalation/app_deploy_data/fire_data_parsing/parse_fire_report_json.py.py
+      run: python escalation/app_deploy_data/fire_data_parsing/parse_fire_report_json.py
