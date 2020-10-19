@@ -1,0 +1,29 @@
+name: Python package
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron:  '6,26,46 * * * *'
+
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.6
+      uses: actions/setup-python@v2
+      with:
+        # Semantic version range syntax or exact version of a Python version
+        python-version: '3.6'
+        # Optional - x64 or x86 architecture, defaults to x64
+        architecture: 'x64'
+    - name: Display Python version
+      run: python -V
+    - name: Install requirements
+      run: pip install -r app_deploy_data/fire_data_parsing/scraper-requirements.txt
+    - name: Run scrape script
+      run: python app_deploy_data/fire_data_parsing/parse_fire_report_json.py.py
