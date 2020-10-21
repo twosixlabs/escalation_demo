@@ -14,12 +14,16 @@ services:
     environment:
       - VIRTUAL_HOST
       - VIRTUAL_PORT
+    networks:
+      - demo_network
 
   data:
     image: postgres:latest
     volumes:
       - db-data-penguin:/var/lib/postgresql/data
     command: "true"
+    networks:
+      - demo_network
 
   postgres_db:
     restart: always
@@ -31,7 +35,14 @@ services:
       - db-data-penguin:/var/lib/postgresql/data
 #      This file runs a db setup command that creates the upload metadata table
       - ./escalation/database/container_db_init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - demo_network
 
 
 volumes:
   db-data-penguin:
+
+networks:
+  demo_network:
+    external:
+      name: escalation-demo-network
